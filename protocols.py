@@ -8,6 +8,11 @@ class Agent(ABC):
 class Board(ABC):
     @property
     @abstractmethod
+    def shape(self):
+        ...
+
+    @property
+    @abstractmethod
     def width(self) -> int:
         ...
 
@@ -22,7 +27,15 @@ class Board(ABC):
 
 
 class Cell(ABC):
-    ...
+    @property
+    @abstractmethod
+    def controlling(self) -> "Agent":
+        ...
+
+    @property
+    @abstractmethod
+    def figure(self) -> "Figure":
+        ...
 
 
 class Figure(ABC):
