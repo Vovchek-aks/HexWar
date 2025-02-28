@@ -34,7 +34,9 @@ class Board(proto.Board):
         return self._shape.y
 
     def coordinates_of(self, cell: proto.Cell) -> Vector2Int:
-        pass
+        idx = self._cells.index(cell)
+        y, x = divmod(idx, self.width)
+        return Vector2Int(x, y)
 
     def __getitem__(self, item: tuple[int, int]) -> proto.Cell:
         return self._cells[item[0] + item[1] * self.width]
