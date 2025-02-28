@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from vector import Vector2Int
+
 
 class Agent(ABC):
     ...
@@ -8,7 +10,7 @@ class Agent(ABC):
 class Board(ABC):
     @property
     @abstractmethod
-    def shape(self):
+    def shape(self) -> Vector2Int:
         ...
 
     @property
@@ -22,7 +24,11 @@ class Board(ABC):
         ...
 
     @abstractmethod
-    def __getitem__(self, item: tuple[int, int]) -> "Cell":
+    def coordinates_of(self, cell: "Cell") -> Vector2Int:
+        ...
+
+    @abstractmethod
+    def __getitem__(self, item: Vector2Int) -> "Cell":
         ...
 
 
