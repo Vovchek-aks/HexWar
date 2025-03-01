@@ -32,4 +32,4 @@ class Vector2Int:
         return type(self)(self.x + other.x, self.y + other.y)
 
     def __mul__(self, number: int) -> "Vector2Int":
-        return type(self)(self.x * number, self.y + number)
+        return type(self)(self.x * number, self.y * number)
