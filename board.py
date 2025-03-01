@@ -38,5 +38,5 @@ class Board(proto.Board):
         y, x = divmod(idx, self.width)
         return Vector2Int(x, y)
 
-    def __getitem__(self, item: tuple[int, int]) -> proto.Cell:
-        return self._cells[item[0] + item[1] * self.width]
+    def __getitem__(self, coord: Vector2Int) -> proto.Cell:
+        return self._cells[coord.x + coord.y * self.width]
