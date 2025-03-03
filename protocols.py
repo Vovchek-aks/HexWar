@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import ClassVar
 
 from vector import Vector2Int
 
@@ -45,4 +46,12 @@ class Cell(ABC):
 
 
 class Figure(ABC):
+    STRENGTH: ClassVar[int]
+
+
+class FigureStatic(Figure):
+    ...
+
+
+class FigureMovable(Figure):
     ...
