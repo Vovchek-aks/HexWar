@@ -3,6 +3,8 @@ from typing import ClassVar
 
 from vector import Vector2Int
 
+INVALID = object()
+
 
 class Master(ABC):
     @abstractmethod
@@ -23,7 +25,7 @@ class ValidMove(ABC):
 
 class Move(ABC):
     @abstractmethod
-    def validate(self, master: Master, board: "Board") -> ValidMove | None:
+    def validate(self, master: Master, board: "Board") -> ValidMove | INVALID:
         ...
 
     @abstractmethod
@@ -73,11 +75,20 @@ class Cell(ABC):
 
     @property
     @abstractmethod
+    def is_empty(self) -> bool:
+        ...
+
+    @property
+    @abstractmethod
     def strength(self) -> int:
         ...
 
     @abstractmethod
     def pop_figure(self) -> "Figure":
+        ...
+
+    @abstractmethod
+    def populate(self, figure: "Figure") -> None:
         ...
 
     @abstractmethod
@@ -89,9 +100,13 @@ class Figure(ABC):
     STRENGTH: ClassVar[int]
 
 
-class StaticFigure(ABC, Figure):
+class StaticFigure(Figure, ABC):
     ...
 
 
-class MovableFigure(ABC, Figure):
+class CreatableFigure(Figure, ABC):
+    ...
+
+
+class MovableFigure(Figure, ABC):
     ...

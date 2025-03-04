@@ -14,7 +14,7 @@ class Tree(proto.StaticFigure):
 
 
 @define
-class Farm(proto.StaticFigure):
+class Farm(proto.StaticFigure, proto.CreatableFigure):
     STRENGTH = 0
 
 
@@ -24,32 +24,32 @@ class Hub(proto.StaticFigure):
 
 
 @define
-class Tower(proto.StaticFigure):
+class Tower(proto.StaticFigure, proto.CreatableFigure):
     STRENGTH = 3
 
 
 @define
-class Castle(proto.StaticFigure):
+class Castle(proto.StaticFigure, proto.CreatableFigure):
     STRENGTH = 5
 
 
 @define
-class Worker(proto.MovableFigure):
+class Worker(proto.MovableFigure, proto.CreatableFigure):
     STRENGTH = 1
 
 
 @define
-class Spearman(proto.MovableFigure):
+class Spearman(proto.MovableFigure, proto.CreatableFigure):
     STRENGTH = 2
 
 
 @define
-class Squire(proto.MovableFigure):
+class Squire(proto.MovableFigure, proto.CreatableFigure):
     STRENGTH = 4
 
 
 @define
-class Knight(proto.MovableFigure):
+class Knight(proto.MovableFigure, proto.CreatableFigure):
     STRENGTH = 6
 
 

@@ -1,3 +1,5 @@
+from abc import ABC
+
 from attrs import frozen
 
 import protocols as proto
@@ -15,29 +17,70 @@ class ValidMove(proto.ValidMove):
 
 
 @frozen
-class Relocation(proto.Move):
+class _FiguresRelocation(proto.Move, ABC):
     from_coord: Vector2Int
     to_coord: Vector2Int
 
-    def validate(self, master: proto.Master, board: proto.Board) -> proto.ValidMove | None:
+    def execute(self, board: proto.Board) -> None:
+        from_cell = board[self.from_coord]
+        to_cell = board[self.to_coord]
+        to_cell.take_from(from_cell)
+
+
+@frozen
+class Capture(_FiguresRelocation):
+    def validate(self, master: proto.Master, board: proto.Board) -> proto.ValidMove | proto.INVALID:
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
 
+        if from_cell.owner == to_cell.owner:
+            return proto.INVALID
+
         if not master.is_turn_of(from_cell.owner):
-            return None
+            return proto.INVALID
 
         if not isinstance(movable := from_cell.figure, proto.MovableFigure):
-            return None
+            return proto.INVALID
 
         if movable.STRENGTH == fig.MAX_STRENGTH:
             return ValidMove(self)
 
         if movable.STRENGTH <= to_cell.strength:
-            return None
+            return proto.INVALID
+
+        return ValidMove(self)
+
+
+@frozen
+class Relocation(_FiguresRelocation):
+    def validate(self, master: proto.Master, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+        from_cell = board[self.from_coord]
+        to_cell = board[self.to_coord]
+
+        if from_cell.owner != to_cell.owner:
+            return proto.INVALID
+
+        if not isinstance(to_cell.figure, fig.Empty | fig.Tree):
+            return proto.INVALID
+
+        return ValidMove(self)
+
+
+@frozen
+class Creation(proto.Move):
+    _creatable_type: type[proto.CreatableFigure]
+    to_coord: Vector2Int
+
+    def validate(self, master: proto.Master, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+        to_cell = board[self.to_coord]
+
+        if not master.is_turn_of(to_cell.owner):
+            return proto.INVALID
+
+        if not to_cell.is_empty:
+            return proto.INVALID
 
         return ValidMove(self)
 
     def execute(self, board: proto.Board) -> None:
-        from_cell = board[self.from_coord]
-        to_cell = board[self.to_coord]
-        from_cell.take_from(to_cell)
+        board[self.to_coord].populate(self._creatable_type())
