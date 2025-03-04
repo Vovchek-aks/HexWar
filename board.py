@@ -38,5 +38,8 @@ class Board(proto.Board):
         y, x = divmod(idx, self.width)
         return Vector2Int(x, y)
 
+    def make(self, move: proto.ValidMove) -> None:
+        move.move.execute(self)
+
     def __getitem__(self, coord: Vector2Int) -> proto.Cell:
         return self._cells[coord.x + coord.y * self.width]

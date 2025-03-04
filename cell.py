@@ -6,16 +6,20 @@ import figures as fig
 
 @define
 class Cell(proto.Cell):
-    _controlling: proto.Agent
+    _owner: proto.Player
     _figure: proto.Figure
 
     @property
-    def controlling(self) -> proto.Agent:
-        return self._controlling
+    def owner(self) -> proto.Player:
+        return self._owner
 
     @property
     def figure(self) -> proto.Figure:
         return self._figure
+
+    @property
+    def strength(self) -> int:
+        return self.figure.STRENGTH  # todo: add projected
 
     def pop_figure(self) -> proto.Figure:
         figure = self.figure
@@ -25,5 +29,5 @@ class Cell(proto.Cell):
     def take_from(self, other: "Cell") -> None:
         assert isinstance(other.figure, proto.MovableFigure)
 
-        self._controlling = other.controlling
+        self._owner = other.owner
         self._figure = other.pop_figure()

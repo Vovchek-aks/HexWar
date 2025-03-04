@@ -4,8 +4,31 @@ from typing import ClassVar
 from vector import Vector2Int
 
 
-class Agent(ABC):
+class Master(ABC):
+    @abstractmethod
+    def is_turn_of(self, player: "Player") -> bool:
+        ...
+
+
+class Player(ABC):
     ...
+
+
+class ValidMove(ABC):
+    @property
+    @abstractmethod
+    def move(self) -> "Move":
+        ...
+
+
+class Move(ABC):
+    @abstractmethod
+    def validate(self, master: Master, board: "Board") -> ValidMove | None:
+        ...
+
+    @abstractmethod
+    def execute(self, board: "Board") -> None:
+        ...
 
 
 class Board(ABC):
@@ -29,6 +52,10 @@ class Board(ABC):
         ...
 
     @abstractmethod
+    def make(self, move: "ValidMove") -> None:
+        ...
+
+    @abstractmethod
     def __getitem__(self, item: Vector2Int) -> "Cell":
         ...
 
@@ -36,12 +63,17 @@ class Board(ABC):
 class Cell(ABC):
     @property
     @abstractmethod
-    def controlling(self) -> "Agent":
+    def owner(self) -> "Player":
         ...
 
     @property
     @abstractmethod
     def figure(self) -> "Figure":
+        ...
+
+    @property
+    @abstractmethod
+    def strength(self) -> int:
         ...
 
     @abstractmethod
