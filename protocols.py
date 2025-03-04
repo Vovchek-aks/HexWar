@@ -44,6 +44,14 @@ class Cell(ABC):
     def figure(self) -> "Figure":
         ...
 
+    @abstractmethod
+    def pop_figure(self) -> "Figure":
+        ...
+
+    @abstractmethod
+    def take_from(self, other: "Cell") -> None:
+        ...
+
 
 class Figure(ABC):
     STRENGTH: ClassVar[int]
