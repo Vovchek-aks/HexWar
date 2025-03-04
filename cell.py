@@ -23,7 +23,7 @@ class Cell(proto.Cell):
         return figure
 
     def take_from(self, other: "Cell") -> None:
-        assert isinstance(other.figure, proto.FigureMovable)
+        assert isinstance(other.figure, proto.MovableFigure)
 
         self._controlling = other.controlling
         self._figure = other.pop_figure()

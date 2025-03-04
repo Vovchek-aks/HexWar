@@ -57,9 +57,9 @@ class Figure(ABC):
     STRENGTH: ClassVar[int]
 
 
-class FigureStatic(Figure):
+class StaticFigure(ABC, Figure):
     ...
 
 
-class FigureMovable(Figure):
+class MovableFigure(ABC, Figure):
     ...
