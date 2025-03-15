@@ -49,7 +49,7 @@ class Board(proto.Board):
         cell_coord = self.coordinates_of(cell)
         neighbors = {cell} if include_cell else set[proto.Cell]()
 
-        neighbors_coords = [
+        neighbors_coords = [  # https://vk.com/cyberdilf?w=wall-226630281_64
             Vector2Int(-1, -1),
             Vector2Int(-1, 0),
             Vector2Int(0, -1),
