@@ -25,7 +25,7 @@ class ValidMove(ABC):
 
 class Move(ABC):
     @abstractmethod
-    def validate(self, master: Master, board: "Board") -> ValidMove | INVALID:
+    def validate(self, board: "Board") -> ValidMove | INVALID:
         ...
 
     @abstractmethod
@@ -84,11 +84,11 @@ class Cell(ABC):
         ...
 
     @abstractmethod
-    def pop_figure(self) -> "Figure":
+    def pop(self) -> "Figure":
         ...
 
     @abstractmethod
-    def populate(self, figure: "Figure") -> None:
+    def insert(self, figure: "Figure") -> None:
         ...
 
     @abstractmethod

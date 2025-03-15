@@ -25,18 +25,16 @@ class Cell(proto.Cell):
     def strength(self) -> int:
         return self.figure.STRENGTH  # todo: add projected
 
-    def pop_figure(self) -> proto.Figure:
+    def pop(self) -> proto.Figure:
         figure = self.figure
         self._figure = fig.Empty()
         return figure
 
-    def populate(self, figure: proto.Figure) -> None:
+    def insert(self, figure: proto.Figure) -> None:
         assert self.is_empty
 
         self._figure = figure
 
     def take_from(self, other: "Cell") -> None:
-        assert isinstance(other.figure, proto.MovableFigure)
-
         self._owner = other.owner
-        self._figure = other.pop_figure()
+        self._figure = other.pop()

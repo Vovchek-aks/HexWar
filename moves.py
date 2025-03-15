@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Callable
 
 from attrs import frozen
 
@@ -29,14 +30,11 @@ class _FiguresRelocation(proto.Move, ABC):
 
 @frozen
 class Capture(_FiguresRelocation):
-    def validate(self, master: proto.Master, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+    def validate(self, board: proto.Board) -> proto.ValidMove | proto.INVALID:
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
 
         if from_cell.owner == to_cell.owner:
-            return proto.INVALID
-
-        if not master.is_turn_of(from_cell.owner):
             return proto.INVALID
 
         if not isinstance(movable := from_cell.figure, proto.MovableFigure):
@@ -53,11 +51,14 @@ class Capture(_FiguresRelocation):
 
 @frozen
 class Relocation(_FiguresRelocation):
-    def validate(self, master: proto.Master, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+    def validate(self, board: proto.Board) -> proto.ValidMove | proto.INVALID:
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
 
         if from_cell.owner != to_cell.owner:
+            return proto.INVALID
+
+        if not isinstance(from_cell.figure, proto.MovableFigure):
             return proto.INVALID
 
         if not isinstance(to_cell.figure, fig.Empty | fig.Tree):
@@ -68,14 +69,11 @@ class Relocation(_FiguresRelocation):
 
 @frozen
 class Creation(proto.Move):
-    _creatable_type: type[proto.CreatableFigure]
+    create_figure: Callable[[], proto.CreatableFigure]
     to_coord: Vector2Int
 
-    def validate(self, master: proto.Master, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+    def validate(self, board: proto.Board) -> proto.ValidMove | proto.INVALID:
         to_cell = board[self.to_coord]
-
-        if not master.is_turn_of(to_cell.owner):
-            return proto.INVALID
 
         if not to_cell.is_empty:
             return proto.INVALID
@@ -83,4 +81,4 @@ class Creation(proto.Move):
         return ValidMove(self)
 
     def execute(self, board: proto.Board) -> None:
-        board[self.to_coord].populate(self._creatable_type())
+        board[self.to_coord].insert(self.create_figure())
