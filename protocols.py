@@ -58,6 +58,10 @@ class Board(ABC):
         ...
 
     @abstractmethod
+    def get_neighbors(self, cell: "Cell", *, include_cell: bool) -> set["Cell"]:
+        ...
+
+    @abstractmethod
     def __getitem__(self, item: Vector2Int) -> "Cell":
         ...
 
