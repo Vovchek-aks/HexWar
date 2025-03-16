@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import ClassVar
 
+from figures.figures_flags import Flag
 from vector import Vector2Int
 
 INVALID = object()
@@ -105,15 +106,4 @@ class Cell(ABC):
 
 class Figure(ABC):
     STRENGTH: ClassVar[int]
-
-
-class StaticFigure(Figure, ABC):
-    ...
-
-
-class CreatableFigure(Figure, ABC):
-    ...
-
-
-class MovableFigure(Figure, ABC):
-    ...
+    FLAGS: set[Flag]

@@ -1,7 +1,7 @@
 from attrs import define
 
 import protocols as proto
-import figures as fig
+from figures import figures as fig
 
 
 @define

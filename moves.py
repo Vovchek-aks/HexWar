@@ -4,7 +4,7 @@ from typing import Callable
 from attrs import frozen
 
 import protocols as proto
-import figures as fig
+from figures import figures as fig
 from vector import Vector2Int
 
 
@@ -37,13 +37,13 @@ class Capture(_FiguresRelocation):
         if from_cell.owner == to_cell.owner:
             return proto.INVALID
 
-        if not isinstance(movable := from_cell.figure, proto.MovableFigure):
+        if fig.Flag.MOVABLE not in (movable := from_cell.figure).FLAGS:
             return proto.INVALID
 
         if movable.STRENGTH == fig.MAX_STRENGTH:
             return ValidMove(self)
 
-        if movable.STRENGTH <= to_cell.strength:
+        if movable.STRENGTH <= to_cell.strength(board):
             return proto.INVALID
 
         return ValidMove(self)
@@ -58,7 +58,7 @@ class Relocation(_FiguresRelocation):
         if from_cell.owner != to_cell.owner:
             return proto.INVALID
 
-        if not isinstance(from_cell.figure, proto.MovableFigure):
+        if fig.Flag.MOVABLE not in from_cell.figure.FLAGS:
             return proto.INVALID
 
         if not isinstance(to_cell.figure, fig.Empty | fig.Tree):
@@ -69,7 +69,7 @@ class Relocation(_FiguresRelocation):
 
 @frozen
 class Creation(proto.Move):
-    create_figure: Callable[[], proto.CreatableFigure]
+    create_figure: Callable[[], proto.Figure]
     to_coord: Vector2Int
 
     def validate(self, board: proto.Board) -> proto.ValidMove | object:
@@ -81,4 +81,7 @@ class Creation(proto.Move):
         return ValidMove(self)
 
     def execute(self, board: proto.Board) -> None:
-        board[self.to_coord].insert(self.create_figure())
+        figure = self.create_figure()
+        assert fig.Flag.CREATABLE in figure.FLAGS
+
+        board[self.to_coord].insert(figure)
