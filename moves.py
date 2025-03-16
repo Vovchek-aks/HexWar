@@ -30,7 +30,7 @@ class _FiguresRelocation(proto.Move, ABC):
 
 @frozen
 class Capture(_FiguresRelocation):
-    def validate(self, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+    def validate(self, board: proto.Board) -> proto.ValidMove | object:
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
 

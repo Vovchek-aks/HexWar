@@ -25,7 +25,7 @@ class ValidMove(ABC):
 
 class Move(ABC):
     @abstractmethod
-    def validate(self, board: "Board") -> ValidMove | INVALID:
+    def validate(self, board: "Board") -> ValidMove | object:
         ...
 
     @abstractmethod
