@@ -21,9 +21,10 @@ class Cell(proto.Cell):
     def is_empty(self) -> bool:
         return isinstance(self.figure, fig.Empty)
 
-    @property
-    def strength(self) -> int:
-        return self.figure.STRENGTH  # todo: add projected
+    def strength(self, board: proto.Board) -> int:
+        assert board.has_cell(self)
+
+        return max(cell.figure.STRENGTH for cell in board.get_neighbors(self, include_cell=True))
 
     def pop(self) -> proto.Figure:
         assert not self.is_empty

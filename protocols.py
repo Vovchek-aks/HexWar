@@ -50,6 +50,10 @@ class Board(ABC):
         ...
 
     @abstractmethod
+    def has_cell(self, cell: "Cell") -> bool:
+        ...
+
+    @abstractmethod
     def coordinates_of(self, cell: "Cell") -> Vector2Int:
         ...
 
@@ -82,9 +86,8 @@ class Cell(ABC):
     def is_empty(self) -> bool:
         ...
 
-    @property
     @abstractmethod
-    def strength(self) -> int:
+    def strength(self, board: "Board") -> int:
         ...
 
     @abstractmethod

@@ -34,8 +34,11 @@ class Board(proto.Board):
     def height(self) -> int:
         return self._shape.y
 
+    def has_cell(self, cell: proto.Cell) -> bool:
+        return cell in self._cells
+
     def coordinates_of(self, cell: proto.Cell) -> Vector2Int:
-        assert cell in self._cells
+        assert self.has_cell(cell)
 
         idx = self._cells.index(cell)
         y, x = divmod(idx, self.width)
@@ -45,7 +48,7 @@ class Board(proto.Board):
         move.move.execute(self)
 
     def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> set[proto.Cell]:
-        assert cell in self._cells
+        assert self.has_cell(cell)
 
         cell_coord = self.coordinates_of(cell)
         neighbors = {cell} if include_cell else set[proto.Cell]()
