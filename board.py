@@ -3,6 +3,7 @@ from typing import Callable
 from attrs import define, field
 
 import protocols as proto
+import hex_geometry as geo
 from vector import Vector2Int
 
 
@@ -43,21 +44,13 @@ class Board(proto.Board):
     def make(self, move: proto.ValidMove) -> None:
         move.move.execute(self)
 
-    def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = True) -> set[proto.Cell]:
+    def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> set[proto.Cell]:
         assert cell in self._cells
 
         cell_coord = self.coordinates_of(cell)
         neighbors = {cell} if include_cell else set[proto.Cell]()
 
-        neighbors_coords = [  # https://vk.com/cyberdilf?w=wall-226630281_64
-            Vector2Int(-1, -1),
-            Vector2Int(-1, 0),
-            Vector2Int(0, -1),
-            Vector2Int(1, 1),
-            Vector2Int(1, 0),
-            Vector2Int(0, 1)
-        ]
-        for delta in neighbors_coords:
+        for delta in geo.NEIGHBORS_DELTAS:
             coord = cell_coord + delta
             if self._is_valid_coord(coord):
                 neighbors.add(self[coord])
