@@ -26,6 +26,8 @@ class Cell(proto.Cell):
         return self.figure.STRENGTH  # todo: add projected
 
     def pop(self) -> proto.Figure:
+        assert not self.is_empty
+
         figure = self.figure
         self._figure = fig.Empty()
         return figure
@@ -35,6 +37,6 @@ class Cell(proto.Cell):
 
         self._figure = figure
 
-    def take_from(self, other: "Cell") -> None:
+    def take_from(self, other: proto.Cell) -> None:
         self._owner = other.owner
         self._figure = other.pop()
