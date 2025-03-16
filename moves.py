@@ -51,7 +51,7 @@ class Capture(_FiguresRelocation):
 
 @frozen
 class Relocation(_FiguresRelocation):
-    def validate(self, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+    def validate(self, board: proto.Board) -> proto.ValidMove | object:
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
 
@@ -72,7 +72,7 @@ class Creation(proto.Move):
     create_figure: Callable[[], proto.CreatableFigure]
     to_coord: Vector2Int
 
-    def validate(self, board: proto.Board) -> proto.ValidMove | proto.INVALID:
+    def validate(self, board: proto.Board) -> proto.ValidMove | object:
         to_cell = board[self.to_coord]
 
         if not to_cell.is_empty:
