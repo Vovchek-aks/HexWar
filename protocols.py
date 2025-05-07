@@ -1,10 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, ABCMeta
 from typing import ClassVar
 
-from figures.figures_flags import Flag
+from statuses import Status
 from vector import Vector2Int
-
-INVALID = object()
 
 
 class Master(ABC):
@@ -26,7 +24,7 @@ class ValidMove(ABC):
 
 class Move(ABC):
     @abstractmethod
-    def validate(self, board: "Board") -> ValidMove | object:
+    def validate(self, board: "Board") -> ValidMove | Status:
         ...
 
     @abstractmethod
@@ -104,6 +102,68 @@ class Cell(ABC):
         ...
 
 
+class Flag(ABC):
+    EXCLUDES: set[type["Flag"]]
+
+
+class Flags(ABC):
+    @classmethod
+    @abstractmethod
+    def new(cls, *flags: Flag) -> "Flags":
+        ...
+
+    @property
+    @abstractmethod
+    def flag_types(self) -> set[type[Flag]]:
+        ...
+
+    @abstractmethod
+    def get[T: Flag](self, flag_type: type[T]) -> T | Status:
+        ...
+
+    @abstractmethod
+    def __contains__(self, item: type[Flag]) -> bool:
+        ...
+
+
+class Static(Flag, metaclass=ABCMeta):
+    ...
+
+
+class Movable(Flag, metaclass=ABCMeta):
+    ...
+
+
+class Creatable(Flag, metaclass=ABCMeta):
+    @classmethod
+    @abstractmethod
+    def new(cls, market: type["FiguresMarket"], kind: "CreatableKind", price: int) -> "Creatable":
+        ...
+
+
+class Updatable(Flag, metaclass=ABCMeta):
+    @classmethod
+    @abstractmethod
+    def new(cls, market: type["FiguresMarket"], creatable: Creatable) -> "Updatable":
+        ...
+
+
 class Figure(ABC):
     STRENGTH: ClassVar[int]
-    FLAGS: set[Flag]
+    FLAGS: ClassVar[Flags]
+
+
+class CreatableKind(ABC):
+    ...
+
+
+class FiguresMarket(ABC):
+    @classmethod
+    @abstractmethod
+    def register_creatable(cls, flag: Creatable, order: CreatableKind, price: int) -> None:
+        ...
+
+    @classmethod
+    @abstractmethod
+    def register_updatable(cls, flag: Updatable, creatable: Creatable) -> None:
+        ...

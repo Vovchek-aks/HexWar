@@ -18,7 +18,7 @@ class Board(proto.Board):
     _cells: list[proto.Cell] = field()
 
     @_cells.validator
-    def validate_cells(self, _, cells: list[proto.Cell]) -> None:
+    def _validate_cells(self, _, cells: list[proto.Cell]) -> None:
         if len(cells) != self.width * self.height:
             raise ValueError(f"Given wrong number of Cells: {len(cells)} != {self.width} * {self.height}")
 
