@@ -34,8 +34,8 @@ class Hub(proto.Figure):
 class Tower(proto.Figure):
     STRENGTH = 3
     FLAGS = Flags.new(Static(),
-                      cr := Creatable.new(FiguresMarket, BUILDING, 50),
-                      Updatable.new(FiguresMarket, cr))
+                      creatable := Creatable.new(FiguresMarket, BUILDING, 50),
+                      Updatable.new(FiguresMarket, creatable))
 
 
 @define
@@ -49,32 +49,32 @@ class Castle(proto.Figure):
 class Worker(proto.Figure):
     STRENGTH = 1
     FLAGS = Flags.new(Movable(),
-                      cr := Creatable.new(FiguresMarket, UNIT, 10),
-                      Updatable.new(FiguresMarket, cr))
+                      creatable := Creatable.new(FiguresMarket, UNIT, 10),
+                      Updatable.new(FiguresMarket, creatable))
 
 
 @define
 class Spearman(proto.Figure):
     STRENGTH = 2
     FLAGS = Flags.new(Movable(),
-                      cr := Creatable.new(FiguresMarket, UNIT, 20),
-                      Updatable.new(FiguresMarket, cr))
+                      creatable := Creatable.new(FiguresMarket, UNIT, 20),
+                      Updatable.new(FiguresMarket, creatable))
 
 
 @define
 class Squire(proto.Figure):
     STRENGTH = 4
     FLAGS = Flags.new(Movable(),
-                      cr := Creatable.new(FiguresMarket, UNIT, 30),
-                      Updatable.new(FiguresMarket, cr))
+                      creatable := Creatable.new(FiguresMarket, UNIT, 30),
+                      Updatable.new(FiguresMarket, creatable))
 
 
 @define
 class Knight(proto.Figure):
     STRENGTH = 6
     FLAGS = Flags.new(Movable(),
-                      cr := Creatable.new(FiguresMarket, UNIT, 50),
-                      Updatable.new(FiguresMarket, cr))
+                      creatable := Creatable.new(FiguresMarket, UNIT, 50),
+                      Updatable.new(FiguresMarket, creatable))
 
 
 MAX_STRENGTH = Knight.STRENGTH

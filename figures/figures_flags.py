@@ -24,14 +24,14 @@ class Flags(proto.Flags):
         for flag in flags:
             for excluded, target in product(flag.EXCLUDES, flags):
                 if isinstance(target, excluded):
-                    raise ValueError(f"{type(flag)} does not fits other flags")
+                    raise ValueError(f"{type(target)} does not fits other flags")
 
     @property
     def flag_types(self) -> set[type[Flag]]:
         return set(map(type, self._flags))
 
     def get[T: Flag](self, flag_type: type[T]) -> T | Status:
-        if not (flags := [flag for flag in self._flags if type(flag) == flag_type]):
+        if not (flags := [flag for flag in self._flags if isinstance(flag, flag_type)]):
             return MISSING
         return flags[0]
 
