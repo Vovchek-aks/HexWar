@@ -1,36 +1,36 @@
-from attrs import define
+from attrs import frozen
 
 import protocols as proto
 from figures_flags import Flags, Static, Movable, Creatable, Updatable
 from market import FiguresMarket, BUILDING, UNIT
 
 
-@define
+@frozen
 class Empty(proto.Figure):
     STRENGTH = 0
     FLAGS = Flags.new(Static())
 
 
-@define
+@frozen
 class Tree(proto.Figure):
     STRENGTH = 0
     FLAGS = Flags.new(Static())
 
 
-@define
+@frozen
 class Farm(proto.Figure):
     STRENGTH = 0
     FLAGS = Flags.new(Static(),
                       Creatable.new(FiguresMarket, BUILDING, 20))
 
 
-@define
+@frozen
 class Hub(proto.Figure):
     STRENGTH = 1
     FLAGS = Flags.new(Static())
 
 
-@define
+@frozen
 class Tower(proto.Figure):
     STRENGTH = 3
     FLAGS = Flags.new(Static(),
@@ -38,14 +38,14 @@ class Tower(proto.Figure):
                       Updatable.new(FiguresMarket, creatable))
 
 
-@define
+@frozen
 class Castle(proto.Figure):
     STRENGTH = 5
     FLAGS = Flags.new(Static(),
                       Creatable.new(FiguresMarket, BUILDING, 100))
 
 
-@define
+@frozen
 class Worker(proto.Figure):
     STRENGTH = 1
     FLAGS = Flags.new(Movable(),
@@ -53,7 +53,7 @@ class Worker(proto.Figure):
                       Updatable.new(FiguresMarket, creatable))
 
 
-@define
+@frozen
 class Spearman(proto.Figure):
     STRENGTH = 2
     FLAGS = Flags.new(Movable(),
@@ -61,7 +61,7 @@ class Spearman(proto.Figure):
                       Updatable.new(FiguresMarket, creatable))
 
 
-@define
+@frozen
 class Squire(proto.Figure):
     STRENGTH = 4
     FLAGS = Flags.new(Movable(),
@@ -69,7 +69,7 @@ class Squire(proto.Figure):
                       Updatable.new(FiguresMarket, creatable))
 
 
-@define
+@frozen
 class Knight(proto.Figure):
     STRENGTH = 6
     FLAGS = Flags.new(Movable(),

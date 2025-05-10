@@ -36,7 +36,7 @@ class Flags(proto.Flags):
         return flags[0]
 
     def __contains__(self, item: type[Flag]) -> bool:
-        return any(issubclass(item, type(flag)) for flag in self._flags)
+        return self.get(item) is not MISSING
 
 
 @frozen
