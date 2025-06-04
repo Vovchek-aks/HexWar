@@ -134,36 +134,24 @@ class Movable(Flag, metaclass=ABCMeta):
     ...
 
 
-class Creatable(Flag, metaclass=ABCMeta):
-    @classmethod
-    @abstractmethod
-    def new(cls, market: type["FiguresMarket"], kind: "CreatableKind", price: int) -> "Creatable":
-        ...
-
-
-class Updatable(Flag, metaclass=ABCMeta):
-    @classmethod
-    @abstractmethod
-    def new(cls, market: type["FiguresMarket"], creatable: Creatable) -> "Updatable":
-        ...
-
-
 class Figure(ABC):
     STRENGTH: ClassVar[int]
     FLAGS: ClassVar[Flags]
 
 
-class CreatableKind(ABC):
+class MarketFiguresKind(ABC):
     ...
 
 
 class FiguresMarket(ABC):
-    @classmethod
+    ...
+
+
+class FiguresMarketBuilder(ABC):
     @abstractmethod
-    def register_creatable(cls, flag: Creatable, kind: CreatableKind, price: int) -> None:
+    def register(self, figure: type[Figure], kind: CreatableKind, price: int) -> None:
         ...
 
-    @classmethod
     @abstractmethod
-    def register_updatable(cls, flag: Updatable, creatable: Creatable) -> None:
+    def build(self) -> FiguresMarket:
         ...

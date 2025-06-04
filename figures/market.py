@@ -1,24 +1,39 @@
-from attrs import frozen
+from attrs import frozen, define
 
 import protocols as proto
-from protocols import Updatable, Figure, Creatable
+from ordered_dict import OrderedDict
 
 
-@frozen
-class FiguresMarket(proto.FiguresMarket):
-    @classmethod
-    def register_creatable(cls, flag: Creatable, kind: proto.CreatableKind, price: int) -> None:
-        pass
-
-    @classmethod
-    def register_updatable(cls, flag: Updatable, to: type[Figure]) -> None:
-        pass
-
-
-@frozen
-class CreatableKind(proto.CreatableKind):
+class Order(OrderedDict[int, type[proto.Figure]]):
     ...
 
 
-BUILDING = CreatableKind()
-UNIT = CreatableKind()
+@define
+class FiguresMarket(proto.FiguresMarket):
+    _kind_to_order: dict[proto.MarketFiguresKind, Order]
+
+
+@define
+class FiguresMarketBuilder(proto.FiguresMarketBuilder):
+    _kind_to_order = dict[proto.MarketFiguresKind, Order]()
+
+    def register(self, figure: type[proto.Figure], kind: proto.MarketFiguresKind, price: int) -> None:
+        if kind not in self._kind_to_order:
+            self._kind_to_order[kind] = Order()
+
+        assert price not in self._kind_to_order[kind]
+        assert figure not in self._kind_to_order[kind].values()
+
+        self._kind_to_order[kind][price] = figure
+
+    def build(self) -> proto.FiguresMarket:
+        return FiguresMarket(self._kind_to_order.copy())
+
+
+@frozen
+class MarketFiguresKind(proto.MarketFiguresKind):
+    ...
+
+
+BUILDING = MarketFiguresKind()
+UNIT = MarketFiguresKind()
