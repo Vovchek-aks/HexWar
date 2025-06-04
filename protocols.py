@@ -149,7 +149,7 @@ class FiguresMarket(ABC):
 
 class FiguresMarketBuilder(ABC):
     @abstractmethod
-    def register(self, figure: type[Figure], kind: CreatableKind, price: int) -> None:
+    def register(self, figure: type[Figure], kind: MarketFiguresKind, price: int) -> None:
         ...
 
     @abstractmethod
