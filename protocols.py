@@ -160,7 +160,7 @@ class CreatableKind(ABC):
 class FiguresMarket(ABC):
     @classmethod
     @abstractmethod
-    def register_creatable(cls, flag: Creatable, order: CreatableKind, price: int) -> None:
+    def register_creatable(cls, flag: Creatable, kind: CreatableKind, price: int) -> None:
         ...
 
     @classmethod

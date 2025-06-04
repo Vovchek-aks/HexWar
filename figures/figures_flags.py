@@ -40,7 +40,7 @@ class Flags(proto.Flags):
 
 
 @frozen
-class Static(Flag):
+class Static(proto.Static):
     EXCLUDES = {proto.Movable}
 
 
@@ -65,7 +65,7 @@ class Updatable(proto.Updatable):
     EXCLUDES = {}
 
     @classmethod
-    def new(cls, market: type[proto.FiguresMarket], creatable: proto.Creatable) -> "Updatable":
+    def new(cls, market: type[proto.FiguresMarket], creatable: proto.Creatable) -> proto.Updatable:
         flag = cls()
         market.register_updatable(flag, creatable)
         return flag
