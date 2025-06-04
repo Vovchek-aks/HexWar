@@ -134,6 +134,10 @@ class Movable(Flag, metaclass=ABCMeta):
     ...
 
 
+class Creatable(Flag, metaclass=ABCMeta):
+    ...
+
+
 class Figure(ABC):
     STRENGTH: ClassVar[int]
     FLAGS: ClassVar[Flags]

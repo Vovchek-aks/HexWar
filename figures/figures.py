@@ -1,7 +1,7 @@
 from attrs import frozen
 
 import protocols as proto
-from figures_flags import Flags, Static, Movable
+from figures_flags import Flags, Static, Movable, Creatable
 
 
 @frozen
@@ -19,7 +19,8 @@ class Tree(proto.Figure):
 @frozen
 class Farm(proto.Figure):
     STRENGTH = 0
-    FLAGS = Flags.new(Static())
+    FLAGS = Flags.new(Static(),
+                      Creatable())
 
 
 @frozen
@@ -31,37 +32,43 @@ class Hub(proto.Figure):
 @frozen
 class Tower(proto.Figure):
     STRENGTH = 3
-    FLAGS = Flags.new(Static())
+    FLAGS = Flags.new(Static(),
+                      Creatable())
 
 
 @frozen
 class Castle(proto.Figure):
     STRENGTH = 5
-    FLAGS = Flags.new(Static())
+    FLAGS = Flags.new(Static(),
+                      Creatable())
 
 
 @frozen
 class Worker(proto.Figure):
     STRENGTH = 1
-    FLAGS = Flags.new(Movable())
+    FLAGS = Flags.new(Movable(),
+                      Creatable())
 
 
 @frozen
 class Spearman(proto.Figure):
     STRENGTH = 2
-    FLAGS = Flags.new(Movable())
+    FLAGS = Flags.new(Movable(),
+                      Creatable())
 
 
 @frozen
 class Squire(proto.Figure):
     STRENGTH = 4
-    FLAGS = Flags.new(Movable())
+    FLAGS = Flags.new(Movable(),
+                      Creatable())
 
 
 @frozen
 class Knight(proto.Figure):
     STRENGTH = 6
-    FLAGS = Flags.new(Movable())
+    FLAGS = Flags.new(Movable(),
+                      Creatable())
 
 
 MAX_STRENGTH = Knight.STRENGTH

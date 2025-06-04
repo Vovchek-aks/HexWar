@@ -2,6 +2,7 @@ from attrs import frozen, define
 
 import protocols as proto
 from ordered_dict import OrderedDict
+from figures_flags import Creatable
 
 
 class Order(OrderedDict[int, type[proto.Figure]]):
@@ -18,6 +19,8 @@ class FiguresMarketBuilder(proto.FiguresMarketBuilder):
     _kind_to_order = dict[proto.MarketFiguresKind, Order]()
 
     def register(self, figure: type[proto.Figure], kind: proto.MarketFiguresKind, price: int) -> None:
+        assert Creatable in figure.FLAGS
+
         if kind not in self._kind_to_order:
             self._kind_to_order[kind] = Order()
 

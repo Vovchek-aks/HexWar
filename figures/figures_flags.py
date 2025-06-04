@@ -47,3 +47,8 @@ class Static(proto.Static):
 @frozen
 class Movable(proto.Movable):
     EXCLUDES = {proto.Static}
+
+
+@frozen
+class Creatable(proto.Creatable):
+    ...
