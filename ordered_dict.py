@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from typing import Callable, Protocol
 
 from attrs import define
@@ -14,7 +15,11 @@ class OrderedDict[TK, TV](dict[TK, TV]):
         return sorted(self.items(), key=self._order)
 
 
-class SupportsComparison(Protocol):
-    def __lt__(self, other: "SupportsComparison") -> bool: ...
+class SupportsComparison(Protocol, metaclass=ABCMeta):
+    @abstractmethod
+    def __lt__(self, other: "SupportsComparison") -> bool:
+        ...
 
-    def __gt__(self, other: "SupportsComparison") -> bool: ...
+    @abstractmethod
+    def __gt__(self, other: "SupportsComparison") -> bool:
+        ...
