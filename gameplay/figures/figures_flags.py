@@ -2,7 +2,7 @@ from itertools import product
 
 from attrs import field, frozen
 
-import protocols as proto
+from gameplay import protocols as proto
 from statuses import Status, MISSING
 
 Flag = proto.Flag
@@ -51,4 +51,4 @@ class Movable(proto.Movable):
 
 @frozen
 class Creatable(proto.Creatable):
-    ...
+    EXCLUDES = set[type["Flag"]]()

@@ -1,8 +1,8 @@
 from itertools import product
-from typing import Callable
+from typing import Callable, Iterable
 from attrs import define, field
 
-import protocols as proto
+import gameplay.protocols as proto
 import hex_geometry as geo
 from vector import Vector2Int
 
@@ -53,18 +53,21 @@ class Board(proto.Board):
         cell_coord = self.coordinates_of(cell)
         neighbors = {cell} if include_cell else set[proto.Cell]()
 
-        for delta in geo.NEIGHBORS_DELTAS:
+        for delta in geo.neighbor_square_deltas().values():
             coord = cell_coord + delta
             if self._is_valid_coord(coord):
                 neighbors.add(self[coord])
 
         return neighbors
 
+    def get_all_coords(self) -> Iterable[Vector2Int]:
+        return map(lambda coord: Vector2Int(*coord), product(*map(range, self.shape.tuple)))
+
     def __getitem__(self, coord: Vector2Int) -> proto.Cell:
-        assert self._is_valid_coord(coord)
+        assert coord in self
 
         return self._cells[coord.x + coord.y * self.width]
 
-    def _is_valid_coord(self, coord: Vector2Int) -> bool:
+    def __contains__(self, coord: Vector2Int) -> bool:
         return (coord.x in range(self.width) and
                 coord.y in range(self.height))

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod, ABCMeta
-from typing import ClassVar
+from typing import ClassVar, Iterable
+
+import pygame as pg
 
 from statuses import Status
 from vector import Vector2Int
@@ -12,7 +14,10 @@ class Master(ABC):
 
 
 class Player(ABC):
-    ...
+    @property
+    @abstractmethod
+    def color(self) -> pg.Color:
+        ...
 
 
 class ValidMove(ABC):
@@ -65,7 +70,15 @@ class Board(ABC):
         ...
 
     @abstractmethod
-    def __getitem__(self, item: Vector2Int) -> "Cell":
+    def get_all_coords(self) -> Iterable[Vector2Int]:
+        ...
+
+    @abstractmethod
+    def __getitem__(self, coord: Vector2Int) -> "Cell":
+        ...
+
+    @abstractmethod
+    def __contains__(self, coord: Vector2Int) -> bool:
         ...
 
 
@@ -143,7 +156,7 @@ class Figure(ABC):
     FLAGS: ClassVar[Flags]
 
 
-class MarketFiguresKind(ABC):
+class FiguresGroup(ABC):
     ...
 
 
@@ -153,7 +166,7 @@ class FiguresMarket(ABC):
 
 class FiguresMarketBuilder(ABC):
     @abstractmethod
-    def register(self, figure: type[Figure], kind: MarketFiguresKind, price: int) -> None:
+    def register(self, figure: type[Figure], kind: FiguresGroup, price: int) -> None:
         ...
 
     @abstractmethod

@@ -4,8 +4,8 @@ from typing import Callable
 from attrs import frozen
 
 import protocols as proto
-from figures import figures as fig
-import figures.figures_flags as flags
+from gameplay.figures import figures as fig
+import gameplay.figures.figures_flags as flags
 from vector import Vector2Int
 from statuses import Status, INVALID
 

@@ -1,7 +1,7 @@
 from attrs import frozen
 
-import protocols as proto
-from figures_flags import Flags, Static, Movable, Creatable
+from gameplay import protocols as proto
+from gameplay.figures.figures_flags import Flags, Static, Movable, Creatable
 
 
 @frozen

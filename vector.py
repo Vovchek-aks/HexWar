@@ -1,3 +1,4 @@
+from pygame import Vector2
 from attrs import frozen
 
 
@@ -15,12 +16,20 @@ class Vector2Int:
     def up(cls) -> "Vector2Int":
         return cls(0, 1)
 
+    @classmethod
+    def ones(cls) -> "Vector2Int":
+        return cls(1, 1)
+
     x: int
     y: int
 
     @property
     def tuple(self) -> tuple[int, int]:
         return self.x, self.y
+
+    @property
+    def as_float(self) -> Vector2:
+        return Vector2(*self.tuple)
 
     def with_x(self, x: int) -> "Vector2Int":
         return type(self)(x, self.y)
