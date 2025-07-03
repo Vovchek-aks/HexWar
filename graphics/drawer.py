@@ -37,7 +37,7 @@ class Draw:
         right_vertex_far = right_vertex * BORDER_WIDTH_RATIO
         vertexes = [left_vertex, left_vertex_far, right_vertex_far, right_vertex]
 
-        pg.draw.polygon(self._screen, color, [self._camera.transform(vertex + world_position)
+        pg.draw.polygon(self._screen, color, [self._camera.world_to_screen(vertex + world_position)
                                               for vertex in vertexes])
 
     def thin_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> None:
@@ -46,7 +46,7 @@ class Draw:
         color += pg.Color(c, c, c)
 
         world_position = _get_world_position(cell_coord)
-        left_vertex, right_vertex = (self._camera.transform(vertex + world_position)
+        left_vertex, right_vertex = (self._camera.world_to_screen(vertex + world_position)
                                      for vertex in neighbors_vertexes()[neighbor])
 
         pg.draw.line(self._screen, color, left_vertex, right_vertex)
@@ -58,7 +58,7 @@ class Draw:
 
     def hex_background(self, cell_coord: Vector2Int) -> None:
         world_position = _get_world_position(cell_coord)
-        points = [self._camera.transform(vertex_pair[0] + world_position)
+        points = [self._camera.world_to_screen(vertex_pair[0] + world_position)
                   for vertex_pair in neighbors_vertexes().values()]
 
         color = self._board[cell_coord].owner.color

@@ -3,7 +3,6 @@ from math import cos, pi
 from attrs import frozen
 from pygame import Vector2
 
-from ordered_dict import OrderedDict
 from vector import Vector2Int
 
 
@@ -47,14 +46,14 @@ def neighbor_square_deltas() -> dict[Neighbor, Vector2Int]:
 
 
 def neighbors_vertexes() -> dict[Neighbor, tuple[Vector2, Vector2]]:
-    _ver = Vector2(1, 0).rotate(120)
+    vertex = Vector2(1, 0).rotate(120)
     return {
-        TopCenter: (_ver, _ver := _ver.rotate(-60)),
-        TopRight: (_ver, _ver := _ver.rotate(-60)),
-        DownRight: (_ver, _ver := _ver.rotate(-60)),
-        DownCenter: (_ver, _ver := _ver.rotate(-60)),
-        DownLeft: (_ver, _ver := _ver.rotate(-60)),
-        TopLeft: (_ver, _ver := _ver.rotate(-60)),
+        TopCenter: (vertex, vertex := vertex.rotate(-60)),
+        TopRight: (vertex, vertex := vertex.rotate(-60)),
+        DownRight: (vertex, vertex := vertex.rotate(-60)),
+        DownCenter: (vertex, vertex := vertex.rotate(-60)),
+        DownLeft: (vertex, vertex := vertex.rotate(-60)),
+        TopLeft: (vertex, vertex.rotate(-60)),
     }
 
 
