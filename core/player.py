@@ -1,7 +1,7 @@
 import pygame as pg
 from attrs import define
 
-from gameplay import protocols as proto
+from core import protocols as proto
 
 
 @define

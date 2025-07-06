@@ -2,7 +2,7 @@ from itertools import product
 from typing import Callable, Iterable
 from attrs import define, field
 
-import gameplay.protocols as proto
+import core.protocols as proto
 import hex_geometry as geo
 from vector import Vector2Int
 

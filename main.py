@@ -1,14 +1,15 @@
 import pygame as pg
 
-from gameplay.board import Board
-from gameplay.cell import Cell
-from gameplay.player import Player
-from graphics.camera.camera import Camera
-from graphics.camera.camera_mover import CameraMover
-from graphics.camera.camera_orientation import CameraOrientation
-from graphics.drawer import Draw
+from events import Events
+from core.board import Board
+from core.cell import Cell
+from core.player import Player
+from appearance.graphics.camera.camera import Camera
+from appearance.input.camera_mover import CameraMover
+from appearance.graphics.camera.camera_orientation import CameraOrientation
+from appearance.graphics.drawer import Draw
 from vector import Vector2Int
-import gameplay.figures.figures as fig
+import core.figures.figures as fig
 
 SHAPE = Vector2Int(1080, 720)
 UPS = 60
@@ -38,7 +39,7 @@ def main():
     draw = Draw(screen, camera, board)
 
     dt = 1 / UPS
-    while not need_to_stop(events := list(pg.event.get())):
+    while not need_to_stop(events := Events(pg.event.get())):
         camera_mover.update(events, pg.key.get_pressed(), dt)
 
         screen.fill(BACKGROUND)
@@ -52,12 +53,8 @@ def main():
     pg.quit()
 
 
-def need_to_stop(events):
-    for event in events:
-        if event.type == pg.QUIT:
-            return True
-
-    return False
+def need_to_stop(events: Events) -> bool:
+    return pg.QUIT in events
 
 
 if __name__ == '__main__':

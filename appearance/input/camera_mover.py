@@ -2,7 +2,9 @@ from attrs import frozen
 import pygame as pg
 
 from angle import Angle
-from graphics import protocols as proto
+from events import Events
+from appearance.graphics import protocols as proto
+from statuses import MISSING
 
 ROTATION_POSITIVE = pg.K_e
 ROTATION_NEGATIVE = pg.K_q
@@ -14,14 +16,14 @@ MOVEMENT_RIGHT = pg.K_d
 
 ROTATION_SPEED = Angle(60)
 MOVEMENT_SPEED = 150
-ZOOM_SPEED = 1.2
+ZOOM_SPEED = 1.15
 
 
 @frozen
-class CameraMover(proto.CameraMover):
+class CameraMover:
     _orientation: proto.CameraOrientation
 
-    def update(self, events: list[pg.event.Event], keys: pg.key.ScancodeWrapper, dt: float) -> None:
+    def update(self, events: Events, keys: pg.key.ScancodeWrapper, dt: float) -> None:
         self._movement(keys, dt)
         self._rotation(keys, dt)
         self._zoom(events)
@@ -41,11 +43,11 @@ class CameraMover(proto.CameraMover):
         direction = keys[ROTATION_POSITIVE] - keys[ROTATION_NEGATIVE]
         self._orientation.rotate(ROTATION_SPEED * (dt * direction))
 
-    def _zoom(self, events: list[pg.event.Event]) -> None:
-        if not (events := list(filter(lambda event: event.type == pg.MOUSEWHEEL, events))):
+    def _zoom(self, events: Events) -> None:
+        if (event := events.get(pg.MOUSEWHEEL)) is MISSING:
             return
 
-        delta = events[0].y
+        delta = event.y
         self._orientation.zoom_in(ZOOM_SPEED ** delta)
 
 

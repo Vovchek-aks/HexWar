@@ -2,8 +2,8 @@ from attrs import frozen
 import pygame as pg
 from pygame import Vector2
 
-from graphics import protocols as proto
-from gameplay.protocols import Board
+from appearance.graphics import protocols as proto
+from core.protocols import Board
 from hex_geometry import Neighbor, X_NORM, Y_NORM, neighbors_vertexes, NEIGHBORS, neighbor_square_deltas, \
     OPPOSITE_NEIGHBOR
 from vector import Vector2Int

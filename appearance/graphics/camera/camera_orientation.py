@@ -2,7 +2,7 @@ from attrs import define
 import pygame as pg
 
 from angle import Angle
-from graphics import protocols as proto
+from appearance.graphics import protocols as proto
 
 
 @define
@@ -27,12 +27,16 @@ class CameraOrientation(proto.CameraOrientation):
     def zoom(self) -> float:
         return self._zoom
 
+    @property
+    def tuple(self) -> tuple[pg.Vector2, Angle, float]:
+        return self._position, self._rotation, self._zoom
+
     def move(self, delta: pg.Vector2) -> "CameraOrientation":
-        self._position += delta.rotate(-self._rotation.degrees)
+        self._position += self._rotation.inverse.apply(delta)
         return self
 
     def rotate(self, angle: Angle) -> "CameraOrientation":
-        self._rotation += angle * -1
+        self._rotation += angle
         return self
 
     def zoom_in(self, ratio: float) -> "CameraOrientation":

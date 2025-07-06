@@ -2,7 +2,7 @@ from itertools import product
 
 from attrs import field, frozen
 
-from gameplay import protocols as proto
+from core import protocols as proto
 from statuses import Status, MISSING
 
 Flag = proto.Flag

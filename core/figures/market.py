@@ -1,6 +1,6 @@
 from attrs import frozen, define
 
-from gameplay import protocols as proto
+from core import protocols as proto
 from ordered_dict import OrderedDict
 from figures_flags import Creatable
 

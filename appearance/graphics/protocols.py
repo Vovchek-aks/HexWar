@@ -27,6 +27,11 @@ class CameraOrientation(ABC):
     def zoom(self) -> float:
         ...
 
+    @property
+    @abstractmethod
+    def tuple(self) -> tuple[pg.Vector2, Angle, float]:
+        ...
+
     @abstractmethod
     def move(self, delta: pg.Vector2) -> "CameraOrientation":
         ...
@@ -39,6 +44,3 @@ class CameraOrientation(ABC):
     def zoom_in(self, ratio: float) -> "CameraOrientation":
         ...
 
-
-class CameraMover(ABC):
-    ...
