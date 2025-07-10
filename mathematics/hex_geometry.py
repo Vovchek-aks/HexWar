@@ -3,7 +3,8 @@ from math import cos, pi
 from attrs import frozen
 from pygame import Vector2
 
-from vector import Vector2Int
+from mathematics.matrix import Matrix2
+from mathematics.vector import Vector2Int
 
 
 # https://vk.com/cyberdilf?w=wall-226630281_64
@@ -61,6 +62,16 @@ DISTANCE_BETWEEN_CENTERS = (1.5 ** 2 + cos(pi / 6) ** 2) ** .5
 
 X_NORM = (Vector2(1, 0) + Vector2(1, 0).rotate(60)).normalize() * DISTANCE_BETWEEN_CENTERS
 Y_NORM = Vector2(0, -1) * DISTANCE_BETWEEN_CENTERS
+_matrix = Matrix2.from_vectors(X_NORM, Y_NORM)
+
+
+def get_world_position(cell_coord: Vector2Int) -> Vector2:
+    return X_NORM * cell_coord.x + Y_NORM * cell_coord.y
+
+
+def get_board_position(cell_coord: Vector2) -> Vector2Int:
+    return Vector2Int.from_float2(_matrix.inverse.apply(cell_coord))
+
 
 if __name__ == '__main__':
     print(neighbor_square_deltas())

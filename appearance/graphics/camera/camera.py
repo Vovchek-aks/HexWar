@@ -2,7 +2,7 @@ from attrs import frozen
 import pygame as pg
 
 from appearance.graphics import protocols as proto
-from vector import Vector2Int
+from mathematics.vector import Vector2Int
 
 
 @frozen
@@ -14,3 +14,8 @@ class Camera(proto.Camera):
         center = self._screen_shape.as_float2 / 2
         position, rotation, zoom = self._orientation.tuple
         return rotation.apply(point - position) * zoom + center
+
+    def screen_to_world(self, point: pg.Vector2) -> pg.Vector2:
+        center = self._screen_shape.as_float2 / 2
+        position, rotation, zoom = self._orientation.tuple
+        return rotation.inverse.apply((point - center) / zoom) + position

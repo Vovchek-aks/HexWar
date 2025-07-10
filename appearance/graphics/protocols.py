@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import pygame as pg
 
-from angle import Angle
+from mathematics.angle import Angle
 
 
 class Camera(ABC):

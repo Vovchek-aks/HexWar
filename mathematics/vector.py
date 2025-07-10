@@ -1,4 +1,4 @@
-from pygame import Vector2
+import pygame as pg
 from attrs import frozen
 
 
@@ -20,6 +20,16 @@ class Vector2Int:
     def ones(cls) -> "Vector2Int":
         return cls(1, 1)
 
+    @classmethod
+    def from_float2(cls, vector: pg.Vector2, strict: bool = True) -> "Vector2Int":
+        x = vector.x
+        y = vector.y
+
+        if strict and not (x.is_integer() and y.is_integer()):
+            raise ValueError("Strict mode requires integer values.")
+
+        return cls(int(x), int(y))
+
     x: int
     y: int
 
@@ -32,8 +42,8 @@ class Vector2Int:
         return self.x, self.y
 
     @property
-    def as_float2(self) -> Vector2:
-        return Vector2(*self.tuple)
+    def as_float2(self) -> pg.Vector2:
+        return pg.Vector2(*self.tuple)
 
     def with_x(self, x: int) -> "Vector2Int":
         return type(self)(x, self.y)

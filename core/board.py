@@ -3,8 +3,8 @@ from typing import Callable, Iterable
 from attrs import define, field
 
 import core.protocols as proto
-import hex_geometry as geo
-from vector import Vector2Int
+from mathematics import hex_geometry as geo
+from mathematics.vector import Vector2Int
 
 
 @define
@@ -55,7 +55,7 @@ class Board(proto.Board):
 
         for delta in geo.neighbor_square_deltas().values():
             coord = cell_coord + delta
-            if self._is_valid_coord(coord):
+            if coord in self:
                 neighbors.add(self[coord])
 
         return neighbors

@@ -8,7 +8,7 @@ from appearance.graphics.camera.camera import Camera
 from appearance.input.camera_mover import CameraMover
 from appearance.graphics.camera.camera_orientation import CameraOrientation
 from appearance.graphics.drawer import Draw
-from vector import Vector2Int
+from mathematics.vector import Vector2Int
 import core.figures.figures as fig
 
 SHAPE = Vector2Int(1080, 720)

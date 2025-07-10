@@ -1,12 +1,11 @@
 from attrs import frozen
 import pygame as pg
-from pygame import Vector2
 
 from appearance.graphics import protocols as proto
 from core.protocols import Board
-from hex_geometry import Neighbor, X_NORM, Y_NORM, neighbors_vertexes, NEIGHBORS, neighbor_square_deltas, \
-    OPPOSITE_NEIGHBOR
-from vector import Vector2Int
+from mathematics.hex_geometry import Neighbor, neighbors_vertexes, NEIGHBORS, neighbor_square_deltas, \
+    OPPOSITE_NEIGHBOR, get_world_position
+from mathematics.vector import Vector2Int
 
 BORDER_WIDTH_RATIO = 1.1
 BORDER_BRIGHTNESS_RATIO = .6
@@ -30,7 +29,7 @@ class Draw:
         cell_coord = cell_coord + neighbor_square_deltas()[neighbor]
         neighbor = OPPOSITE_NEIGHBOR[neighbor]
 
-        world_position = _get_world_position(cell_coord)
+        world_position = get_world_position(cell_coord)
 
         left_vertex, right_vertex = neighbors_vertexes()[neighbor]
         left_vertex_far = left_vertex * BORDER_WIDTH_RATIO
@@ -45,7 +44,7 @@ class Draw:
         c = 5
         color += pg.Color(c, c, c)
 
-        world_position = _get_world_position(cell_coord)
+        world_position = get_world_position(cell_coord)
         left_vertex, right_vertex = (self._camera.world_to_screen(vertex + world_position)
                                      for vertex in neighbors_vertexes()[neighbor])
 
@@ -57,7 +56,7 @@ class Draw:
                 self.edge(cell_coord, neighbor)
 
     def hex_background(self, cell_coord: Vector2Int) -> None:
-        world_position = _get_world_position(cell_coord)
+        world_position = get_world_position(cell_coord)
         points = [self._camera.world_to_screen(vertex_pair[0] + world_position)
                   for vertex_pair in neighbors_vertexes().values()]
 
@@ -72,7 +71,3 @@ class Draw:
 
         neighbor_cell = self._board[neighbor_coord]
         return cell.owner != neighbor_cell.owner
-
-
-def _get_world_position(cell_coord: Vector2Int) -> Vector2:
-    return cell_coord.x * X_NORM + cell_coord.y * Y_NORM

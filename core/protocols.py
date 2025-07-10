@@ -4,7 +4,7 @@ from typing import ClassVar, Iterable
 import pygame as pg
 
 from statuses import Status
-from vector import Vector2Int
+from mathematics.vector import Vector2Int
 
 
 class Master(ABC):

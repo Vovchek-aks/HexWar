@@ -1,7 +1,7 @@
 from attrs import define
 import pygame as pg
 
-from angle import Angle
+from mathematics.angle import Angle
 from appearance.graphics import protocols as proto
 
 
