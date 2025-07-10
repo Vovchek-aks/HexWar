@@ -47,16 +47,16 @@ class Board(proto.Board):
     def make(self, move: proto.ValidMove) -> None:
         move.move.execute(self)
 
-    def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> set[proto.Cell]:
+    def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> list[proto.Cell]:
         assert self.has_cell(cell)
 
         cell_coord = self.coordinates_of(cell)
-        neighbors = {cell} if include_cell else set[proto.Cell]()
+        neighbors = [cell] if include_cell else list[proto.Cell]()
 
         for delta in geo.neighbor_square_deltas().values():
             coord = cell_coord + delta
             if coord in self:
-                neighbors.add(self[coord])
+                neighbors.append(self[coord])
 
         return neighbors
 

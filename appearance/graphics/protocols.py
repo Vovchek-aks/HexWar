@@ -10,6 +10,10 @@ class Camera(ABC):
     def world_to_screen(self, point: pg.Vector2) -> pg.Vector2:
         ...
 
+    @abstractmethod
+    def screen_to_world(self, point: pg.Vector2) -> pg.Vector2:
+        ...
+
 
 class CameraOrientation(ABC):
     @property

@@ -1,5 +1,5 @@
 import pygame as pg
-from attrs import define
+from attrs import define, field
 
 from core import protocols as proto
 

@@ -21,7 +21,7 @@ class Vector2Int:
         return cls(1, 1)
 
     @classmethod
-    def from_float2(cls, vector: pg.Vector2, strict: bool = True) -> "Vector2Int":
+    def from_float2(cls, vector: pg.Vector2, *, strict: bool = True) -> "Vector2Int":
         x = vector.x
         y = vector.y
 
@@ -36,6 +36,10 @@ class Vector2Int:
     @property
     def inverse(self) -> "Vector2Int":
         return self * -1
+
+    @property
+    def length(self) -> float:
+        return (self.x ** 2 + self.y ** 2) ** .5
 
     @property
     def tuple(self) -> tuple[int, int]:
@@ -53,6 +57,9 @@ class Vector2Int:
 
     def __add__(self, other: "Vector2Int") -> "Vector2Int":
         return type(self)(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other: "Vector2Int") -> "Vector2Int":
+        return self + -other
 
     def __mul__(self, number: int) -> "Vector2Int":
         return type(self)(self.x * number, self.y * number)

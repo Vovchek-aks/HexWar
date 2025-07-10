@@ -70,7 +70,7 @@ def get_world_position(cell_coord: Vector2Int) -> Vector2:
 
 
 def get_board_position(cell_coord: Vector2) -> Vector2Int:
-    return Vector2Int.from_float2(_matrix.inverse.apply(cell_coord))
+    return Vector2Int.from_float2(_matrix.inverse.apply(cell_coord), strict=False)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,36 @@
+from attrs import frozen
+import pygame as pg
+
+import appearance.graphics.protocols as proto
+from core.protocols import Board
+from mathematics.hex_geometry import get_board_position, get_world_position
+from mathematics.vector import Vector2Int
+from statuses import Status, MISSING
+
+
+@frozen
+class SelectedCellGetter:
+    _camera: proto.Camera
+    _board: Board
+
+    def get_coord(self, mouse_position: pg.Vector2) -> Vector2Int | Status:
+        board = self._board
+        point = self._camera.screen_to_world(mouse_position)
+
+        rough_coord = get_board_position(point)
+        if rough_coord not in board:
+            return MISSING
+
+        coord = self._refinish(rough_coord, point)
+        if coord not in board:
+            return MISSING
+
+        return coord
+
+    def _refinish(self, coord: Vector2Int, point: pg.Vector2) -> Vector2Int:
+        board = self._board
+
+        idx = min(enumerate(map(lambda cell: (get_world_position(board.coordinates_of(cell)) - point).length(),
+                                candidates := board.get_neighbors(board[coord], include_cell=True))),
+                  key=lambda t: t[-1])[0]
+        return board.coordinates_of(candidates[idx])

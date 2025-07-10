@@ -4,7 +4,7 @@ import core.protocols as proto
 from core.figures import figures as fig
 
 
-@define
+@define(eq=False)
 class Cell(proto.Cell):
     _owner: proto.Player
     _figure: proto.Figure
@@ -41,3 +41,6 @@ class Cell(proto.Cell):
     def take_from(self, other: proto.Cell) -> None:
         self._owner = other.owner
         self._figure = other.pop()
+
+    def __eq__(self, other: proto.Cell) -> bool:
+        return self is other

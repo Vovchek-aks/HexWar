@@ -66,7 +66,7 @@ class Board(ABC):
         ...
 
     @abstractmethod
-    def get_neighbors(self, cell: "Cell", *, include_cell: bool) -> set["Cell"]:
+    def get_neighbors(self, cell: "Cell", *, include_cell: bool) -> list["Cell"]:
         ...
 
     @abstractmethod
