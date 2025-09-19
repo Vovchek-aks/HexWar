@@ -1,4 +1,4 @@
-import pygame as pg
+from pygame import Vector2
 from attrs import frozen
 
 
@@ -21,7 +21,7 @@ class Vector2Int:
         return cls(1, 1)
 
     @classmethod
-    def from_float2(cls, vector: pg.Vector2, *, strict: bool = True) -> "Vector2Int":
+    def from_float2(cls, vector: Vector2, *, strict: bool = True) -> "Vector2Int":
         x = vector.x
         y = vector.y
 
@@ -46,8 +46,8 @@ class Vector2Int:
         return self.x, self.y
 
     @property
-    def as_float2(self) -> pg.Vector2:
-        return pg.Vector2(*self.tuple)
+    def as_float2(self) -> Vector2:
+        return Vector2(*self.tuple)
 
     def with_x(self, x: int) -> "Vector2Int":
         return type(self)(x, self.y)

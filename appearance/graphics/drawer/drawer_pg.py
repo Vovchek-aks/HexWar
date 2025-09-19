@@ -1,7 +1,7 @@
 from attrs import frozen
 import pygame as pg
 
-from appearance.graphics import protocols as proto
+from appearance import protocols as proto
 from appearance.graphics.basic_colors import WHITE
 from appearance.graphics.colors import BACKGROUND
 from core.protocols import Board
@@ -15,7 +15,7 @@ HIGHLIGHT_RATIO = .2
 
 
 @frozen
-class Draw:
+class Draw(proto.Draw):
     _screen: pg.Surface
     _camera: proto.Camera
     _board: Board

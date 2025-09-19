@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod, ABCMeta
 from typing import ClassVar, Iterable
 
-import pygame as pg
-
 from statuses import Status
 from mathematics.vector import Vector2Int
+from color import Color
 
 
 class Master(ABC):
@@ -16,7 +15,7 @@ class Master(ABC):
 class Player(ABC):
     @property
     @abstractmethod
-    def color(self) -> pg.Color:
+    def color(self) -> Color:
         ...
 
 
@@ -79,6 +78,18 @@ class Board(ABC):
 
     @abstractmethod
     def __contains__(self, coord: Vector2Int) -> bool:
+        ...
+
+
+class GameSession:
+    @property
+    @abstractmethod
+    def master(self) -> Master:
+        ...
+
+    @property
+    @abstractmethod
+    def board(self) -> Board:
         ...
 
 

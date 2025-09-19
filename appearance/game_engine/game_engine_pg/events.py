@@ -8,6 +8,10 @@ from statuses import Status, MISSING
 
 @frozen
 class Events:
+    @classmethod
+    def read(cls) -> "Events":
+        return cls(pg.event.get())
+
     _events: list[pg.event.Event]
 
     def select(self, target: int) -> list[pg.event.Event] | Status:

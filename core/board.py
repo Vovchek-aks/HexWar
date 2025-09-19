@@ -1,20 +1,20 @@
 from itertools import product
 from typing import Callable, Iterable
-from attrs import define, field
+from attrs import frozen, field
 
 import core.protocols as proto
 from mathematics import hex_geometry as geo
 from mathematics.vector import Vector2Int
 
 
-@define
+@frozen
 class Board(proto.Board):
     @classmethod
     def from_maker(cls, shape: Vector2Int, cell_maker: Callable[[Vector2Int], proto.Cell]) -> proto.Board:
         cells = [cell_maker(Vector2Int(x, y)) for x, y in product(range(shape.x), range(shape.y))]
         return cls(shape, cells)
 
-    _shape: Vector2Int
+    shape: Vector2Int
     _cells: list[proto.Cell] = field()
 
     @_cells.validator
@@ -23,16 +23,12 @@ class Board(proto.Board):
             raise ValueError(f"Given wrong number of Cells: {len(cells)} != {self.width} * {self.height}")
 
     @property
-    def shape(self) -> Vector2Int:
-        return self._shape
-
-    @property
     def width(self) -> int:
-        return self._shape.x
+        return self.shape.x
 
     @property
     def height(self) -> int:
-        return self._shape.y
+        return self.shape.y
 
     def has_cell(self, cell: proto.Cell) -> bool:
         return cell in self._cells

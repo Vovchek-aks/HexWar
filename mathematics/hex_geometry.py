@@ -1,10 +1,9 @@
 from math import cos, pi
 
 from attrs import frozen
-from pygame import Vector2
 
 from mathematics.matrix import Matrix2
-from mathematics.vector import Vector2Int
+from mathematics.vector import Vector2Int, Vector2
 
 
 # https://vk.com/cyberdilf?w=wall-226630281_64
@@ -69,8 +68,8 @@ def get_world_position(cell_coord: Vector2Int) -> Vector2:
     return X_NORM * cell_coord.x + Y_NORM * cell_coord.y
 
 
-def get_board_position(cell_coord: Vector2) -> Vector2Int:
-    return Vector2Int.from_float2(_matrix.inverse.apply(cell_coord), strict=False)
+def get_board_position(point: Vector2) -> Vector2Int:
+    return Vector2Int.from_float2(_matrix.inverse.apply(point), strict=False)
 
 
 if __name__ == '__main__':

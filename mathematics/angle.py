@@ -1,7 +1,8 @@
 from math import pi
 
 from attrs import frozen, field
-import pygame as pg
+
+from mathematics.vector import Vector2
 
 
 @frozen
@@ -20,7 +21,7 @@ class Angle:
     def inverse(self) -> "Angle":
         return self * -1
 
-    def apply(self, vector: pg.Vector2) -> pg.Vector2:
+    def apply(self, vector: Vector2) -> Vector2:
         return vector.rotate(-self.degrees)
 
     def __add__(self, other: "Angle") -> "Angle":

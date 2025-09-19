@@ -1,3 +1,3 @@
-import pygame as pg
+from color import Color
 
-WHITE = pg.Color(255, 255, 255)
+WHITE = Color(255, 255, 255)

@@ -2,8 +2,9 @@ from attrs import frozen
 import pygame as pg
 
 from mathematics.angle import Angle
-from events import Events
-from appearance.graphics import protocols as proto
+from mathematics.vector import Vector2
+from appearance.game_engine.game_engine_pg.events import Events
+from appearance import protocols as proto
 from statuses import MISSING
 
 ROTATION_POSITIVE = pg.K_e
@@ -31,7 +32,7 @@ class CameraMover:
     def _movement(self, keys: pg.key.ScancodeWrapper, dt: float) -> None:
         x = keys[MOVEMENT_RIGHT] - keys[MOVEMENT_LEFT]
         y = keys[MOVEMENT_DOWN] - keys[MOVEMENT_UP]
-        direction = pg.Vector2(x, y)
+        direction = Vector2(x, y)
 
         if direction.length() > 1:
             direction = direction.normalize()
