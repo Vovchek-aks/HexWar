@@ -9,12 +9,10 @@ CAPTION = "HexWar"
 
 def main() -> None:
     session = GameSession.test_map(board_size=10)
-    engine = GameEngine.start(CAPTION, UPS, SCREEN_SHAPE, session)
 
-    while not engine.need_to_stop():
-        engine.update()
-
-    engine.stop()
+    with GameEngine.start(CAPTION, UPS, SCREEN_SHAPE, session) as engine:
+        while not engine.need_to_stop():
+            engine.update()
 
 
 if __name__ == '__main__':

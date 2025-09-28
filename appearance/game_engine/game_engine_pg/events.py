@@ -1,17 +1,13 @@
 from typing import Iterable
 
 import pygame as pg
-from attrs import frozen
+from attrs import frozen, define
 
 from statuses import Status, MISSING
 
 
 @frozen
 class Events:
-    @classmethod
-    def read(cls) -> "Events":
-        return cls(pg.event.get())
-
     _events: list[pg.event.Event]
 
     def select(self, target: int) -> list[pg.event.Event] | Status:
@@ -33,3 +29,20 @@ class Events:
 
     def __iter__(self) -> Iterable[pg.event.Event]:
         return iter(self._events)
+
+
+@define
+class UpdatableEvents:
+    @classmethod
+    def new(cls) -> "UpdatableEvents":
+        events = cls(Events([]))
+        events.read()
+        return events
+
+    _events: Events
+
+    def get(self) -> Events:
+        return self._events
+
+    def read(self) -> None:
+        self._events = Events(pg.event.get())
