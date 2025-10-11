@@ -4,9 +4,16 @@ from mathematics.angle import Angle
 from mathematics.vector import Vector2, Vector2Int
 from mathematics.hex_geometry import Neighbor
 from statuses import Status
+from appearance.graphics.sprite import Sprite
+import core.protocols as proto
 
 
 class Camera(ABC):
+    @property
+    @abstractmethod
+    def orientation(self) -> "CameraOrientationView":
+        ...
+
     @abstractmethod
     def world_to_screen(self, point: Vector2) -> Vector2:
         ...
@@ -50,7 +57,29 @@ class CameraOrientation(ABC):
         ...
 
 
-class Draw:
+class CameraOrientationView(ABC):
+    @property
+    @abstractmethod
+    def position(self) -> Vector2:
+        ...
+
+    @property
+    @abstractmethod
+    def rotation(self) -> Angle:
+        ...
+
+    @property
+    @abstractmethod
+    def zoom(self) -> float:
+        ...
+
+    @property
+    @abstractmethod
+    def tuple(self) -> tuple[Vector2, Angle, float]:
+        ...
+
+
+class Draw(ABC):
     @abstractmethod
     def board(self) -> None:
         ...
@@ -64,19 +93,49 @@ class Draw:
         ...
 
     @abstractmethod
-    def edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> None:
+    def figures(self) -> None:
+        ...
+
+
+class FiguresDrawer(ABC):
+    @abstractmethod
+    def draw_figures(self) -> None:
+        ...
+
+
+class FiguresSprites(ABC):
+    @abstractmethod
+    def get(self, figure: type[proto.Figure]) -> Sprite:
+        ...
+
+
+class BordDrawer(ABC):
+    @abstractmethod
+    def draw_board(self) -> None:
         ...
 
     @abstractmethod
-    def edges(self, cell_coord: Vector2Int) -> None:
+    def draw_background(self) -> None:
         ...
 
     @abstractmethod
-    def hex_background(self, cell_coord: Vector2Int) -> None:
+    def draw_highlighted(self, cell_coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def draw_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> None:
+        ...
+
+    @abstractmethod
+    def draw_edges(self, cell_coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def draw_hex_background(self, cell_coord: Vector2Int) -> None:
         ...
 
 
-class SelectedCellGetter:
+class SelectedCellGetter(ABC):
     @abstractmethod
     def get_coord(self, mouse_position: Vector2) -> Vector2Int | Status:
         ...

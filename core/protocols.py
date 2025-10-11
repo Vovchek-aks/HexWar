@@ -52,8 +52,13 @@ class Board(ABC):
     def height(self) -> int:
         ...
 
+    @property
     @abstractmethod
-    def has_cell(self, cell: "Cell") -> bool:
+    def cell_coords(self) -> Iterable[Vector2Int]:
+        ...
+
+    @abstractmethod
+    def has(self, cell: "Cell") -> bool:
         ...
 
     @abstractmethod
@@ -69,11 +74,11 @@ class Board(ABC):
         ...
 
     @abstractmethod
-    def get_all_coords(self) -> Iterable[Vector2Int]:
+    def __getitem__(self, coord: Vector2Int) -> "Cell":
         ...
 
     @abstractmethod
-    def __getitem__(self, coord: Vector2Int) -> "Cell":
+    def __iter__(self) -> Iterable[Vector2Int]:
         ...
 
     @abstractmethod
@@ -81,7 +86,7 @@ class Board(ABC):
         ...
 
 
-class GameSession:
+class GameSession(ABC):
     @property
     @abstractmethod
     def master(self) -> Master:

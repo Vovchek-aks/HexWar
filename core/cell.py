@@ -22,7 +22,7 @@ class Cell(proto.Cell):
         return isinstance(self.figure, fig.Empty)
 
     def strength(self, board: proto.Board) -> int:
-        assert board.has_cell(self)
+        assert board.has(self)
 
         return max(cell.figure.STRENGTH for cell in board.get_neighbors(self, include_cell=True))
 

@@ -1,4 +1,4 @@
-from attrs import define
+from attrs import define, frozen
 
 from mathematics.angle import Angle
 from mathematics.vector import Vector2
@@ -42,3 +42,24 @@ class CameraOrientation(proto.CameraOrientation):
     def zoom_in(self, ratio: float) -> "CameraOrientation":
         self._zoom *= ratio
         return self
+
+
+@frozen
+class CameraOrientationView(proto.CameraOrientationView):
+    _orientation: proto.CameraOrientation
+
+    @property
+    def position(self) -> Vector2:
+        return self._orientation.position
+
+    @property
+    def rotation(self) -> Angle:
+        return self._orientation.rotation
+
+    @property
+    def zoom(self) -> float:
+        return self._orientation.zoom
+
+    @property
+    def tuple(self) -> tuple[Vector2, Angle, float]:
+        return self._orientation.tuple

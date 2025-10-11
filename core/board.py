@@ -30,11 +30,15 @@ class Board(proto.Board):
     def height(self) -> int:
         return self.shape.y
 
-    def has_cell(self, cell: proto.Cell) -> bool:
+    @property
+    def cell_coords(self) -> Iterable[Vector2Int]:
+        return map(lambda coord: Vector2Int(*coord), product(*map(range, self.shape.tuple)))
+
+    def has(self, cell: proto.Cell) -> bool:
         return cell in self._cells
 
     def coordinates_of(self, cell: proto.Cell) -> Vector2Int:
-        assert self.has_cell(cell)
+        assert self.has(cell)
 
         idx = self._cells.index(cell)
         y, x = divmod(idx, self.width)
@@ -44,7 +48,7 @@ class Board(proto.Board):
         move.move.execute(self)
 
     def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> list[proto.Cell]:
-        assert self.has_cell(cell)
+        assert self.has(cell)
 
         cell_coord = self.coordinates_of(cell)
         neighbors = [cell] if include_cell else list[proto.Cell]()
@@ -56,13 +60,13 @@ class Board(proto.Board):
 
         return neighbors
 
-    def get_all_coords(self) -> Iterable[Vector2Int]:
-        return map(lambda coord: Vector2Int(*coord), product(*map(range, self.shape.tuple)))
-
     def __getitem__(self, coord: Vector2Int) -> proto.Cell:
         assert coord in self
 
         return self._cells[coord.x + coord.y * self.width]
+
+    def __iter__(self) -> Iterable[Vector2Int]:
+        return self.cell_coords
 
     def __contains__(self, coord: Vector2Int) -> bool:
         return (coord.x in range(self.width) and

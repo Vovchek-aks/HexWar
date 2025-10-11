@@ -7,7 +7,11 @@ from mathematics.vector import Vector2Int, Vector2
 @frozen
 class Camera(proto.Camera):
     _screen_shape: Vector2Int
-    _orientation: proto.CameraOrientation
+    _orientation: proto.CameraOrientationView
+
+    @property
+    def orientation(self) -> proto.CameraOrientationView:
+        return self._orientation
 
     def world_to_screen(self, point: Vector2) -> Vector2:
         center = self._screen_shape.as_float2 / 2

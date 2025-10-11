@@ -15,26 +15,26 @@ HIGHLIGHT_RATIO = .2
 
 
 @frozen
-class Draw(proto.Draw):
+class BordDrawer(proto.BordDrawer):
     _screen: pg.Surface
     _camera: proto.Camera
     _board: Board
 
-    def board(self) -> None:
-        for cell_coord in self._board.get_all_coords():
-            self.hex_background(cell_coord)
-        for cell_coord in self._board.get_all_coords():
-            self.edges(cell_coord)
+    def draw_board(self) -> None:
+        for cell_coord in self._board:
+            self.draw_hex_background(cell_coord)
+        for cell_coord in self._board:
+            self.draw_edges(cell_coord)
 
-    def background(self) -> None:
+    def draw_background(self) -> None:
         self._screen.fill(BACKGROUND)
 
-    def highlighted(self, cell_coord: Vector2Int) -> None:
+    def draw_highlighted(self, cell_coord: Vector2Int) -> None:
         color = self._get_hex_color(cell_coord).lerp(WHITE, HIGHLIGHT_RATIO)
-        self._hex_background_no_auto_color(cell_coord, color)
-        self.edges(cell_coord)
+        self.draw_hex_background_no_auto_color(cell_coord, color)
+        self.draw_edges(cell_coord)
 
-    def edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> None:
+    def draw_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> None:
         color = self._get_hex_color(cell_coord).lerp(WHITE, EDGES_BRIGHTNESS_RATIO)
 
         cell_coord = cell_coord + neighbor_square_deltas()[neighbor]
@@ -50,18 +50,18 @@ class Draw(proto.Draw):
         pg.draw.polygon(self._screen, color, [self._camera.world_to_screen(vertex + world_position)
                                               for vertex in vertexes])
 
-    def edges(self, cell_coord: Vector2Int) -> None:
+    def draw_edges(self, cell_coord: Vector2Int) -> None:
         for neighbor in NEIGHBORS:
             if self._should_draw_edge(cell_coord, neighbor):
-                self.edge(cell_coord, neighbor)
+                self.draw_edge(cell_coord, neighbor)
 
-    def hex_background(self, cell_coord: Vector2Int) -> None:
-        self._hex_background_no_auto_color(cell_coord, self._get_hex_color(cell_coord))
+    def draw_hex_background(self, cell_coord: Vector2Int) -> None:
+        self.draw_hex_background_no_auto_color(cell_coord, self._get_hex_color(cell_coord))
 
     def _get_hex_color(self, cell_coord: Vector2Int) -> pg.Color:
         return self._board[cell_coord].owner.color
 
-    def _hex_background_no_auto_color(self, cell_coord: Vector2Int, color: pg.Color) -> None:
+    def draw_hex_background_no_auto_color(self, cell_coord: Vector2Int, color: pg.Color) -> None:
         world_position = get_world_position(cell_coord)
         points = [self._camera.world_to_screen(vertex_pair[0] + world_position)
                   for vertex_pair in neighbors_vertexes().values()]

@@ -4,8 +4,8 @@ from attrs import frozen
 import pygame as pg
 
 from appearance.graphics.camera.camera import Camera
-from appearance.graphics.camera.camera_orientation import CameraOrientation
-from appearance.graphics.drawer import Draw
+from appearance.graphics.camera.camera_orientation import CameraOrientation, CameraOrientationView
+from appearance.graphics.draw import Draw, make_draw
 from appearance.input.camera_mover import CameraMover
 from appearance.input.selected_cell_getter import SelectedCellGetter
 from appearance.game_engine.game_engine_pg.events import UpdatableEvents
@@ -25,11 +25,11 @@ class GameEngine:
 
         camera_orientation = CameraOrientation.starter()
         camera_mover = CameraMover(camera_orientation)
-        camera = Camera(screen_shape, camera_orientation)
+        camera = Camera(screen_shape, CameraOrientationView(camera_orientation))
 
         selected_cell_getter = SelectedCellGetter(camera, session.board)
 
-        draw = Draw(screen, camera, session.board)
+        draw = make_draw(Draw, screen, camera, session.board)
 
         dt = 1 / ups
 
@@ -55,6 +55,8 @@ class GameEngine:
 
         if (selected_coord := self._selected_cell_getter.get_coord(mouse_position)) is not MISSING:
             self._draw.highlighted(selected_coord)
+
+        self._draw.figures()
 
         pg.display.flip()
         dt = self._clock.tick(self._ups) / 1_000
