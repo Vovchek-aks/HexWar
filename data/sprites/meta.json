@@ -1,0 +1,18 @@
+{
+  "no_sprite": {
+    "file": "no_sprite.png",
+    "pivot": [
+      183,
+      183
+    ]
+  },
+  "figures": {
+    "Tree": {
+      "file": "figures/chess.png",
+      "pivot": [
+        183,
+        183
+      ]
+    }
+  }
+}

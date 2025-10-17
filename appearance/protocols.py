@@ -4,7 +4,7 @@ from mathematics.angle import Angle
 from mathematics.vector import Vector2, Vector2Int
 from mathematics.hex_geometry import Neighbor
 from statuses import Status
-from appearance.graphics.sprite import Sprite
+from appearance.graphics.sprites import Sprite
 import core.protocols as proto
 
 

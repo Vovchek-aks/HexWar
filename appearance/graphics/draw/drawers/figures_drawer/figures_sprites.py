@@ -1,6 +1,6 @@
 from attrs import frozen
 
-from appearance.graphics.sprite import Sprite
+from appearance.graphics.sprites import Sprite
 from core.protocols import Figure
 import appearance.protocols as proto
 

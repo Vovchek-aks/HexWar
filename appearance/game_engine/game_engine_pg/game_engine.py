@@ -5,7 +5,7 @@ import pygame as pg
 
 from appearance.graphics.camera.camera import Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, CameraOrientationView
-from appearance.graphics.draw import Draw, make_draw
+from appearance.graphics.draw import Draw, DrawMaker
 from appearance.input.camera_mover import CameraMover
 from appearance.input.selected_cell_getter import SelectedCellGetter
 from appearance.game_engine.game_engine_pg.events import UpdatableEvents
@@ -29,7 +29,7 @@ class GameEngine:
 
         selected_cell_getter = SelectedCellGetter(camera, session.board)
 
-        draw = make_draw(Draw, screen, camera, session.board)
+        draw = DrawMaker(Draw).make(screen, camera, session.board)
 
         dt = 1 / ups
 

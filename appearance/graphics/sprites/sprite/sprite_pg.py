@@ -5,14 +5,11 @@ import pygame as pg
 
 from mathematics.vector import Vector2Int, Vector2
 
-SPRITES_FOLDER = "data/sprites"
-
 
 @frozen
 class Sprite:
     @classmethod
     def load_raw_image(cls, path: Path | str, pivot: Vector2Int = Vector2Int.zero()) -> "Sprite":
-        path = SPRITES_FOLDER / Path(path)
         assert path.exists()
 
         return cls(pg.image.load(path).convert_alpha(), pivot)

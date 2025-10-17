@@ -71,4 +71,16 @@ class Knight(proto.Figure):
                       Creatable())
 
 
-MAX_STRENGTH = Knight.STRENGTH
+def get_figures() -> list[type[proto.Figure]]:
+    return [
+        Empty,
+        Tree,
+        Farm,
+        Hub,
+        Tower,
+        Castle,
+        Worker,
+        Spearman,
+        Squire,
+        Knight,
+    ]

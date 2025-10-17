@@ -2,7 +2,7 @@ from attrs import frozen, define
 
 from core import protocols as proto
 from ordered_dict import OrderedDict
-from figures_flags import Creatable
+from .figures_flags import Creatable
 
 
 class Order(OrderedDict[int, type[proto.Figure]]):

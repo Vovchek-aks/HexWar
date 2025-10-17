@@ -1,25 +1,30 @@
+from attrs import frozen
 import pygame as pg
 
 from core.protocols import Board
 import appearance.protocols as proto
 from ..draw import Draw
 from ..drawers.drawers_pg.bord_drawer import BordDrawer
-from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresDrawer, FiguresSpritesBuilder
-from appearance.graphics.sprite import Sprite
-import core.figures.figures as fig
-
-NO_SPRITE = "no_sprite.png"
-TEST_SPRITE = "chess.png"
+from appearance.graphics.draw.drawers.figures_drawer import FiguresDrawer
+from appearance.graphics.sprites import SpritesLoader
+from appearance.graphics.draw.drawers.figures_drawer import FiguresSpritesLoader
+from core.figures import Figure, get_figures
 
 
-def make_draw[T: Draw](cls: type[T], screen: pg.Surface, camera: proto.Camera, board: Board) -> T:
-    no_sprite = Sprite.load_raw_image(NO_SPRITE).with_pivot_from_ratios(.55, .55)
-    test_sprite = Sprite.load_raw_image(TEST_SPRITE).with_pivot_from_ratios(.55, .55)
+@frozen
+class DrawMaker[T: Draw]:
+    @staticmethod
+    def _on_no_figure_sprite(figure: type[Figure]) -> None:
+        print(f"No sprite for [{figure.__name__}] figure was found.")
 
-    figures_sprites_builder = FiguresSpritesBuilder(no_sprite)
-    figures_sprites_builder.register(fig.Tree, test_sprite)
-    figures_drawer = FiguresDrawer(screen, camera, board, figures_sprites_builder.build())
+    _draw_class: type[T]
 
-    board_drawer = BordDrawer(screen, camera, board)
+    def make(self, screen: pg.Surface, camera: proto.Camera, board: Board) -> T:
+        sprites_loader = SpritesLoader.from_meta()
+        figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
+        figures_sprites = figures_sprites_loader.load(get_figures(), self._on_no_figure_sprite)
+        figures_drawer = FiguresDrawer(screen, camera, board, figures_sprites)
 
-    return cls(board_drawer, figures_drawer)
+        board_drawer = BordDrawer(screen, camera, board)
+
+        return self._draw_class(board_drawer, figures_drawer)
