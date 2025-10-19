@@ -45,7 +45,7 @@ class CameraOrientation(proto.CameraOrientation):
 
 
 @frozen
-class CameraOrientationView(proto.CameraOrientationView):
+class ReadonlyCameraOrientation(proto.ReadonlyCameraOrientation):
     _orientation: proto.CameraOrientation
 
     @property

@@ -4,7 +4,7 @@ from attrs import frozen
 import pygame as pg
 
 from appearance.graphics.camera.camera import Camera
-from appearance.graphics.camera.camera_orientation import CameraOrientation, CameraOrientationView
+from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import Draw, DrawMaker
 from appearance.input.camera_mover import CameraMover
 from appearance.input.selected_cell_getter import SelectedCellGetter
@@ -25,7 +25,7 @@ class GameEngine:
 
         camera_orientation = CameraOrientation.starter()
         camera_mover = CameraMover(camera_orientation)
-        camera = Camera(screen_shape, CameraOrientationView(camera_orientation))
+        camera = Camera(screen_shape, ReadonlyCameraOrientation(camera_orientation))
 
         selected_cell_getter = SelectedCellGetter(camera, session.board)
 

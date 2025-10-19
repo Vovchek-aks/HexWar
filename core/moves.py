@@ -4,7 +4,7 @@ from typing import Callable
 from attrs import frozen
 
 import protocols as proto
-from core.figures import figures as fig
+import core.figures as fig
 import core.figures.figures_flags as flags
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID

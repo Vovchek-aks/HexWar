@@ -7,10 +7,10 @@ from mathematics.vector import Vector2Int, Vector2
 @frozen
 class Camera(proto.Camera):
     _screen_shape: Vector2Int
-    _orientation: proto.CameraOrientationView
+    _orientation: proto.ReadonlyCameraOrientation
 
     @property
-    def orientation(self) -> proto.CameraOrientationView:
+    def orientation(self) -> proto.ReadonlyCameraOrientation:
         return self._orientation
 
     def world_to_screen(self, point: Vector2) -> Vector2:

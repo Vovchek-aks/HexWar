@@ -12,9 +12,9 @@ class SelectedCellGetter(proto.SelectedCellGetter):
     _camera: proto.Camera
     _board: Board
 
-    def get_coord(self, mouse_position: Vector2) -> Vector2Int | Status:
+    def get_coord(self, screen_position: Vector2) -> Vector2Int | Status:
         board = self._board
-        point = self._camera.screen_to_world(mouse_position)
+        point = self._camera.screen_to_world(screen_position)
 
         rough_coord = get_board_position(point)
         if rough_coord not in board:
@@ -28,8 +28,7 @@ class SelectedCellGetter(proto.SelectedCellGetter):
 
     def _refinish(self, coord: Vector2Int, point: Vector2) -> Vector2Int:
         board = self._board
-
-        idx = min(enumerate(map(lambda cell: (get_world_position(board.coordinates_of(cell)) - point).length(),
+        idx, _ = min(enumerate(map(lambda cell: (get_world_position(board.coordinates_of(cell)) - point).length(),
                                 candidates := board.get_neighbors(board[coord], include_cell=True))),
-                  key=lambda t: t[-1])[0]
+                     key=lambda t: t[-1])
         return board.coordinates_of(candidates[idx])

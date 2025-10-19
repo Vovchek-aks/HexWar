@@ -6,11 +6,13 @@ import core.protocols as proto
 from mathematics import hex_geometry as geo
 from mathematics.vector import Vector2Int
 
+CELL_MAKER = Callable[[Vector2Int], proto.Cell]
+
 
 @frozen
 class Board(proto.Board):
     @classmethod
-    def from_maker(cls, shape: Vector2Int, cell_maker: Callable[[Vector2Int], proto.Cell]) -> proto.Board:
+    def from_maker(cls, shape: Vector2Int, cell_maker: CELL_MAKER) -> proto.Board:
         cells = [cell_maker(Vector2Int(x, y)) for x, y in product(range(shape.x), range(shape.y))]
         return cls(shape, cells)
 

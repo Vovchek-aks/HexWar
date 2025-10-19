@@ -11,7 +11,7 @@ import core.protocols as proto
 class Camera(ABC):
     @property
     @abstractmethod
-    def orientation(self) -> "CameraOrientationView":
+    def orientation(self) -> "ReadonlyCameraOrientation":
         ...
 
     @abstractmethod
@@ -57,7 +57,7 @@ class CameraOrientation(ABC):
         ...
 
 
-class CameraOrientationView(ABC):
+class ReadonlyCameraOrientation(ABC):
     @property
     @abstractmethod
     def position(self) -> Vector2:

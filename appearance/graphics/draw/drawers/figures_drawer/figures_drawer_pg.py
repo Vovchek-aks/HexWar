@@ -6,6 +6,7 @@ from core.protocols import Board
 from mathematics.hex_geometry import get_world_position
 from mathematics.vector import Vector2Int
 import core.figures.figures as fig
+from appearance.graphics.sprites import Sprite
 
 SPRITES_SCALE_RATIO = 1.5
 
@@ -27,9 +28,13 @@ class FiguresDrawer(proto.FiguresDrawer):
             return
 
         sprite = self._figures_sprites.get(type(figure))
-        sprite = sprite.resize(SPRITES_SCALE_RATIO * self._camera.orientation.zoom / sprite.shape.x)
+        sprite = sprite.resize(self._resizing_ratio_for(sprite))
 
         world_position = get_world_position(cell_coord)
         screen_position = self._camera.world_to_screen(world_position)
 
         sprite.blit_on(self._screen, screen_position)
+
+    def _resizing_ratio_for(self, sprite: Sprite) -> float:
+        bigger_side = max(sprite.shape.x, sprite.shape.y)
+        return SPRITES_SCALE_RATIO * self._camera.orientation.zoom / bigger_side
