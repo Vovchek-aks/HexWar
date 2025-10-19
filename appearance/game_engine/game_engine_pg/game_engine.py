@@ -7,6 +7,7 @@ from appearance.graphics.camera.camera import Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import Draw, DrawMaker
 from appearance.input.camera_mover import CameraMover
+from appearance.input.clicks_catcher import ClicksCatcher
 from appearance.input.selected_cell_getter import SelectedCellGetter
 from appearance.game_engine.game_engine_pg.events import UpdatableEvents
 from core.protocols import GameSession
@@ -28,12 +29,14 @@ class GameEngine:
         camera = Camera(screen_shape, ReadonlyCameraOrientation(camera_orientation))
 
         selected_cell_getter = SelectedCellGetter(camera, session.board)
+        clicks_catcher = ClicksCatcher.debug()
 
         draw = DrawMaker(Draw).make(screen, camera, session.board)
 
         dt = 1 / ups
 
-        return cls(ups, dt, caption, clock, draw, selected_cell_getter, camera_mover, UpdatableEvents.new())
+        return cls(ups, dt, caption, clock, draw, selected_cell_getter, camera_mover, clicks_catcher,
+                   UpdatableEvents.new())
 
     _ups: int
     _dt: float
@@ -42,13 +45,16 @@ class GameEngine:
     _draw: Draw
     _selected_cell_getter: SelectedCellGetter
     _camera_mover: CameraMover
+    _clicks_catcher: ClicksCatcher
     _last_frame_events: UpdatableEvents
 
     def update(self) -> None:
+        events = self._last_frame_events.get()
         keys = pg.key.get_pressed()
         mouse_position = Vector2(*pg.mouse.get_pos())
 
-        self._camera_mover.update(self._last_frame_events.get(), keys, self._dt)
+        self._camera_mover.update(events, keys, self._dt)
+        self._clicks_catcher.update(events, mouse_position)
 
         self._draw.background()
         self._draw.board()

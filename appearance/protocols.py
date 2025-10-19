@@ -139,3 +139,13 @@ class SelectedCellGetter(ABC):
     @abstractmethod
     def get_coord(self, mouse_position: Vector2) -> Vector2Int | Status:
         ...
+
+
+class ClicksCatchingLayer(ABC):
+    @abstractmethod
+    def can_catch(self, screen_position: Vector2) -> bool:
+        ...
+
+    @abstractmethod
+    def catch(self, screen_position: Vector2) -> None:
+        ...
