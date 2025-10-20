@@ -1,7 +1,6 @@
-from attrs import frozen
+from attrs import frozen, Factory
 
 from appearance.game_engine.game_engine_pg.events import Events
-from appearance.input.clicks_catcher.layers.debug import WholeScreenDebugLayer, RightSideDebugLayer
 from appearance.protocols import ClicksCatchingLayer as Layer
 from mathematics.vector import Vector2
 from statuses import MISSING
@@ -10,11 +9,7 @@ from .click import read_click
 
 @frozen
 class ClicksCatcher:
-    @classmethod
-    def debug(cls) -> "ClicksCatcher":
-        return cls([RightSideDebugLayer(500), WholeScreenDebugLayer()])
-
-    _layers: list[Layer]
+    _layers: list[Layer] = Factory(list)
 
     def update(self, events: Events, mouse_position: Vector2) -> None:
         if (click := read_click(events, mouse_position)) is MISSING:
