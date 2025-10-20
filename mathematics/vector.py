@@ -1,5 +1,13 @@
-from pygame import Vector2
 from attrs import frozen
+import pygame as pg
+
+
+class Vector2(pg.Vector2):
+    def __str__(self) -> str:
+        return f"{type(self).__name__}({self.x}, {self.y})"
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 @frozen

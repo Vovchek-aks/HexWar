@@ -141,11 +141,33 @@ class SelectedCellGetter(ABC):
         ...
 
 
+class Click(ABC):
+    @property
+    @abstractmethod
+    def screen_position(self) -> Vector2:
+        ...
+
+    @property
+    @abstractmethod
+    def is_left(self) -> bool:
+        ...
+
+    @property
+    @abstractmethod
+    def is_right(self) -> bool:
+        ...
+
+    @property
+    @abstractmethod
+    def is_middle(self) -> bool:
+        ...
+
+
 class ClicksCatchingLayer(ABC):
     @abstractmethod
-    def can_catch(self, screen_position: Vector2) -> bool:
+    def can_catch(self, click: Click) -> bool:
         ...
 
     @abstractmethod
-    def catch(self, screen_position: Vector2) -> None:
+    def catch(self, click: Click) -> None:
         ...
