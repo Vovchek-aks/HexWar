@@ -9,11 +9,22 @@ from statuses import MISSING
 @frozen
 class BoardLayer(proto.ClicksCatchingLayer):
     _cell_getter: proto.SelectedCellGetter
-    _cell_was_clicked: Event[Vector2Int, None] = field(init=False, factory=Event)
+
+    _cell_was_clicked_left: Event[Vector2Int, None] = field(init=False, factory=Event)
+    _cell_was_clicked_right: Event[Vector2Int, None] = field(init=False, factory=Event)
+    _cell_was_clicked_middle: Event[Vector2Int, None] = field(init=False, factory=Event)
 
     @property
-    def cell_was_clicked(self) -> ToEventSubscriber[Vector2Int, None]:
-        return self._cell_was_clicked.subscriber
+    def cell_was_clicked_left(self) -> ToEventSubscriber[Vector2Int, None]:
+        return self._cell_was_clicked_left.subscriber
+
+    @property
+    def cell_was_clicked_right(self) -> ToEventSubscriber[Vector2Int, None]:
+        return self._cell_was_clicked_right.subscriber
+
+    @property
+    def cell_was_clicked_middle(self) -> ToEventSubscriber[Vector2Int, None]:
+        return self._cell_was_clicked_middle.subscriber
 
     def can_catch(self, click: proto.Click) -> bool:
         return self._cell_getter.get_coord(click.screen_position) is not MISSING
@@ -22,4 +33,12 @@ class BoardLayer(proto.ClicksCatchingLayer):
         assert self.can_catch(click)
 
         cell_coord = self._cell_getter.get_coord(click.screen_position)
-        self._cell_was_clicked.invoke(cell_coord)
+
+        if click.is_left:
+            self._cell_was_clicked_left.invoke(cell_coord)
+
+        if click.is_right:
+            self._cell_was_clicked_right.invoke(cell_coord)
+
+        if click.is_middle:
+            self._cell_was_clicked_middle.invoke(cell_coord)

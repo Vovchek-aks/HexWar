@@ -9,3 +9,4 @@ class Status:
 
 INVALID = Status()
 MISSING = Status()
+CAN_BECOME_CORRECT = Status()

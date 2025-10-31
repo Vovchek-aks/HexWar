@@ -3,7 +3,7 @@ from typing import Callable
 
 from attrs import frozen
 
-import protocols as proto
+import core.protocols as proto
 import core.figures as fig
 import core.figures.figures_flags as flags
 from mathematics.vector import Vector2Int
@@ -37,6 +37,10 @@ class Capture(_FiguresRelocation):
         to_cell = board[self.to_coord]
 
         if from_cell.owner == to_cell.owner:
+            return INVALID
+
+        if from_cell.owner not in map(lambda cell: cell.owner,
+                                      board.get_neighbors(to_cell, include_cell=False)):
             return INVALID
 
         if flags.Movable not in (movable := from_cell.figure).FLAGS:

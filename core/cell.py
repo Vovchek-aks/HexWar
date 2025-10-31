@@ -24,7 +24,9 @@ class Cell(proto.Cell):
     def strength(self, board: proto.Board) -> int:
         assert board.has(self)
 
-        return max(cell.figure.STRENGTH for cell in board.get_neighbors(self, include_cell=True))
+        return max(cell.figure.STRENGTH
+                   for cell in board.get_neighbors(self, include_cell=True)
+                   if cell.owner == self._owner)
 
     def pop(self) -> proto.Figure:
         assert not self.is_empty

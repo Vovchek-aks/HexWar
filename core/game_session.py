@@ -23,9 +23,9 @@ class GameSession(proto.GameSession):
                                                     (player1 if coord.y < board_size * .6 else player4),
                                                     fig.Empty()))
 
-        board[Vector2Int(0, 0)].insert(fig.Tree())
-        board[Vector2Int(5, 7)].insert(fig.Tree())
-        board[Vector2Int(2, 8)].insert(fig.Tree())
+        board[Vector2Int(0, 0)].insert(fig.Worker())
+        board[Vector2Int(5, 7)].insert(fig.Worker())
+        board[Vector2Int(2, 8)].insert(fig.Worker())
         board[Vector2Int(7, 2)].insert(fig.Castle())
 
         return cls(..., [player1, player2, player3, player4], board)

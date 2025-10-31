@@ -33,7 +33,10 @@ class GameEngine:
         selected_cell_getter = SelectedCellGetter(camera, session.board)
 
         board_layer = BoardLayer(selected_cell_getter)
-        moves_inputer = MovesInputer.make(board_layer)
+
+        moves_inputer = MovesInputer.make(board_layer, session.board)
+        moves_inputer.move_was_raed.subscribe(lambda move: session.board.make(move))
+
         clicks_catcher = ClicksCatcher([board_layer])
 
         draw = DrawMaker(Draw).make(screen, camera, session.board)
