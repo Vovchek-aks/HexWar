@@ -9,7 +9,7 @@ from appearance.graphics.draw import Draw, DrawMaker
 from appearance.input.camera_mover import CameraMover
 from appearance.input.clicks_catcher import ClicksCatcher
 from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
-from appearance.input.moves_inputer.moves_inputer import MovesInputer
+from appearance.input.moves_inputer import MovesInputer
 from appearance.input.selected_cell_getter import SelectedCellGetter
 from appearance.game_engine.game_engine_pg.events import UpdatableEvents
 from core.protocols import GameSession
