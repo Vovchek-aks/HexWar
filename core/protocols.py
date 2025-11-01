@@ -70,7 +70,7 @@ class Board(ABC):
         ...
 
     @abstractmethod
-    def get_neighbors(self, cell: "Cell", *, include_cell: bool) -> list["Cell"]:
+    def get_neighbors(self, cell: "Cell", *, include_cell: bool) -> "Cells":
         ...
 
     @abstractmethod
@@ -115,7 +115,11 @@ class Cell(ABC):
         ...
 
     @abstractmethod
-    def strength(self, board: "Board") -> int:
+    def hardness(self, board: Board) -> int:
+        ...
+
+    @abstractmethod
+    def strength(self, board: Board, *, strict: bool = True) -> int:
         ...
 
     @abstractmethod
@@ -128,6 +132,32 @@ class Cell(ABC):
 
     @abstractmethod
     def take_from(self, other: "Cell") -> None:
+        ...
+
+
+class Cells(ABC):
+    @abstractmethod
+    def all(self) -> list[Cell]:
+        ...
+
+    @abstractmethod
+    def with_owner(self, target: Player) -> "Cells":
+        ...
+
+    @abstractmethod
+    def with_figure(self, target: type["Figure"]) -> "Cells":
+        ...
+
+    @abstractmethod
+    def __bool__(self) -> bool:
+        ...
+
+    @abstractmethod
+    def __iter__(self) -> Iterable[Cell]:
+        ...
+
+    @abstractmethod
+    def __contains__(self, cell: Cell) -> bool:
         ...
 
 
@@ -160,7 +190,14 @@ class Static(Flag, metaclass=ABCMeta):
 
 
 class Movable(Flag, metaclass=ABCMeta):
-    ...
+    @classmethod
+    @abstractmethod
+    def constant_strength(cls, strength: int) -> "Movable":
+        ...
+
+    @abstractmethod
+    def strength(self, coord: Vector2Int, board: Board) -> int:
+        ...
 
 
 class Creatable(Flag, metaclass=ABCMeta):
@@ -168,8 +205,12 @@ class Creatable(Flag, metaclass=ABCMeta):
 
 
 class Figure(ABC):
-    STRENGTH: ClassVar[int]
     FLAGS: ClassVar[Flags]
+
+    @classmethod
+    @abstractmethod
+    def hardness(cls, coord: Vector2Int, board: Board) -> int:
+        ...
 
 
 class FiguresGroup(ABC):

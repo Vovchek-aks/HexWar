@@ -39,17 +39,13 @@ class Capture(_FiguresRelocation):
         if from_cell.owner == to_cell.owner:
             return INVALID
 
-        if from_cell.owner not in map(lambda cell: cell.owner,
-                                      board.get_neighbors(to_cell, include_cell=False)):
+        if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
             return INVALID
 
-        if flags.Movable not in (movable := from_cell.figure).FLAGS:
+        if flags.Movable not in from_cell.figure.FLAGS:
             return INVALID
 
-        if movable.STRENGTH == fig.MAX_STRENGTH:
-            return ValidMove(self)
-
-        if movable.STRENGTH <= to_cell.strength(board):
+        if from_cell.strength(board) <= to_cell.hardness(board):
             return INVALID
 
         return ValidMove(self)
@@ -67,7 +63,7 @@ class Relocation(_FiguresRelocation):
         if flags.Movable not in from_cell.figure.FLAGS:
             return INVALID
 
-        if not isinstance(to_cell.figure, fig.Empty | fig.Tree):
+        if not isinstance(to_cell.figure, fig.Empty):
             return INVALID
 
         return ValidMove(self)

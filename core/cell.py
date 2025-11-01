@@ -2,6 +2,7 @@ from attrs import define
 
 import core.protocols as proto
 from core.figures import figures as fig
+from statuses import MISSING
 
 
 @define(eq=False)
@@ -21,12 +22,23 @@ class Cell(proto.Cell):
     def is_empty(self) -> bool:
         return isinstance(self.figure, fig.Empty)
 
-    def strength(self, board: proto.Board) -> int:
+    def hardness(self, board: proto.Board) -> int:
         assert board.has(self)
 
-        return max(cell.figure.STRENGTH
-                   for cell in board.get_neighbors(self, include_cell=True)
-                   if cell.owner == self._owner)
+        coord = board.coordinates_of(self)
+        return max(cell.figure.hardness(coord, board)
+                   for cell in board.get_neighbors(self, include_cell=True).with_owner(self.owner))
+
+    def strength(self, board: proto.Board, *, strict: bool = True) -> int:
+        assert board.has(self)
+
+        if (movable := self.figure.FLAGS.get(proto.Movable)) is MISSING and not strict:
+            return 0
+
+        assert movable is not MISSING
+
+        coord = board.coordinates_of(self)
+        return movable.strength(coord, board)
 
     def pop(self) -> proto.Figure:
         assert not self.is_empty

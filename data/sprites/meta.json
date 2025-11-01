@@ -7,8 +7,36 @@
     ]
   },
   "figures": {
-    "Worker": {
-      "file": "figures/chess.png",
+    "Bunker": {
+      "file": "figures/bunk.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "Infantry": {
+      "file": "figures/inf.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "Motorization": {
+      "file": "figures/mt.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "Tank": {
+      "file": "figures/tank.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "Artillery": {
+      "file": "figures/art.png",
       "pivot": [
         183,
         183

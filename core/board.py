@@ -3,6 +3,7 @@ from typing import Callable, Iterable
 from attrs import frozen, field
 
 import core.protocols as proto
+from core.cells import Cells
 from mathematics import hex_geometry as geo
 from mathematics.vector import Vector2Int
 
@@ -49,7 +50,7 @@ class Board(proto.Board):
     def make(self, move: proto.ValidMove) -> None:
         move.move.execute(self)
 
-    def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> list[proto.Cell]:
+    def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> proto.Cells:
         assert self.has(cell)
 
         cell_coord = self.coordinates_of(cell)
@@ -60,7 +61,7 @@ class Board(proto.Board):
             if coord in self:
                 neighbors.append(self[coord])
 
-        return neighbors
+        return Cells(neighbors)
 
     def __getitem__(self, coord: Vector2Int) -> proto.Cell:
         assert coord in self

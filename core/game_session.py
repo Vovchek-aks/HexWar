@@ -23,10 +23,13 @@ class GameSession(proto.GameSession):
                                                     (player1 if coord.y < board_size * .6 else player4),
                                                     fig.Empty()))
 
-        board[Vector2Int(0, 0)].insert(fig.Worker())
-        board[Vector2Int(5, 7)].insert(fig.Worker())
-        board[Vector2Int(2, 8)].insert(fig.Worker())
-        board[Vector2Int(7, 2)].insert(fig.Castle())
+        board[Vector2Int(0, 0)].insert(fig.Infantry())
+        board[Vector2Int(1, 0)].insert(fig.Infantry())
+        board[Vector2Int(0, 1)].insert(fig.Tank())
+        board[Vector2Int(5, 7)].insert(fig.Artillery())
+        board[Vector2Int(5, 8)].insert(fig.Infantry())
+        board[Vector2Int(2, 8)].insert(fig.Motorization())
+        board[Vector2Int(7, 2)].insert(fig.Bunker())
 
         return cls(..., [player1, player2, player3, player4], board)
 
