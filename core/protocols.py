@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod, ABCMeta
+from types import UnionType
 from typing import ClassVar, Iterable
 
 from statuses import Status
@@ -145,7 +146,7 @@ class Cells(ABC):
         ...
 
     @abstractmethod
-    def with_figure(self, target: type["Figure"]) -> "Cells":
+    def with_figure(self, target: type["Figure"] | UnionType) -> "Cells":
         ...
 
     @abstractmethod
@@ -190,13 +191,12 @@ class Static(Flag, metaclass=ABCMeta):
 
 
 class Movable(Flag, metaclass=ABCMeta):
-    @classmethod
     @abstractmethod
-    def constant_strength(cls, strength: int) -> "Movable":
+    def strength(self, coord: Vector2Int, board: Board) -> int:
         ...
 
     @abstractmethod
-    def strength(self, coord: Vector2Int, board: Board) -> int:
+    def can_relocate(self, from_coord: Vector2Int, to_coord: Vector2Int, board: Board) -> bool:
         ...
 
 

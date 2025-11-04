@@ -1,10 +1,8 @@
 from itertools import product
-from typing import Callable
 
 from attrs import field, frozen
 
 from core import protocols as proto
-from mathematics.vector import Vector2Int
 from statuses import Status, MISSING
 
 Flag = proto.Flag
@@ -44,20 +42,6 @@ class Flags(proto.Flags):
 @frozen
 class Static(proto.Static):
     EXCLUDES = {proto.Movable}
-
-
-@frozen
-class Movable(proto.Movable):
-    EXCLUDES = {proto.Static}
-
-    @classmethod
-    def constant_strength(cls, strength: int) -> proto.Movable:
-        return cls(lambda coord, board: strength)
-
-    _get_strength: Callable[[Vector2Int, proto.Board], int]
-
-    def strength(self, coord: Vector2Int, board: proto.Board) -> int:
-        return self._get_strength(coord, board)
 
 
 @frozen

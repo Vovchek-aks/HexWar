@@ -3,11 +3,12 @@ from typing import Callable
 
 from attrs import frozen
 
+from core.figures.movable_flag import Movable
 import core.protocols as proto
 import core.figures as fig
 import core.figures.figures_flags as flags
 from mathematics.vector import Vector2Int
-from statuses import Status, INVALID
+from statuses import Status, INVALID, MISSING
 
 
 @frozen
@@ -42,7 +43,10 @@ class Capture(_FiguresRelocation):
         if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
             return INVALID
 
-        if flags.Movable not in from_cell.figure.FLAGS:
+        if (movable := from_cell.figure.FLAGS.get(Movable)) is MISSING:
+            return INVALID
+
+        if not movable.can_relocate(self.from_coord, self.to_coord, board):
             return INVALID
 
         if from_cell.strength(board) <= to_cell.hardness(board):
@@ -60,10 +64,13 @@ class Relocation(_FiguresRelocation):
         if from_cell.owner != to_cell.owner:
             return INVALID
 
-        if flags.Movable not in from_cell.figure.FLAGS:
+        if not isinstance(to_cell.figure, fig.Empty):
             return INVALID
 
-        if not isinstance(to_cell.figure, fig.Empty):
+        if (movable := from_cell.figure.FLAGS.get(Movable)) is MISSING:
+            return INVALID
+
+        if not movable.can_relocate(self.from_coord, self.to_coord, board):
             return INVALID
 
         return ValidMove(self)
