@@ -7,11 +7,15 @@ from appearance.graphics.camera.camera import Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import Draw, DrawMaker
 from appearance.input.camera_mover import CameraMover
+from appearance.input.cell_selector import CellSelector
 from appearance.input.clicks_catcher import ClicksCatcher
 from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
+from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
 from appearance.input.moves_inputer import MovesInputer
-from appearance.input.selected_cell_getter import SelectedCellGetter
+from appearance.input.moves_inputer.actions_reader import InputActionsReader
+from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.game_engine.game_engine_pg.events import UpdatableEvents
+from core.moves_maker import MovesMaker
 from core.protocols import GameSession
 from mathematics.vector import Vector2Int, Vector2
 from statuses import MISSING
@@ -30,20 +34,25 @@ class GameEngine:
         camera_mover = CameraMover(camera_orientation)
         camera = Camera(screen_shape, ReadonlyCameraOrientation(camera_orientation))
 
-        selected_cell_getter = SelectedCellGetter(camera, session.board)
+        hovered_cell_getter = UnderCursorCellGetter(camera, session.board)
 
-        board_layer = BoardLayer(selected_cell_getter)
+        board_layer = BoardLayer(hovered_cell_getter)
+        null_layer = WholeScreenLayer()
+        clicks_catcher = ClicksCatcher([board_layer, null_layer])
 
-        moves_inputer = MovesInputer.make(board_layer, session.board)
-        moves_inputer.move_was_raed.subscribe(lambda move: session.board.make(move))
+        actions_reader = InputActionsReader.make(board_layer, null_layer)
 
-        clicks_catcher = ClicksCatcher([board_layer])
+        moves_maker = MovesMaker(session)
+        cell_selector = CellSelector.make(actions_reader, moves_maker)
+
+        moves_inputer = MovesInputer.make(actions_reader, session.board, cell_selector)
+        moves_inputer.move_was_raed.subscribe(moves_maker.make)
 
         draw = DrawMaker(Draw).make(screen, camera, session.board)
 
         dt = 1 / ups
 
-        return cls(ups, dt, caption, clock, draw, selected_cell_getter, camera_mover, clicks_catcher,
+        return cls(ups, dt, caption, clock, draw, hovered_cell_getter, cell_selector, camera_mover, clicks_catcher,
                    moves_inputer, UpdatableEvents.new())
 
     _ups: int
@@ -51,7 +60,8 @@ class GameEngine:
     _caption: str
     _clock: pg.time.Clock
     _draw: Draw
-    _selected_cell_getter: SelectedCellGetter
+    _hovered_cell_getter: UnderCursorCellGetter
+    _cell_selector: CellSelector
     _camera_mover: CameraMover
     _clicks_catcher: ClicksCatcher
     _moves_inputer: MovesInputer
@@ -68,8 +78,11 @@ class GameEngine:
         self._draw.background()
         self._draw.board()
 
-        if (selected_coord := self._selected_cell_getter.get_coord(mouse_position)) is not MISSING:
-            self._draw.highlighted(selected_coord)
+        if (hovered_coord := self._hovered_cell_getter.get_coord(mouse_position)) is not MISSING:
+            self._draw.under_cursor_cell(hovered_coord)
+
+        if (selected_coord := self._cell_selector.get_coord()) is not MISSING:
+            self._draw.selected_cell(selected_coord)
 
         self._draw.figures()
 

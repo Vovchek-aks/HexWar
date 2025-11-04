@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod, ABCMeta
 from types import UnionType
 from typing import ClassVar, Iterable
 
+from observer import OnEventSubscriber
 from statuses import Status
 from mathematics.vector import Vector2Int
 from color import Color
@@ -34,6 +35,22 @@ class Move(ABC):
 
     @abstractmethod
     def execute(self, board: "Board") -> None:
+        ...
+
+
+class MovesMaker(ABC):
+    @property
+    @abstractmethod
+    def move_was_made(self) -> OnEventSubscriber[ValidMove, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def board_move_was_made(self) -> OnEventSubscriber[ValidMove, None]:
+        ...
+
+    @abstractmethod
+    def make(self, move: ValidMove) -> None:
         ...
 
 

@@ -11,7 +11,6 @@ from mathematics.vector import Vector2Int
 
 EDGES_WIDTH_RATIO = 1.1
 EDGES_BRIGHTNESS_RATIO = .6
-HIGHLIGHT_RATIO = .2
 
 
 @frozen
@@ -29,8 +28,8 @@ class BordDrawer(proto.BordDrawer):
     def draw_background(self) -> None:
         self._screen.fill(BACKGROUND)
 
-    def draw_highlighted(self, cell_coord: Vector2Int) -> None:
-        color = self._get_hex_color(cell_coord).lerp(WHITE, HIGHLIGHT_RATIO)
+    def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
+        color = self._get_hex_color(cell_coord).lerp(WHITE, highlight_ratio)
         self.draw_hex_background_no_auto_color(cell_coord, color)
         self.draw_edges(cell_coord)
 

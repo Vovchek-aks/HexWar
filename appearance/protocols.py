@@ -1,8 +1,9 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, ABCMeta
 
 from mathematics.angle import Angle
 from mathematics.vector import Vector2, Vector2Int
 from mathematics.hex_geometry import Neighbor
+from observer import OnEventSubscriber
 from statuses import Status
 from appearance.graphics.sprites import Sprite
 import core.protocols as proto
@@ -89,7 +90,11 @@ class Draw(ABC):
         ...
 
     @abstractmethod
-    def highlighted(self, cell_coord: Vector2Int) -> None:
+    def under_cursor_cell(self, cell_coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def selected_cell(self, cell_coord: Vector2Int) -> None:
         ...
 
     @abstractmethod
@@ -119,7 +124,7 @@ class BordDrawer(ABC):
         ...
 
     @abstractmethod
-    def draw_highlighted(self, cell_coord: Vector2Int) -> None:
+    def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
         ...
 
     @abstractmethod
@@ -135,9 +140,30 @@ class BordDrawer(ABC):
         ...
 
 
-class SelectedCellGetter(ABC):
+class UnderCursorCellGetter(ABC):
     @abstractmethod
     def get_coord(self, mouse_position: Vector2) -> Vector2Int | Status:
+        ...
+
+
+class CellSelector(ABC):
+    @classmethod
+    @abstractmethod
+    def make(cls, actions_reader: "InputActionsReader", moves_maker: proto.MovesMaker) -> "CellSelector":
+        ...
+
+    @property
+    @abstractmethod
+    def cell_was_selected(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def cell_was_unselected(self) -> OnEventSubscriber[None, None]:
+        ...
+
+    @abstractmethod
+    def get_coord(self) -> Vector2Int | Status:
         ...
 
 
@@ -170,4 +196,56 @@ class ClicksCatchingLayer(ABC):
 
     @abstractmethod
     def catch(self, click: Click) -> None:
+        ...
+
+
+class BoardLayer(ClicksCatchingLayer, metaclass=ABCMeta):
+    ...
+
+
+class WholeScreenLayer(ClicksCatchingLayer, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def click_happened(self) -> OnEventSubscriber[Click, None]:
+        ...
+
+
+class MovesInputer:
+    @classmethod
+    @abstractmethod
+    def make(cls, reader: "InputActionsReader", board: proto.Board, cell_selector: CellSelector) -> "MovesInputer":
+        ...
+
+    @property
+    @abstractmethod
+    def move_was_raed(self) -> OnEventSubscriber[proto.ValidMove, None]:
+        ...
+
+
+class InputAction(ABC):
+    ...
+
+
+class InputActionsReader:
+    @classmethod
+    @abstractmethod
+    def make(cls, board_layer: BoardLayer, null_layer: WholeScreenLayer) -> "InputActionsReader":
+        ...
+
+    @property
+    @abstractmethod
+    def action_was_raed(self) -> OnEventSubscriber[InputAction, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def actions(self) -> list[InputAction]:
+        ...
+
+    @abstractmethod
+    def clear(self) -> None:
+        ...
+
+    @abstractmethod
+    def pop(self) -> None:
         ...

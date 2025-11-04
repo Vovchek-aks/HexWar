@@ -8,8 +8,8 @@ class Event[* TA, TO]:
     _subscribers: list[Callable[[*TA], TO]] = Factory(list)
 
     @property
-    def subscriber(self) -> "ToEventSubscriber[*TA, TO]":
-        return ToEventSubscriber(self)
+    def subscriber(self) -> "OnEventSubscriber[*TA, TO]":
+        return OnEventSubscriber(self)
 
     def subscribe(self, subscriber: Callable[[*TA], TO]) -> None:
         self._subscribers.append(subscriber)
@@ -23,7 +23,7 @@ class Event[* TA, TO]:
 
 
 @frozen
-class ToEventSubscriber[* TA, TO]:
+class OnEventSubscriber[* TA, TO]:
     _event: Event[*TA, TO]
 
     def subscribe(self, subscriber: Callable[[*TA], TO]) -> None:

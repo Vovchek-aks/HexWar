@@ -2,28 +2,28 @@ from attrs import frozen, field
 
 import appearance.protocols as proto
 from mathematics.vector import Vector2Int
-from observer import Event, ToEventSubscriber
+from observer import Event, OnEventSubscriber
 from statuses import MISSING
 
 
 @frozen
-class BoardLayer(proto.ClicksCatchingLayer):
-    _cell_getter: proto.SelectedCellGetter
+class BoardLayer(proto.BoardLayer):
+    _cell_getter: proto.UnderCursorCellGetter
 
     _cell_was_clicked_left: Event[Vector2Int, None] = field(init=False, factory=Event)
     _cell_was_clicked_right: Event[Vector2Int, None] = field(init=False, factory=Event)
     _cell_was_clicked_middle: Event[Vector2Int, None] = field(init=False, factory=Event)
 
     @property
-    def cell_was_clicked_left(self) -> ToEventSubscriber[Vector2Int, None]:
+    def cell_was_clicked_left(self) -> OnEventSubscriber[Vector2Int, None]:
         return self._cell_was_clicked_left.subscriber
 
     @property
-    def cell_was_clicked_right(self) -> ToEventSubscriber[Vector2Int, None]:
+    def cell_was_clicked_right(self) -> OnEventSubscriber[Vector2Int, None]:
         return self._cell_was_clicked_right.subscriber
 
     @property
-    def cell_was_clicked_middle(self) -> ToEventSubscriber[Vector2Int, None]:
+    def cell_was_clicked_middle(self) -> OnEventSubscriber[Vector2Int, None]:
         return self._cell_was_clicked_middle.subscriber
 
     def can_catch(self, click: proto.Click) -> bool:

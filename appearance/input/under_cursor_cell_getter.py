@@ -8,7 +8,7 @@ from statuses import Status, MISSING
 
 
 @frozen
-class SelectedCellGetter(proto.SelectedCellGetter):
+class UnderCursorCellGetter(proto.UnderCursorCellGetter):
     _camera: proto.Camera
     _board: Board
 

@@ -5,9 +5,9 @@ from core.protocols import Board
 import appearance.protocols as proto
 from ..draw import Draw
 from ..drawers.drawers_pg.bord_drawer import BordDrawer
-from appearance.graphics.draw.drawers.figures_drawer import FiguresDrawer
+from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresDrawer
 from appearance.graphics.sprites import SpritesLoader
-from appearance.graphics.draw.drawers.figures_drawer import FiguresSpritesLoader
+from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresSpritesLoader
 from core.figures import Figure, get_figures
 
 

@@ -6,12 +6,14 @@ from appearance.input.clicks_catcher.click import Buttons
 from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction
 from core.moves import Relocation, Capture
 from core.protocols import Board, ValidMove
-from statuses import Status, CAN_BECOME_CORRECT, INVALID
+from statuses import Status, CAN_BECOME_CORRECT, INVALID, MISSING
+import appearance.protocols as proto
 
 
 @frozen
 class MoveReaders:
     _board: Board
+    _cell_selector: proto.CellSelector
 
     @property
     def readers(self) -> list[Callable[[list[InputAction]], ValidMove | Status]]:
@@ -22,28 +24,24 @@ class MoveReaders:
 
     def _try_read_relocation_move(self, actions: list[InputAction]) -> ValidMove | Status:
         match actions:
-            case [CellClickAction(coord=from_coord,
-                                  buttons=Buttons(is_left=True)),
-                  CellClickAction(coord=to_coord,
+            case [CellClickAction(coord=to_coord,
                                   buttons=Buttons(is_right=True))]:
-                return Relocation(from_coord, to_coord).validate(self._board)
+                if (coord := self._cell_selector.get_coord()) is MISSING:
+                    return INVALID
 
-            case [CellClickAction(buttons=Buttons(is_left=True))]:
-                return CAN_BECOME_CORRECT
+                return Relocation(coord, to_coord).validate(self._board)
 
             case _:
                 return INVALID
 
     def _try_read_capture_move(self, actions: list[InputAction]) -> ValidMove | Status:
         match actions:
-            case [CellClickAction(coord=from_coord,
-                                  buttons=Buttons(is_left=True)),
-                  CellClickAction(coord=to_coord,
+            case [CellClickAction(coord=to_coord,
                                   buttons=Buttons(is_right=True))]:
-                return Capture(from_coord, to_coord).validate(self._board)
+                if (coord := self._cell_selector.get_coord()) is MISSING:
+                    return INVALID
 
-            case [CellClickAction(buttons=Buttons(is_left=True))]:
-                return CAN_BECOME_CORRECT
+                return Capture(coord, to_coord).validate(self._board)
 
             case _:
                 return INVALID

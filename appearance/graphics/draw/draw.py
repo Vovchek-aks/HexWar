@@ -4,6 +4,9 @@ import appearance.protocols as proto
 from mathematics.vector import Vector2Int
 from .drawers import BordDrawer, FiguresDrawer
 
+HOVER_HIGHLIGHT_RATIO = .15
+SELECT_HIGHLIGHT_RATIO = .25
+
 
 @frozen
 class Draw(proto.Draw):
@@ -16,8 +19,11 @@ class Draw(proto.Draw):
     def board(self) -> None:
         self._bord_drawer.draw_board()
 
-    def highlighted(self, cell_coord: Vector2Int) -> None:
-        self._bord_drawer.draw_highlighted(cell_coord)
+    def under_cursor_cell(self, cell_coord: Vector2Int) -> None:
+        self._bord_drawer.draw_highlighted(cell_coord, HOVER_HIGHLIGHT_RATIO)
+
+    def selected_cell(self, cell_coord: Vector2Int) -> None:
+        self._bord_drawer.draw_highlighted(cell_coord, SELECT_HIGHLIGHT_RATIO)
 
     def figures(self) -> None:
         self._figures_drawer.draw_figures()

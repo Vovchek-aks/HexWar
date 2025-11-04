@@ -17,8 +17,8 @@
     "Infantry": {
       "file": "figures/inf.png",
       "pivot": [
-        183,
-        183
+        163,
+        180
       ]
     },
     "Motorization": {
@@ -38,7 +38,7 @@
     "Artillery": {
       "file": "figures/art.png",
       "pivot": [
-        183,
+        170,
         183
       ]
     }
