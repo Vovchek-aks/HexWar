@@ -63,9 +63,19 @@ class Infantry(proto.Figure):
                       .build(),
                       Creatable())
 
+    _SELF_HARDNESS = 1
+    _NEAR_BUNKER_HARDNESS = 4
+
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 1
+        cell = board[coord]
+        has_bunker = bool(board.get_neighbors(cell, include_cell=False)
+                          .with_owner(cell.owner)
+                          .with_figure(Bunker))
+        if has_bunker:
+            return cls._NEAR_BUNKER_HARDNESS
+
+        return cls._SELF_HARDNESS
 
 
 @frozen
@@ -92,7 +102,7 @@ class Tank(proto.Figure):
 
     SELF_STRENGTH = 1
     _SELF_HARDNESS = 1
-    _PER_INFANTRY_STRENGTH_RATIO = 1
+    _PER_INFANTRY_STRENGTH_RATIO = .75
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -102,12 +112,12 @@ class Tank(proto.Figure):
     def get_projected_strength(cls, coord: Vector2Int, board: proto.Board) -> int:
         cell = board[coord]
 
-        return (cls._PER_INFANTRY_STRENGTH_RATIO *
-                sum(map(lambda infantry_cell: infantry_cell.strength(board),
-                        board.get_neighbors(cell, include_cell=False)
-                        .with_owner(cell.owner)
-                        .with_figure(Infantry | Motorization)
-                        .all())))
+        return int(cls._PER_INFANTRY_STRENGTH_RATIO *
+                   sum(map(lambda infantry_cell: infantry_cell.strength(board),
+                           board.get_neighbors(cell, include_cell=False)
+                           .with_owner(cell.owner)
+                           .with_figure(Infantry | Motorization)
+                           .all())))
 
 
 @frozen
@@ -137,7 +147,6 @@ class Artillery(proto.Figure):
 
         target = board[to_coord]
         return target in cells
-
 
 
 def get_figures() -> list[type[proto.Figure]]:

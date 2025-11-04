@@ -25,11 +25,13 @@ class GameSession(proto.GameSession):
 
         board[Vector2Int(0, 0)].insert(fig.Infantry())
         board[Vector2Int(1, 0)].insert(fig.Infantry())
+        board[Vector2Int(1, 1)].insert(fig.Infantry())
         board[Vector2Int(0, 1)].insert(fig.Tank())
         board[Vector2Int(5, 7)].insert(fig.Artillery())
         board[Vector2Int(5, 8)].insert(fig.Infantry())
         board[Vector2Int(2, 8)].insert(fig.Motorization())
         board[Vector2Int(7, 2)].insert(fig.Bunker())
+        board[Vector2Int(7, 1)].insert(fig.Infantry())
 
         return cls(..., [player1, player2, player3, player4], board)
 

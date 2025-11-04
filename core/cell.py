@@ -25,8 +25,7 @@ class Cell(proto.Cell):
     def hardness(self, board: proto.Board) -> int:
         assert board.has(self)
 
-        coord = board.coordinates_of(self)
-        return max(cell.figure.hardness(coord, board)
+        return max(cell.figure.hardness(board.coordinates_of(cell), board)
                    for cell in board.get_neighbors(self, include_cell=True).with_owner(self.owner))
 
     def strength(self, board: proto.Board, *, strict: bool = True) -> int:
