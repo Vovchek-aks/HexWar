@@ -1,69 +1,101 @@
-from attrs import frozen
+from abc import ABCMeta
+
+from attrs import define, field
 
 from core import protocols as proto
 from core.cells import Cells
 from core.figures.figures_flags import Flags, Static, Creatable
 from core.figures.movable_flag import MovableBuilder
+from core.moves import Relocation, Capture
+from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 
 
-@frozen
-class Empty(proto.Figure):
+@define(hash=True, eq=True)
+class _Figure(proto.Figure, metaclass=ABCMeta):
+    _id: int = field(init=False)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
+
+
+class Empty(_Figure):
     FLAGS = Flags.new(Static())
+    MOVES_BUDGET = 0
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         return 0
 
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return 0
 
-@frozen
-class Settlement(proto.Figure):
+
+class Settlement(_Figure):
     FLAGS = Flags.new(Static(),
                       Creatable())
+    MOVES_BUDGET = 0
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         return 0
 
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return 0
 
-@frozen
-class Town(proto.Figure):
+
+class Town(_Figure):
     FLAGS = Flags.new(Static(),
                       Creatable())
+    MOVES_BUDGET = 0
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         return 0
 
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return 0
 
-@frozen
-class Capital(proto.Figure):
+
+class Capital(_Figure):
     FLAGS = Flags.new(Static())
+    MOVES_BUDGET = 0
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         return 0
 
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return 0
 
-@frozen
-class Bunker(proto.Figure):
+
+class Bunker(_Figure):
     FLAGS = Flags.new(Static(),
                       Creatable())
+    MOVES_BUDGET = 0
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         return 3
 
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return 0
 
-@frozen
-class Infantry(proto.Figure):
+
+class Infantry(_Figure):
     FLAGS = Flags.new(MovableBuilder()
-                      .always_can_move()
+                      .can_move_to_neighbor()
                       .constant_strength(2)
                       .build(),
                       Creatable())
+    MOVES_BUDGET = 3
 
-    _SELF_HARDNESS = 1
+    SELF_HARDNESS = 1
     _NEAR_BUNKER_HARDNESS = 4
 
     @classmethod
@@ -75,30 +107,44 @@ class Infantry(proto.Figure):
         if has_bunker:
             return cls._NEAR_BUNKER_HARDNESS
 
-        return cls._SELF_HARDNESS
+        return cls.SELF_HARDNESS
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        match move:
+            case Relocation():
+                return 1
+            case Capture():
+                return 3
+            case _:
+                raise NotSupportedMove(move)
 
 
-@frozen
-class Motorization(proto.Figure):
+class Motorization(_Figure):
     FLAGS = Flags.new(MovableBuilder()
                       .always_can_move()
                       .constant_strength(1)
                       .build(),
                       Creatable())
+    MOVES_BUDGET = 3
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 1
+        return Infantry.SELF_HARDNESS
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return Infantry.get_cost_of(move, board)
 
 
-@frozen
-class Tank(proto.Figure):
+class Tank(_Figure):
     FLAGS = Flags.new(MovableBuilder()
                       .always_can_move()
                       .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                 Tank.get_projected_strength(coord, board))
                       .build(),
                       Creatable())
+    MOVES_BUDGET = 3
 
     SELF_STRENGTH = 1
     _SELF_HARDNESS = 1
@@ -107,6 +153,10 @@ class Tank(proto.Figure):
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         return cls._SELF_HARDNESS + cls.get_projected_strength(coord, board)
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return Infantry.get_cost_of(move, board)
 
     @classmethod
     def get_projected_strength(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -120,18 +170,22 @@ class Tank(proto.Figure):
                            .all())))
 
 
-@frozen
-class Artillery(proto.Figure):
+class Artillery(_Figure):
     FLAGS = Flags.new(MovableBuilder()
                       .constant_strength(4)
                       .set_can_relocate(lambda from_coord, to_coord, board:
                                         Artillery.can_relocate(from_coord, to_coord, board))
                       .build(),
                       Creatable())
+    MOVES_BUDGET = 2
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+        return 1
 
     @classmethod
     def can_relocate(cls, from_coord: Vector2Int, to_coord: Vector2Int, board: proto.Board) -> bool:
@@ -149,7 +203,7 @@ class Artillery(proto.Figure):
         return target in cells
 
 
-def get_figures() -> list[type[proto.Figure]]:
+def get_figures() -> list[type[_Figure]]:
     return [
         Empty,
         Settlement,

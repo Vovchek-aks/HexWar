@@ -30,11 +30,11 @@ class ValidMove(ABC):
 
 class Move(ABC):
     @abstractmethod
-    def validate(self, board: "Board") -> ValidMove | Status:
+    def validate(self, session: "GameSession") -> ValidMove | Status:
         ...
 
     @abstractmethod
-    def execute(self, board: "Board") -> None:
+    def execute(self, session: "GameSession") -> None:
         ...
 
 
@@ -84,10 +84,6 @@ class Board(ABC):
         ...
 
     @abstractmethod
-    def make(self, move: "ValidMove") -> None:
-        ...
-
-    @abstractmethod
     def get_neighbors(self, cell: "Cell", *, include_cell: bool) -> "Cells":
         ...
 
@@ -112,7 +108,16 @@ class GameSession(ABC):
 
     @property
     @abstractmethod
+    def figures_budget(self) -> "FiguresBudget":
+        ...
+
+    @property
+    @abstractmethod
     def board(self) -> Board:
+        ...
+
+    @abstractmethod
+    def make(self, move: "ValidMove") -> None:
         ...
 
 
@@ -223,10 +228,34 @@ class Creatable(Flag, metaclass=ABCMeta):
 
 class Figure(ABC):
     FLAGS: ClassVar[Flags]
+    MOVES_BUDGET: ClassVar[int]
 
     @classmethod
     @abstractmethod
     def hardness(cls, coord: Vector2Int, board: Board) -> int:
+        ...
+
+    @classmethod
+    @abstractmethod
+    def get_cost_of(cls, move: Move, board: Board) -> int:
+        ...
+
+
+class FiguresBudget(ABC):
+    @abstractmethod
+    def clear(self) -> None:
+        ...
+
+    @abstractmethod
+    def of(self, figure: Figure) -> int:
+        ...
+
+    @abstractmethod
+    def can_add(self, figure: Figure, pay_count: int) -> bool:
+        ...
+
+    @abstractmethod
+    def add(self, figure: Figure, pay_count: int) -> None:
         ...
 
 

@@ -4,6 +4,7 @@ import core.protocols as proto
 from appearance.graphics import colors
 from core.board import Board
 from core.cell import Cell
+from core.figures.figures_budget import FiguresBudget
 from core.player import Player
 from mathematics.vector import Vector2Int
 import core.figures.figures as fig
@@ -31,18 +32,26 @@ class GameSession(proto.GameSession):
         board[Vector2Int(5, 8)].insert(fig.Infantry())
         board[Vector2Int(2, 8)].insert(fig.Motorization())
         board[Vector2Int(7, 2)].insert(fig.Bunker())
-        board[Vector2Int(7, 1)].insert(fig.Infantry())
+        board[Vector2Int(6, 2)].insert(fig.Infantry())
 
-        return cls(..., [player1, player2, player3, player4], board)
+        return cls(..., [player1, player2, player3, player4], board, FiguresBudget())
 
     _master: proto.Master
     _players: list[proto.Player]
     _board: proto.Board
+    _figures_budget: proto.FiguresBudget
 
     @property
     def master(self) -> proto.Master:
-        return self.master
+        return self._master
+
+    @property
+    def figures_budget(self) -> proto.FiguresBudget:
+        return self._figures_budget
 
     @property
     def board(self) -> proto.Board:
         return self._board
+
+    def make(self, move: proto.ValidMove) -> None:
+        move.move.execute(self)

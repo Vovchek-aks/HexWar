@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABCMeta
 from typing import Callable
 
 from attrs import frozen
@@ -21,11 +21,12 @@ class ValidMove(proto.ValidMove):
 
 
 @frozen
-class _FiguresRelocation(proto.Move, ABC):
+class _FiguresRelocation(proto.Move, metaclass=ABCMeta):
     from_coord: Vector2Int
     to_coord: Vector2Int
 
-    def execute(self, board: proto.Board) -> None:
+    def execute(self, session: proto.GameSession) -> None:
+        board = session.board
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
         to_cell.take_from(from_cell)
@@ -33,9 +34,11 @@ class _FiguresRelocation(proto.Move, ABC):
 
 @frozen
 class Capture(_FiguresRelocation):
-    def validate(self, board: proto.Board) -> proto.ValidMove | Status:
+    def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
+        board = session.board
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
+        figure = from_cell.figure
 
         if from_cell.owner == to_cell.owner:
             return INVALID
@@ -52,14 +55,19 @@ class Capture(_FiguresRelocation):
         if from_cell.strength(board) <= to_cell.hardness(board):
             return INVALID
 
+        if not session.figures_budget.can_add(figure, figure.get_cost_of(self, session.board)):
+            return INVALID
+
         return ValidMove(self)
 
 
 @frozen
 class Relocation(_FiguresRelocation):
-    def validate(self, board: proto.Board) -> proto.ValidMove | Status:
+    def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
+        board = session.board
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
+        figure = from_cell.figure
 
         if from_cell.owner != to_cell.owner:
             return INVALID
@@ -73,6 +81,9 @@ class Relocation(_FiguresRelocation):
         if not movable.can_relocate(self.from_coord, self.to_coord, board):
             return INVALID
 
+        if not session.figures_budget.can_add(figure, figure.get_cost_of(self, session.board)):
+            return INVALID
+
         return ValidMove(self)
 
 
@@ -81,7 +92,8 @@ class Creation(proto.Move):
     create_figure: Callable[[], proto.Figure] | type[proto.Figure]
     to_coord: Vector2Int
 
-    def validate(self, board: proto.Board) -> proto.ValidMove | Status:
+    def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
+        board = session.board
         to_cell = board[self.to_coord]
 
         if not to_cell.is_empty:
@@ -89,7 +101,8 @@ class Creation(proto.Move):
 
         return ValidMove(self)
 
-    def execute(self, board: proto.Board) -> None:
+    def execute(self, session: proto.GameSession) -> None:
+        board = session.board
         figure = self.create_figure()
         assert flags.Creatable in figure.FLAGS
 

@@ -47,9 +47,6 @@ class Board(proto.Board):
         y, x = divmod(idx, self.width)
         return Vector2Int(x, y)
 
-    def make(self, move: proto.ValidMove) -> None:
-        move.move.execute(self)
-
     def get_neighbors(self, cell: proto.Cell, *, include_cell: bool = False) -> proto.Cells:
         assert self.has(cell)
 

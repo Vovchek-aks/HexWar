@@ -5,14 +5,14 @@ from attrs import frozen
 from appearance.input.clicks_catcher.click import Buttons
 from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction
 from core.moves import Relocation, Capture
-from core.protocols import Board, ValidMove
-from statuses import Status, CAN_BECOME_CORRECT, INVALID, MISSING
+from core.protocols import ValidMove, GameSession
+from statuses import Status, INVALID, MISSING
 import appearance.protocols as proto
 
 
 @frozen
 class MoveReaders:
-    _board: Board
+    _session: GameSession
     _cell_selector: proto.CellSelector
 
     @property
@@ -29,7 +29,7 @@ class MoveReaders:
                 if (coord := self._cell_selector.get_coord()) is MISSING:
                     return INVALID
 
-                return Relocation(coord, to_coord).validate(self._board)
+                return Relocation(coord, to_coord).validate(self._session)
 
             case _:
                 return INVALID
@@ -41,7 +41,7 @@ class MoveReaders:
                 if (coord := self._cell_selector.get_coord()) is MISSING:
                     return INVALID
 
-                return Capture(coord, to_coord).validate(self._board)
+                return Capture(coord, to_coord).validate(self._session)
 
             case _:
                 return INVALID

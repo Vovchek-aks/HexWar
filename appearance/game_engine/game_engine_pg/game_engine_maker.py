@@ -42,7 +42,7 @@ def make_game_engine(caption: str, ups: int, screen_shape: Vector2Int, session: 
     moves_maker = MovesMaker(session)
     cell_selector = CellSelector.make(actions_reader, moves_maker)
 
-    moves_inputer = MovesInputer.make(actions_reader, session.board, cell_selector)
+    moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
     moves_inputer.move_was_raed.subscribe(moves_maker.make)
 
     draw = DrawMaker(Draw).make(screen, camera, session.board)

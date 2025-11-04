@@ -3,7 +3,7 @@ from attrs import frozen, field
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.moves_reader import MoveReaders
 from appearance.input.moves_inputer.input_actions import InputAction
-from core.protocols import Board, ValidMove
+from core.protocols import ValidMove, GameSession
 import appearance.protocols as proto
 from observer import Event, OnEventSubscriber
 from statuses import CAN_BECOME_CORRECT
@@ -12,8 +12,11 @@ from statuses import CAN_BECOME_CORRECT
 @frozen
 class MovesInputer(proto.MovesInputer):
     @classmethod
-    def make(cls, reader: InputActionsReader, board: Board, cell_selector: proto.CellSelector) -> "MovesInputer":
-        inputer = cls(reader, MoveReaders(board, cell_selector))
+    def make(cls,
+             reader: InputActionsReader,
+             session: GameSession,
+             cell_selector: proto.CellSelector) -> "MovesInputer":
+        inputer = cls(reader, MoveReaders(session, cell_selector))
         reader.action_was_raed.subscribe(inputer._on_action_was_read)
         return inputer
 
