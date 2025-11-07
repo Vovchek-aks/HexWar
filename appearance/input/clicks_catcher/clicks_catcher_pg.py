@@ -25,3 +25,4 @@ class ClicksCatcher:
         for layer in self._layers:
             if layer.can_catch(click):
                 return layer
+        return MISSING

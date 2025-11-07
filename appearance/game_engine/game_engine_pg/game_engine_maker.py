@@ -1,5 +1,7 @@
 import pygame as pg
 
+from appearance.UI.drawer import UiDrawer
+from appearance.UI.ui_layer_maker import make_ui_layer
 from appearance.game_engine.game_engine_pg.game_engine import GameEngine
 from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
@@ -20,7 +22,6 @@ from appearance.game_engine.game_engine_pg.events import UpdatableEvents
 from appearance.game_engine.game_engine_pg.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_pg.timer import Timer
 from appearance.input.camera_mover import CameraMover
-from appearance.input.clicks_catcher import ClicksCatcher
 from core.protocols import GameSession
 
 
@@ -51,13 +52,12 @@ def make_game_engine(caption: str, ups: int, screen_shape: Vector2Int, session: 
     draw = DrawMaker(Draw).make(screen, camera, session.board)
 
     layers = [
+        make_ui_layer(UiDrawer(screen)),
         Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    clicks_catcher = ClicksCatcher(layers)
-    updater = Updater(camera_mover, clicks_catcher)
-
-    drawer = FrameDrawer.make(draw, layers)
+    updater = Updater.make(camera_mover, layers)
+    drawer = FrameDrawer.make(layers)
 
     return GameEngine(caption, timer, drawer, updater, UpdatableEvents.new())

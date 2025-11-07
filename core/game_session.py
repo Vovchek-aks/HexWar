@@ -13,7 +13,7 @@ import core.figures.figures as fig
 @frozen
 class GameSession(proto.GameSession):
     @classmethod
-    def test_map(cls, *, board_size: int) -> "proto.GameSession":
+    def test_map(cls, *, board_size: int) -> proto.GameSession:
         player1 = Player(colors.PLAYER_RED)
         player2 = Player(colors.PLAYER_BLUED)
         player3 = Player(colors.PLAYER_GREEN)

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod, ABCMeta
 
+from color import Color
+from font import Font
 from mathematics.angle import Angle
 from mathematics.vector import Vector2, Vector2Int
 from mathematics.hex_geometry import Neighbor
@@ -140,6 +142,11 @@ class BordDrawer(ABC):
         ...
 
 
+class UiDrawer(ABC):
+    def draw_text(self, text_data: "TextData") -> None:
+        ...
+
+
 class UnderCursorCellGetter(ABC):
     @abstractmethod
     def get_coord(self, mouse_position: Vector2) -> Vector2Int | Status:
@@ -196,6 +203,30 @@ class DrawableLayer(ABC):
 
 
 class ClicksCatchingLayer(ABC):
+    @abstractmethod
+    def can_catch(self, click: Click) -> bool:
+        ...
+
+    @abstractmethod
+    def catch(self, click: Click) -> None:
+        ...
+
+
+class Layer(DrawableLayer, ClicksCatchingLayer):
+    @property
+    @abstractmethod
+    def drawable_layer(self) -> DrawableLayer:
+        ...
+
+    @property
+    @abstractmethod
+    def clicks_catching_layer(self) -> ClicksCatchingLayer:
+        ...
+
+    @abstractmethod
+    def draw(self, mouse_position: Vector2) -> None:
+        ...
+
     @abstractmethod
     def can_catch(self, click: Click) -> bool:
         ...
@@ -271,4 +302,16 @@ class InputActionsReader(ABC):
 
     @abstractmethod
     def pop(self) -> None:
+        ...
+
+
+class TextData(ABC):
+    @property
+    @abstractmethod
+    def position(self) -> Vector2:
+        ...
+
+    @property
+    @abstractmethod
+    def tuple(self) -> tuple[str, Font, Color, Vector2]:
         ...

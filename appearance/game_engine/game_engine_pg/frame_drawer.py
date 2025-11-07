@@ -1,7 +1,7 @@
 from attrs import frozen
 import pygame as pg
 
-from appearance.graphics.draw import Draw
+from appearance.graphics.layer_drawers.layers_drawer import LayersDrawer
 from appearance.layer import Layer
 from mathematics.vector import Vector2
 
@@ -9,15 +9,11 @@ from mathematics.vector import Vector2
 @frozen
 class FrameDrawer:
     @classmethod
-    def make(cls, draw: Draw, layers: list[Layer]) -> "FrameDrawer":
-        return cls(draw,
-                   layers[::-1])
+    def make(cls, layers: list[Layer]) -> "FrameDrawer":
+        return cls(LayersDrawer(layers[::-1]))
 
-    _draw: Draw
-    _layers: list[Layer]
+    _layers: LayersDrawer
 
     def draw_frame(self, mouse_position: Vector2) -> None:
-        for layer in self._layers:
-            layer.draw(mouse_position)
-
+        self._layers.draw(mouse_position)
         pg.display.flip()
