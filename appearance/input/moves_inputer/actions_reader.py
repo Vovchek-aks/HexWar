@@ -1,17 +1,16 @@
 from attrs import frozen, field
 
 from appearance.input.clicks_catcher.click import Buttons, Click
-from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
-from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
 from mathematics.vector import Vector2Int
 from observer import Event, OnEventSubscriber
 from appearance.input.moves_inputer.input_actions import InputAction, CellClickAction, NullClickAction
+import appearance.protocols as proto
 
 
 @frozen
-class InputActionsReader:
+class InputActionsReader(proto.InputActionsReader):
     @classmethod
-    def make(cls, board_layer: BoardLayer, null_layer: WholeScreenLayer) -> "InputActionsReader":
+    def make(cls, board_layer: proto.BoardLayer, null_layer: proto.WholeScreenLayer) -> "InputActionsReader":
         reader = cls()
 
         board_layer.cell_was_clicked_left.subscribe(reader._on_cell_was_clicked_left)

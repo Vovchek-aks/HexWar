@@ -1,6 +1,10 @@
 import pygame as pg
 
 from appearance.game_engine.game_engine_pg.game_engine import GameEngine
+from appearance.game_engine.game_engine_pg.updater import Updater
+from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
+from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
+from appearance.layer import Layer
 from mathematics.vector import Vector2Int
 from appearance.graphics.camera.camera import Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
@@ -35,7 +39,6 @@ def make_game_engine(caption: str, ups: int, screen_shape: Vector2Int, session: 
 
     board_layer = BoardLayer(hovered_cell_getter)
     null_layer = WholeScreenLayer()
-    clicks_catcher = ClicksCatcher([board_layer, null_layer])
 
     actions_reader = InputActionsReader.make(board_layer, null_layer)
 
@@ -47,6 +50,14 @@ def make_game_engine(caption: str, ups: int, screen_shape: Vector2Int, session: 
 
     draw = DrawMaker(Draw).make(screen, camera, session.board)
 
-    drawer = FrameDrawer(draw, hovered_cell_getter, cell_selector)
+    layers = [
+        Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector), board_layer),
+        Layer(WholeScreenDrawableLayer(draw), null_layer)
+    ]
 
-    return GameEngine(caption, timer, drawer, camera_mover, clicks_catcher, UpdatableEvents.new())
+    clicks_catcher = ClicksCatcher(layers)
+    updater = Updater(camera_mover, clicks_catcher)
+
+    drawer = FrameDrawer.make(draw, layers)
+
+    return GameEngine(caption, timer, drawer, updater, UpdatableEvents.new())

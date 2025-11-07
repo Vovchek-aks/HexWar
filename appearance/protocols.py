@@ -189,6 +189,12 @@ class Click(ABC):
         ...
 
 
+class DrawableLayer(ABC):
+    @abstractmethod
+    def draw(self, mouse_position: Vector2) -> None:
+        ...
+
+
 class ClicksCatchingLayer(ABC):
     @abstractmethod
     def can_catch(self, click: Click) -> bool:
@@ -200,7 +206,20 @@ class ClicksCatchingLayer(ABC):
 
 
 class BoardLayer(ClicksCatchingLayer, metaclass=ABCMeta):
-    ...
+    @property
+    @abstractmethod
+    def cell_was_clicked_left(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def cell_was_clicked_right(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def cell_was_clicked_middle(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
 
 
 class WholeScreenLayer(ClicksCatchingLayer, metaclass=ABCMeta):
@@ -210,7 +229,11 @@ class WholeScreenLayer(ClicksCatchingLayer, metaclass=ABCMeta):
         ...
 
 
-class MovesInputer:
+class LayersContainerLayer(ClicksCatchingLayer, metaclass=ABCMeta):
+    ...
+
+
+class MovesInputer(ABC):
     @classmethod
     @abstractmethod
     def make(cls, reader: "InputActionsReader", board: proto.Board, cell_selector: CellSelector) -> "MovesInputer":
@@ -226,7 +249,7 @@ class InputAction(ABC):
     ...
 
 
-class InputActionsReader:
+class InputActionsReader(ABC):
     @classmethod
     @abstractmethod
     def make(cls, board_layer: BoardLayer, null_layer: WholeScreenLayer) -> "InputActionsReader":
