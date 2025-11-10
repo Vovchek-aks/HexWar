@@ -10,8 +10,8 @@ from mathematics.vector import Vector2
 class UiDrawer(proto.UiDrawer):
     _screen: pg.Surface
 
-    def draw_text(self, text_data: proto.TextData) -> None:
-        text, font, color, position = text_data.tuple
+    def draw_text(self, text_data: proto.TextData, position: Vector2) -> None:
+        text, font, color = text_data.tuple
         rendered = font.render(text, True, color)
         self._screen.blit(rendered, position)
 

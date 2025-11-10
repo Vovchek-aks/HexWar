@@ -4,7 +4,9 @@ from attrs import frozen, define
 
 import appearance.protocols as proto
 from appearance.graphics.layer_drawers.function_layer_drawer import FunctionLayerDrawer
+from appearance.graphics.layer_drawers.layers_drawer import LayersDrawer
 from appearance.graphics.layer_drawers.no_draw_layer import NoDrawLayer
+from appearance.input.clicks_catcher.layers.layers_container_layer import LayersContainerLayer
 from appearance.input.clicks_catcher.layers.no_catching_layer import NoCatchingLayer
 from appearance.protocols import Click
 from mathematics.vector import Vector2
@@ -14,6 +16,11 @@ from statuses import Status, MISSING
 
 @frozen
 class Layer(proto.Layer, proto.LayerHolder):
+    @classmethod
+    def as_multiple(cls, layers: list[proto.LayerHolder]) -> "Layer":
+        return cls(LayersDrawer(layers[::-1]),
+                   LayersContainerLayer.make(layers))
+
     _drawable_layer: proto.DrawableLayer
     _clicks_catching_layer: proto.ClicksCatchingLayer
 

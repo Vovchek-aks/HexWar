@@ -144,7 +144,7 @@ class BordDrawer(ABC):
 
 class UiDrawer(ABC):
     @abstractmethod
-    def draw_text(self, text_data: "TextData") -> None:
+    def draw_text(self, text_data: "TextData", position: Vector2) -> None:
         ...
 
     @abstractmethod
@@ -319,10 +319,13 @@ class InputActionsReader(ABC):
 class TextData(ABC):
     @property
     @abstractmethod
-    def position(self) -> Vector2:
+    def tuple(self) -> tuple[str, Font, Color]:
         ...
 
-    @property
     @abstractmethod
-    def tuple(self) -> tuple[str, Font, Color, Vector2]:
+    def with_text(self, text: str) -> "TextData":
+        ...
+
+    @abstractmethod
+    def with_color(self, color: Color) -> "TextData":
         ...
