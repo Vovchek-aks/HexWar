@@ -44,6 +44,12 @@
     }
   },
   "ui": {
-
+    "small_button": {
+      "file": "ui/small_button.png",
+      "pivot": [
+        16,
+        16
+      ]
+    }
   }
 }

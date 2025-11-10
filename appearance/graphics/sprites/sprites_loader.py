@@ -12,9 +12,13 @@ SPRITES_GROUP_DICT = dict[str, SPRITE_DICT]
 SPRITES_META_DICT = dict[str, SPRITE_DICT | SPRITES_GROUP_DICT]
 
 _NO_SPRITE = "no_sprite"
-_FIGURES = "figures"
 _FILE = "file"
 _PIVOT = "pivot"
+
+_FIGURES = "figures"
+
+_UI = "ui"
+_SMALL_BUTTON = "small_button"
 
 SPRITES_FOLDER = Path("data/sprites")
 
@@ -41,6 +45,10 @@ class SpritesLoader:
     def _figures(self) -> SPRITES_GROUP_DICT:
         return self._meta[_FIGURES]
 
+    @property
+    def _ui(self) -> SPRITES_GROUP_DICT:
+        return self._meta[_UI]
+
     def load_no_sprite(self) -> Sprite:
         sprite_info = self._meta[_NO_SPRITE]
         return self._load_sprite(sprite_info)
@@ -48,6 +56,11 @@ class SpritesLoader:
     def load_figure_sprite(self, figure: type[Figure]) -> Sprite:
         sprite_info = self._figures[figure.__name__]
         return self._load_sprite(sprite_info)
+
+    def load_small_button(self) -> Sprite:
+        sprite_info = self._ui[_SMALL_BUTTON]
+        return self._load_sprite(sprite_info)
+
 
     def has_figure(self, figure: type[Figure]) -> bool:
         return figure.__name__ in self._figures
