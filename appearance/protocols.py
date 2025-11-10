@@ -143,7 +143,12 @@ class BordDrawer(ABC):
 
 
 class UiDrawer(ABC):
+    @abstractmethod
     def draw_text(self, text_data: "TextData") -> None:
+        ...
+
+    @abstractmethod
+    def draw_image(self, sprite: Sprite, position: Vector2) -> None:
         ...
 
 

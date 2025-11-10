@@ -3,6 +3,22 @@ import pygame as pg
 
 
 class Vector2(pg.Vector2):
+    @classmethod
+    def zero(cls) -> "Vector2":
+        return cls(0, 0)
+
+    @classmethod
+    def right(cls) -> "Vector2":
+        return cls(1, 0)
+
+    @classmethod
+    def up(cls) -> "Vector2":
+        return cls(0, 1)
+
+    @classmethod
+    def ones(cls) -> "Vector2":
+        return cls(1, 1)
+
     def __str__(self) -> str:
         return f"{type(self).__name__}({self.x}, {self.y})"
 
@@ -54,11 +70,11 @@ class Vector2Int:
         return self.x, self.y
 
     @property
-    def as_float2(self) -> Vector2:
+    def as_vector2(self) -> Vector2:
         return Vector2(*self.tuple)
 
     def scale_rounded(self, ratio: float) -> "Vector2Int":
-        return type(self).from_float2(self.as_float2 * ratio, strict=False)
+        return type(self).from_float2(self.as_vector2 * ratio, strict=False)
 
     def with_x(self, x: int) -> "Vector2Int":
         return type(self)(x, self.y)

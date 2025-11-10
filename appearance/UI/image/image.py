@@ -1,19 +1,24 @@
 from attrs import define, field
 
-from appearance.layer import LayerBuilder
-from mathematics.vector import Vector2
 import appearance.protocols as proto
+from appearance.graphics.sprites import Sprite
+from appearance.input.clicks_catcher.layers.shape_layer import ShapeLayer
+from appearance.layer import LayerBuilder
+from mathematics.rectangle import Rectangle
+from mathematics.vector import Vector2
 
 
 @define
-class TextUi(proto.Layer):
+class ImageUi(proto.Layer):
     _drawer: proto.UiDrawer
-    _data: proto.TextData
+    _sprite: Sprite
+    _position: Vector2
     _layer: proto.Layer = field(init=False)
 
     def __attrs_post_init__(self) -> None:
+        shape = Rectangle(self._position, self._sprite.shape.as_vector2)
         self._layer = (LayerBuilder()
-                       .not_catching()
+                       .set_clicks_catching(ShapeLayer(shape))
                        .set_draw_function(self._draw)
                        .build())
 
@@ -35,4 +40,4 @@ class TextUi(proto.Layer):
         self._layer.clicks_catching_layer.catch(click)
 
     def _draw(self, _: Vector2) -> None:
-        self._drawer.draw_text(self._data)
+        self._drawer.draw_image(self._sprite, self._position)

@@ -25,7 +25,7 @@ class Sprite:
         return self._image
 
     def blit_on(self, screen: pg.Surface, position: Vector2) -> None:
-        screen.blit(self._image, position - self._pivot.as_float2)
+        screen.blit(self._image, position - self._pivot.as_vector2)
 
     def with_pivot(self, pivot: Vector2Int) -> "Sprite":
         return type(self)(self._image, pivot)
