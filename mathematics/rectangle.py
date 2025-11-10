@@ -5,6 +5,11 @@ from mathematics.vector import Vector2
 
 @frozen
 class Rectangle:
+    @classmethod
+    def with_center_at(cls, center: Vector2, shape: Vector2) -> "Rectangle":
+        position = center - shape / 2
+        return cls(position, shape)
+
     _position: Vector2
     _shape: Vector2
 
@@ -15,6 +20,14 @@ class Rectangle:
         right = left + self._shape.x
         bottom = up + self._shape.y
         return left, right, up, bottom
+
+    @property
+    def center(self) -> Vector2:
+        return self._position + self._shape / 2
+
+    @property
+    def left_up_corner(self) -> Vector2:
+        return self._position
 
     def is_surrounding(self, point: Vector2) -> bool:
         left, right, up, bottom = self.left_right_up_bottom

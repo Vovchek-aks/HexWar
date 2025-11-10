@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod, ABCMeta
 from color import Color
 from font import Font
 from mathematics.angle import Angle
+from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2, Vector2Int
 from mathematics.hex_geometry import Neighbor
 from observer import OnEventSubscriber
@@ -316,10 +317,22 @@ class InputActionsReader(ABC):
         ...
 
 
+class UiElement(LayerHolder, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def rectangle(self) -> Rectangle:
+        ...
+
+
 class TextData(ABC):
     @property
     @abstractmethod
     def tuple(self) -> tuple[str, Font, Color]:
+        ...
+
+    @property
+    @abstractmethod
+    def shape(self) -> Vector2:
         ...
 
     @abstractmethod

@@ -4,6 +4,8 @@ import pygame as pg
 from font import Font
 from color import Color
 import appearance.protocols as proto
+from mathematics.rectangle import Rectangle
+from mathematics.vector import Vector2
 
 
 @frozen
@@ -20,6 +22,11 @@ class TextData(proto.TextData):
     @property
     def tuple(self) -> tuple[str, Font, Color]:
         return self.text, self.font, self.color
+
+    @property
+    def shape(self) -> Vector2:
+        image = self.font.render(self.text, True, self.color)
+        return Vector2(image.get_width(), image.get_height())
 
     def with_text(self, text: str) -> "TextData":
         return TextData(text, self.font, self.color)
