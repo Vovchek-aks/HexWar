@@ -6,7 +6,9 @@ import appearance.protocols as proto
 from appearance.graphics.layer_drawers.function_layer_drawer import FunctionLayerDrawer
 from appearance.graphics.layer_drawers.no_draw_layer import NoDrawLayer
 from appearance.input.clicks_catcher.layers.no_catching_layer import NoCatchingLayer
+from appearance.protocols import Click
 from mathematics.vector import Vector2
+from observer import OnEventSubscriber
 from statuses import Status, MISSING
 
 
@@ -18,6 +20,10 @@ class Layer(proto.Layer, proto.LayerHolder):
     @property
     def layer(self) -> proto.Layer:
         return self
+
+    @property
+    def was_clicked(self) -> OnEventSubscriber[Click, None]:
+        return self._clicks_catching_layer.was_clicked
 
     @property
     def drawable_layer(self) -> proto.DrawableLayer:

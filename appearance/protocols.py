@@ -179,12 +179,7 @@ class CellSelector(ABC):
         ...
 
 
-class Click(ABC):
-    @property
-    @abstractmethod
-    def screen_position(self) -> Vector2:
-        ...
-
+class MouseButtons(ABC):
     @property
     @abstractmethod
     def is_left(self) -> bool:
@@ -201,6 +196,18 @@ class Click(ABC):
         ...
 
 
+class Click(ABC):
+    @property
+    @abstractmethod
+    def screen_position(self) -> Vector2:
+        ...
+
+    @property
+    @abstractmethod
+    def buttons(self) -> MouseButtons:
+        ...
+
+
 class DrawableLayer(ABC):
     @abstractmethod
     def draw(self, mouse_position: Vector2) -> None:
@@ -208,6 +215,11 @@ class DrawableLayer(ABC):
 
 
 class ClicksCatchingLayer(ABC):
+    @property
+    @abstractmethod
+    def was_clicked(self) -> OnEventSubscriber[Click, None]:
+        ...
+
     @abstractmethod
     def can_catch(self, click: Click) -> bool:
         ...
@@ -251,25 +263,12 @@ class LayerHolder(ABC):
 class BoardLayer(ClicksCatchingLayer, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def cell_was_clicked_left(self) -> OnEventSubscriber[Vector2Int, None]:
-        ...
-
-    @property
-    @abstractmethod
-    def cell_was_clicked_right(self) -> OnEventSubscriber[Vector2Int, None]:
-        ...
-
-    @property
-    @abstractmethod
-    def cell_was_clicked_middle(self) -> OnEventSubscriber[Vector2Int, None]:
+    def cell_was_clicked(self) -> OnEventSubscriber[Vector2Int, MouseButtons, None]:
         ...
 
 
 class WholeScreenLayer(ClicksCatchingLayer, metaclass=ABCMeta):
-    @property
-    @abstractmethod
-    def click_happened(self) -> OnEventSubscriber[Click, None]:
-        ...
+    ...
 
 
 class LayersContainerLayer(ClicksCatchingLayer, metaclass=ABCMeta):

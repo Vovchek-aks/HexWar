@@ -1,6 +1,6 @@
 from attrs import frozen
 
-from appearance.input.clicks_catcher.click import Buttons, Click
+from appearance.input.clicks_catcher.click import MouseButtons, Click
 from mathematics.vector import Vector2Int
 import appearance.protocols as proto
 
@@ -15,4 +15,4 @@ class NullClickAction(proto.InputAction):
 @frozen
 class CellClickAction(proto.InputAction):
     coord: Vector2Int
-    buttons: Buttons
+    buttons: MouseButtons

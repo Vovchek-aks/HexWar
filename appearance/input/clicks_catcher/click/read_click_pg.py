@@ -2,7 +2,7 @@ import pygame as pg
 
 import appearance.protocols as proto
 from appearance.game_engine.game_engine_pg.events import Events
-from appearance.input.clicks_catcher.click import Click, Buttons
+from appearance.input.clicks_catcher.click import Click, MouseButtons
 from mathematics.vector import Vector2
 from statuses import Status, MISSING
 
@@ -22,5 +22,5 @@ def read_click(events: Events, mouse_position: Vector2) -> proto.Click | Status:
     if not any((is_left, is_right, is_middle)):
         return MISSING
 
-    buttons = Buttons(is_left, is_right, is_middle)
+    buttons = MouseButtons(is_left, is_right, is_middle)
     return Click(mouse_position, buttons)

@@ -1,6 +1,6 @@
 from attrs import define, field
 
-from appearance.input.clicks_catcher.click import Buttons
+from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import InputAction, NullClickAction, CellClickAction
 from core.moves import Relocation, Capture
@@ -40,7 +40,7 @@ class CellSelector(proto.CellSelector):
 
     def _on_action_was_read(self, action: InputAction) -> None:
         match action:
-            case CellClickAction(buttons=Buttons(is_left=True), coord=coord):
+            case CellClickAction(buttons=MouseButtons(is_left=True), coord=coord):
                 self._select_cell(coord)
             case NullClickAction():
                 self._unselect_cell()

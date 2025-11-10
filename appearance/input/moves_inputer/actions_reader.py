@@ -1,6 +1,6 @@
 from attrs import frozen, field
 
-from appearance.input.clicks_catcher.click import Buttons, Click
+from appearance.input.clicks_catcher.click import Click
 from mathematics.vector import Vector2Int
 from observer import Event, OnEventSubscriber
 from appearance.input.moves_inputer.input_actions import InputAction, CellClickAction, NullClickAction
@@ -13,11 +13,9 @@ class InputActionsReader(proto.InputActionsReader):
     def make(cls, board_layer: proto.BoardLayer, null_layer: proto.WholeScreenLayer) -> "InputActionsReader":
         reader = cls()
 
-        board_layer.cell_was_clicked_left.subscribe(reader._on_cell_was_clicked_left)
-        board_layer.cell_was_clicked_right.subscribe(reader._on_cell_was_clicked_right)
-        board_layer.cell_was_clicked_middle.subscribe(reader._on_cell_was_clicked_middle)
+        board_layer.cell_was_clicked.subscribe(reader._on_cell_was_clicked)
 
-        null_layer.click_happened.subscribe(reader._on_null_click)
+        null_layer.was_clicked.subscribe(reader._on_null_click)
 
         return reader
 
@@ -43,14 +41,8 @@ class InputActionsReader(proto.InputActionsReader):
         self._actions.append(action)
         self._action_was_raed.invoke(action)
 
-    def _on_cell_was_clicked_left(self, coord: Vector2Int) -> None:
-        self._add_action(CellClickAction(coord, Buttons(is_left=True)))
-
-    def _on_cell_was_clicked_right(self, coord: Vector2Int) -> None:
-        self._add_action(CellClickAction(coord, Buttons(is_right=True)))
-
-    def _on_cell_was_clicked_middle(self, coord: Vector2Int) -> None:
-        self._add_action(CellClickAction(coord, Buttons(is_middle=True)))
+    def _on_cell_was_clicked(self, coord: Vector2Int, buttons: proto.MouseButtons) -> None:
+        self._add_action(CellClickAction(coord, buttons))
 
     def _on_null_click(self, click: Click) -> None:
         self._add_action(NullClickAction(click))
