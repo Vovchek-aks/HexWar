@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from attrs import frozen, Factory
 
 from appearance.game_engine.game_engine_pg.events import Events
@@ -22,7 +24,10 @@ class ClicksCatcher:
         layer.catch(click)
 
     def get_first_layer_that_cat_catch(self, click: Click) -> proto.Layer | Status:
-        for layer_holder in self._layers:
-            if layer_holder.layer.can_catch(click):
-                return layer_holder.layer
+        for layer in self._get_active_layers():
+            if layer.can_catch(click):
+                return layer
         return MISSING
+
+    def _get_active_layers(self) -> Iterable[proto.Layer]:
+        return (layer.layer for layer in self._layers if layer.layer.is_active)

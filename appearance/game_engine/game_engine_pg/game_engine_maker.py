@@ -52,7 +52,7 @@ def make_game_engine(caption: str, ups: int, screen_shape: Vector2Int, session: 
     draw = DrawMaker(Draw).make(screen, camera, session.board)
 
     layers = [
-        make_ui_layer(UiDrawer(screen)),
+        make_ui_layer(UiDrawer(screen), screen_shape),
         Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]

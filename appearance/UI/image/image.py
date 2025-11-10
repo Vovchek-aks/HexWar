@@ -10,19 +10,20 @@ from mathematics.vector import Vector2, Vector2Int
 
 @define
 class ImageUi(proto.UiElement):
-    _drawer: proto.UiDrawer
-    _sprite: Sprite
-    _position: Vector2
-    _rectangle: Rectangle = field(init=False)
-    _layer: proto.Layer = field(init=False)
-
-    def __attrs_post_init__(self) -> None:
-        self._sprite = self._sprite.with_pivot(Vector2Int.zero())
-        self._rectangle = Rectangle.with_center_at(self._position, self._sprite.shape.as_vector2)
+    @classmethod
+    def make(cls, drawer: proto.UiDrawer, position: Vector2, sprite: Sprite) -> "ImageUi":
+        rectangle = Rectangle.with_center_at(position, sprite.shape.as_vector2)
+        self = cls(drawer, sprite.with_pivot(Vector2Int.zero()), rectangle)
         self._layer = (LayerBuilder()
                        .set_clicks_catching(ShapeLayer(self._rectangle))
                        .set_draw_function(self._draw)
                        .build())
+        return self
+
+    _drawer: proto.UiDrawer
+    _sprite: Sprite
+    _rectangle: Rectangle
+    _layer: proto.Layer = field(init=False)
 
     @property
     def layer(self) -> proto.Layer:

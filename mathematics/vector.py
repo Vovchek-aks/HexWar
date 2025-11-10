@@ -45,7 +45,7 @@ class Vector2Int:
         return cls(1, 1)
 
     @classmethod
-    def from_float2(cls, vector: Vector2, *, strict: bool = True) -> "Vector2Int":
+    def from_vector2(cls, vector: Vector2, *, strict: bool = True) -> "Vector2Int":
         x = vector.x
         y = vector.y
 
@@ -74,7 +74,7 @@ class Vector2Int:
         return Vector2(*self.tuple)
 
     def scale_rounded(self, ratio: float) -> "Vector2Int":
-        return type(self).from_float2(self.as_vector2 * ratio, strict=False)
+        return type(self).from_vector2(self.as_vector2 * ratio, strict=False)
 
     def with_x(self, x: int) -> "Vector2Int":
         return type(self)(x, self.y)

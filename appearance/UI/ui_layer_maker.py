@@ -1,28 +1,35 @@
 from appearance.UI.button import ButtonUi
 from appearance.UI.text import TextUi, TextData
-from appearance.UI.image import ImageUi
 from appearance.graphics.sprites import SpritesLoader
-from color import Color
 from appearance.UI.drawer import UiDrawer
 from appearance.layer import Layer
 from mathematics.vector import Vector2, Vector2Int
 
 
-def make_ui_layer(drawer: UiDrawer) -> Layer:
-    test_sprite = SpritesLoader.from_meta().load_no_sprite().with_pivot(Vector2Int.zero()).reshape(Vector2Int(120, 40))
+def make_ui_layer(drawer: UiDrawer, screen_shape: Vector2Int) -> Layer:
+    text = TextUi.make(drawer,
+                       Vector2(80, 40),
+                       TextData.debug("Your turn"))
 
-    text = TextUi(drawer, TextData.with_debug_font("test", 40, Color(255, 255, 255)), Vector2(50, 50))
-
-    image = ImageUi(drawer, test_sprite, Vector2(80, 100))
-
+    button_background = (SpritesLoader
+                         .from_meta()
+                         .load_no_sprite()
+                         .with_pivot(Vector2Int.zero())
+                         .reshape(Vector2Int(120, 40)))
+    button_position = screen_shape - button_background.shape.scale_rounded(.5) - Vector2Int(30, 30)
     button = ButtonUi.make(drawer,
-                           test_sprite,
-                           TextData.with_debug_font("click me", 40, Color(255, 255, 255)), Vector2(80, 170))
-    button.layer.was_clicked.subscribe(lambda click: text.set_text("Батон"))
+                           button_position.as_vector2,
+                           button_background,
+                           TextData.debug("End turn"))
+
+    def on_end_turn_was_clicked() -> None:
+        text.set_text("Yellow player's turn")
+        button.layer.set_activity(False)
+
+    button.layer.was_clicked.subscribe(lambda click: on_end_turn_was_clicked())
 
     layers = [
         text,
-        image,
         button
     ]
     return Layer.as_multiple(layers)

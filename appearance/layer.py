@@ -14,7 +14,7 @@ from observer import OnEventSubscriber
 from statuses import Status, MISSING
 
 
-@frozen
+@define
 class Layer(proto.Layer, proto.LayerHolder):
     @classmethod
     def as_multiple(cls, layers: list[proto.LayerHolder]) -> "Layer":
@@ -23,6 +23,7 @@ class Layer(proto.Layer, proto.LayerHolder):
 
     _drawable_layer: proto.DrawableLayer
     _clicks_catching_layer: proto.ClicksCatchingLayer
+    _is_active: bool = True
 
     @property
     def layer(self) -> proto.Layer:
@@ -39,6 +40,13 @@ class Layer(proto.Layer, proto.LayerHolder):
     @property
     def clicks_catching_layer(self) -> proto.ClicksCatchingLayer:
         return self._clicks_catching_layer
+
+    @property
+    def is_active(self) -> bool:
+        return self._is_active
+
+    def set_activity(self, activity: bool) -> None:
+        self._is_active = activity
 
     def draw(self, mouse_position: Vector2) -> None:
         self._drawable_layer.draw(mouse_position)

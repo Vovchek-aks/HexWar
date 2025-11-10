@@ -1,4 +1,4 @@
-from attrs import frozen, field
+from attrs import frozen
 
 import appearance.protocols as proto
 from appearance.UI.image import ImageUi
@@ -12,9 +12,9 @@ from mathematics.vector import Vector2
 @frozen
 class ButtonUi(proto.UiElement):
     @classmethod
-    def make(cls, drawer: proto.UiDrawer, sprite: Sprite, text_data: proto.TextData, position: Vector2) -> "ButtonUi":
-        image = ImageUi(drawer, sprite, position)
-        text = TextUi(drawer, text_data, position)
+    def make(cls, drawer: proto.UiDrawer, position: Vector2, sprite: Sprite, text_data: proto.TextData) -> "ButtonUi":
+        image = ImageUi.make(drawer, position, sprite)
+        text = TextUi.make(drawer, position, text_data)
 
         layers = [
             text,

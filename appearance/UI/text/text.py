@@ -9,18 +9,24 @@ import appearance.protocols as proto
 
 @define
 class TextUi(proto.UiElement):
+    @classmethod
+    def make(cls, drawer: proto.UiDrawer, position: Vector2, text_data: proto.TextData) -> "TextUi":
+        self = cls(drawer,
+                   text_data,
+                   Rectangle.with_center_at(position, text_data.shape))
+
+        layer = (LayerBuilder()
+                 .not_catching()
+                 .set_draw_function(self._draw)
+                 .build())
+
+        self._layer = layer
+        return self
+
     _drawer: proto.UiDrawer
     _data: proto.TextData
-    _position: Vector2
-    _rectangle: Rectangle = field(init=False)
+    _rectangle: Rectangle
     _layer: proto.Layer = field(init=False)
-
-    def __attrs_post_init__(self) -> None:
-        self._rectangle = Rectangle.with_center_at(self._position, self._data.shape)
-        self._layer = (LayerBuilder()
-                       .not_catching()
-                       .set_draw_function(self._draw)
-                       .build())
 
     @property
     def layer(self) -> proto.Layer:

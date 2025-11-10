@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from attrs import frozen
 
 from mathematics.vector import Vector2
@@ -9,5 +11,8 @@ class LayersDrawer(proto.DrawableLayer):
     _layers: list[proto.LayerHolder]
 
     def draw(self, mouse_position: Vector2) -> None:
-        for layer_holder in self._layers:
-            layer_holder.layer.draw(mouse_position)
+        for layer in self._get_active_layers():
+            layer.draw(mouse_position)
+
+    def _get_active_layers(self) -> Iterable[proto.Layer]:
+        return (layer.layer for layer in self._layers if layer.layer.is_active)

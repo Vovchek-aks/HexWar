@@ -241,6 +241,15 @@ class Layer(DrawableLayer, ClicksCatchingLayer):
     def clicks_catching_layer(self) -> ClicksCatchingLayer:
         ...
 
+    @property
+    @abstractmethod
+    def is_active(self) -> bool:
+        ...
+
+    @abstractmethod
+    def set_activity(self, activity: bool) -> None:
+        ...
+
     @abstractmethod
     def draw(self, mouse_position: Vector2) -> None:
         ...
