@@ -8,7 +8,7 @@ from statuses import MISSING
 @frozen
 class LayersContainerLayer(proto.LayersContainerLayer):
     @classmethod
-    def make(cls, layers: list[proto.Layer]) -> "LayersContainerLayer":
+    def make(cls, layers: list[proto.LayerHolder]) -> "LayersContainerLayer":
         return cls(ClicksCatcher(layers))
 
     _clicks_catcher: ClicksCatcher

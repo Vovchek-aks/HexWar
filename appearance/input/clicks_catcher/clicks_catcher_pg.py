@@ -1,15 +1,15 @@
 from attrs import frozen, Factory
 
 from appearance.game_engine.game_engine_pg.events import Events
-from appearance.protocols import ClicksCatchingLayer as Layer
 from mathematics.vector import Vector2
 from statuses import MISSING, Status
 from .click import read_click, Click
+import appearance.protocols as proto
 
 
 @frozen
 class ClicksCatcher:
-    _layers: list[Layer] = Factory(list)
+    _layers: list[proto.LayerHolder] = Factory(list)
 
     def update(self, events: Events, mouse_position: Vector2) -> None:
         if (click := read_click(events, mouse_position)) is MISSING:
@@ -21,8 +21,8 @@ class ClicksCatcher:
         layer = self.get_first_layer_that_cat_catch(click)
         layer.catch(click)
 
-    def get_first_layer_that_cat_catch(self, click: Click) -> Layer | Status:
-        for layer in self._layers:
-            if layer.can_catch(click):
-                return layer
+    def get_first_layer_that_cat_catch(self, click: Click) -> proto.Layer | Status:
+        for layer_holder in self._layers:
+            if layer_holder.layer.can_catch(click):
+                return layer_holder.layer
         return MISSING

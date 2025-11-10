@@ -241,6 +241,13 @@ class Layer(DrawableLayer, ClicksCatchingLayer):
         ...
 
 
+class LayerHolder(ABC):
+    @property
+    @abstractmethod
+    def layer(self) -> Layer:
+        ...
+
+
 class BoardLayer(ClicksCatchingLayer, metaclass=ABCMeta):
     @property
     @abstractmethod

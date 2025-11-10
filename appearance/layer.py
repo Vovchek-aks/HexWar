@@ -11,9 +11,13 @@ from statuses import Status, MISSING
 
 
 @frozen
-class Layer(proto.Layer):
+class Layer(proto.Layer, proto.LayerHolder):
     _drawable_layer: proto.DrawableLayer
     _clicks_catching_layer: proto.ClicksCatchingLayer
+
+    @property
+    def layer(self) -> proto.Layer:
+        return self
 
     @property
     def drawable_layer(self) -> proto.DrawableLayer:
