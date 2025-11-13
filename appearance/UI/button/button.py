@@ -8,7 +8,7 @@ from appearance.layer import Layer
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2, Vector2Int
 
-MARGIN = Vector2Int(40, 10)
+MARGIN = Vector2Int(10, 10)
 
 
 @frozen

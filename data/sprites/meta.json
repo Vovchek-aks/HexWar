@@ -44,8 +44,8 @@
     }
   },
   "ui": {
-    "small_button": {
-      "file": "ui/small_button.png",
+    "button_2_to_3": {
+      "file": "ui/btn_216_144.png",
       "pivot": [
         16,
         16
