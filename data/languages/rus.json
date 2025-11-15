@@ -1,0 +1,16 @@
+{
+  "info": {
+    "name": "Русский"
+  },
+  "messages": {
+    "ui": {
+      "END_TURN_BTN": "Завершить ход",
+      "PLAYERS_TURN_TEXT": "{player} ходит"
+    },
+    "figures": {
+      "Infantry": "Пехота",
+      "Tank": "Танк",
+      "Artillery": "Артиллерия"
+    }
+  }
+}

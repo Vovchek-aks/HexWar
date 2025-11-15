@@ -1,0 +1,16 @@
+{
+  "info": {
+    "name": "English"
+  },
+  "messages": {
+    "ui": {
+      "END_TURN_BTN": "End turn",
+      "PLAYERS_TURN_TEXT": "{player}'s turn"
+    },
+    "figures": {
+      "Infantry": "Infantry",
+      "Tank": "Tank",
+      "Artillery": "Artillery"
+    }
+  }
+}
