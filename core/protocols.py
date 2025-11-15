@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod, ABCMeta
-from types import UnionType
+from types import UnionType, TracebackType
 from typing import ClassVar, Iterable
 
 from observer import OnEventSubscriber
@@ -9,15 +9,72 @@ from color import Color
 
 
 class Master(ABC):
+    @property
     @abstractmethod
-    def is_turn_of(self, player: "Player") -> bool:
+    def turn_has_passed(self) -> OnEventSubscriber["Player", None]:
+        ...
+
+    @property
+    @abstractmethod
+    def current_player(self) -> "Player":
+        ...
+
+    @abstractmethod
+    def pass_turn_to_next_player(self) -> None:
+        ...
+
+
+class PlayerData(ABC):
+    @property
+    @abstractmethod
+    def color(self) -> Color:
+        ...
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        ...
+
+
+class PlayerInputer(ABC):
+    @property
+    @abstractmethod
+    def move_was_inputted(self) -> OnEventSubscriber["ValidMove", None]:
+        ...
+
+    @abstractmethod
+    def update(self, session: "GameSession") -> None:
+        ...
+
+    @abstractmethod
+    def wants_to_end_turn(self) -> bool:
+        ...
+
+    @abstractmethod
+    def __enter__(self) -> "PlayerInputer":
+        ...
+
+    @abstractmethod
+    def __exit__(self,
+                 exc_type: type[BaseException],
+                 exc_val: BaseException,
+                 exc_tb: TracebackType) -> bool | None:
         ...
 
 
 class Player(ABC):
     @property
     @abstractmethod
-    def color(self) -> Color:
+    def data(self) -> PlayerData:
+        ...
+
+    @property
+    @abstractmethod
+    def inputer(self) -> PlayerInputer:
+        ...
+
+    @abstractmethod
+    def change_inputer(self, inputer: PlayerInputer) -> None:
         ...
 
 

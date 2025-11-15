@@ -40,6 +40,9 @@ class Capture(_FiguresRelocation):
         to_cell = board[self.to_coord]
         figure = from_cell.figure
 
+        if from_cell.owner != session.master.current_player:
+            return INVALID
+
         if from_cell.owner == to_cell.owner:
             return INVALID
 
@@ -69,6 +72,9 @@ class Relocation(_FiguresRelocation):
         to_cell = board[self.to_coord]
         figure = from_cell.figure
 
+        if from_cell.owner != session.master.current_player:
+            return INVALID
+
         if from_cell.owner != to_cell.owner:
             return INVALID
 
@@ -95,6 +101,9 @@ class Creation(proto.Move):
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
         board = session.board
         to_cell = board[self.to_coord]
+
+        if to_cell.owner != session.master.current_player:
+            return INVALID
 
         if not to_cell.is_empty:
             return INVALID

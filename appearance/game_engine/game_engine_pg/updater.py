@@ -1,3 +1,5 @@
+from typing import Iterator
+
 from attrs import frozen
 
 from appearance.game_engine.game_engine_pg.user_input import UserInput
@@ -9,14 +11,17 @@ from appearance.layer import Layer
 @frozen
 class Updater:
     @classmethod
-    def make(cls, camera_mover: CameraMover, layers: list[Layer]) -> "Updater":
+    def make(cls, camera_mover: CameraMover, layers: list[Layer], player_turner: Iterator[None]) -> "Updater":
         clicks_catcher = ClicksCatcher(layers)
         return cls(camera_mover,
-                   clicks_catcher)
+                   clicks_catcher,
+                   player_turner)
 
     _camera_mover: CameraMover
     _clicks_catcher: ClicksCatcher
+    _player_turner: Iterator[None]
 
     def update(self, user_input: UserInput) -> None:
         self._camera_mover.update(user_input.events, user_input.keys, user_input.dt)
         self._clicks_catcher.update(user_input.events, user_input.mouse_position)
+        next(self._player_turner)

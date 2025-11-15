@@ -1,5 +1,5 @@
 from appearance.game_engine import make_game_engine
-from core.game_session import GameSession
+from core.game_session import test_map
 from mathematics.vector import Vector2Int
 
 SCREEN_SHAPE = Vector2Int(1080, 720)
@@ -8,9 +8,11 @@ CAPTION = "HexWar"
 
 
 def main() -> None:
-    session = GameSession.test_map(board_size=10)
+    session = test_map(board_size=10)
+    engine, user_inputer = make_game_engine(CAPTION, UPS, SCREEN_SHAPE, session)
+    session.master.current_player.change_inputer(user_inputer)
 
-    with make_game_engine(CAPTION, UPS, SCREEN_SHAPE, session) as engine:
+    with engine:
         engine.run()
 
 

@@ -7,6 +7,7 @@ from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.layer import Layer
+from core.player.player_moves_maker import player_moves_maker
 from mathematics.vector import Vector2Int
 from appearance.graphics.camera.camera import Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
@@ -22,10 +23,14 @@ from appearance.game_engine.game_engine_pg.events import UpdatableEvents
 from appearance.game_engine.game_engine_pg.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_pg.timer import Timer
 from appearance.input.camera_mover import CameraMover
+from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder, EventPlayerInputer
 from core.protocols import GameSession
 
 
-def make_game_engine(caption: str, ups: int, screen_shape: Vector2Int, session: GameSession) -> GameEngine:
+def make_game_engine(caption: str,
+                     ups: int,
+                     screen_shape: Vector2Int,
+                     session: GameSession) -> tuple[GameEngine, EventPlayerInputer]:
     pg.init()
     screen = pg.display.set_mode(screen_shape.tuple)
     pg.display.set_caption(caption)
@@ -45,19 +50,22 @@ def make_game_engine(caption: str, ups: int, screen_shape: Vector2Int, session: 
 
     moves_maker = MovesMaker(session)
     cell_selector = CellSelector.make(actions_reader, moves_maker)
-
     moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
-    moves_inputer.move_was_raed.subscribe(moves_maker.make)
+
+    user_inputer_builder = EventPlayerInputerBuilder()
+    user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
+    ui_layer = make_ui_layer(UiDrawer(screen), screen_shape, user_inputer_builder, session)
 
     draw = DrawMaker(Draw).make(screen, camera, session.board)
 
     layers = [
-        make_ui_layer(UiDrawer(screen), screen_shape),
+        ui_layer,
         Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    updater = Updater.make(camera_mover, layers)
+    updater = Updater.make(camera_mover, layers, player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
 
-    return GameEngine(caption, timer, drawer, updater, UpdatableEvents.new())
+    return (GameEngine(caption, timer, drawer, updater, UpdatableEvents.new()),
+            user_inputer_builder.build())

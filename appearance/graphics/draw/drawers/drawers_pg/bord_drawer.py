@@ -58,7 +58,7 @@ class BordDrawer(proto.BordDrawer):
         self.draw_hex_background_no_auto_color(cell_coord, self._get_hex_color(cell_coord))
 
     def _get_hex_color(self, cell_coord: Vector2Int) -> pg.Color:
-        return self._board[cell_coord].owner.color
+        return self._board[cell_coord].owner.data.color
 
     def draw_hex_background_no_auto_color(self, cell_coord: Vector2Int, color: pg.Color) -> None:
         world_position = get_world_position(cell_coord)
