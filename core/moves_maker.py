@@ -1,7 +1,7 @@
 from attrs import frozen, field
 
 import core.protocols as proto
-from core.moves import Relocation, Capture
+from core.moves import Relocation, Capture, Creation
 from exceptions import NotImplementedMove
 from observer import Event, OnEventSubscriber
 
@@ -30,6 +30,9 @@ class MovesMaker(proto.MovesMaker):
                 figure = self._session.board[move_move.from_coord].figure
                 self._session.figures_budget.add(figure, figure.get_cost_of(move_move, board))
 
+                self._session.make(move)
+                self._board_move_was_made.invoke(move)
+            case Creation():
                 self._session.make(move)
                 self._board_move_was_made.invoke(move)
             case _:

@@ -1,7 +1,7 @@
 import pygame as pg
 
 from appearance.UI.drawer import UiDrawer
-from appearance.UI.ui_layer_maker import make_ui_layer
+from appearance.UI.ui_layer_maker import UiLayerMaker
 from appearance.game_engine.game_engine_pg.game_engine import GameEngine
 from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
@@ -24,7 +24,8 @@ from appearance.game_engine.game_engine_pg.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_pg.timer import Timer
 from appearance.input.camera_mover import CameraMover
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder, EventPlayerInputer
-from core.protocols import GameSession
+from core.protocols import GameSession, Figure
+from observer import Event
 
 
 def make_game_engine(caption: str,
@@ -46,7 +47,8 @@ def make_game_engine(caption: str,
     board_layer = BoardLayer(hovered_cell_getter)
     null_layer = WholeScreenLayer()
 
-    actions_reader = InputActionsReader.make(board_layer, null_layer)
+    button_press_action_happened = Event[type[Figure], None]()
+    actions_reader = InputActionsReader.make(board_layer, null_layer, button_press_action_happened.subscriber)
 
     moves_maker = MovesMaker(session)
     cell_selector = CellSelector.make(actions_reader, moves_maker)
@@ -54,7 +56,13 @@ def make_game_engine(caption: str,
 
     user_inputer_builder = EventPlayerInputerBuilder()
     user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
-    ui_layer = make_ui_layer(UiDrawer(screen), screen_shape, user_inputer_builder, session)
+    ui_layer = (UiLayerMaker(UiDrawer(screen),
+                             screen_shape,
+                             session,
+                             cell_selector,
+                             button_press_action_happened,
+                             moves_maker)
+                .make(user_inputer_builder))
 
     draw = DrawMaker(Draw).make(screen, camera, session.board)
 

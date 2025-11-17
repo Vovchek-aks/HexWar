@@ -10,7 +10,9 @@
     "figures": {
       "Infantry": "Пехота",
       "Tank": "Танк",
-      "Artillery": "Артиллерия"
+      "Artillery": "Артиллерия",
+      "Motorization": "Мотор-пехота",
+      "Bunker": "Бункер"
     }
   }
 }

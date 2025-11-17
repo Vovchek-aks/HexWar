@@ -9,14 +9,14 @@ from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2, Vector2Int
 from observer import Event, OnEventSubscriber
 
-MARGIN = Vector2Int(10, 10)
+MARGIN = Vector2(10, 10)
 
 
 @frozen
 class ButtonUi(proto.UiElement):
     @classmethod
     def make(cls, drawer: proto.UiDrawer, position: Vector2, sprite: Sprite, text_data: proto.TextData) -> "ButtonUi":
-        sprite = sprite.reshape(Vector2Int.from_vector2(text_data.shape) + MARGIN * 2)
+        sprite = sprite.reshape(Vector2Int.from_vector2(get_button_shape(text_data.shape)))
         image = ImageUi.make(drawer, position, sprite)
         text = TextUi.make(drawer, position, text_data)
 
@@ -49,3 +49,7 @@ class ButtonUi(proto.UiElement):
 
     def _on_layer_was_clicked(self, _: proto.Click) -> None:
         self._was_clicked.invoke()
+
+
+def get_button_shape(text_shape: Vector2) -> Vector2:
+    return text_shape + MARGIN * 2

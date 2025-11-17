@@ -50,6 +50,9 @@ class Language:
     def _ui(self) -> LANGUAGE_SECTION_DICT:
         return self._messages[_UI]
 
+    def get_figure_name(self, figure: type[Figure]) -> str:
+        return self._figures.get(figure.__name__, figure.__name__)
+
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]
 

@@ -17,7 +17,7 @@ class TextData(proto.TextData):
 
     @classmethod
     def debug(cls, text: str) -> "TextData":
-        return cls.with_debug_font(text, 40, Color(255, 255, 255))
+        return cls.with_debug_font(text, 30, Color(255, 255, 255))
 
     text: str
     font: Font

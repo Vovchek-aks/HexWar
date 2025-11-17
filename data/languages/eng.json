@@ -10,7 +10,9 @@
     "figures": {
       "Infantry": "Infantry",
       "Tank": "Tank",
-      "Artillery": "Artillery"
+      "Artillery": "Artillery",
+      "Motorization": "Motorization",
+      "Bunker": "Bunker"
     }
   }
 }

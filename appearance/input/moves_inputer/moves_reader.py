@@ -3,8 +3,8 @@ from typing import Callable
 from attrs import frozen
 
 from appearance.input.clicks_catcher.click import MouseButtons
-from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction
-from core.moves import Relocation, Capture
+from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction, CreationButtonPressAction
+from core.moves import Relocation, Capture, Creation
 from core.protocols import ValidMove, GameSession
 from statuses import Status, INVALID, MISSING
 import appearance.protocols as proto
@@ -20,6 +20,7 @@ class MoveReaders:
         return [
             self._try_read_relocation_move,
             self._try_read_capture_move,
+            self._try_read_creation_move,
         ]
 
     def _try_read_relocation_move(self, actions: list[InputAction]) -> ValidMove | Status:
@@ -42,6 +43,17 @@ class MoveReaders:
                     return INVALID
 
                 return Capture(coord, to_coord).validate(self._session)
+
+            case _:
+                return INVALID
+
+    def _try_read_creation_move(self, actions: list[InputAction]) -> ValidMove | Status:
+        match actions:
+            case [CreationButtonPressAction(figure=figure)]:
+                if (coord := self._cell_selector.get_coord()) is MISSING:
+                    return INVALID
+
+                return Creation(figure, coord).validate(self._session)
 
             case _:
                 return INVALID

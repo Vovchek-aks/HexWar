@@ -286,11 +286,6 @@ class LayersContainerLayer(ClicksCatchingLayer, metaclass=ABCMeta):
 
 
 class MovesInputer(ABC):
-    @classmethod
-    @abstractmethod
-    def make(cls, reader: "InputActionsReader", board: proto.Board, cell_selector: CellSelector) -> "MovesInputer":
-        ...
-
     @property
     @abstractmethod
     def move_was_raed(self) -> OnEventSubscriber[proto.ValidMove, None]:
@@ -302,11 +297,6 @@ class InputAction(ABC):
 
 
 class InputActionsReader(ABC):
-    @classmethod
-    @abstractmethod
-    def make(cls, board_layer: BoardLayer, null_layer: WholeScreenLayer) -> "InputActionsReader":
-        ...
-
     @property
     @abstractmethod
     def action_was_raed(self) -> OnEventSubscriber[InputAction, None]:

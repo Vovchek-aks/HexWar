@@ -3,6 +3,7 @@ from attrs import frozen
 from appearance.input.clicks_catcher.click import MouseButtons, Click
 from mathematics.vector import Vector2Int
 import appearance.protocols as proto
+from core.protocols import Figure
 
 InputAction = proto.InputAction
 
@@ -16,3 +17,8 @@ class NullClickAction(proto.InputAction):
 class CellClickAction(proto.InputAction):
     coord: Vector2Int
     buttons: MouseButtons
+
+
+@frozen
+class CreationButtonPressAction(proto.InputAction):
+    figure: type[Figure]

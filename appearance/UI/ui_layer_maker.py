@@ -1,55 +1,126 @@
-from appearance.UI.button import ButtonUi
+from attrs import frozen
+
+from appearance.UI.button import ButtonUi, get_button_shape
 from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
 from appearance.language import Language
 from appearance.layer import Layer
+from appearance.protocols import CellSelector
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
-from core.protocols import GameSession, Player
+from core.protocols import GameSession, Player, MovesMaker, ValidMove
 from mathematics.vector import Vector2, Vector2Int
+import core.figures as fig
+from observer import Event
+from statuses import MISSING
 
 
-def make_ui_layer(drawer: UiDrawer,
-                  screen_shape: Vector2Int,
-                  user_inputer_builder: EventPlayerInputerBuilder,
-                  session: GameSession) -> Layer:
-    language = Language.from_meta()
+@frozen
+class UiLayerMaker:
+    _drawer: UiDrawer
+    _screen_shape: Vector2Int
+    _session: GameSession
+    _cell_selector: CellSelector
+    _button_press_action_happened: Event[type[fig.Figure], None]
+    _moves_maker: MovesMaker
 
-    player_name = session.master.current_player.data.name
-    text = TextUi.make(drawer,
-                       Vector2(80, 40),
-                       TextData.debug(language.get_players_turn_message(player_name)))
+    def make(self, user_inputer_builder: EventPlayerInputerBuilder) -> Layer:
+        language = Language.from_meta()
 
-    end_turn_button = make_end_turn_button(drawer, screen_shape, language)
+        player_name = self._session.master.current_player.data.name
+        text = TextUi.make(self._drawer,
+                           Vector2(80, 40),
+                           TextData.debug(language.get_players_turn_message(player_name)))
 
-    user_inputer_builder.set_need_to_end_turn(end_turn_button.was_clicked)
+        end_turn_button = self._make_end_turn_button()
 
-    def on_turn_passed(player: Player) -> None:
-        name = player.data.name
-        text.set_text(language.get_players_turn_message(name))
-        end_turn_button.layer.set_activity(_is_player_need_ui(player))
+        user_inputer_builder.set_need_to_end_turn(end_turn_button.was_clicked)
 
-    session.master.turn_has_passed.subscribe(on_turn_passed)
+        def on_turn_passed(player: Player) -> None:
+            name = player.data.name
+            text.set_text(language.get_players_turn_message(name))
+            end_turn_button.layer.set_activity(self._is_player_need_ui(player))
 
-    layers = [
-        text,
-        end_turn_button
-    ]
-    return Layer.as_multiple(layers)
+        self._session.master.turn_has_passed.subscribe(on_turn_passed)
 
+        figures_making_buttons = self._make_figures_creation_buttons()
 
-def make_end_turn_button(drawer: UiDrawer, screen_shape: Vector2Int, language: Language) -> ButtonUi:
-    button_background = (SpritesLoader
-                         .from_meta()
-                         .load_button_2_to_3())
-    button_text = TextData.debug(language.get_end_turn_message())
-    button_position = screen_shape.as_vector2 - button_text.shape / 2 - Vector2(30, 30)
-    button = ButtonUi.make(drawer,
-                           button_position,
-                           button_background,
-                           button_text)
-    return button
+        layers = [
+            text,
+            figures_making_buttons,
+            end_turn_button,
+        ]
+        return Layer.as_multiple(layers)
 
+    def _make_end_turn_button(self) -> ButtonUi:
+        button_background = (SpritesLoader
+                             .from_meta()
+                             .load_button_2_to_3())
+        button_text = TextData.debug(Language.from_meta().get_end_turn_message())
+        button_position = self._screen_shape.as_vector2 - button_text.shape / 2 - Vector2(30, 30)
+        button = ButtonUi.make(self._drawer,
+                               button_position,
+                               button_background,
+                               button_text)
+        return button
 
-def _is_player_need_ui(player: Player) -> bool:
-    return player.data.name == "Red"
+    def _make_figures_creation_buttons(self) -> Layer:
+        buttons = [
+            self._make_figure_creation_button(Vector2(100, 250), fig.Bunker),
+
+            self._make_figure_creation_button(Vector2(100, 190), fig.Motorization),
+            self._make_figure_creation_button(Vector2(100, 140), fig.Tank),
+            self._make_figure_creation_button(Vector2(100, 90), fig.Artillery),
+            self._make_figure_creation_button(Vector2(100, 40), fig.Infantry),
+        ]
+        layer = Layer.as_multiple(buttons)
+        layer.set_activity(False)
+
+        self._cell_selector.cell_was_selected.subscribe(
+            lambda coord: layer.set_activity(self._is_figures_making_buttons_needed(coord)))
+        self._cell_selector.cell_was_unselected.subscribe(lambda: layer.set_activity(False))
+
+        def on_board_move_was_made(_: ValidMove) -> None:
+            if (coord := self._cell_selector.get_coord()) is MISSING:
+                layer.set_activity(False)
+                return
+
+            return layer.set_activity(self._is_figures_making_buttons_needed(coord))
+
+        self._moves_maker.board_move_was_made.subscribe(on_board_move_was_made)
+
+        return layer
+
+    def _make_figure_creation_button(self, delta_position: Vector2, figure: type[fig.Figure]) -> ButtonUi:
+        background = (SpritesLoader
+                      .from_meta()
+                      .load_button_2_to_3())
+
+        text = TextData.debug(Language.from_meta().get_figure_name(figure))
+        position = self._get_position_from_left_bottom(delta_position)
+        button = ButtonUi.make(self._drawer,
+                               position,
+                               background,
+                               text)
+
+        button.was_clicked.subscribe(lambda: self._button_press_action_happened.invoke(figure))
+        return button
+
+    def _get_position_from_left_bottom(self, delta: Vector2) -> Vector2:
+        position = Vector2(0, self._screen_shape.y)
+        position += Vector2(delta.x, -delta.y)
+        return position
+
+    def _is_figures_making_buttons_needed(self, cell_coord: Vector2Int) -> bool:
+        cell = self._session.board[cell_coord]
+        player = self._session.master.current_player
+        is_needed_by_current_player = cell.owner is player and cell.is_empty
+        return is_needed_by_current_player and self._is_current_player_need_ui()
+
+    def _is_current_player_need_ui(self) -> bool:
+        player = self._session.master.current_player
+        return self._is_player_need_ui(player)
+
+    @staticmethod
+    def _is_player_need_ui(player: Player) -> bool:
+        return player.data.name == "Red"
