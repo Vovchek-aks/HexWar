@@ -1,6 +1,6 @@
 from attrs import frozen
 
-from appearance.UI.button import ButtonUi, get_button_shape
+from appearance.UI.button import ButtonUi
 from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
@@ -8,7 +8,8 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.protocols import CellSelector
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
-from core.protocols import GameSession, Player, MovesMaker, ValidMove
+from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile
+from core.resources import Dollars
 from mathematics.vector import Vector2, Vector2Int
 import core.figures as fig
 from observer import Event
@@ -27,29 +28,39 @@ class UiLayerMaker:
     def make(self, user_inputer_builder: EventPlayerInputerBuilder) -> Layer:
         language = Language.from_meta()
 
-        player_name = self._session.master.current_player.data.name
-        text = TextUi.make(self._drawer,
-                           Vector2(80, 40),
-                           TextData.debug(language.get_players_turn_message(player_name)))
+        players_turn = TextUi.make(self._drawer,
+                                   Vector2(110, 40),
+                                   TextData.debug("-"))
+
+        dollars = TextUi.make(self._drawer,
+                              Vector2(110, 80),
+                              TextData.debug("-"))
+
+        def on_resources_had_changed(resources: ResourcesStockpile) -> None:
+            dollars.set_text(f"{language.get_resource_name(Dollars)}: {resources.get(Dollars).amount}")
+
+        self._session.resources.has_changed.subscribe(on_resources_had_changed)
 
         end_turn_button = self._make_end_turn_button()
-
         user_inputer_builder.set_need_to_end_turn(end_turn_button.was_clicked)
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
-            text.set_text(language.get_players_turn_message(name))
+            players_turn.set_text(language.get_players_turn_message(name))
             end_turn_button.layer.set_activity(self._is_player_need_ui(player))
 
         self._session.master.turn_has_passed.subscribe(on_turn_passed)
 
-        figures_making_buttons = self._make_figures_creation_buttons()
-
         layers = [
-            text,
-            figures_making_buttons,
+            players_turn,
+            dollars,
+            self._make_figures_creation_buttons(),
             end_turn_button,
         ]
+
+        on_turn_passed(self._session.master.current_player)
+        on_resources_had_changed(self._session.resources)
+
         return Layer.as_multiple(layers)
 
     def _make_end_turn_button(self) -> ButtonUi:

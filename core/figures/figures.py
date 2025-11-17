@@ -7,6 +7,7 @@ from core.cells import Cells
 from core.figures.figures_flags import Flags, Static, Creatable
 from core.figures.movable_flag import MovableBuilder
 from core.moves import Relocation, Capture
+from core.resources import Dollars
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 
@@ -34,7 +35,7 @@ class Empty(_Figure):
 
 class Settlement(_Figure):
     FLAGS = Flags.new(Static(),
-                      Creatable())
+                      Creatable(1))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -48,7 +49,7 @@ class Settlement(_Figure):
 
 class Town(_Figure):
     FLAGS = Flags.new(Static(),
-                      Creatable())
+                      Creatable(1))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -75,7 +76,7 @@ class Capital(_Figure):
 
 class Bunker(_Figure):
     FLAGS = Flags.new(Static(),
-                      Creatable())
+                      Creatable(Dollars(1_000_000)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -92,7 +93,7 @@ class Infantry(_Figure):
                       .can_move_to_neighbor()
                       .constant_strength(2)
                       .build(),
-                      Creatable())
+                      Creatable(Dollars(100_000)))
     MOVES_BUDGET = 3
 
     SELF_HARDNESS = 1
@@ -125,7 +126,7 @@ class Motorization(_Figure):
                       .always_can_move()
                       .constant_strength(1)
                       .build(),
-                      Creatable())
+                      Creatable(Dollars(500_000)))
     MOVES_BUDGET = 3
 
     @classmethod
@@ -143,7 +144,7 @@ class Tank(_Figure):
                       .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                 Tank.get_projected_strength(coord, board))
                       .build(),
-                      Creatable())
+                      Creatable(Dollars(1_000_000)))
     MOVES_BUDGET = 3
 
     SELF_STRENGTH = 1
@@ -176,7 +177,7 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board:
                                         Artillery.can_relocate(from_coord, to_coord, board))
                       .build(),
-                      Creatable())
+                      Creatable(Dollars(150_000)))
     MOVES_BUDGET = 2
 
     @classmethod

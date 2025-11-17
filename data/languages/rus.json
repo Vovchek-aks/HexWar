@@ -13,6 +13,9 @@
       "Artillery": "Артиллерия",
       "Motorization": "Мотор-пехота",
       "Bunker": "Бункер"
+    },
+    "resources": {
+      "Dollars": "Доллары"
     }
   }
 }

@@ -1,11 +1,12 @@
 from attrs import frozen
 
 import core.protocols as proto
+from core.resources import ResourcesStockpile, Dollars
 from mathematics.vector import Vector2Int
 from appearance.graphics import colors
 from core.board import Board
 from core.cell import Cell
-from core.figures.figures_budget import FiguresBudget
+from core.figures.figures_relocation_budget import FiguresRelocationBudget
 from core.master import Master
 from core.player import PlayerData, Player, PassPlayerInputer
 import core.figures.figures as fig
@@ -15,19 +16,24 @@ import core.figures.figures as fig
 class GameSession(proto.GameSession):
     _master: proto.Master
     _board: proto.Board
-    _figures_budget: proto.FiguresBudget
+    _figures_budget: proto.FiguresRelocationBudget
+    _resources_stockpile: proto.ResourcesStockpile
 
     @property
     def master(self) -> proto.Master:
         return self._master
 
     @property
-    def figures_budget(self) -> proto.FiguresBudget:
+    def figures_budget(self) -> proto.FiguresRelocationBudget:
         return self._figures_budget
 
     @property
     def board(self) -> proto.Board:
         return self._board
+
+    @property
+    def resources(self) -> proto.ResourcesStockpile:
+        return self._resources_stockpile
 
     def make(self, move: proto.ValidMove) -> None:
         move.move.execute(self)
@@ -56,4 +62,7 @@ def test_map(*, board_size: int) -> GameSession:
     board[Vector2Int(7, 2)].insert(fig.Bunker())
     board[Vector2Int(6, 2)].insert(fig.Infantry())
 
-    return GameSession(Master(players), board, FiguresBudget())
+    resources = ResourcesStockpile()
+    resources.add(Dollars(2_000_000))
+
+    return GameSession(Master(players), board, FiguresRelocationBudget(), resources)

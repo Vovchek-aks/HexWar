@@ -165,12 +165,17 @@ class GameSession(ABC):
 
     @property
     @abstractmethod
-    def figures_budget(self) -> "FiguresBudget":
+    def figures_budget(self) -> "FiguresRelocationBudget":
         ...
 
     @property
     @abstractmethod
     def board(self) -> Board:
+        ...
+
+    @property
+    @abstractmethod
+    def resources(self) -> "ResourcesStockpile":
         ...
 
     @abstractmethod
@@ -280,7 +285,10 @@ class Movable(Flag, metaclass=ABCMeta):
 
 
 class Creatable(Flag, metaclass=ABCMeta):
-    ...
+    @property
+    @abstractmethod
+    def cost(self) -> "Resource":
+        ...
 
 
 class Figure(ABC):
@@ -298,7 +306,7 @@ class Figure(ABC):
         ...
 
 
-class FiguresBudget(ABC):
+class FiguresRelocationBudget(ABC):
     @abstractmethod
     def clear(self) -> None:
         ...
@@ -308,7 +316,7 @@ class FiguresBudget(ABC):
         ...
 
     @abstractmethod
-    def can_add(self, figure: Figure, pay_count: int) -> bool:
+    def can_spend(self, figure: Figure, pay_count: int) -> bool:
         ...
 
     @abstractmethod
@@ -316,19 +324,39 @@ class FiguresBudget(ABC):
         ...
 
 
-class FiguresGroup(ABC):
-    ...
-
-
-class FiguresMarket(ABC):
-    ...
-
-
-class FiguresMarketBuilder(ABC):
+class Resource(ABC):
+    @property
     @abstractmethod
-    def register(self, figure: type[Figure], kind: FiguresGroup, price: int) -> None:
+    def amount(self) -> int:
         ...
 
     @abstractmethod
-    def build(self) -> FiguresMarket:
+    def __add__(self, other: "Resource") -> "Resource":
+        ...
+
+    @abstractmethod
+    def __sub__(self, other: "Resource") -> "Resource":
+        ...
+
+
+class ResourcesStockpile(ABC):
+    @property
+    @abstractmethod
+    def has_changed(self) -> OnEventSubscriber["ResourcesStockpile", None]:
+        ...
+
+    @abstractmethod
+    def get(self, target: type[Resource]) -> Resource:
+        ...
+
+    @abstractmethod
+    def can_take(self, taken_resource: Resource) -> bool:
+        ...
+
+    @abstractmethod
+    def add(self, additional_resource: Resource) -> None:
+        ...
+
+    @abstractmethod
+    def take(self, taken_resource: Resource) -> None:
         ...

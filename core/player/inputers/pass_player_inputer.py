@@ -1,5 +1,5 @@
 from types import TracebackType
-from time import time, sleep
+from time import time
 
 from attrs import define, field
 
@@ -25,11 +25,9 @@ class PassPlayerInputer(proto.PlayerInputer):
         return time() - self._move_start_time >= self._timeout
 
     def __enter__(self) -> proto.PlayerInputer:
-        print("turn started")
         self._move_start_time = time()
         return self
 
     def __exit__(self, exc_type: type[BaseException], exc_val: BaseException, exc_tb: TracebackType) -> bool | None:
-        assert self.wants_to_end_turn()
-        print("turn ended")
+        assert self.wants_to_end_turn() or not issubclass(exc_type, Exception)
         return None

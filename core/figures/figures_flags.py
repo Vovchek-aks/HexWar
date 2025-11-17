@@ -47,3 +47,5 @@ class Static(proto.Static):
 @frozen
 class Creatable(proto.Creatable):
     EXCLUDES = set[type[Flag]]()
+
+    cost: proto.Resource

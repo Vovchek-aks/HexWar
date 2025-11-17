@@ -35,7 +35,7 @@ class EventPlayerInputer(proto.PlayerInputer):
         return self
 
     def __exit__(self, exc_type: type[BaseException], exc_val: BaseException, exc_tb: TracebackType) -> bool | None:
-        assert self.wants_to_end_turn()
+        assert self.wants_to_end_turn() or not issubclass(exc_type, Exception)
 
         self._need_to_end_turn.unsubscribe(self._make_want_end_turn)
         self._move_was_read.unsubscribe(self._move_was_inputted.invoke)

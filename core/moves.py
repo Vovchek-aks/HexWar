@@ -1,12 +1,11 @@
 from abc import ABCMeta
-from typing import Callable
 
 from attrs import frozen
 
 from core.figures.movable_flag import Movable
 import core.protocols as proto
 import core.figures as fig
-import core.figures.figures_flags as flags
+from core.protocols import Creatable
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID, MISSING
 
@@ -29,6 +28,9 @@ class _FiguresRelocation(proto.Move, metaclass=ABCMeta):
         board = session.board
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
+        figure = from_cell.figure
+
+        session.figures_budget.add(figure, figure.get_cost_of(self, board))
         to_cell.take_from(from_cell)
 
 
@@ -58,7 +60,7 @@ class Capture(_FiguresRelocation):
         if from_cell.strength(board) <= to_cell.hardness(board):
             return INVALID
 
-        if not session.figures_budget.can_add(figure, figure.get_cost_of(self, session.board)):
+        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
             return INVALID
 
         return ValidMove(self)
@@ -87,7 +89,7 @@ class Relocation(_FiguresRelocation):
         if not movable.can_relocate(self.from_coord, self.to_coord, board):
             return INVALID
 
-        if not session.figures_budget.can_add(figure, figure.get_cost_of(self, session.board)):
+        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
             return INVALID
 
         return ValidMove(self)
@@ -95,7 +97,7 @@ class Relocation(_FiguresRelocation):
 
 @frozen
 class Creation(proto.Move):
-    create_figure: Callable[[], proto.Figure] | type[proto.Figure]
+    figure_type: type[proto.Figure]
     to_coord: Vector2Int
 
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
@@ -108,11 +110,18 @@ class Creation(proto.Move):
         if not to_cell.is_empty:
             return INVALID
 
+        if (creatable := self.figure_type.FLAGS.get(Creatable)) is MISSING:
+            return INVALID
+
+        if not session.resources.can_take(creatable.cost):
+            return INVALID
+
         return ValidMove(self)
 
     def execute(self, session: proto.GameSession) -> None:
         board = session.board
-        figure = self.create_figure()
-        assert flags.Creatable in figure.FLAGS
+        figure = self.figure_type()
 
         board[self.to_coord].insert(figure)
+
+        session.resources.take(figure.FLAGS.get(Creatable).cost)

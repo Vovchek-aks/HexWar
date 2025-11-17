@@ -13,6 +13,9 @@
       "Artillery": "Artillery",
       "Motorization": "Motorization",
       "Bunker": "Bunker"
+    },
+    "resources": {
+      "Dollars": "Dollars"
     }
   }
 }

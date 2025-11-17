@@ -37,7 +37,9 @@ class TextUi(proto.UiElement):
         return self._rectangle
 
     def set_text(self, text: str) -> None:
+        center = self.rectangle.center
         self._data = self._data.with_text(text)
+        self._rectangle = Rectangle.with_center_at(center, self._data.shape)
 
     def set_color(self, color: Color) -> None:
         self._data = self._data.with_color(color)

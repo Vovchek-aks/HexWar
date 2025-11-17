@@ -2,7 +2,7 @@ from pathlib import Path
 
 from attrs import frozen
 
-from core.protocols import Figure
+from core.protocols import Figure, Resource
 from files import read_meta, read_json
 
 LANGUAGE_SECTION_DICT = dict[str, str]
@@ -16,6 +16,8 @@ _INFO = "info"
 _MESSAGES = "messages"
 
 _FIGURES = "figures"
+
+_RESOURCES = "resources"
 
 _UI = "ui"
 _END_TURN_BTN = "END_TURN_BTN"
@@ -47,11 +49,18 @@ class Language:
         return self._messages[_FIGURES]
 
     @property
+    def _resources(self) -> LANGUAGE_SECTION_DICT:
+        return self._messages[_RESOURCES]
+
+    @property
     def _ui(self) -> LANGUAGE_SECTION_DICT:
         return self._messages[_UI]
 
     def get_figure_name(self, figure: type[Figure]) -> str:
         return self._figures.get(figure.__name__, figure.__name__)
+
+    def get_resource_name(self, resource: type[Resource]) -> str:
+        return self._resources.get(resource.__name__, resource.__name__)
 
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]
