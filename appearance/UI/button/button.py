@@ -15,10 +15,15 @@ MARGIN = Vector2(10, 10)
 @frozen
 class ButtonUi(proto.UiElement):
     @classmethod
-    def make(cls, drawer: proto.UiDrawer, position: Vector2, sprite: Sprite, text_data: proto.TextData) -> "ButtonUi":
-        sprite = sprite.reshape(Vector2Int.from_vector2(get_button_shape(text_data.shape)))
-        image = ImageUi.make(drawer, position, sprite)
-        text = TextUi.make(drawer, position, text_data)
+    def make(cls,
+             drawer: proto.UiDrawer,
+             rectangle: Rectangle,
+             sprite: Sprite,
+             text_data: proto.TextData) -> "ButtonUi":
+        image_rect = get_image_rectangle(rectangle)
+        sprite = sprite.reshape(Vector2Int.from_vector2(image_rect.shape))
+        image = ImageUi.make(drawer, image_rect, sprite)
+        text = TextUi.make(drawer, rectangle, text_data)
 
         layers = [
             text,
@@ -51,5 +56,5 @@ class ButtonUi(proto.UiElement):
         self._was_clicked.invoke()
 
 
-def get_button_shape(text_shape: Vector2) -> Vector2:
-    return text_shape + MARGIN * 2
+def get_image_rectangle(rectangle: Rectangle) -> Rectangle:
+    return Rectangle(rectangle.left_up_corner - MARGIN, rectangle.shape + MARGIN * 2)

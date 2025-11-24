@@ -14,6 +14,10 @@ class Rectangle:
     _shape: Vector2
 
     @property
+    def shape(self) -> Vector2:
+        return self._shape
+
+    @property
     def left_right_up_bottom(self) -> tuple[float, float, float, float]:
         left = self._position.x
         up = self._position.y

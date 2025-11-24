@@ -11,8 +11,7 @@ from mathematics.vector import Vector2, Vector2Int
 @define
 class ImageUi(proto.UiElement):
     @classmethod
-    def make(cls, drawer: proto.UiDrawer, position: Vector2, sprite: Sprite) -> "ImageUi":
-        rectangle = Rectangle.with_center_at(position, sprite.shape.as_vector2)
+    def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, sprite: Sprite) -> "ImageUi":
         self = cls(drawer, sprite.with_pivot(Vector2Int.zero()), rectangle)
         self._layer = (LayerBuilder()
                        .set_clicks_catching(ShapeLayer(self._rectangle))

@@ -1,5 +1,6 @@
 from attrs import define, field
 
+from appearance.UI.text.text_data_pg import TextDataBuilder
 from appearance.layer import LayerBuilder
 from color import Color
 from mathematics.rectangle import Rectangle
@@ -10,10 +11,12 @@ import appearance.protocols as proto
 @define
 class TextUi(proto.UiElement):
     @classmethod
-    def make(cls, drawer: proto.UiDrawer, position: Vector2, text_data: proto.TextData) -> "TextUi":
-        self = cls(drawer,
-                   text_data,
-                   Rectangle.with_center_at(position, text_data.shape))
+    def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, data: proto.TextData) -> "TextUi":
+        data = (TextDataBuilder.like(data)
+                .change_font_size_fitting(rectangle)
+                .build())
+
+        self = cls(drawer, data, rectangle)
 
         layer = (LayerBuilder()
                  .not_catching()
@@ -37,9 +40,11 @@ class TextUi(proto.UiElement):
         return self._rectangle
 
     def set_text(self, text: str) -> None:
-        center = self.rectangle.center
-        self._data = self._data.with_text(text)
-        self._rectangle = Rectangle.with_center_at(center, self._data.shape)
+        self._data = (TextDataBuilder
+                      .like(self._data)
+                      .set_text(text)
+                      .change_font_size_fitting(self.rectangle)
+                      .build())
 
     def set_color(self, color: Color) -> None:
         self._data = self._data.with_color(color)

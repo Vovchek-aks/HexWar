@@ -11,6 +11,7 @@ from appearance.protocols import CellSelector
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile
 from core.resources import Dollars
+from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2, Vector2Int
 import core.figures as fig
 from observer import Event
@@ -30,12 +31,12 @@ class UiLayerMaker:
         language = Language.from_meta()
 
         players_turn = TextUi.make(self._drawer,
-                                   Vector2(110, 40),
-                                   TextData.debug("-"))
+                                   Rectangle(Vector2(10, 10), Vector2(130, 50)),
+                                   TextData.debug('...'))
 
         dollars = TextUi.make(self._drawer,
-                              Vector2(110, 80),
-                              TextData.debug("-"))
+                              Rectangle(Vector2(10, 60), Vector2(100, 30)),
+                              TextData.debug('...'))
 
         def on_resources_had_changed(resources: ResourcesStockpile) -> None:
             amount = NumberShortener.shorten(resources.get(Dollars).amount)
@@ -72,7 +73,7 @@ class UiLayerMaker:
         button_text = TextData.debug(Language.from_meta().get_end_turn_message())
         button_position = self._screen_shape.as_vector2 - button_text.shape / 2 - Vector2(30, 30)
         button = ButtonUi.make(self._drawer,
-                               button_position,
+                               Rectangle.with_center_at(button_position, button_text.shape),
                                button_background,
                                button_text)
         return button
@@ -112,7 +113,7 @@ class UiLayerMaker:
         text = TextData.debug(Language.from_meta().get_figure_name(figure))
         position = self._get_position_from_left_bottom(delta_position)
         button = ButtonUi.make(self._drawer,
-                               position,
+                               Rectangle.with_center_at(position, text.shape),
                                background,
                                text)
 

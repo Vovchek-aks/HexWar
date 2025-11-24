@@ -326,6 +326,11 @@ class UiElement(LayerHolder, metaclass=ABCMeta):
 class TextData(ABC):
     @property
     @abstractmethod
+    def text(self) -> str:
+        ...
+
+    @property
+    @abstractmethod
     def tuple(self) -> tuple[str, Font, Color]:
         ...
 
