@@ -1,6 +1,7 @@
 from attrs import frozen
 
-from appearance.UI.button import ButtonUi
+from appearance.UI.button import ButtonUi, get_image_rectangle
+from appearance.UI.layouts.vertical_layout import VerticalLayout
 from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
@@ -31,11 +32,11 @@ class UiLayerMaker:
         language = Language.from_meta()
 
         players_turn = TextUi.make(self._drawer,
-                                   Rectangle(Vector2(10, 10), Vector2(130, 50)),
+                                   Rectangle(Vector2(10, 10), Vector2(130, 30)),
                                    TextData.debug('...'))
 
         dollars = TextUi.make(self._drawer,
-                              Rectangle(Vector2(10, 60), Vector2(100, 30)),
+                              Rectangle(Vector2(20, 60), Vector2(100, 20)),
                               TextData.debug('...'))
 
         def on_resources_had_changed(resources: ResourcesStockpile) -> None:
@@ -71,23 +72,24 @@ class UiLayerMaker:
                              .from_meta()
                              .load_button_2_to_3())
         button_text = TextData.debug(Language.from_meta().get_end_turn_message())
-        button_position = self._screen_shape.as_vector2 - button_text.shape / 2 - Vector2(30, 30)
+        button_position = self._screen_shape.as_vector2 - button_text.shape - Vector2(30, 30)
         button = ButtonUi.make(self._drawer,
-                               Rectangle.with_center_at(button_position, button_text.shape),
+                               get_image_rectangle(Rectangle(button_position, button_text.shape)),
                                button_background,
                                button_text)
+
         return button
 
     def _make_figures_creation_buttons(self) -> Layer:
-        buttons = [
-            self._make_figure_creation_button(Vector2(100, 250), fig.Bunker),
+        layout = VerticalLayout(Rectangle(Vector2(20, self._screen_shape.y - 260), Vector2(200, 250)),
+                                margin_ratio=.2)
+        layout.append(self._make_figure_creation_button(fig.Bunker))
+        layout.append(self._make_figure_creation_button(fig.Motorization))
+        layout.append(self._make_figure_creation_button(fig.Tank))
+        layout.append(self._make_figure_creation_button(fig.Artillery))
+        layout.append(self._make_figure_creation_button(fig.Infantry))
 
-            self._make_figure_creation_button(Vector2(100, 190), fig.Motorization),
-            self._make_figure_creation_button(Vector2(100, 140), fig.Tank),
-            self._make_figure_creation_button(Vector2(100, 90), fig.Artillery),
-            self._make_figure_creation_button(Vector2(100, 40), fig.Infantry),
-        ]
-        layer = Layer.as_multiple(buttons)
+        layer = layout.layer
         layer.set_activity(False)
 
         self._cell_selector.cell_was_selected.subscribe(
@@ -105,15 +107,15 @@ class UiLayerMaker:
 
         return layer
 
-    def _make_figure_creation_button(self, delta_position: Vector2, figure: type[fig.Figure]) -> ButtonUi:
+    def _make_figure_creation_button(self, figure: type[fig.Figure]) -> ButtonUi:
         background = (SpritesLoader
                       .from_meta()
                       .load_button_2_to_3())
 
         text = TextData.debug(Language.from_meta().get_figure_name(figure))
-        position = self._get_position_from_left_bottom(delta_position)
+        position = Vector2.zero()
         button = ButtonUi.make(self._drawer,
-                               Rectangle.with_center_at(position, text.shape),
+                               get_image_rectangle(Rectangle.with_center_at(position, text.shape)),
                                background,
                                text)
 

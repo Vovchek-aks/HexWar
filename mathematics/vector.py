@@ -19,6 +19,10 @@ class Vector2(pg.Vector2):
     def ones(cls) -> "Vector2":
         return cls(1, 1)
 
+    @property
+    def as_vector2int(self) -> "Vector2Int":
+        return Vector2Int.from_vector2(self, strict=False)
+
     def __str__(self) -> str:
         return f"{type(self).__name__}({self.x}, {self.y})"
 

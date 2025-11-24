@@ -17,6 +17,10 @@ from statuses import Status, MISSING
 @define
 class Layer(proto.Layer, proto.LayerHolder):
     @classmethod
+    def empty(cls) -> "Layer":
+        return cls.as_multiple([])
+
+    @classmethod
     def as_multiple(cls, layers: list[proto.LayerHolder]) -> "Layer":
         return cls(LayersDrawer(layers[::-1]),
                    LayersContainerLayer.make(layers))

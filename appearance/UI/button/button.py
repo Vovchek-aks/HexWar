@@ -1,4 +1,4 @@
-from attrs import frozen, field
+from attrs import define, field
 
 import appearance.protocols as proto
 from appearance.UI.image import ImageUi
@@ -12,7 +12,7 @@ from observer import Event, OnEventSubscriber
 MARGIN = Vector2(10, 10)
 
 
-@frozen
+@define
 class ButtonUi(proto.UiElement):
     @classmethod
     def make(cls,
@@ -20,17 +20,16 @@ class ButtonUi(proto.UiElement):
              rectangle: Rectangle,
              sprite: Sprite,
              text_data: proto.TextData) -> "ButtonUi":
-        image_rect = get_image_rectangle(rectangle)
-        sprite = sprite.reshape(Vector2Int.from_vector2(image_rect.shape))
-        image = ImageUi.make(drawer, image_rect, sprite)
-        text = TextUi.make(drawer, rectangle, text_data)
+        sprite = sprite.reshape(Vector2Int.from_vector2(rectangle.shape))
+        image = ImageUi.make(drawer, rectangle, sprite)
+        text = TextUi.make(drawer, get_text_rectangle(rectangle), text_data)
 
         layers = [
             text,
             image
         ]
 
-        self = cls(image.rectangle, Layer.as_multiple(layers))
+        self = cls(image.rectangle, Layer.as_multiple(layers), text, image)
         self.layer.was_clicked.subscribe(self._on_layer_was_clicked)
 
         return self
@@ -39,6 +38,8 @@ class ButtonUi(proto.UiElement):
 
     _rectangle: Rectangle
     _layer: proto.Layer
+    _text: TextUi
+    _image: ImageUi
 
     @property
     def was_clicked(self) -> OnEventSubscriber[None]:
@@ -52,8 +53,18 @@ class ButtonUi(proto.UiElement):
     def rectangle(self) -> Rectangle:
         return self._rectangle
 
+    def set_rectangle(self, rectangle: Rectangle) -> None:
+        self._rectangle = rectangle
+        self._image.set_rectangle(rectangle)
+        self._text.set_rectangle(get_text_rectangle(rectangle))
+        ...
+
     def _on_layer_was_clicked(self, _: proto.Click) -> None:
         self._was_clicked.invoke()
+
+
+def get_text_rectangle(rectangle: Rectangle) -> Rectangle:
+    return Rectangle(rectangle.left_up_corner + MARGIN, rectangle.shape - MARGIN * 2)
 
 
 def get_image_rectangle(rectangle: Rectangle) -> Rectangle:

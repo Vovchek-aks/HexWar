@@ -145,7 +145,7 @@ class BordDrawer(ABC):
 
 class UiDrawer(ABC):
     @abstractmethod
-    def draw_text(self, text_data: "TextData", position: Vector2) -> None:
+    def draw_text(self, text_data: "TextData", rectangle: Rectangle) -> None:
         ...
 
     @abstractmethod
@@ -320,6 +320,10 @@ class UiElement(LayerHolder, metaclass=ABCMeta):
     @property
     @abstractmethod
     def rectangle(self) -> Rectangle:
+        ...
+
+    @abstractmethod
+    def set_rectangle(self, rectangle: Rectangle) -> None:
         ...
 
 

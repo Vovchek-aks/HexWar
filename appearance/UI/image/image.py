@@ -32,5 +32,9 @@ class ImageUi(proto.UiElement):
     def rectangle(self) -> Rectangle:
         return self._rectangle
 
+    def set_rectangle(self, rectangle: Rectangle) -> None:
+        self._rectangle = rectangle
+        self._sprite = self._sprite.reshape(rectangle.shape.as_vector2int)
+
     def _draw(self, _: Vector2) -> None:
         self._drawer.draw_image(self._sprite, self.rectangle.left_up_corner)

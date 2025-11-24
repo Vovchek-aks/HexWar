@@ -39,15 +39,18 @@ class TextUi(proto.UiElement):
     def rectangle(self) -> Rectangle:
         return self._rectangle
 
-    def set_text(self, text: str) -> None:
-        self._data = (TextDataBuilder
-                      .like(self._data)
-                      .set_text(text)
+    def set_rectangle(self, rectangle: Rectangle) -> None:
+        self._rectangle = rectangle
+        self._data = (TextDataBuilder.like(self._data)
                       .change_font_size_fitting(self.rectangle)
                       .build())
+
+    def set_text(self, text: str) -> None:
+        self._data = self._data.with_text(text)
+        self.set_rectangle(self.rectangle)
 
     def set_color(self, color: Color) -> None:
         self._data = self._data.with_color(color)
 
     def _draw(self, _: Vector2) -> None:
-        self._drawer.draw_text(self._data, self.rectangle.left_up_corner)
+        self._drawer.draw_text(self._data, self.rectangle)

@@ -1,9 +1,18 @@
 from color import Color
 
-BACKGROUND = Color(66, 133, 180).lerp(0, .3)
+# BACKGROUND = Color(66, 133, 180).lerp(0, .3)
+#
+# PLAYER_RED = Color(175, 43, 30)
+# PLAYER_BLUE = Color(18, 47, 170)
+# PLAYER_GREEN = Color(46, 139, 87)
+# PLAYER_YELLOW = Color(210, 150, 10)
+# PLAYER_PURPLE = Color(175, 43, 130)
 
-PLAYER_RED = Color(175, 43, 30)
-PLAYER_BLUE = Color(18, 47, 170)
-PLAYER_GREEN = Color(46, 139, 87)
-PLAYER_YELLOW = Color(210, 150, 10)
+BACKGROUND = Color(111, 139, 158)
+# BACKGROUND = Color(35, 50, 75)
+
+PLAYER_RED = Color(173, 82, 64)
+PLAYER_BLUE = Color(64, 106, 173)
+PLAYER_GREEN = Color(59, 134, 93)
+PLAYER_YELLOW = Color(215, 151, 60)
 PLAYER_PURPLE = Color(175, 43, 130)
