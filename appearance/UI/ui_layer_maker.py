@@ -1,6 +1,7 @@
 from attrs import frozen
 
 from appearance.UI.button import ButtonUi
+from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
@@ -37,7 +38,8 @@ class UiLayerMaker:
                               TextData.debug("-"))
 
         def on_resources_had_changed(resources: ResourcesStockpile) -> None:
-            dollars.set_text(f"{language.get_resource_name(Dollars)}: {resources.get(Dollars).amount}")
+            amount = NumberShortener.shorten(resources.get(Dollars).amount)
+            dollars.set_text(f"{language.get_resource_name(Dollars)}: {amount}")
 
         self._session.resources.has_changed.subscribe(on_resources_had_changed)
 
