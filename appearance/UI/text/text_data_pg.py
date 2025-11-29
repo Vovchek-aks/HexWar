@@ -81,24 +81,8 @@ class TextDataBuilder:
     def change_font_size_fitting(self, rectangle: Rectangle) -> "TextDataBuilder":
         assert MISSING not in (self._text, self._font)
 
-        # FUCK MY LIFE
-
-        rect_width, rect_height = rectangle.shape
-        # text_width, text_height = self._font.size(self._text)
-        #
-        # estimated_size1 = round(rect_height * 1.4)
-        # # font = Font(self._font.file_path, estimated_size1)
-        #
-        # # if (width := font.size(self._text)[0]) < rect_width:
-        # #     return self.set_font(font)
-        #
-        # estimated_size2 = round(rect_width * .25)
-        # estimated_size = round((estimated_size1 + estimated_size2) / 2)
-        # font = Font(self._font.file_path, estimated_size)
-        # # if new_font.size(self._text)[0] < width:
-        # #     return self.set_font(new_font)
-
         font = self._font
+        rect_width, rect_height = rectangle.shape
         text_surface = font.render(self._text, True, self._color)
         text_rect = text_surface.get_rect()
 

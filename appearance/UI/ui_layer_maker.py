@@ -1,7 +1,7 @@
 from attrs import frozen
 
 from appearance.UI.button import ButtonUi, get_image_rectangle
-from appearance.UI.layouts.vertical_layout import VerticalLayout
+from appearance.UI.layouts import VerticalLayout, HorizontalLayout
 from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
@@ -81,13 +81,16 @@ class UiLayerMaker:
         return button
 
     def _make_figures_creation_buttons(self) -> Layer:
-        layout = VerticalLayout(Rectangle(Vector2(20, self._screen_shape.y - 260), Vector2(200, 250)),
-                                margin_ratio=.2)
+        layout = VerticalLayout(Rectangle(Vector2(20, self._screen_shape.y - 260), Vector2(200, 250)), margin_ratio=.2)
         layout.append(self._make_figure_creation_button(fig.Bunker))
         layout.append(self._make_figure_creation_button(fig.Motorization))
-        layout.append(self._make_figure_creation_button(fig.Tank))
+
+        horizontal_layout = HorizontalLayout(Rectangle.zero(), margin_ratio=.07)
+        layout.append(horizontal_layout)
+        horizontal_layout.append(self._make_figure_creation_button(fig.Tank))
+        horizontal_layout.append(self._make_figure_creation_button(fig.Infantry))
+
         layout.append(self._make_figure_creation_button(fig.Artillery))
-        layout.append(self._make_figure_creation_button(fig.Infantry))
 
         layer = layout.layer
         layer.set_activity(False)

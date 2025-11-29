@@ -14,7 +14,7 @@ class ImageUi(proto.UiElement):
     def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, sprite: Sprite) -> "ImageUi":
         self = cls(drawer, sprite.with_pivot(Vector2Int.zero()), rectangle)
         self._layer = (LayerBuilder()
-                       .set_clicks_catching(ShapeLayer(self._rectangle))
+                       .set_clicks_catcher(ShapeLayer(self._rectangle))
                        .set_draw_function(self._draw)
                        .build())
         return self
@@ -35,6 +35,9 @@ class ImageUi(proto.UiElement):
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
         self._sprite = self._sprite.reshape(rectangle.shape.as_vector2int)
+        self._layer = (LayerBuilder.like(self.layer)
+                       .set_clicks_catcher(ShapeLayer(self._rectangle))
+                       .build())
 
     def _draw(self, _: Vector2) -> None:
         self._drawer.draw_image(self._sprite, self.rectangle.left_up_corner)

@@ -6,6 +6,10 @@ from mathematics.vector import Vector2
 @frozen
 class Rectangle:
     @classmethod
+    def zero(cls) -> "Rectangle":
+        return cls(Vector2.zero(), Vector2.zero())
+
+    @classmethod
     def with_center_at(cls, center: Vector2, shape: Vector2) -> "Rectangle":
         position = center - shape / 2
         return cls(position, shape)

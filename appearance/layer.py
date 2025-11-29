@@ -64,6 +64,12 @@ class Layer(proto.Layer, proto.LayerHolder):
 
 @define
 class LayerBuilder:
+    @classmethod
+    def like(cls, layer: Layer) -> "LayerBuilder":
+        return (cls()
+                .set_clicks_catcher(layer.clicks_catching_layer)
+                .set_drawable(layer.drawable_layer))
+
     _drawable_layer: proto.DrawableLayer | Status = MISSING
     _clicks_catching_layer: proto.ClicksCatchingLayer | Status = MISSING
 
@@ -78,7 +84,7 @@ class LayerBuilder:
         self._drawable_layer = drawable_layer
         return self
 
-    def set_clicks_catching(self, clicks_catching: proto.ClicksCatchingLayer) -> "LayerBuilder":
+    def set_clicks_catcher(self, clicks_catching: proto.ClicksCatchingLayer) -> "LayerBuilder":
         self._clicks_catching_layer = clicks_catching
         return self
 
@@ -86,7 +92,7 @@ class LayerBuilder:
         return self.set_drawable(NoDrawLayer())
 
     def not_catching(self) -> "LayerBuilder":
-        return self.set_clicks_catching(NoCatchingLayer())
+        return self.set_clicks_catcher(NoCatchingLayer())
 
     def set_draw_function(self, draw: Callable[[Vector2], None]) -> "LayerBuilder":
         return self.set_drawable(FunctionLayerDrawer(draw))
