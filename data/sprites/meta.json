@@ -22,10 +22,10 @@
       ]
     },
     "Infantry": {
-      "file": "figures/inf.png",
+      "file": "figures/inf2.png",
       "pivot": [
-        163,
-        180
+        400,
+        700
       ]
     },
     "Motorization": {
