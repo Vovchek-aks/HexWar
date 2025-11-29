@@ -36,7 +36,7 @@ class UiLayerMaker:
                                    TextData.debug('...'))
 
         dollars = TextUi.make(self._drawer,
-                              Rectangle(Vector2(20, 60), Vector2(100, 20)),
+                              Rectangle(Vector2(2, 60), Vector2(130, 20)),
                               TextData.debug('...'))
 
         def on_resources_had_changed(resources: ResourcesStockpile) -> None:

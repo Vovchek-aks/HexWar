@@ -84,18 +84,29 @@ class TextDataBuilder:
         # FUCK MY LIFE
 
         rect_width, rect_height = rectangle.shape
-        text_width, text_height = self._font.size(self._text)
+        # text_width, text_height = self._font.size(self._text)
+        #
+        # estimated_size1 = round(rect_height * 1.4)
+        # # font = Font(self._font.file_path, estimated_size1)
+        #
+        # # if (width := font.size(self._text)[0]) < rect_width:
+        # #     return self.set_font(font)
+        #
+        # estimated_size2 = round(rect_width * .25)
+        # estimated_size = round((estimated_size1 + estimated_size2) / 2)
+        # font = Font(self._font.file_path, estimated_size)
+        # # if new_font.size(self._text)[0] < width:
+        # #     return self.set_font(new_font)
 
-        estimated_size1 = round(rect_height * 1.4)
-        # font = Font(self._font.file_path, estimated_size1)
+        font = self._font
+        text_surface = font.render(self._text, True, self._color)
+        text_rect = text_surface.get_rect()
 
-        # if (width := font.size(self._text)[0]) < rect_width:
-        #     return self.set_font(font)
-
-        estimated_size2 = round(rect_width * .25)
-        estimated_size = round((estimated_size1 + estimated_size2) / 2)
-        font = Font(self._font.file_path, estimated_size)
-        # if new_font.size(self._text)[0] < width:
-        #     return self.set_font(new_font)
+        if text_rect.width > rect_width or text_rect.height > rect_height:
+            scale_x = rect_width / text_rect.width
+            scale_y = rect_height / text_rect.height
+            scale = min(scale_x, scale_y)
+            new_size = max(1, int(font.get_height() * scale))
+            font = Font(font.file_path, new_size)
 
         return self.set_font(font)

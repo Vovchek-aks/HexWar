@@ -11,8 +11,8 @@ class NumberShortener:
         power = 0
         while number >= 1_000:
             power += 1
-            number //= 1_000
+            number /= 1_000
 
         assert power < len(cls._POSTFIXES)
 
-        return f"{number}{cls._POSTFIXES[power]}"
+        return f"{number:.1f}{cls._POSTFIXES[power]}"
