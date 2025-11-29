@@ -128,15 +128,15 @@ class Infantry(_Figure):
 
 
 class Motorization(_Figure):
-    FLAGS = Flags.new(MovableBuilder()
-                      .always_can_move()
-                      .constant_strength(1)
-                      .build(),
+    FLAGS = Flags.new((MovableBuilder()
+                       .can_move_to_neighbor()
+                       .constant_strength(1)
+                       .build()),
                       Creatable(Dollars(500_000)),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(10_000))
                        .build()))
-    MOVES_BUDGET = 3
+    MOVES_BUDGET = 60
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -144,20 +144,26 @@ class Motorization(_Figure):
 
     @classmethod
     def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
-        return Infantry.get_cost_of(move, board)
+        match move:
+            case Relocation():
+                return 10
+            case Capture():
+                return 15
+            case _:
+                raise NotSupportedMove(move)
 
 
 class Tank(_Figure):
-    FLAGS = Flags.new(MovableBuilder()
-                      .always_can_move()
-                      .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
-                                                                Tank.get_projected_strength(coord, board))
-                      .build(),
+    FLAGS = Flags.new((MovableBuilder()
+                       .can_move_to_neighbor()
+                       .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
+                                                                 Tank.get_projected_strength(coord, board))
+                       .build()),
                       Creatable(Dollars(1_000_000)),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(20_000))
                        .build()))
-    MOVES_BUDGET = 3
+    MOVES_BUDGET = 60
 
     SELF_STRENGTH = 1
     _SELF_HARDNESS = 1
@@ -169,7 +175,13 @@ class Tank(_Figure):
 
     @classmethod
     def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
-        return Infantry.get_cost_of(move, board)
+        match move:
+            case Relocation():
+                return 15
+            case Capture():
+                return 20
+            case _:
+                raise NotSupportedMove(move)
 
     @classmethod
     def get_projected_strength(cls, coord: Vector2Int, board: proto.Board) -> int:
