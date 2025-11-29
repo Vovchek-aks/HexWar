@@ -6,6 +6,7 @@ from appearance.game_engine.game_engine_pg.game_engine import GameEngine
 from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
+from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
 from core.player.player_moves_maker import player_moves_maker
 from mathematics.vector import Vector2Int
@@ -37,6 +38,8 @@ def make_game_engine(caption: str,
     pg.display.set_caption(caption)
 
     timer = Timer.make(ups)
+
+    screenshot_saver = ScreenshotSaver(screen)
 
     camera_orientation = CameraOrientation.starter()
     camera_mover = CameraMover(camera_orientation)
@@ -72,7 +75,7 @@ def make_game_engine(caption: str,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    updater = Updater.make(camera_mover, layers, player_moves_maker(session, moves_maker))
+    updater = Updater.make(camera_mover, screenshot_saver, layers, player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
 
     return (GameEngine(caption, timer, drawer, updater, UpdatableEvents.new()),
