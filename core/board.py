@@ -34,6 +34,10 @@ class Board(proto.Board):
         return self.shape.y
 
     @property
+    def cells(self) -> Cells:
+        return Cells(self._cells.copy())
+
+    @property
     def cell_coords(self) -> Iterable[Vector2Int]:
         return map(lambda coord: Vector2Int(*coord), product(*map(range, self.shape.tuple)))
 

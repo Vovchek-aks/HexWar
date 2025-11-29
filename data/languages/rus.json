@@ -12,7 +12,8 @@
       "Tank": "Танк",
       "Artillery": "Артиллерия",
       "Motorization": "Мотор-пехота",
-      "Bunker": "Бункер"
+      "Bunker": "Бункер",
+      "Town": "Жилой район"
     },
     "resources": {
       "Dollars": "Доллары"

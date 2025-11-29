@@ -129,6 +129,11 @@ class Board(ABC):
 
     @property
     @abstractmethod
+    def cells(self) -> "Cells":
+        ...
+
+    @property
+    @abstractmethod
     def cell_coords(self) -> Iterable[Vector2Int]:
         ...
 
@@ -234,6 +239,10 @@ class Cells(ABC):
         ...
 
     @abstractmethod
+    def with_flag(self, target: type["Flag"] | UnionType) -> "Cells":
+        ...
+
+    @abstractmethod
     def __bool__(self) -> bool:
         ...
 
@@ -288,6 +297,12 @@ class Creatable(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
     def cost(self) -> "Resource":
+        ...
+
+
+class UpdatableOnTurnStart(Flag, metaclass=ABCMeta):
+    @abstractmethod
+    def update(self, coord: Vector2Int, session: GameSession) -> None:
         ...
 
 

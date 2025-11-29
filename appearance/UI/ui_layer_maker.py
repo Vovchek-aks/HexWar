@@ -82,6 +82,7 @@ class UiLayerMaker:
 
     def _make_figures_creation_buttons(self) -> Layer:
         layout = VerticalLayout(Rectangle(Vector2(20, self._screen_shape.y - 260), Vector2(200, 250)), margin_ratio=.2)
+        layout.append(self._make_figure_creation_button(fig.Town))
         layout.append(self._make_figure_creation_button(fig.Bunker))
         layout.append(self._make_figure_creation_button(fig.Motorization))
 

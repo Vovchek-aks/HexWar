@@ -6,6 +6,7 @@ from core import protocols as proto
 from core.cells import Cells
 from core.figures.figures_flags import Flags, Static, Creatable
 from core.figures.movable_flag import MovableBuilder
+from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStart
 from core.moves import Relocation, Capture
 from core.resources import Dollars
 from exceptions import NotSupportedMove
@@ -34,8 +35,7 @@ class Empty(_Figure):
 
 
 class Settlement(_Figure):
-    FLAGS = Flags.new(Static(),
-                      Creatable(1))
+    FLAGS = Flags.new(Static())
     MOVES_BUDGET = 0
 
     @classmethod
@@ -49,7 +49,8 @@ class Settlement(_Figure):
 
 class Town(_Figure):
     FLAGS = Flags.new(Static(),
-                      Creatable(1))
+                      Creatable(Dollars(1_000_000)),
+                      UpdatableOnTurnStart(lambda _, session: Town.on_turn_start(session)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -59,6 +60,10 @@ class Town(_Figure):
     @classmethod
     def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
         return 0
+
+    @classmethod
+    def on_turn_start(cls, session: proto.GameSession) -> None:
+        session.resources.add(Dollars(150_000))
 
 
 class Capital(_Figure):

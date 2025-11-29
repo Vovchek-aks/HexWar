@@ -12,7 +12,8 @@
       "Tank": "Tank",
       "Artillery": "Artillery",
       "Motorization": "Motorization",
-      "Bunker": "Bunker"
+      "Bunker": "Bunker",
+      "Town": "Town"
     },
     "resources": {
       "Dollars": "Dollars"
