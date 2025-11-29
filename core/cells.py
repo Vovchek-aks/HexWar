@@ -14,7 +14,7 @@ class Cells(proto.Cells):
         return list(self._cells)
 
     def with_owner(self, target: proto.Player) -> "Cells":
-        return Cells([cell for cell in self._cells if cell.owner == target])
+        return Cells([cell for cell in self._cells if cell.owner is target])
 
     def with_figure(self, target: type[proto.Figure] | UnionType) -> "Cells":
         return Cells([cell for cell in self._cells if isinstance(cell.figure, target)])

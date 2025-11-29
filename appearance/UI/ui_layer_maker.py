@@ -43,7 +43,7 @@ class UiLayerMaker:
             amount = NumberShortener.shorten(resources.get(Dollars).amount)
             dollars.set_text(f"{language.get_resource_name(Dollars)}: {amount}")
 
-        self._session.resources.has_changed.subscribe(on_resources_had_changed)
+        self._session.master.current_player.resources.has_changed.subscribe(on_resources_had_changed)
 
         end_turn_button = self._make_end_turn_button()
         user_inputer_builder.set_need_to_end_turn(end_turn_button.was_clicked)
@@ -63,7 +63,7 @@ class UiLayerMaker:
         ]
 
         on_turn_passed(self._session.master.current_player)
-        on_resources_had_changed(self._session.resources)
+        on_resources_had_changed(self._session.master.current_player.resources)
 
         return Layer.as_multiple(layers)
 

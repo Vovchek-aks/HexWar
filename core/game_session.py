@@ -17,7 +17,6 @@ class GameSession(proto.GameSession):
     _master: proto.Master
     _board: proto.Board
     _figures_budget: proto.FiguresRelocationBudget
-    _resources_stockpile: proto.ResourcesStockpile
 
     @property
     def master(self) -> proto.Master:
@@ -30,10 +29,6 @@ class GameSession(proto.GameSession):
     @property
     def board(self) -> proto.Board:
         return self._board
-
-    @property
-    def resources(self) -> proto.ResourcesStockpile:
-        return self._resources_stockpile
 
     def make(self, move: proto.ValidMove) -> None:
         move.move.execute(self)
@@ -62,7 +57,6 @@ def test_map(*, board_size: int) -> GameSession:
     board[Vector2Int(7, 2)].insert(fig.Bunker())
     board[Vector2Int(6, 2)].insert(fig.Infantry())
 
-    resources = ResourcesStockpile()
-    resources.add(Dollars(2_000_000))
+    players[0].resources.add(Dollars(2_000_000))
 
-    return GameSession(Master(players), board, FiguresRelocationBudget(), resources)
+    return GameSession(Master(players), board, FiguresRelocationBudget())

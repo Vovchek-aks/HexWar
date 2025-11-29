@@ -42,10 +42,10 @@ class Capture(_FiguresRelocation):
         to_cell = board[self.to_coord]
         figure = from_cell.figure
 
-        if from_cell.owner != session.master.current_player:
+        if from_cell.owner is not session.master.current_player:
             return INVALID
 
-        if from_cell.owner == to_cell.owner:
+        if from_cell.owner is to_cell.owner:
             return INVALID
 
         if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
@@ -74,10 +74,10 @@ class Relocation(_FiguresRelocation):
         to_cell = board[self.to_coord]
         figure = from_cell.figure
 
-        if from_cell.owner != session.master.current_player:
+        if from_cell.owner is not session.master.current_player:
             return INVALID
 
-        if from_cell.owner != to_cell.owner:
+        if from_cell.owner is not to_cell.owner:
             return INVALID
 
         if not isinstance(to_cell.figure, fig.Empty):
@@ -104,7 +104,7 @@ class Creation(proto.Move):
         board = session.board
         to_cell = board[self.to_coord]
 
-        if to_cell.owner != session.master.current_player:
+        if to_cell.owner is not session.master.current_player:
             return INVALID
 
         if not to_cell.is_empty:
@@ -113,7 +113,7 @@ class Creation(proto.Move):
         if (creatable := self.figure_type.FLAGS.get(Creatable)) is MISSING:
             return INVALID
 
-        if not session.resources.can_take(creatable.cost):
+        if not session.master.current_player.resources.can_take(creatable.cost):
             return INVALID
 
         return ValidMove(self)
@@ -124,4 +124,4 @@ class Creation(proto.Move):
 
         board[self.to_coord].insert(figure)
 
-        session.resources.take(figure.FLAGS.get(Creatable).cost)
+        session.master.current_player.resources.take(figure.FLAGS.get(Creatable).cost)

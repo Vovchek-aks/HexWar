@@ -73,6 +73,11 @@ class Player(ABC):
     def inputer(self) -> PlayerInputer:
         ...
 
+    @property
+    @abstractmethod
+    def resources(self) -> "ResourcesStockpile":
+        ...
+
     @abstractmethod
     def change_inputer(self, inputer: PlayerInputer) -> None:
         ...
@@ -176,11 +181,6 @@ class GameSession(ABC):
     @property
     @abstractmethod
     def board(self) -> Board:
-        ...
-
-    @property
-    @abstractmethod
-    def resources(self) -> "ResourcesStockpile":
         ...
 
     @abstractmethod

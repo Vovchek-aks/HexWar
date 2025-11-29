@@ -6,7 +6,7 @@ from core import protocols as proto
 from core.cells import Cells
 from core.figures.figures_flags import Flags, Static, Creatable
 from core.figures.movable_flag import MovableBuilder
-from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStart
+from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
 from core.moves import Relocation, Capture
 from core.resources import Dollars
 from exceptions import NotSupportedMove
@@ -50,7 +50,9 @@ class Settlement(_Figure):
 class Town(_Figure):
     FLAGS = Flags.new(Static(),
                       Creatable(Dollars(1_000_000)),
-                      UpdatableOnTurnStart(lambda _, session: Town.on_turn_start(session)))
+                      (UpdatableOnTurnStartBuilder()
+                       .add_resources(Dollars(150_000))
+                       .build()))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -60,10 +62,6 @@ class Town(_Figure):
     @classmethod
     def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
         return 0
-
-    @classmethod
-    def on_turn_start(cls, session: proto.GameSession) -> None:
-        session.resources.add(Dollars(150_000))
 
 
 class Capital(_Figure):
@@ -94,11 +92,14 @@ class Bunker(_Figure):
 
 
 class Infantry(_Figure):
-    FLAGS = Flags.new(MovableBuilder()
-                      .can_move_to_neighbor()
-                      .constant_strength(2)
-                      .build(),
-                      Creatable(Dollars(100_000)))
+    FLAGS = Flags.new((MovableBuilder()
+                       .can_move_to_neighbor()
+                       .constant_strength(2)
+                       .build()),
+                      Creatable(Dollars(100_000)),
+                      (UpdatableOnTurnStartBuilder()
+                       .try_take_else_die(Dollars(5_000))
+                       .build()))
     MOVES_BUDGET = 3
 
     SELF_HARDNESS = 1
@@ -131,7 +132,10 @@ class Motorization(_Figure):
                       .always_can_move()
                       .constant_strength(1)
                       .build(),
-                      Creatable(Dollars(500_000)))
+                      Creatable(Dollars(500_000)),
+                      (UpdatableOnTurnStartBuilder()
+                       .try_take_else_die(Dollars(10_000))
+                       .build()))
     MOVES_BUDGET = 3
 
     @classmethod
@@ -149,7 +153,10 @@ class Tank(_Figure):
                       .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                 Tank.get_projected_strength(coord, board))
                       .build(),
-                      Creatable(Dollars(1_000_000)))
+                      Creatable(Dollars(1_000_000)),
+                      (UpdatableOnTurnStartBuilder()
+                       .try_take_else_die(Dollars(20_000))
+                       .build()))
     MOVES_BUDGET = 3
 
     SELF_STRENGTH = 1
@@ -182,7 +189,10 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board:
                                         Artillery.can_relocate(from_coord, to_coord, board))
                       .build(),
-                      Creatable(Dollars(150_000)))
+                      Creatable(Dollars(150_000)),
+                      (UpdatableOnTurnStartBuilder()
+                       .try_take_else_die(Dollars(20_000))
+                       .build()))
     MOVES_BUDGET = 2
 
     @classmethod
