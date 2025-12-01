@@ -10,7 +10,7 @@ from mathematics.rectangle import Rectangle
 @define
 class Layout(proto.UiElement, metaclass=ABCMeta):
     _rectangle: Rectangle
-    _margin_ratio: float = .1
+    _margin_ratio: float = .05
     _layer: proto.Layer = field(init=False, factory=Layer.empty)
     _elements: list[proto.UiElement] = field(init=False, factory=list)
 

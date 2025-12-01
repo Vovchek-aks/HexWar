@@ -1,4 +1,5 @@
 from attrs import define, frozen, field
+from numpy.ma.core import less_equal
 
 from font import Font
 from color import Color
@@ -82,14 +83,14 @@ class TextDataBuilder:
         assert MISSING not in (self._text, self._font)
 
         font = self._font
-        rect_width, rect_height = rectangle.shape
-        text_surface = font.render(self._text, True, self._color)
-        text_rect = text_surface.get_rect()
+        for _ in range(2):
+            rect_width, rect_height = rectangle.shape
+            text_surface = font.render(self._text, True, self._color)
+            text_rect = text_surface.get_rect()
 
-        if text_rect.width > rect_width or text_rect.height > rect_height:
             scale_x = rect_width / text_rect.width
             scale_y = rect_height / text_rect.height
-            scale = min(scale_x, scale_y)
+            scale = min(scale_x, scale_y) * 1.45
             new_size = max(1, int(font.get_height() * scale))
             font = Font(font.file_path, new_size)
 
