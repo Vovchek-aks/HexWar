@@ -13,9 +13,9 @@ from statuses import Status, INVALID
 
 @frozen
 class Conversion(proto.Move):
-    _CONVERSIONS: ClassVar[dict[tuple[type[fig.Figure], type[fig.Figure]], Resource]] = {
-        (fig.Infantry, fig.Motorization): Dollars(100_000),
-        (fig.Motorization, fig.Infantry): Dollars(0),
+    _CONVERSIONS: ClassVar[dict[tuple[type[fig.Figure], type[fig.Figure]], tuple[Resource, int]]] = {
+        (fig.Infantry, fig.Motorization): (Dollars(100_000), 1),
+        (fig.Motorization, fig.Infantry): (Dollars(0), 10),
     }
 
     coord: Vector2Int
@@ -31,8 +31,12 @@ class Conversion(proto.Move):
         if (conversion := (type(cell.figure), self.target)) not in self._CONVERSIONS:
             return INVALID
 
-        cost = self._CONVERSIONS[conversion]
-        if not player.resources.can_take(cost):
+        resources_cost, figure_budget_cost = self._CONVERSIONS[conversion]
+        if not player.resources.can_take(resources_cost):
+            return INVALID
+
+        figure = cell.figure
+        if not session.figures_budget.can_spend(figure, figure_budget_cost):
             return INVALID
 
         return ValidMove(self)
@@ -43,6 +47,8 @@ class Conversion(proto.Move):
         budget = session.figures_budget
 
         old_figure = cell.pop()
+        resources_cost, figure_budget_cost = self._CONVERSIONS[type(old_figure), self.target]
+        session.figures_budget.add(old_figure, figure_budget_cost)
         old_bill = budget.pop(old_figure)
 
         bill = ceil(figure.MOVES_BUDGET * (old_bill / old_figure.MOVES_BUDGET))
@@ -52,5 +58,4 @@ class Conversion(proto.Move):
         cell.insert(figure)
         budget.add(figure, bill)
 
-        cost = self._CONVERSIONS[type(old_figure), self.target]
-        session.master.current_player.resources.take(cost)
+        session.master.current_player.resources.take(resources_cost)

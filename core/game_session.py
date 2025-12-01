@@ -49,8 +49,9 @@ def test_map(*, board_size: int) -> GameSession:
 
     board[Vector2Int(0, 0)].insert(fig.Infantry())
     board[Vector2Int(1, 0)].insert(fig.Infantry())
-    board[Vector2Int(1, 1)].insert(fig.Infantry())
+    board[Vector2Int(1, 3)].insert(fig.Infantry())
     board[Vector2Int(0, 1)].insert(fig.Tank())
+    board[Vector2Int(1, 4)].insert(fig.Tank())
     board[Vector2Int(5, 7)].insert(fig.Artillery())
     board[Vector2Int(5, 8)].insert(fig.Infantry())
     board[Vector2Int(2, 8)].insert(fig.Motorization())

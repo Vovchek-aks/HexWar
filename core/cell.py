@@ -51,8 +51,13 @@ class Cell(proto.Cell):
 
         self._figure = figure
 
+    def change_owner(self, player: proto.Player) -> None:
+        assert self._owner != player
+        self._owner = player
+
     def take_from(self, other: proto.Cell) -> None:
-        self._owner = other.owner
+        if self.owner != other.owner:
+            self.change_owner(other.owner)
         self._figure = other.pop()
 
     def __eq__(self, other: proto.Cell) -> bool:

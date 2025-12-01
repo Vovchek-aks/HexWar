@@ -4,10 +4,11 @@ from attrs import define, field
 
 from core import protocols as proto
 from core.cells import Cells
-from core.figures.figures_flags import Flags, Static, Creatable
+from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable
 from core.figures.movable_flag import MovableBuilder
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
-from core.moves.relocations import Relocation, Capture
+from core.moves.capture import Capture
+from core.moves.relocations import Relocation, Assault
 from core.resources import Dollars
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
@@ -23,7 +24,8 @@ class _Figure(Figure, metaclass=ABCMeta):
 
 
 class Empty(_Figure):
-    FLAGS = Flags.new(Static())
+    FLAGS = Flags.new(Static(),
+                      Capturable())
     MOVES_BUDGET = 0
 
     @classmethod
@@ -98,6 +100,7 @@ class Infantry(_Figure):
                        .constant_strength(2)
                        .build()),
                       Creatable(Dollars(100_000)),
+                      CanCapture(),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(5_000))
                        .build()))
@@ -122,8 +125,10 @@ class Infantry(_Figure):
         match move:
             case Relocation():
                 return 1
-            case Capture():
+            case Assault():
                 return 3
+            case Capture():
+                return 2
             case _:
                 raise NotSupportedMove(move)
 
@@ -148,7 +153,7 @@ class Motorization(_Figure):
         match move:
             case Relocation():
                 return 10
-            case Capture():
+            case Assault():
                 return 15
             case _:
                 raise NotSupportedMove(move)
@@ -161,6 +166,7 @@ class Tank(_Figure):
                                                                  Tank.get_projected_strength(coord, board))
                        .build()),
                       Creatable(Dollars(1_000_000)),
+                      Capturable(),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(20_000))
                        .build()))
@@ -179,7 +185,7 @@ class Tank(_Figure):
         match move:
             case Relocation():
                 return 15
-            case Capture():
+            case Assault():
                 return 20
             case _:
                 raise NotSupportedMove(move)
@@ -203,6 +209,7 @@ class Artillery(_Figure):
                                         Artillery.can_relocate(from_coord, to_coord, board))
                       .build(),
                       Creatable(Dollars(150_000)),
+                      Capturable(),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(20_000))
                        .build()))

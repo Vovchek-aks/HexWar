@@ -221,6 +221,10 @@ class Cell(ABC):
         ...
 
     @abstractmethod
+    def change_owner(self, player: Player) -> None:
+        ...
+
+    @abstractmethod
     def take_from(self, other: "Cell") -> None:
         ...
 
@@ -277,6 +281,14 @@ class Flags(ABC):
     @abstractmethod
     def __contains__(self, item: type[Flag]) -> bool:
         ...
+
+
+class CanCapture(Flag, metaclass=ABCMeta):
+    ...
+
+
+class Capturable(Flag, metaclass=ABCMeta):
+    ...
 
 
 class Static(Flag, metaclass=ABCMeta):

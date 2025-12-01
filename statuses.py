@@ -1,12 +1,12 @@
 from attrs import frozen
 
 
-@frozen(eq=False, hash=True)
+@frozen(hash=True)
 class Status:
-    def __eq__(self, other: 'Status') -> bool:
-        return self is other
+    _name: str
 
 
-INVALID = Status()
-MISSING = Status()
-CAN_BECOME_CORRECT = Status()
+INVALID = Status("INVALID")
+MISSING = Status("MISSING")
+CAN_BECOME_CORRECT = Status("CAN_BECOME_CORRECT")
+ABORT_NEEDED = Status("ABORT_NEEDED")

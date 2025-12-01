@@ -25,7 +25,7 @@ class _FiguresRelocation(proto.Move, metaclass=ABCMeta):
 
 
 @frozen
-class Capture(_FiguresRelocation):
+class Assault(_FiguresRelocation):
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
         board = session.board
         from_cell = board[self.from_coord]

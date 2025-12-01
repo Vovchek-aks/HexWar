@@ -7,7 +7,7 @@ from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
-    ConversionButtonPressAction
+    ConversionButtonPressAction, CaptureButtonPressAction
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.protocols import CellSelector
@@ -114,7 +114,8 @@ class UiLayerMaker:
                                text)
 
         button.was_clicked.subscribe(lambda:
-                                     self._button_press_action_happened.invoke(CreationButtonPressAction(figure)))
+                                     self._button_press_action_happened
+                                     .invoke(CreationButtonPressAction(self._cell_selector.get_coord(), figure)))
         return button
 
     def _make_infantry_menu(self) -> Layer:
@@ -127,13 +128,16 @@ class UiLayerMaker:
                                     background,
                                     to_motorize_text)
         to_motorize.was_clicked.subscribe(lambda: self._button_press_action_happened
-                                          .invoke(ConversionButtonPressAction(fig.Motorization)))
+                                          .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                              fig.Motorization)))
 
         capture_text = TextData.debug(Language.from_meta().get_capture_message())
         capture = ButtonUi.make(self._drawer,
                                 Rectangle(Vector2.zero(), capture_text.shape),
                                 background,
                                 capture_text)
+        capture.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                      .invoke(CaptureButtonPressAction(self._cell_selector.get_coord())))
 
         layout = HorizontalLayout(Rectangle(Vector2(20, self._screen_shape.y - 60), Vector2(200, 40)))
         layout.append(to_motorize)
@@ -153,9 +157,10 @@ class UiLayerMaker:
                                     background,
                                     to_infantry_text)
         to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
-                                          .invoke(ConversionButtonPressAction(fig.Infantry)))
+                                          .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                              fig.Infantry)))
 
-        layout = HorizontalLayout(Rectangle(Vector2(20, self._screen_shape.y - 60), Vector2(100, 40)))
+        layout = HorizontalLayout(Rectangle(Vector2(20, self._screen_shape.y - 70), Vector2(150, 50)))
         layout.append(to_infantry)
 
         layer = layout.layer

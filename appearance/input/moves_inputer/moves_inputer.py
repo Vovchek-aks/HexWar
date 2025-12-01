@@ -6,7 +6,7 @@ from appearance.input.moves_inputer.input_actions import InputAction
 from core.protocols import ValidMove, GameSession
 import appearance.protocols as proto
 from observer import Event, OnEventSubscriber
-from statuses import CAN_BECOME_CORRECT
+from statuses import CAN_BECOME_CORRECT, ABORT_NEEDED
 
 
 @frozen
@@ -33,6 +33,10 @@ class MovesInputer(proto.MovesInputer):
         while actions := self._actions_reader.actions:
             results = list(map(lambda reader: reader(actions),
                                self._move_reader.readers))
+
+            if ABORT_NEEDED in results:
+                self._actions_reader.clear()
+                return
 
             moves = [result for result in results if isinstance(result, ValidMove)]
             assert len(moves) < 2

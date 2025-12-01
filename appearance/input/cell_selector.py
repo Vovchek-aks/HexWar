@@ -3,7 +3,7 @@ from attrs import define, field
 from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import InputAction, NullClickAction, CellClickAction
-from core.moves.relocations import Relocation, Capture
+from core.moves.relocations import Relocation, Assault
 from core.protocols import ValidMove, MovesMaker
 from mathematics.vector import Vector2Int
 from observer import Event, OnEventSubscriber
@@ -47,7 +47,7 @@ class CellSelector(proto.CellSelector):
 
     def _on_board_move_was_made(self, move: ValidMove) -> None:
         match move.move:
-            case Relocation(to_coord=coord) | Capture(to_coord=coord):
+            case Relocation(to_coord=coord) | Assault(to_coord=coord):
                 self._select_cell(coord)
 
     def _select_cell(self, coord: Vector2Int) -> None:

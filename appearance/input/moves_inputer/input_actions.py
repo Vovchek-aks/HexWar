@@ -6,6 +6,7 @@ from appearance.input.clicks_catcher.click import MouseButtons, Click
 from mathematics.vector import Vector2Int
 import appearance.protocols as proto
 from core.protocols import Figure
+from statuses import Status
 
 
 class InputAction(proto.InputAction, metaclass=ABCMeta):
@@ -23,8 +24,9 @@ class CellClickAction(InputAction):
     buttons: MouseButtons
 
 
+@frozen
 class ButtonPressAction(InputAction, metaclass=ABCMeta):
-    ...
+    coord: Vector2Int | Status
 
 
 @frozen
@@ -35,3 +37,8 @@ class CreationButtonPressAction(ButtonPressAction):
 @frozen
 class ConversionButtonPressAction(ButtonPressAction):
     target: type[Figure]
+
+
+@frozen
+class CaptureButtonPressAction(ButtonPressAction):
+    ...

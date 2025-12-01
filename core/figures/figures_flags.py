@@ -49,3 +49,13 @@ class Creatable(proto.Creatable):
     EXCLUDES = set[type[Flag]]()
 
     cost: proto.Resource
+
+
+@frozen
+class CanCapture(proto.CanCapture):
+    EXCLUDES = set[type[Flag]]()
+
+
+@frozen
+class Capturable(proto.Capturable):
+    EXCLUDES = set[type[Flag]]()
