@@ -4,9 +4,8 @@ from appearance.input.clicks_catcher.click import Click
 from mathematics.vector import Vector2Int
 from observer import Event, OnEventSubscriber
 from appearance.input.moves_inputer.input_actions import InputAction, CellClickAction, NullClickAction, \
-    CreationButtonPressAction
+    ButtonPressAction
 import appearance.protocols as proto
-from core.figures import Figure
 
 
 @frozen
@@ -15,7 +14,7 @@ class InputActionsReader(proto.InputActionsReader):
     def make(cls,
              board_layer: proto.BoardLayer,
              null_layer: proto.WholeScreenLayer,
-             button_press_action_happened: OnEventSubscriber[type[Figure], None]) -> "InputActionsReader":
+             button_press_action_happened: OnEventSubscriber[ButtonPressAction, None]) -> "InputActionsReader":
         reader = cls()
 
         board_layer.cell_was_clicked.subscribe(reader._on_cell_was_clicked)
@@ -52,5 +51,5 @@ class InputActionsReader(proto.InputActionsReader):
     def _on_null_click(self, click: Click) -> None:
         self._add_action(NullClickAction(click))
 
-    def _on_button_press_action_happened(self, figure: type[Figure]) -> None:
-        self._add_action(CreationButtonPressAction(figure))
+    def _on_button_press_action_happened(self, action: ButtonPressAction) -> None:
+        self._add_action(action)

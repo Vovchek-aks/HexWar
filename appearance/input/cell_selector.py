@@ -3,7 +3,7 @@ from attrs import define, field
 from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import InputAction, NullClickAction, CellClickAction
-from core.moves import Relocation, Capture
+from core.moves.relocations import Relocation, Capture
 from core.protocols import ValidMove, MovesMaker
 from mathematics.vector import Vector2Int
 from observer import Event, OnEventSubscriber

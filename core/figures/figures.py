@@ -7,14 +7,15 @@ from core.cells import Cells
 from core.figures.figures_flags import Flags, Static, Creatable
 from core.figures.movable_flag import MovableBuilder
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
-from core.moves import Relocation, Capture
+from core.moves.relocations import Relocation, Capture
 from core.resources import Dollars
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
+from core.protocols import Figure
 
 
 @define(hash=True, eq=True)
-class _Figure(proto.Figure, metaclass=ABCMeta):
+class _Figure(Figure, metaclass=ABCMeta):
     _id: int = field(init=False)
 
     def __attrs_post_init__(self) -> None:

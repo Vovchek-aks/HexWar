@@ -5,7 +5,10 @@
   "messages": {
     "ui": {
       "END_TURN_BTN": "Завершить ход",
-      "PLAYERS_TURN_TEXT": "{player} ходит"
+      "PLAYERS_TURN_TEXT": "{player} ходит",
+      "TO_MOTORIZATION": "Околёситься",
+      "CAPTURE": "Захватить",
+      "TO_INFANTRY": "Обесколёситься"
     },
     "figures": {
       "Infantry": "Пехота",

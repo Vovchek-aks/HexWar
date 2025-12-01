@@ -22,6 +22,9 @@ _RESOURCES = "resources"
 _UI = "ui"
 _END_TURN_BTN = "END_TURN_BTN"
 _PLAYERS_TURN_TEXT = "PLAYERS_TURN_TEXT"
+_TO_MOTORIZATION = "TO_MOTORIZATION"
+_CAPTURE = "CAPTURE"
+_TO_INFANTRY = "TO_INFANTRY"
 
 LANGUAGES_FOLDER = Path("data/languages")
 
@@ -64,6 +67,15 @@ class Language:
 
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]
+
+    def get_to_motorize_message(self) -> str:
+        return self._ui[_TO_MOTORIZATION]
+
+    def get_to_infantry_message(self) -> str:
+        return self._ui[_TO_INFANTRY]
+
+    def get_capture_message(self) -> str:
+        return self._ui[_CAPTURE]
 
     def get_players_turn_message(self, player: str) -> str:
         return self._ui[_PLAYERS_TURN_TEXT].format(player=player)

@@ -6,6 +6,7 @@ from appearance.game_engine.game_engine_pg.game_engine import GameEngine
 from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
+from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
 from core.player.player_moves_maker import player_moves_maker
@@ -50,7 +51,7 @@ def make_game_engine(caption: str,
     board_layer = BoardLayer(hovered_cell_getter)
     null_layer = WholeScreenLayer()
 
-    button_press_action_happened = Event[type[Figure], None]()
+    button_press_action_happened = Event[ButtonPressAction, None]()
     actions_reader = InputActionsReader.make(board_layer, null_layer, button_press_action_happened.subscriber)
 
     moves_maker = MovesMaker(session)

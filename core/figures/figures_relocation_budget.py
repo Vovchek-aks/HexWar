@@ -10,6 +10,9 @@ class FiguresRelocationBudget(proto.FiguresRelocationBudget):
     def clear(self) -> None:
         self.figures_bills.clear()
 
+    def pop(self, figure: proto.Figure) -> int:
+        return self.figures_bills.pop(figure) if figure in self.figures_bills else 0
+
     def of(self, figure: proto.Figure) -> int:
         return self.figures_bills.get(figure, 0)
 

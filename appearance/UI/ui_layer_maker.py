@@ -6,6 +6,8 @@ from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
+from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
+    ConversionButtonPressAction
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.protocols import CellSelector
@@ -14,7 +16,7 @@ from core.protocols import GameSession, Player, MovesMaker, ValidMove, Resources
 from core.resources import Dollars
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2, Vector2Int
-import core.figures as fig
+import core.figures.figures as fig
 from observer import Event
 from statuses import MISSING
 
@@ -25,18 +27,18 @@ class UiLayerMaker:
     _screen_shape: Vector2Int
     _session: GameSession
     _cell_selector: CellSelector
-    _button_press_action_happened: Event[type[fig.Figure], None]
+    _button_press_action_happened: Event[ButtonPressAction, None]
     _moves_maker: MovesMaker
 
     def make(self, user_inputer_builder: EventPlayerInputerBuilder) -> Layer:
         language = Language.from_meta()
 
         players_turn = TextUi.make(self._drawer,
-                                   Rectangle(Vector2(10, 10), Vector2(130, 30)),
+                                   Rectangle(Vector2(10, 10), Vector2(110, 30)),
                                    TextData.debug('...'))
 
         dollars = TextUi.make(self._drawer,
-                              Rectangle(Vector2(2, 60), Vector2(130, 20)),
+                              Rectangle(Vector2(12, 60), Vector2(100, 20)),
                               TextData.debug('...'))
 
         def on_resources_had_changed(resources: ResourcesStockpile) -> None:
@@ -59,6 +61,8 @@ class UiLayerMaker:
             players_turn,
             dollars,
             self._make_figures_creation_buttons(),
+            self._make_infantry_menu(),
+            self._make_motorization_menu(),
             end_turn_button,
         ]
 
@@ -81,7 +85,7 @@ class UiLayerMaker:
         return button
 
     def _make_figures_creation_buttons(self) -> Layer:
-        layout = VerticalLayout(Rectangle(Vector2(20, self._screen_shape.y - 260), Vector2(200, 250)), margin_ratio=.2)
+        layout = VerticalLayout(Rectangle(Vector2(20, self._screen_shape.y - 270), Vector2(200, 250)), margin_ratio=.2)
         layout.append(self._make_figure_creation_button(fig.Town))
         layout.append(self._make_figure_creation_button(fig.Bunker))
         layout.append(self._make_figure_creation_button(fig.Motorization))
@@ -94,21 +98,7 @@ class UiLayerMaker:
         layout.append(self._make_figure_creation_button(fig.Artillery))
 
         layer = layout.layer
-        layer.set_activity(False)
-
-        self._cell_selector.cell_was_selected.subscribe(
-            lambda coord: layer.set_activity(self._is_figures_making_buttons_needed(coord)))
-        self._cell_selector.cell_was_unselected.subscribe(lambda: layer.set_activity(False))
-
-        def on_board_move_was_made(_: ValidMove) -> None:
-            if (coord := self._cell_selector.get_coord()) is MISSING:
-                layer.set_activity(False)
-                return
-
-            return layer.set_activity(self._is_figures_making_buttons_needed(coord))
-
-        self._moves_maker.board_move_was_made.subscribe(on_board_move_was_made)
-
+        self._bind_layer_to_cell_with_figure_selection(layer, fig.Empty)
         return layer
 
     def _make_figure_creation_button(self, figure: type[fig.Figure]) -> ButtonUi:
@@ -123,19 +113,83 @@ class UiLayerMaker:
                                background,
                                text)
 
-        button.was_clicked.subscribe(lambda: self._button_press_action_happened.invoke(figure))
+        button.was_clicked.subscribe(lambda:
+                                     self._button_press_action_happened.invoke(CreationButtonPressAction(figure)))
         return button
+
+    def _make_infantry_menu(self) -> Layer:
+        background = (SpritesLoader
+                      .from_meta()
+                      .load_button_2_to_3())
+        to_motorize_text = TextData.debug(Language.from_meta().get_to_motorize_message())
+        to_motorize = ButtonUi.make(self._drawer,
+                                    Rectangle(Vector2.zero(), to_motorize_text.shape),
+                                    background,
+                                    to_motorize_text)
+        to_motorize.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                          .invoke(ConversionButtonPressAction(fig.Motorization)))
+
+        capture_text = TextData.debug(Language.from_meta().get_capture_message())
+        capture = ButtonUi.make(self._drawer,
+                                Rectangle(Vector2.zero(), capture_text.shape),
+                                background,
+                                capture_text)
+
+        layout = HorizontalLayout(Rectangle(Vector2(20, self._screen_shape.y - 60), Vector2(200, 40)))
+        layout.append(to_motorize)
+        layout.append(capture)
+
+        layer = layout.layer
+        self._bind_layer_to_cell_with_figure_selection(layer, fig.Infantry)
+        return layer
+
+    def _make_motorization_menu(self) -> Layer:
+        background = (SpritesLoader
+                      .from_meta()
+                      .load_button_2_to_3())
+        to_infantry_text = TextData.debug(Language.from_meta().get_to_infantry_message())
+        to_infantry = ButtonUi.make(self._drawer,
+                                    Rectangle(Vector2.zero(), to_infantry_text.shape),
+                                    background,
+                                    to_infantry_text)
+        to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                          .invoke(ConversionButtonPressAction(fig.Infantry)))
+
+        layout = HorizontalLayout(Rectangle(Vector2(20, self._screen_shape.y - 60), Vector2(100, 40)))
+        layout.append(to_infantry)
+
+        layer = layout.layer
+        self._bind_layer_to_cell_with_figure_selection(layer, fig.Motorization)
+        return layer
+
+    def _bind_layer_to_cell_with_figure_selection(self, layer: Layer, figure: type[fig.Figure]) -> None:
+        layer.set_activity(False)
+
+        self._cell_selector.cell_was_selected.subscribe(
+            lambda coord: layer.set_activity(self._is_ui_needed(coord, figure)))
+        self._cell_selector.cell_was_unselected.subscribe(lambda: layer.set_activity(False))
+
+        def on_board_move_was_made(_: ValidMove) -> None:
+            if (coord := self._cell_selector.get_coord()) is MISSING:
+                layer.set_activity(False)
+                return
+
+            return layer.set_activity(self._is_ui_needed(coord, figure))
+
+        self._moves_maker.board_move_was_made.subscribe(on_board_move_was_made)
+
 
     def _get_position_from_left_bottom(self, delta: Vector2) -> Vector2:
         position = Vector2(0, self._screen_shape.y)
         position += Vector2(delta.x, -delta.y)
         return position
 
-    def _is_figures_making_buttons_needed(self, cell_coord: Vector2Int) -> bool:
+    def _is_ui_needed(self, cell_coord: Vector2Int, figure: type[fig.Figure]) -> bool:
         cell = self._session.board[cell_coord]
         player = self._session.master.current_player
-        is_needed_by_current_player = cell.owner is player and cell.is_empty
-        return is_needed_by_current_player and self._is_current_player_need_ui()
+        return (self._is_current_player_need_ui() and
+                cell.owner is player and
+                isinstance(cell.figure, figure))
 
     def _is_current_player_need_ui(self) -> bool:
         player = self._session.master.current_player

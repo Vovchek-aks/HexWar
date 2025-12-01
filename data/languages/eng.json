@@ -5,7 +5,10 @@
   "messages": {
     "ui": {
       "END_TURN_BTN": "End turn",
-      "PLAYERS_TURN_TEXT": "{player}'s turn"
+      "PLAYERS_TURN_TEXT": "{player}'s turn",
+      "TO_MOTORIZATION": "Motorize",
+      "CAPTURE": "Capture",
+      "TO_INFANTRY": "Unmotorize"
     },
     "figures": {
       "Infantry": "Infantry",

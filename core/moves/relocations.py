@@ -4,19 +4,9 @@ from attrs import frozen
 
 from core.figures.movable_flag import Movable
 import core.protocols as proto
-import core.figures as fig
-from core.protocols import Creatable
+from core.moves.valid_move import ValidMove
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID, MISSING
-
-
-@frozen
-class ValidMove(proto.ValidMove):
-    _move: proto.Move
-
-    @property
-    def move(self) -> proto.Move:
-        return self._move
 
 
 @frozen
@@ -80,7 +70,7 @@ class Relocation(_FiguresRelocation):
         if from_cell.owner is not to_cell.owner:
             return INVALID
 
-        if not isinstance(to_cell.figure, fig.Empty):
+        if not to_cell.is_empty:
             return INVALID
 
         if (movable := from_cell.figure.FLAGS.get(Movable)) is MISSING:
@@ -93,35 +83,3 @@ class Relocation(_FiguresRelocation):
             return INVALID
 
         return ValidMove(self)
-
-
-@frozen
-class Creation(proto.Move):
-    figure_type: type[proto.Figure]
-    to_coord: Vector2Int
-
-    def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
-        board = session.board
-        to_cell = board[self.to_coord]
-
-        if to_cell.owner is not session.master.current_player:
-            return INVALID
-
-        if not to_cell.is_empty:
-            return INVALID
-
-        if (creatable := self.figure_type.FLAGS.get(Creatable)) is MISSING:
-            return INVALID
-
-        if not session.master.current_player.resources.can_take(creatable.cost):
-            return INVALID
-
-        return ValidMove(self)
-
-    def execute(self, session: proto.GameSession) -> None:
-        board = session.board
-        figure = self.figure_type()
-
-        board[self.to_coord].insert(figure)
-
-        session.master.current_player.resources.take(figure.FLAGS.get(Creatable).cost)

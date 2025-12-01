@@ -327,6 +327,10 @@ class FiguresRelocationBudget(ABC):
         ...
 
     @abstractmethod
+    def pop(self, figure: Figure) -> int:
+        ...
+
+    @abstractmethod
     def of(self, figure: Figure) -> int:
         ...
 
