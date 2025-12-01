@@ -138,7 +138,6 @@ class Motorization(_Figure):
                        .can_move_to_neighbor()
                        .constant_strength(1)
                        .build()),
-                      Creatable(Dollars(500_000)),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(10_000))
                        .build()))
