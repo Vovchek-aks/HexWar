@@ -29,10 +29,10 @@
       ]
     },
     "Motorization": {
-      "file": "figures/mt.png",
+      "file": "figures/mt2.png",
       "pivot": [
-        183,
-        183
+        630,
+        630
       ]
     },
     "Tank": {
