@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from typing import Iterable
 
 from attrs import define, field
 
@@ -30,6 +31,10 @@ class Layout(proto.UiElement, metaclass=ABCMeta):
         self._elements.append(element)
         self._layer = Layer.as_multiple(self._elements)
         self._reshape_all(self._elements, self._margin_ratio)
+
+    def extend(self, elements: Iterable[proto.UiElement]) -> None:
+        for element in elements:
+            self.append(element)
 
     def _reshape_all(self, elements: list[proto.UiElement], margin_ratio: float) -> None:
         ...

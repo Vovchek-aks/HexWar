@@ -19,6 +19,7 @@ _FIGURES = "figures"
 
 _UI = "ui"
 _BUTTON_2_to_3 = "button_2_to_3"
+_BACKGROUND_2_to_3 = "background_2_to_3"
 
 SPRITES_FOLDER = Path("data/sprites")
 
@@ -59,6 +60,10 @@ class SpritesLoader:
 
     def load_button_2_to_3(self) -> Sprite:
         sprite_info = self._ui[_BUTTON_2_to_3]
+        return self._load_sprite(sprite_info)
+
+    def load_background_2_to_3(self) -> Sprite:
+        sprite_info = self._ui[_BACKGROUND_2_to_3]
         return self._load_sprite(sprite_info)
 
 

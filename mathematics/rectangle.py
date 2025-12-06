@@ -1,6 +1,7 @@
-from attrs import frozen
+from attrs import frozen, define, field
 
-from mathematics.vector import Vector2
+from mathematics.vector import Vector2, Vector2Int
+from statuses import Status, MISSING
 
 
 @frozen
@@ -42,3 +43,52 @@ class Rectangle:
 
         return (left <= point.x <= right and
                 up <= point.y <= bottom)
+
+
+@define
+class RectangleBuilder:
+    _screen_shape: Vector2Int = field()
+
+    _coordinates_multiplier = field(init=False, default=Vector2Int(1, 1))
+    _position: Vector2 = field(init=False, factory=Vector2.zero)
+    _shape: Vector2 | Status = field(init=False, default=MISSING)
+
+    def is_valid(self) -> bool:
+        return MISSING not in (self._position, self._shape)
+
+    def build(self) -> Rectangle:
+        assert self.is_valid()
+        return Rectangle(self._position, self._shape)
+
+    def set_shape(self, shape: Vector2) -> "RectangleBuilder":
+        self._shape = shape
+        return self
+
+    def move(self, position: Vector2) -> "RectangleBuilder":
+        self._position += Vector2(position.x * self._coordinates_multiplier.x,
+                                  position.y * self._coordinates_multiplier.y)
+        return self
+
+    def adjust_for_shape(self) -> "RectangleBuilder":
+        return self.move(Vector2(self._shape.x if self._coordinates_multiplier.x < 0 else 0,
+                                 self._shape.y if self._coordinates_multiplier.y < 0 else 0))
+
+    def from_left_up(self) -> "RectangleBuilder":
+        self._position = Vector2.zero()
+        self._coordinates_multiplier = Vector2Int(1, 1)
+        return self
+
+    def from_left_bottom(self) -> "RectangleBuilder":
+        self._position = self._screen_shape.with_x(0).as_vector2
+        self._coordinates_multiplier = Vector2Int(1, -1)
+        return self
+
+    def from_right_bottom(self) -> "RectangleBuilder":
+        self._position = self._screen_shape.as_vector2
+        self._coordinates_multiplier = Vector2Int(-1, -1)
+        return self
+
+    def from_right_up(self) -> "RectangleBuilder":
+        self._position = self._screen_shape.with_y(0).as_vector2
+        self._coordinates_multiplier = Vector2Int(-1, 1)
+        return self

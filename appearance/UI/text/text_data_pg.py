@@ -1,5 +1,4 @@
 from attrs import define, frozen, field
-from numpy.ma.core import less_equal
 
 from font import Font
 from color import Color
@@ -8,7 +7,8 @@ from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
 from statuses import Status, MISSING
 
-DEBUG_COLOR = Color(255, 255, 255)
+WHITE_COLOR = Color(255, 255, 255)
+BLACK_COLOR = Color(53, 53, 49)
 
 
 @frozen
@@ -18,7 +18,7 @@ class TextData(proto.TextData):
         return (TextDataBuilder()
                 .set_text(text)
                 .debug_font()
-                .debug_color()
+                .white_colored()
                 .build())
 
     text: str
@@ -76,8 +76,11 @@ class TextDataBuilder:
     def debug_font(self, size: int = 30) -> "TextDataBuilder":
         return self.set_font(Font(None, size))
 
-    def debug_color(self) -> "TextDataBuilder":
-        return self.set_color(DEBUG_COLOR)
+    def white_colored(self) -> "TextDataBuilder":
+        return self.set_color(WHITE_COLOR)
+
+    def black_colored(self) -> "TextDataBuilder":
+        return self.set_color(BLACK_COLOR)
 
     def change_font_size_fitting(self, rectangle: Rectangle) -> "TextDataBuilder":
         assert MISSING not in (self._text, self._font)

@@ -20,7 +20,6 @@ class ButtonUi(proto.UiElement):
              rectangle: Rectangle,
              sprite: Sprite,
              text_data: proto.TextData) -> "ButtonUi":
-        sprite = sprite.reshape(Vector2Int.from_vector2(rectangle.shape))
         image = ImageUi.make(drawer, rectangle, sprite)
         text = TextUi.make(drawer, get_text_rectangle(rectangle), text_data)
 
