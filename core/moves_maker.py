@@ -1,6 +1,7 @@
 from attrs import frozen, field
 
 import core.protocols as proto
+from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.relocations import Relocation, Assault
 from core.moves.creation import Creation
@@ -26,7 +27,7 @@ class MovesMaker(proto.MovesMaker):
 
     def make(self, move: proto.ValidMove) -> None:
         match move.move:  # move move
-            case Relocation() | Assault() | Creation() | Conversion() | Capture():
+            case Relocation() | Assault() | Creation() | Conversion() | Capture() | Attack():
                 self._session.make(move)
                 self._board_move_was_made.invoke(move)
             case _:

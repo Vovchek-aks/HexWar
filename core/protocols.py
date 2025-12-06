@@ -291,6 +291,13 @@ class Capturable(Flag, metaclass=ABCMeta):
     ...
 
 
+class CanAttack(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def max_distance(self) -> int:
+        ...
+
+
 class Static(Flag, metaclass=ABCMeta):
     ...
 

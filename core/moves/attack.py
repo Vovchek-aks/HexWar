@@ -3,11 +3,11 @@ from attrs import frozen
 import core.protocols as proto
 from core.moves.valid_move import ValidMove
 from mathematics.vector import Vector2Int
-from statuses import Status, INVALID
+from statuses import Status, INVALID, MISSING
 
 
 @frozen
-class Capture(proto.Move):
+class Attack(proto.Move):
     from_coord: Vector2Int
     to_coord: Vector2Int
 
@@ -23,16 +23,11 @@ class Capture(proto.Move):
         if from_cell.owner is to_cell.owner:
             return INVALID
 
-        if proto.CanCapture not in figure.FLAGS:
+        if (can_attack := figure.FLAGS.get(proto.CanAttack)) is MISSING:
             return INVALID
 
-        if proto.Capturable not in to_cell.figure.FLAGS:
-            return INVALID
-
+        assert can_attack.max_distance == 1
         if from_cell not in board.get_neighbors(to_cell, include_cell=False):
-            return INVALID
-
-        if from_cell.strength(board) <= to_cell.hardness(board):
             return INVALID
 
         if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
@@ -47,5 +42,5 @@ class Capture(proto.Move):
         figure = from_cell.figure
         budget = session.figures_budget
 
-        to_cell.change_owner(from_cell.owner)
+        to_cell.pop()
         budget.add(figure, figure.get_cost_of(self, session.board))

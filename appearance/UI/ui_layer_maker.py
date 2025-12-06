@@ -9,7 +9,7 @@ from appearance.UI.text.text_data_pg import TextDataBuilder
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
-    ConversionButtonPressAction, CaptureButtonPressAction
+    ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.protocols import CellSelector
@@ -74,6 +74,7 @@ class UiLayerMaker:
             self._make_figures_creation_buttons(),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
+            self._make_tank_menu(),
             end_turn_button,
         ])
         self._session.master.turn_has_passed.subscribe(lambda player:
@@ -152,6 +153,13 @@ class UiLayerMaker:
 
         return self._make_figure_menu(fig.Motorization, [to_infantry])
 
+    def _make_tank_menu(self) -> Layer:
+        to_infantry = self._make_null_button(Language.from_meta().get_attack_message())
+        to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                          .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
+
+        return self._make_figure_menu(fig.Tank, [to_infantry])
+
     def _make_figure_menu(self, figure: type[fig.Figure], buttons: list[ButtonUi]) -> Layer:
         background_margin = Vector2(20, 20)
         background = ImageUi.make(self._drawer,
@@ -167,7 +175,7 @@ class UiLayerMaker:
         title = TextUi.make(self._drawer,
                             RectangleBuilder(self._screen_shape)
                             .move(background.rectangle.left_up_corner + title_margin)
-                            .set_shape(Vector2(background.rectangle.shape.x / 2,
+                            .set_shape(Vector2(background.rectangle.shape.x / 2 - title_margin.x,
                                                background.rectangle.shape.y / 4))
                             .build(),
                             TextDataBuilder()

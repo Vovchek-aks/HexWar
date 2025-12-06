@@ -8,7 +8,8 @@
       "PLAYERS_TURN_TEXT": "{player} ходит",
       "TO_MOTORIZATION": "Околёситься",
       "CAPTURE": "Захватить",
-      "TO_INFANTRY": "Обесколёситься"
+      "TO_INFANTRY": "Обесколёситься",
+      "ATTACK": "Атаковать"
     },
     "figures": {
       "Infantry": "Пехота",

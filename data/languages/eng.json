@@ -8,7 +8,8 @@
       "PLAYERS_TURN_TEXT": "{player}'s turn",
       "TO_MOTORIZATION": "Motorize",
       "CAPTURE": "Capture",
-      "TO_INFANTRY": "Unmotorize"
+      "TO_INFANTRY": "Unmotorize",
+      "ATTACK": "Attack"
     },
     "figures": {
       "Infantry": "Infantry",

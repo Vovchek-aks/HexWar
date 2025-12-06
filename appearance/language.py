@@ -25,6 +25,7 @@ _PLAYERS_TURN_TEXT = "PLAYERS_TURN_TEXT"
 _TO_MOTORIZATION = "TO_MOTORIZATION"
 _CAPTURE = "CAPTURE"
 _TO_INFANTRY = "TO_INFANTRY"
+_ATTACK = "ATTACK"
 
 LANGUAGES_FOLDER = Path("data/languages")
 
@@ -76,6 +77,9 @@ class Language:
 
     def get_capture_message(self) -> str:
         return self._ui[_CAPTURE]
+
+    def get_attack_message(self) -> str:
+        return self._ui[_ATTACK]
 
     def get_players_turn_message(self, player: str) -> str:
         return self._ui[_PLAYERS_TURN_TEXT].format(player=player)

@@ -59,3 +59,10 @@ class CanCapture(proto.CanCapture):
 @frozen
 class Capturable(proto.Capturable):
     EXCLUDES = set[type[Flag]]()
+
+
+@frozen
+class CanAttack(proto.CanAttack):
+    EXCLUDES = set[type[Flag]]()
+
+    max_distance: int

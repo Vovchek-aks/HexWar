@@ -4,9 +4,10 @@ from attrs import define, field
 
 from core import protocols as proto
 from core.cells import Cells
-from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable
+from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack
 from core.figures.movable_flag import MovableBuilder
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
+from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.relocations import Relocation, Assault
 from core.resources import Dollars
@@ -168,7 +169,8 @@ class Tank(_Figure):
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(20_000))
-                       .build()))
+                       .build()),
+                      CanAttack(1))
     MOVES_BUDGET = 60
 
     SELF_STRENGTH = 1
@@ -185,6 +187,8 @@ class Tank(_Figure):
             case Relocation():
                 return 15
             case Assault():
+                return 20
+            case Attack():
                 return 20
             case _:
                 raise NotSupportedMove(move)
@@ -211,7 +215,8 @@ class Artillery(_Figure):
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(20_000))
-                       .build()))
+                       .build()),
+                      CanAttack(1))
     MOVES_BUDGET = 2
 
     @classmethod

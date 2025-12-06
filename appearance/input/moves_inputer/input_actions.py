@@ -42,3 +42,8 @@ class ConversionButtonPressAction(ButtonPressAction):
 @frozen
 class CaptureButtonPressAction(ButtonPressAction):
     ...
+
+
+@frozen
+class AttackButtonPressAction(ButtonPressAction):
+    ...
