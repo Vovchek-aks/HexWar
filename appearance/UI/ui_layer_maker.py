@@ -20,7 +20,7 @@ from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figures as fig
 from observer import Event
-from statuses import MISSING
+from statuses import MISSING, Status
 
 
 @frozen
@@ -75,6 +75,9 @@ class UiLayerMaker:
             self._make_infantry_menu(),
             self._make_motorization_menu(),
             self._make_tank_menu(),
+            self._make_artillery_menu(),
+            self._make_town_menu(),
+            self._make_bunker_menu(),
             end_turn_button,
         ])
         self._session.master.turn_has_passed.subscribe(lambda player:
@@ -153,6 +156,12 @@ class UiLayerMaker:
 
         return self._make_figure_menu(fig.Motorization, [to_infantry])
 
+    def _make_town_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Town, [])
+
+    def _make_bunker_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Bunker, [])
+
     def _make_tank_menu(self) -> Layer:
         to_infantry = self._make_null_button(Language.from_meta().get_attack_message())
         to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
@@ -160,7 +169,14 @@ class UiLayerMaker:
 
         return self._make_figure_menu(fig.Tank, [to_infantry])
 
-    def _make_figure_menu(self, figure: type[fig.Figure], buttons: list[ButtonUi]) -> Layer:
+    def _make_artillery_menu(self) -> Layer:
+        # to_infantry = self._make_null_button(Language.from_meta().get_attack_message())
+        # to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
+        #                                   .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
+
+        return self._make_figure_menu(fig.Artillery, [])
+
+    def _make_figure_menu(self, figure_type: type[fig.Figure], buttons: list[ButtonUi]) -> Layer:
         background_margin = Vector2(20, 20)
         background = ImageUi.make(self._drawer,
                                   RectangleBuilder(self._screen_shape)
@@ -179,10 +195,40 @@ class UiLayerMaker:
                                                background.rectangle.shape.y / 4))
                             .build(),
                             TextDataBuilder()
-                            .set_text(self._language.get_figure_name(figure))
+                            .set_text(self._language.get_figure_name(figure_type))
                             .debug_font()
                             .black_colored()
                             .build())
+        *_, title_bottom = title.rectangle.left_right_up_bottom
+        combat_ability_position = Vector2(title.rectangle.left_up_corner.x, title_bottom)
+        combat_ability = TextUi.make(self._drawer,
+                                     RectangleBuilder(self._screen_shape)
+                                     .move(combat_ability_position)
+                                     .set_shape(Vector2(background.rectangle.shape.x / 2 - title_margin.x,
+                                                        background.rectangle.shape.y / 4))
+                                     .build(),
+                                     TextDataBuilder()
+                                     .set_text(self._language.get_combat_ability_message(0))
+                                     .debug_font()
+                                     .black_colored()
+                                     .build())
+
+        def update_combat_ability(coord: Vector2Int | Status) -> None:
+            if coord is MISSING:
+                return
+
+            figure = self._session.board[coord].figure
+            if (budget := figure.MOVES_BUDGET) == 0:
+                combat_ability.set_text('')
+                return
+
+            spent = self._session.figures_budget.of(figure)
+            combat_ability_ratio = (budget - spent) / budget
+            combat_ability.set_text(self._language.get_combat_ability_message(combat_ability_ratio))
+
+        self._cell_selector.cell_was_selected.subscribe(update_combat_ability)
+        self._moves_maker.board_move_was_made.subscribe(
+            lambda _: update_combat_ability(self._cell_selector.get_coord()))
 
         layout_margin = Vector2(15, 15)
         buttons_width = background.rectangle.shape.x - layout_margin.x * 2
@@ -196,11 +242,12 @@ class UiLayerMaker:
 
         layer = Layer.as_multiple([
             title,
+            combat_ability,
             layout,
             background,
         ])
 
-        self._bind_layer_to_cell_with_figure_selection(layer, figure)
+        self._bind_layer_to_cell_with_figure_selection(layer, figure_type)
         return layer
 
     def _bind_layer_to_cell_with_figure_selection(self, layer: Layer, figure: type[fig.Figure]) -> None:

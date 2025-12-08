@@ -26,6 +26,7 @@ _TO_MOTORIZATION = "TO_MOTORIZATION"
 _CAPTURE = "CAPTURE"
 _TO_INFANTRY = "TO_INFANTRY"
 _ATTACK = "ATTACK"
+_COMBAT_ABILITY = "COMBAT_ABILITY"
 
 LANGUAGES_FOLDER = Path("data/languages")
 
@@ -80,6 +81,10 @@ class Language:
 
     def get_attack_message(self) -> str:
         return self._ui[_ATTACK]
+
+    def get_combat_ability_message(self, combat_ability_ratio: float) -> str:
+        combat_ability = f"{100 * combat_ability_ratio:.0f}"
+        return self._ui[_COMBAT_ABILITY].format(combat_ability=combat_ability)
 
     def get_players_turn_message(self, player: str) -> str:
         return self._ui[_PLAYERS_TURN_TEXT].format(player=player)

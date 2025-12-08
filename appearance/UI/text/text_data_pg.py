@@ -85,6 +85,9 @@ class TextDataBuilder:
     def change_font_size_fitting(self, rectangle: Rectangle) -> "TextDataBuilder":
         assert MISSING not in (self._text, self._font)
 
+        if not self._text:
+            return self
+
         font = self._font
         for _ in range(2):
             rect_width, rect_height = rectangle.shape

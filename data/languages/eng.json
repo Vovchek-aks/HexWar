@@ -9,7 +9,8 @@
       "TO_MOTORIZATION": "Motorize",
       "CAPTURE": "Capture",
       "TO_INFANTRY": "Unmotorize",
-      "ATTACK": "Attack"
+      "ATTACK": "Attack",
+      "COMBAT_ABILITY": "Combat ability: {combat_ability}%"
     },
     "figures": {
       "Infantry": "Infantry",
