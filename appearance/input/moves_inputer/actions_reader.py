@@ -23,27 +23,38 @@ class InputActionsReader(proto.InputActionsReader):
 
         return reader
 
-    _action_was_raed: Event[InputAction, None] = field(init=False, factory=Event)
+    _action_was_read: Event[InputAction, bool, None] = field(init=False, factory=Event)
+    _action_was_removed: Event[InputAction, bool, None] = field(init=False, factory=Event)
 
     _actions: list[InputAction] = field(init=False, factory=list)
 
     @property
-    def action_was_raed(self) -> OnEventSubscriber[InputAction, None]:
-        return self._action_was_raed.subscriber
+    def action_was_read(self) -> OnEventSubscriber[InputAction, bool, None]:
+        return self._action_was_read.subscriber
+
+    @property
+    def action_was_removed(self) -> OnEventSubscriber[InputAction, bool, None]:
+        return self._action_was_removed.subscriber
 
     @property
     def actions(self) -> list[InputAction]:
         return list(self._actions)
 
     def clear(self) -> None:
-        self._actions.clear()
+        while self._actions:
+            self.pop()
 
     def pop(self) -> None:
-        self._actions.pop(0)
+        self._on_action_removed(self._actions.pop(0))
 
     def _add_action(self, action: InputAction) -> None:
+        is_first = not any(isinstance(action, type(read)) for read in self.actions)
         self._actions.append(action)
-        self._action_was_raed.invoke(action)
+        self._action_was_read.invoke(action, is_first)
+
+    def _on_action_removed(self, action: InputAction) -> None:
+        is_last = not any(isinstance(action, type(read)) for read in self.actions)
+        self._action_was_removed.invoke(action, is_last)
 
     def _on_cell_was_clicked(self, coord: Vector2Int, buttons: proto.MouseButtons) -> None:
         self._add_action(CellClickAction(coord, buttons))

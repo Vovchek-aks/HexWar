@@ -299,7 +299,12 @@ class InputAction(ABC):
 class InputActionsReader(ABC):
     @property
     @abstractmethod
-    def action_was_raed(self) -> OnEventSubscriber[InputAction, None]:
+    def action_was_read(self) -> OnEventSubscriber[InputAction, bool, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def action_was_removed(self) -> OnEventSubscriber[InputAction, bool, None]:
         ...
 
     @property

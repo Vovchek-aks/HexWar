@@ -54,15 +54,22 @@
     "button_2_to_3": {
       "file": "ui/btn_216_144.png",
       "pivot": [
-        16,
-        16
+        0,
+        0
+      ]
+    },
+    "button_2_to_3_active": {
+      "file": "ui/btn_216_144_active.png",
+      "pivot": [
+        0,
+        0
       ]
     },
     "background_2_to_3": {
       "file": "ui/bck_1500_1000.png",
       "pivot": [
-        16,
-        16
+        0,
+        0
       ]
     }
   }

@@ -1,3 +1,5 @@
+from typing import Callable
+
 from attrs import frozen, Factory
 
 from appearance.UI.button import ButtonUi, get_image_rectangle
@@ -8,11 +10,12 @@ from appearance.UI.text import TextUi, TextData
 from appearance.UI.text.text_data_pg import TextDataBuilder
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
+from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction
 from appearance.language import Language
 from appearance.layer import Layer
-from appearance.protocols import CellSelector
+from appearance.protocols import CellSelector, InputAction
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile
 from core.resources import Dollars
@@ -31,6 +34,8 @@ class UiLayerMaker:
     _cell_selector: CellSelector
     _button_press_action_happened: Event[ButtonPressAction, None]
     _moves_maker: MovesMaker
+    _actions_reader: InputActionsReader
+
     _language: Language = Factory(Language.from_meta)
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
@@ -142,9 +147,8 @@ class UiLayerMaker:
                                           .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                               fig.Motorization)))
 
-        capture = self._make_null_button(Language.from_meta().get_capture_message())
-        capture.was_clicked.subscribe(lambda: self._button_press_action_happened
-                                      .invoke(CaptureButtonPressAction(self._cell_selector.get_coord())))
+        capture = self._make_activatable_button(self._language.get_capture_message(),
+                                                lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Infantry, [to_motorize, capture])
 
@@ -163,16 +167,14 @@ class UiLayerMaker:
         return self._make_figure_menu(fig.Bunker, [])
 
     def _make_tank_menu(self) -> Layer:
-        attack = self._make_null_button(Language.from_meta().get_attack_message())
-        attack.was_clicked.subscribe(lambda: self._button_press_action_happened
-                                     .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
+        attack = self._make_activatable_button(self._language.get_attack_message(),
+                                               lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Tank, [attack])
 
     def _make_artillery_menu(self) -> Layer:
-        attack = self._make_null_button(Language.from_meta().get_attack_message())
-        attack.was_clicked.subscribe(lambda: self._button_press_action_happened
-                                     .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
+        attack = self._make_activatable_button(self._language.get_attack_message(),
+                                               lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Artillery, [attack])
 
@@ -270,6 +272,31 @@ class UiLayerMaker:
             return layer.set_activity(self._is_ui_needed(coord, figure))
 
         self._moves_maker.board_move_was_made.subscribe(on_board_move_was_made)
+
+    def _make_activatable_button(self,
+                                 text: str,
+                                 action_maker: Callable[[], ButtonPressAction]) -> ButtonUi:
+        button = self._make_null_button(text)
+        image = button.image
+        not_active = image.sprite
+        active = self._sprites_loader.load_button_2_to_3_active()
+
+        def set_active() -> None:
+            image.set_sprite(active)
+            self._button_press_action_happened.invoke(action_maker())
+
+        def set_not_active(action: InputAction, is_last: bool) -> None:
+            if not isinstance(action, type(action_maker())):
+                return
+            if not is_last:
+                return
+
+            image.set_sprite(not_active)
+
+        button.was_clicked.subscribe(set_active)
+        self._actions_reader.action_was_removed.subscribe(set_not_active)
+
+        return button
 
     def _make_null_button(self, text: str) -> ButtonUi:
         background = self._sprites_loader.load_button_2_to_3()

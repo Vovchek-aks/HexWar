@@ -35,7 +35,7 @@ class Board(proto.Board):
 
     @property
     def cells(self) -> Cells:
-        return Cells(self._cells.copy())
+        return Cells(set(self._cells))
 
     @property
     def cell_coords(self) -> Iterable[Vector2Int]:

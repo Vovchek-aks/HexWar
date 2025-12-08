@@ -17,7 +17,7 @@ class MovesInputer(proto.MovesInputer):
              session: GameSession,
              cell_selector: proto.CellSelector) -> "MovesInputer":
         inputer = cls(reader, MoveReaders(session, cell_selector))
-        reader.action_was_raed.subscribe(inputer._on_action_was_read)
+        reader.action_was_read.subscribe(inputer._on_action_was_read)
         return inputer
 
     _move_was_raed: Event[ValidMove, None] = field(init=False, factory=Event)
@@ -29,7 +29,7 @@ class MovesInputer(proto.MovesInputer):
     def move_was_raed(self) -> OnEventSubscriber[ValidMove, None]:
         return self._move_was_raed.subscriber
 
-    def _on_action_was_read(self, _: InputAction) -> None:
+    def _on_action_was_read(self, *_: InputAction | bool) -> None:
         while actions := self._actions_reader.actions:
             results = list(map(lambda reader: reader(actions),
                                self._move_reader.readers))

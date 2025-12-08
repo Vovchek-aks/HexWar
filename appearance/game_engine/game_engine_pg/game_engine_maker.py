@@ -26,7 +26,7 @@ from appearance.game_engine.game_engine_pg.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_pg.timer import Timer
 from appearance.input.camera_mover import CameraMover
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder, EventPlayerInputer
-from core.protocols import GameSession, Figure
+from core.protocols import GameSession
 from observer import Event
 
 
@@ -65,7 +65,8 @@ def make_game_engine(caption: str,
                              session,
                              cell_selector,
                              button_press_action_happened,
-                             moves_maker)
+                             moves_maker,
+                             actions_reader)
                 .make(user_inputer_builder))
 
     draw = DrawMaker(Draw).make(screen, camera, session.board)

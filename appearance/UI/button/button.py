@@ -52,6 +52,14 @@ class ButtonUi(proto.UiElement):
     def rectangle(self) -> Rectangle:
         return self._rectangle
 
+    @property
+    def image(self) -> ImageUi:
+        return self._image
+
+    @property
+    def text(self) -> TextUi:
+        return self._text
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
         self._image.set_rectangle(rectangle)

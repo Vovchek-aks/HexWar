@@ -18,7 +18,8 @@ _PIVOT = "pivot"
 _FIGURES = "figures"
 
 _UI = "ui"
-_BUTTON_2_to_3 = "button_2_to_3"
+_BUTTON_2_TO_3 = "button_2_to_3"
+_BUTTON_2_TO_3_ACTIVE = "button_2_to_3_active"
 _BACKGROUND_2_to_3 = "background_2_to_3"
 
 SPRITES_FOLDER = Path("data/sprites")
@@ -59,7 +60,11 @@ class SpritesLoader:
         return self._load_sprite(sprite_info)
 
     def load_button_2_to_3(self) -> Sprite:
-        sprite_info = self._ui[_BUTTON_2_to_3]
+        sprite_info = self._ui[_BUTTON_2_TO_3]
+        return self._load_sprite(sprite_info)
+
+    def load_button_2_to_3_active(self) -> Sprite:
+        sprite_info = self._ui[_BUTTON_2_TO_3_ACTIVE]
         return self._load_sprite(sprite_info)
 
     def load_background_2_to_3(self) -> Sprite:

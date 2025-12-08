@@ -17,7 +17,7 @@ class CellSelector(proto.CellSelector):
     def make(cls, actions_reader: InputActionsReader, moves_maker: MovesMaker) -> "CellSelector":
         selector = cls()
 
-        actions_reader.action_was_raed.subscribe(selector._on_action_was_read)
+        actions_reader.action_was_read.subscribe(selector._on_action_was_read)
         moves_maker.board_move_was_made.subscribe(selector._on_board_move_was_made)
 
         return selector
@@ -38,7 +38,7 @@ class CellSelector(proto.CellSelector):
     def get_coord(self) -> Vector2Int | Status:
         return self._cell_coord
 
-    def _on_action_was_read(self, action: InputAction) -> None:
+    def _on_action_was_read(self, action: InputAction, _: bool) -> None:
         match action:
             case CellClickAction(buttons=MouseButtons(is_left=True), coord=coord):
                 self._select_cell(coord)
