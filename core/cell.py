@@ -1,14 +1,18 @@
-from attrs import define
+from attrs import define, field
 
 import core.protocols as proto
 from core.figures import figures as fig
 from statuses import MISSING
 
 
-@define(eq=False)
+@define(hash=True, eq=True)
 class Cell(proto.Cell):
-    _owner: proto.Player
-    _figure: proto.Figure
+    _owner: proto.Player = field(hash=False)
+    _figure: proto.Figure = field(hash=False)
+    _id: int = field(init=False)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
 
     @property
     def owner(self) -> proto.Player:

@@ -231,7 +231,7 @@ class Cell(ABC):
 
 class Cells(ABC):
     @abstractmethod
-    def all(self) -> list[Cell]:
+    def all(self) -> set[Cell]:
         ...
 
     @abstractmethod
@@ -244,6 +244,18 @@ class Cells(ABC):
 
     @abstractmethod
     def with_flag(self, target: type["Flag"] | UnionType) -> "Cells":
+        ...
+
+    @abstractmethod
+    def __add__(self, other_cells: "Cells") -> "Cells":
+        ...
+
+    @abstractmethod
+    def __sub__(self, other_cells: "Cells") -> "Cells":
+        ...
+
+    @abstractmethod
+    def __and__(self, other_cells: "Cells") -> "Cells":
         ...
 
     @abstractmethod

@@ -108,7 +108,7 @@ class Infantry(_Figure):
     MOVES_BUDGET = 3
 
     SELF_HARDNESS = 2
-    _NEAR_BUNKER_HARDNESS = 4
+    _NEAR_BUNKER_HARDNESS = 6
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -173,7 +173,7 @@ class Tank(_Figure):
                       CanAttack(1))
     MOVES_BUDGET = 60
 
-    SELF_STRENGTH = 1
+    SELF_STRENGTH = 3
     _SELF_HARDNESS = 2
     _PER_INFANTRY_STRENGTH_RATIO = .5
 
@@ -207,7 +207,7 @@ class Tank(_Figure):
 
 class Artillery(_Figure):
     FLAGS = Flags.new(MovableBuilder()
-                      .constant_strength(6)
+                      .constant_strength(7)
                       .set_can_relocate(lambda from_coord, to_coord, board:
                                         Artillery.can_relocate(from_coord, to_coord, board))
                       .build(),
@@ -216,8 +216,8 @@ class Artillery(_Figure):
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(20_000))
                        .build()),
-                      CanAttack(1))
-    MOVES_BUDGET = 2
+                      CanAttack(2))
+    MOVES_BUDGET = 3
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -225,7 +225,15 @@ class Artillery(_Figure):
 
     @classmethod
     def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
-        return 1
+        match move:
+            case Relocation():
+                return 1
+            case Assault():
+                return cls.MOVES_BUDGET + 1
+            case Attack():
+                return 2
+            case _:
+                raise NotSupportedMove(move)
 
     @classmethod
     def can_relocate(cls, from_coord: Vector2Int, to_coord: Vector2Int, board: proto.Board) -> bool:

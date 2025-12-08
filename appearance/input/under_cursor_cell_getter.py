@@ -28,7 +28,6 @@ class UnderCursorCellGetter(proto.UnderCursorCellGetter):
 
     def _refinish(self, coord: Vector2Int, point: Vector2) -> Vector2Int:
         board = self._board
-        idx, _ = min(enumerate(map(lambda cell: (get_world_position(board.coordinates_of(cell)) - point).length(),
-                                   candidates := board.get_neighbors(board[coord], include_cell=True).all())),
-                     key=lambda t: t[-1])
-        return board.coordinates_of(candidates[idx])
+        true_cell = min(board.get_neighbors(board[coord], include_cell=True).all(),
+                        key=lambda cell: (get_world_position(board.coordinates_of(cell)) - point).length())
+        return board.coordinates_of(true_cell)

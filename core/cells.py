@@ -8,26 +8,32 @@ import core.protocols as proto
 
 @frozen
 class Cells(proto.Cells):
-    _cells: list[proto.Cell] = field(factory=list)
+    @classmethod
+    def empty(cls) -> proto.Cells:
+        return cls(set())
 
-    def all(self) -> list[proto.Cell]:
-        return list(self._cells)
+    _cells: set[proto.Cell] = field(factory=set)
+
+    def all(self) -> set[proto.Cell]:
+        return set(self._cells)
 
     def with_owner(self, target: proto.Player) -> "Cells":
-        return Cells([cell for cell in self._cells if cell.owner is target])
+        return Cells({cell for cell in self._cells if cell.owner is target})
 
     def with_figure(self, target: type[proto.Figure] | UnionType) -> "Cells":
-        return Cells([cell for cell in self._cells if isinstance(cell.figure, target)])
+        return Cells({cell for cell in self._cells if isinstance(cell.figure, target)})
 
     def with_flag(self, target: type[proto.Flag] | UnionType) -> "Cells":
-        return Cells([cell for cell in self._cells if target in cell.figure.FLAGS])
+        return Cells({cell for cell in self._cells if target in cell.figure.FLAGS})
 
     def __add__(self, other_cells: "Cells") -> "Cells":
-        our = [cell for cell in self if cell not in other_cells]
-        other = [cell for cell in other_cells if cell not in self]
-        common = [cell for cell in other_cells if cell in self]
+        return Cells(self._cells | other_cells._cells)
 
-        return Cells(our + other + common)
+    def __sub__(self, other_cells: "Cells") -> "Cells":
+        return Cells(self._cells - other_cells._cells)
+
+    def __and__(self, other_cells: "Cells") -> "Cells":
+        return Cells(self._cells & other_cells._cells)
 
     def __bool__(self) -> bool:
         return bool(self._cells)

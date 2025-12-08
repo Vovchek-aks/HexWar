@@ -1,6 +1,7 @@
 from attrs import frozen
 
 import core.protocols as proto
+from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.moves.valid_move import ValidMove
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID, MISSING
@@ -26,8 +27,8 @@ class Attack(proto.Move):
         if (can_attack := figure.FLAGS.get(proto.CanAttack)) is MISSING:
             return INVALID
 
-        assert can_attack.max_distance == 1
-        if from_cell not in board.get_neighbors(to_cell, include_cell=False):
+        if from_cell not in (DistantNeighborsGetter(to_cell, board)
+                .get_all_not_farther_than(can_attack.max_distance, include_cell=False)):
             return INVALID
 
         if from_cell.strength(board) <= to_cell.hardness(board):
@@ -45,5 +46,6 @@ class Attack(proto.Move):
         figure = from_cell.figure
         budget = session.figures_budget
 
-        to_cell.pop()
+        if not to_cell.is_empty:
+            to_cell.pop()
         budget.add(figure, figure.get_cost_of(self, session.board))

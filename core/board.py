@@ -55,12 +55,12 @@ class Board(proto.Board):
         assert self.has(cell)
 
         cell_coord = self.coordinates_of(cell)
-        neighbors = [cell] if include_cell else list[proto.Cell]()
+        neighbors = {cell} if include_cell else set[proto.Cell]()
 
         for delta in geo.neighbor_square_deltas().values():
             coord = cell_coord + delta
             if coord in self:
-                neighbors.append(self[coord])
+                neighbors.add(self[coord])
 
         return Cells(neighbors)
 

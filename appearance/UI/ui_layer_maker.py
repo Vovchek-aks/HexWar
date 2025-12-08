@@ -163,18 +163,18 @@ class UiLayerMaker:
         return self._make_figure_menu(fig.Bunker, [])
 
     def _make_tank_menu(self) -> Layer:
-        to_infantry = self._make_null_button(Language.from_meta().get_attack_message())
-        to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
-                                          .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
+        attack = self._make_null_button(Language.from_meta().get_attack_message())
+        attack.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                     .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
 
-        return self._make_figure_menu(fig.Tank, [to_infantry])
+        return self._make_figure_menu(fig.Tank, [attack])
 
     def _make_artillery_menu(self) -> Layer:
-        # to_infantry = self._make_null_button(Language.from_meta().get_attack_message())
-        # to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
-        #                                   .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
+        attack = self._make_null_button(Language.from_meta().get_attack_message())
+        attack.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                     .invoke(AttackButtonPressAction(self._cell_selector.get_coord())))
 
-        return self._make_figure_menu(fig.Artillery, [])
+        return self._make_figure_menu(fig.Artillery, [attack])
 
     def _make_figure_menu(self, figure_type: type[fig.Figure], buttons: list[ButtonUi]) -> Layer:
         background_margin = Vector2(20, 20)
@@ -218,6 +218,9 @@ class UiLayerMaker:
                 return
 
             figure = self._session.board[coord].figure
+            if not isinstance(figure, figure_type):
+                return
+
             if (budget := figure.MOVES_BUDGET) == 0:
                 combat_ability.set_text('')
                 return
@@ -228,6 +231,8 @@ class UiLayerMaker:
 
         self._cell_selector.cell_was_selected.subscribe(update_combat_ability)
         self._moves_maker.board_move_was_made.subscribe(
+            lambda _: update_combat_ability(self._cell_selector.get_coord()))
+        self._session.master.turn_has_passed.subscribe(
             lambda _: update_combat_ability(self._cell_selector.get_coord()))
 
         layout_margin = Vector2(15, 15)
