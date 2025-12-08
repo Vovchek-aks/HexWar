@@ -30,6 +30,9 @@ class Attack(proto.Move):
         if from_cell not in board.get_neighbors(to_cell, include_cell=False):
             return INVALID
 
+        if from_cell.strength(board) <= to_cell.hardness(board):
+            return INVALID
+
         if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
             return INVALID
 

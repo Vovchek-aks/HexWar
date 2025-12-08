@@ -88,7 +88,7 @@ class Bunker(_Figure):
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 3
+        return 4
 
     @classmethod
     def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
@@ -98,7 +98,7 @@ class Bunker(_Figure):
 class Infantry(_Figure):
     FLAGS = Flags.new((MovableBuilder()
                        .can_move_to_neighbor()
-                       .constant_strength(2)
+                       .constant_strength(3)
                        .build()),
                       Creatable(Dollars(100_000)),
                       CanCapture(),
@@ -107,7 +107,7 @@ class Infantry(_Figure):
                        .build()))
     MOVES_BUDGET = 3
 
-    SELF_HARDNESS = 1
+    SELF_HARDNESS = 2
     _NEAR_BUNKER_HARDNESS = 4
 
     @classmethod
@@ -137,7 +137,7 @@ class Infantry(_Figure):
 class Motorization(_Figure):
     FLAGS = Flags.new((MovableBuilder()
                        .can_move_to_neighbor()
-                       .constant_strength(1)
+                       .constant_strength(3)
                        .build()),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(10_000))
@@ -146,7 +146,7 @@ class Motorization(_Figure):
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return Infantry.SELF_HARDNESS
+        return 1
 
     @classmethod
     def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
@@ -174,8 +174,8 @@ class Tank(_Figure):
     MOVES_BUDGET = 60
 
     SELF_STRENGTH = 1
-    _SELF_HARDNESS = 1
-    _PER_INFANTRY_STRENGTH_RATIO = .75
+    _SELF_HARDNESS = 2
+    _PER_INFANTRY_STRENGTH_RATIO = .5
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -207,7 +207,7 @@ class Tank(_Figure):
 
 class Artillery(_Figure):
     FLAGS = Flags.new(MovableBuilder()
-                      .constant_strength(4)
+                      .constant_strength(6)
                       .set_can_relocate(lambda from_coord, to_coord, board:
                                         Artillery.can_relocate(from_coord, to_coord, board))
                       .build(),
