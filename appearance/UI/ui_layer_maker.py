@@ -65,8 +65,7 @@ class UiLayerMaker:
 
         layers = [
             players_turn,
-            dollars,
-            self._make_current_turn_ui(end_turn_button)
+            self._make_current_turn_ui(dollars, end_turn_button)
         ]
 
         on_turn_passed(self._session.master.current_player)
@@ -74,7 +73,7 @@ class UiLayerMaker:
 
         return Layer.as_multiple(layers)
 
-    def _make_current_turn_ui(self, end_turn_button: ButtonUi) -> Layer:
+    def _make_current_turn_ui(self, dollars: TextUi, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
             self._make_figures_creation_buttons(),
             self._make_infantry_menu(),
@@ -83,10 +82,10 @@ class UiLayerMaker:
             self._make_artillery_menu(),
             self._make_town_menu(),
             self._make_bunker_menu(),
+            dollars,
             end_turn_button,
         ])
-        self._session.master.turn_has_passed.subscribe(lambda player:
-                                                       layer.set_activity(self._is_player_need_ui(player)))
+        self._session.master.turn_has_passed.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
 
     def _make_end_turn_button(self) -> ButtonUi:
@@ -320,9 +319,4 @@ class UiLayerMaker:
                 isinstance(cell.figure, figure))
 
     def _is_current_player_need_ui(self) -> bool:
-        player = self._session.master.current_player
-        return self._is_player_need_ui(player)
-
-    @staticmethod
-    def _is_player_need_ui(player: Player) -> bool:
-        return player.data.name == "Red"
+        return self._session.master.current_player.need_ui

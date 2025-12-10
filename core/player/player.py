@@ -1,6 +1,7 @@
 from attrs import define, field
 
 import core.protocols as proto
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.resources import ResourcesStockpile
 
 
@@ -17,6 +18,10 @@ class Player(proto.Player):
     @property
     def inputer(self) -> proto.PlayerInputer:
         return self._inputer
+
+    @property
+    def need_ui(self) -> bool:
+        return not isinstance(self.inputer, BotPlayerInputer)
 
     @property
     def resources(self) -> proto.ResourcesStockpile:

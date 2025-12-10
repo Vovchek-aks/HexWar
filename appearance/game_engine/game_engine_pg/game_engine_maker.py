@@ -55,7 +55,7 @@ def make_game_engine(caption: str,
     actions_reader = InputActionsReader.make(board_layer, null_layer, button_press_action_happened.subscriber)
 
     moves_maker = MovesMaker(session)
-    cell_selector = CellSelector.make(actions_reader, moves_maker)
+    cell_selector = CellSelector.make(actions_reader, moves_maker, session.master)
     moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
 
     user_inputer_builder = EventPlayerInputerBuilder()

@@ -55,7 +55,7 @@ class Town(_Figure):
     FLAGS = Flags.new(Static(),
                       Creatable(Dollars(1_000_000)),
                       (UpdatableOnTurnStartBuilder()
-                       .add_resources(Dollars(150_000))
+                       .add_resources(Dollars(120_000))
                        .build()))
     MOVES_BUDGET = 0
 
@@ -100,10 +100,10 @@ class Infantry(_Figure):
                        .can_move_to_neighbor()
                        .constant_strength(3)
                        .build()),
-                      Creatable(Dollars(100_000)),
+                      Creatable(Dollars(150_000)),
                       CanCapture(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(5_000))
+                       .try_take_else_die(Dollars(20_000))
                        .build()))
     MOVES_BUDGET = 3
 
@@ -140,7 +140,7 @@ class Motorization(_Figure):
                        .constant_strength(3)
                        .build()),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(10_000))
+                       .try_take_else_die(Dollars(50_000))
                        .build()))
     MOVES_BUDGET = 60
 
@@ -168,7 +168,7 @@ class Tank(_Figure):
                       Creatable(Dollars(1_000_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(20_000))
+                       .try_take_else_die(Dollars(100_000))
                        .build()),
                       CanAttack(1))
     MOVES_BUDGET = 60
@@ -211,10 +211,10 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board:
                                         Artillery.can_relocate(from_coord, to_coord, board))
                       .build(),
-                      Creatable(Dollars(150_000)),
+                      Creatable(Dollars(250_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(20_000))
+                       .try_take_else_die(Dollars(100_000))
                        .build()),
                       CanAttack(2))
     MOVES_BUDGET = 3

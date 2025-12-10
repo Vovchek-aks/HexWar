@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod, ABCMeta
 from types import UnionType, TracebackType
 from typing import ClassVar, Iterable
 
-from observer import OnEventSubscriber
+from observer import OnEventSubscriber, Event
 from statuses import Status
 from mathematics.vector import Vector2Int
 from color import Color
@@ -75,11 +75,27 @@ class Player(ABC):
 
     @property
     @abstractmethod
+    def need_ui(self) -> bool:
+        ...
+
+    @property
+    @abstractmethod
     def resources(self) -> "ResourcesStockpile":
         ...
 
     @abstractmethod
     def change_inputer(self, inputer: PlayerInputer) -> None:
+        ...
+
+
+class Bot:
+    @classmethod
+    @abstractmethod
+    def make(cls, session: "GameSession", event_to_call: Event["ValidMove", None]) -> "Bot":
+        ...
+
+    @abstractmethod
+    def update(self) -> bool:
         ...
 
 
@@ -244,6 +260,10 @@ class Cells(ABC):
 
     @abstractmethod
     def with_flag(self, target: type["Flag"] | UnionType) -> "Cells":
+        ...
+
+    @abstractmethod
+    def at_front(self, board: Board) -> "Cells":
         ...
 
     @abstractmethod

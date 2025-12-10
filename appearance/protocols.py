@@ -162,7 +162,10 @@ class UnderCursorCellGetter(ABC):
 class CellSelector(ABC):
     @classmethod
     @abstractmethod
-    def make(cls, actions_reader: "InputActionsReader", moves_maker: proto.MovesMaker) -> "CellSelector":
+    def make(cls,
+             actions_reader: "InputActionsReader",
+             moves_maker: proto.MovesMaker,
+             master: proto.Master) -> "CellSelector":
         ...
 
     @property

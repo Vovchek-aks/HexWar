@@ -5,7 +5,7 @@ from attrs import frozen
 import core.protocols as proto
 
 
-@frozen
+@frozen(order=True)
 class Resource(proto.Resource, metaclass=ABCMeta):
     amount: int = 0
 

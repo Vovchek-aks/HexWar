@@ -26,6 +26,15 @@ class Cells(proto.Cells):
     def with_flag(self, target: type[proto.Flag] | UnionType) -> "Cells":
         return Cells({cell for cell in self._cells if target in cell.figure.FLAGS})
 
+    def at_front(self, board: proto.Board) -> "Cells":
+        assert self
+        player = next(iter(self._cells)).owner
+        assert self == self.with_owner(player)
+
+        return Cells({cell for cell in self._cells
+                      if (neighbors := board.get_neighbors(cell, include_cell=False)) !=
+                      neighbors.with_owner(player)})
+
     def __add__(self, other_cells: "Cells") -> "Cells":
         return Cells(self._cells | other_cells._cells)
 

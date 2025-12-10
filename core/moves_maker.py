@@ -8,6 +8,7 @@ from core.moves.creation import Creation
 from core.moves.conversion import Conversion
 from exceptions import NotImplementedMove
 from observer import Event, OnEventSubscriber
+from statuses import INVALID
 
 
 @frozen
@@ -26,6 +27,8 @@ class MovesMaker(proto.MovesMaker):
         return self._board_move_was_made.subscriber
 
     def make(self, move: proto.ValidMove) -> None:
+        assert move.move.validate(self._session) is not INVALID
+
         match move.move:  # move move
             case Relocation() | Assault() | Creation() | Conversion() | Capture() | Attack():
                 self._session.make(move)
