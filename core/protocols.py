@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod, ABCMeta
 from types import UnionType, TracebackType
 from typing import ClassVar, Iterable
 
-from observer import OnEventSubscriber, Event
+from observer import OnEventSubscriber
 from statuses import Status
 from mathematics.vector import Vector2Int
 from color import Color
@@ -24,6 +24,13 @@ class Master(ABC):
         ...
 
 
+class ValidMove(ABC):
+    @property
+    @abstractmethod
+    def move(self) -> "Move":
+        ...
+
+
 class PlayerData(ABC):
     @property
     @abstractmethod
@@ -37,13 +44,8 @@ class PlayerData(ABC):
 
 
 class PlayerInputer(ABC):
-    @property
     @abstractmethod
-    def move_was_inputted(self) -> OnEventSubscriber["ValidMove", None]:
-        ...
-
-    @abstractmethod
-    def update(self, session: "GameSession") -> None:
+    def get_move(self, session: "GameSession") -> ValidMove | Status:
         ...
 
     @abstractmethod
@@ -91,18 +93,11 @@ class Player(ABC):
 class Bot:
     @classmethod
     @abstractmethod
-    def make(cls, session: "GameSession", event_to_call: Event["ValidMove", None]) -> "Bot":
+    def make(cls) -> "Bot":
         ...
 
     @abstractmethod
-    def update(self) -> bool:
-        ...
-
-
-class ValidMove(ABC):
-    @property
-    @abstractmethod
-    def move(self) -> "Move":
+    def get_move(self, session: "GameSession") -> ValidMove | Status:
         ...
 
 
