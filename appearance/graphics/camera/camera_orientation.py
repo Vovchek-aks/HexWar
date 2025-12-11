@@ -9,7 +9,7 @@ from appearance import protocols as proto
 class CameraOrientation(proto.CameraOrientation):
     @classmethod
     def starter(cls) -> "CameraOrientation":
-        return cls(Vector2(0, 0), Angle(0), 50)
+        return cls(Vector2(13, -7), Angle(60), 25)
 
     _position: Vector2
     _rotation: Angle

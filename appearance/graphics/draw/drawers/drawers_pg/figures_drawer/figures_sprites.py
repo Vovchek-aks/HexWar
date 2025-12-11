@@ -1,4 +1,4 @@
-from attrs import frozen
+from attrs import frozen, field
 
 from appearance.graphics.sprites import Sprite
 from core.protocols import Figure
@@ -17,7 +17,7 @@ class FiguresSprites(proto.FiguresSprites):
 @frozen
 class FiguresSpritesBuilder:
     _no_sprite: Sprite
-    _sprites = dict[type[Figure], Sprite]()
+    _sprites: dict[type[Figure], Sprite] = field(factory=dict)
 
     def register(self, figure: type[Figure], sprite: Sprite) -> None:
         assert figure not in self._sprites
