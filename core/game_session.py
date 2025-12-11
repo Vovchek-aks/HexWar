@@ -44,9 +44,9 @@ def test_map(*, board_size: int) -> GameSession:
         Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor)),
     ]
     board = Board.from_maker(Vector2Int.ones() * board_size,
-                             lambda coord: Cell((players[3] if coord.y < board_size * .4 else players[2])
-                                                if coord.x > board_size * .3 else
-                                                (players[0] if coord.y < board_size * .6 else players[1]),
+                             lambda coord: Cell((players[3] if coord.y < board_size * .5 else players[2])
+                                                if coord.x > board_size * .4 else
+                                                (players[0] if coord.y < board_size * .5 else players[1]),
                                                 fig.Empty()))
 
     # board[Vector2Int(0, 0)].insert(fig.Infantry())

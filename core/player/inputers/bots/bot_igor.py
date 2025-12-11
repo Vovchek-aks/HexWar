@@ -47,8 +47,8 @@ class BotIgor(proto.Bot):
         town_count = self._count_of(fig.Town)
 
         move = (self._try_create(fig.Town)
-                if town_count < cells_count * .1 or town_count < 3 else
-                self._try_create(fig.Infantry))
+                if town_count < cells_count * .1 or town_count < 7 else
+                self._try_create(fig.Tank if random.random() > .9 else fig.Infantry))
         if move is not MISSING:
             return move
 
@@ -67,7 +67,7 @@ class BotIgor(proto.Bot):
         back = empties - front
 
         match figure:
-            case fig.Infantry | fig.Bunker:
+            case fig.Infantry | fig.Bunker | fig.Tank:
                 candidates = front
             case fig.Town:
                 candidates = back or empties
