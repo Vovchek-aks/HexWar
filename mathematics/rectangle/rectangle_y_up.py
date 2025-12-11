@@ -35,7 +35,7 @@ class Rectangle:
         return self._position + self._shape / 2
 
     @property
-    def left_up_corner(self) -> Vector2:
+    def position(self) -> Vector2:
         return Vector2(self._position)
 
     def is_surrounding(self, point: Vector2) -> bool:

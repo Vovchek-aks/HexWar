@@ -9,7 +9,7 @@ from mathematics.vector import Vector2
 @define
 class HorizontalLayout(Layout):
     def _reshape_all(self, elements: list[proto.UiElement], margin_ratio: float) -> None:
-        x, y = self.rectangle.left_up_corner
+        x, y = self.rectangle.position
         width, height = self.rectangle.shape
         total_empty = width * margin_ratio if len(elements) > 1 else 0
 

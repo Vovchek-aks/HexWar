@@ -6,7 +6,7 @@ from appearance.UI.text import TextUi
 from appearance.graphics.sprites import Sprite
 from appearance.layer import Layer
 from mathematics.rectangle import Rectangle
-from mathematics.vector import Vector2, Vector2Int
+from mathematics.vector import Vector2
 from observer import Event, OnEventSubscriber
 
 MARGIN = Vector2(10, 10)
@@ -71,8 +71,8 @@ class ButtonUi(proto.UiElement):
 
 
 def get_text_rectangle(rectangle: Rectangle) -> Rectangle:
-    return Rectangle(rectangle.left_up_corner + MARGIN, rectangle.shape - MARGIN * 2)
+    return Rectangle(rectangle.position + MARGIN, rectangle.shape - MARGIN * 2)
 
 
 def get_image_rectangle(rectangle: Rectangle) -> Rectangle:
-    return Rectangle(rectangle.left_up_corner - MARGIN, rectangle.shape + MARGIN * 2)
+    return Rectangle(rectangle.position - MARGIN, rectangle.shape + MARGIN * 2)

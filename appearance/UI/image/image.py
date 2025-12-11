@@ -42,13 +42,13 @@ class ImageUi(proto.UiElement):
 
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
-        self._sprite = self._sprite.reshape(rectangle.shape.as_vector2int)
+        self._sprite = self._sprite.reshape(Vector2Int.from_vector2(rectangle.shape, strict=False))
         self._layer = (LayerBuilder.like(self.layer)
                        .set_clicks_catcher(ShapeLayer(self._rectangle))
                        .build())
 
     def _draw(self, _: Vector2) -> None:
-        self._drawer.draw_image(self._sprite, self.rectangle.left_up_corner)
+        self._drawer.draw_image(self._sprite, self.rectangle.position)
 
     @staticmethod
     def _reshape(sprite: Sprite, rectangle: Rectangle) -> Sprite:
