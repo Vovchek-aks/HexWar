@@ -9,7 +9,7 @@ IS_BOTS_ONLY = True
 
 
 def main() -> None:
-    session = test_map(board_size=10)
+    session = test_map(board_size=20, initial_town_ratio=.05)
     engine, user_inputer = make_game_engine(CAPTION, UPS, SCREEN_SHAPE, session)
     if not IS_BOTS_ONLY:
         session.master.current_player.change_inputer(user_inputer)

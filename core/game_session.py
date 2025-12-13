@@ -1,3 +1,5 @@
+import random
+
 from attrs import frozen
 
 import core.protocols as proto
@@ -36,7 +38,7 @@ class GameSession(proto.GameSession):
         move.move.execute(self)
 
 
-def test_map(*, board_size: int) -> GameSession:
+def test_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
     players = [
         Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor())),
         Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor())),
@@ -49,24 +51,14 @@ def test_map(*, board_size: int) -> GameSession:
                                                 (players[0] if coord.y < board_size * .5 else players[1]),
                                                 fig.Empty()))
 
-    # board[Vector2Int(0, 0)].insert(fig.Infantry())
-    # board[Vector2Int(1, 0)].insert(fig.Infantry())
-    # board[Vector2Int(1, 3)].insert(fig.Infantry())
-    # board[Vector2Int(0, 1)].insert(fig.Tank())
+    for player in players:
+        while (len(board.cells.with_owner(player).with_figure(fig.Town).all()) <
+               len(board.cells.with_owner(player).all()) * initial_town_ratio):
+            random.choice(list(board.cells.with_owner(player).with_figure(fig.Empty).all())).insert(fig.Town())
 
-    # board[Vector2Int(1, 4)].insert(fig.Tank())
-    # board[Vector2Int(5, 7)].insert(fig.Town())
-
-    # board[Vector2Int(5, 8)].insert(fig.Infantry())
-    # board[Vector2Int(2, 8)].insert(fig.Town())
-
-    # board[Vector2Int(9, 2)].insert(fig.Town())
-    # board[Vector2Int(7, 2)].insert(fig.Bunker())
-    # board[Vector2Int(6, 2)].insert(fig.Infantry())
-
-    players[0].resources.add(Dollars(2_000_000))
-    players[1].resources.add(Dollars(2_000_000))
-    players[2].resources.add(Dollars(2_000_000))
-    players[3].resources.add(Dollars(2_000_000))
+    players[0].resources.add(Dollars(5_000_000))
+    players[1].resources.add(Dollars(5_000_000))
+    players[2].resources.add(Dollars(5_000_000))
+    players[3].resources.add(Dollars(5_000_000))
 
     return GameSession(Master(players), board, FiguresRelocationBudget())
