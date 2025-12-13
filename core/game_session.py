@@ -38,10 +38,10 @@ class GameSession(proto.GameSession):
 
 def test_map(*, board_size: int) -> GameSession:
     players = [
-        Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor)),
-        Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor)),
-        Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor)),
-        Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor)),
+        Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor())),
     ]
     board = Board.from_maker(Vector2Int.ones() * board_size,
                              lambda coord: Cell((players[3] if coord.y < board_size * .5 else players[2])

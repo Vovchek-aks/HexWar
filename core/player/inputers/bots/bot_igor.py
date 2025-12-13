@@ -11,10 +11,6 @@ from statuses import Status, MISSING, INVALID
 
 @define
 class BotIgor(proto.Bot):
-    @classmethod
-    def make(cls) -> "BotIgor":
-        return cls()
-
     _session: proto.GameSession | Status = field(init=False, default=MISSING)
 
     @property
