@@ -91,11 +91,6 @@ class Player(ABC):
 
 
 class Bot:
-    @classmethod
-    @abstractmethod
-    def make(cls) -> "Bot":
-        ...
-
     @abstractmethod
     def get_move(self, session: "GameSession") -> ValidMove | Status:
         ...
