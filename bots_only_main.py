@@ -1,5 +1,3 @@
-from attrs import define
-
 from appearance.game_engine import make_game_engine
 from core.game_session import test_map
 from mathematics.vector import Vector2Int
@@ -11,38 +9,15 @@ CAPTION = "HexWar"
 BOARD_SIZE = 20
 
 
-@define
-class FakeGameSession(proto.GameSession):
-    _session: proto.GameSession
-
-    @property
-    def master(self) -> proto.Master:
-        return self._session.master
-
-    @property
-    def figures_budget(self) -> proto.FiguresRelocationBudget:
-        return self._session.figures_budget
-
-    @property
-    def board(self) -> proto.Board:
-        return self._session.board
-
-    def make(self, move: proto.ValidMove) -> None:
-        move.move.execute(self._session)
-
-    def change_session(self, session: proto.GameSession) -> None:
-        self._session = session
-
-
 class Shit(Exception):
     ...
 
 
 def main() -> None:
-    fake_session = FakeGameSession(test_map(board_size=BOARD_SIZE))
-    engine, user_inputer = make_game_engine(CAPTION, UPS, SCREEN_SHAPE, fake_session)
+    session = test_map(board_size=BOARD_SIZE, initial_town_ratio=.05)
+    engine, user_inputer = make_game_engine(CAPTION, UPS, SCREEN_SHAPE, session)
 
-    fake_session.master.turn_has_passed.subscribe(lambda player: _try_reboot(fake_session, player))
+    session.master.turn_has_passed.subscribe(lambda player: _try_reboot(session, player))
 
     with engine:
         engine.run()
@@ -50,10 +25,10 @@ def main() -> None:
 
 def _is_end(board: proto.Board, player: proto.Player) -> bool:
     cells = board.cells
-    return cells == cells.with_owner(player)
+    return len(cells.all()) * .8 <= len(cells.with_owner(player).all())
 
 
-def _try_reboot(fake_session: FakeGameSession, player: proto.Player) -> None:
+def _try_reboot(fake_session: proto.GameSession, player: proto.Player) -> None:
     if _is_end(fake_session.board, player):
         raise Shit
 
