@@ -51,22 +51,29 @@
     }
   },
   "ui": {
-    "button_2_to_3": {
+    "button_3_to_2": {
       "file": "ui/btn_216_144.png",
       "pivot": [
         0,
         0
       ]
     },
-    "button_2_to_3_active": {
+    "button_3_to_2_active": {
       "file": "ui/btn_216_144_active.png",
       "pivot": [
         0,
         0
       ]
     },
-    "background_2_to_3": {
+    "background_3_to_2": {
       "file": "ui/bck_1500_1000.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "background_2_to_3": {
+      "file": "ui/bck_1000_1500.png",
       "pivot": [
         0,
         0

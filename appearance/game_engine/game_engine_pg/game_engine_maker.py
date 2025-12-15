@@ -6,6 +6,7 @@ from appearance.game_engine.game_engine_pg.game_engine import GameEngine
 from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
+from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
@@ -58,12 +59,15 @@ def make_game_engine(caption: str,
     cell_selector = CellSelector.make(actions_reader, moves_maker, session.master)
     moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
 
+    mouse_movement_observer = MouseMovementObserver()
+
     user_inputer_builder = EventPlayerInputerBuilder()
     user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
     ui_layer = (UiLayerMaker(UiDrawer(screen),
                              screen_shape,
                              session,
                              cell_selector,
+                             mouse_movement_observer,
                              button_press_action_happened,
                              moves_maker,
                              actions_reader)
@@ -77,7 +81,8 @@ def make_game_engine(caption: str,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    updater = Updater.make(camera_mover, screenshot_saver, layers, player_moves_maker(session, moves_maker))
+    updater = Updater.make(camera_mover, screenshot_saver, mouse_movement_observer, layers,
+                           player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
 
     return (GameEngine(caption, timer, drawer, updater, UpdatableEvents.new()),

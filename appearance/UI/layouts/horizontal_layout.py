@@ -1,14 +1,14 @@
 from attrs import define
 
 import appearance.protocols as proto
-from appearance.UI.layouts.layout import Layout
+from appearance.UI.layouts.layout import LayoutUi
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
 
 
 @define
-class HorizontalLayout(Layout):
-    def _reshape_all(self, elements: list[proto.UiElement], margin_ratio: float) -> None:
+class HorizontalLayoutUi(LayoutUi):
+    def _reshape_all(self, elements: list[proto.ElementUi], margin_ratio: float) -> None:
         x, y = self.rectangle.position
         width, height = self.rectangle.shape
         total_empty = width * margin_ratio if len(elements) > 1 else 0

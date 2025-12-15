@@ -2,11 +2,12 @@ from pathlib import Path
 
 from attrs import frozen
 
+from appearance.UI.number_shortener import NumberShortener
 from core.protocols import Figure, Resource
 from files import read_meta, read_json
 
-LANGUAGE_SECTION_DICT = dict[str, str]
-LANGUAGE_DICT = dict[str, LANGUAGE_SECTION_DICT]
+LANGUAGE_SECTION_DICT = dict[str, str | list[str]]
+LANGUAGE_DICT = dict[str, LANGUAGE_SECTION_DICT | dict[str, LANGUAGE_SECTION_DICT]]
 
 LANGUAGES_META_DICT = dict[str, str | list[str]]
 
@@ -19,6 +20,9 @@ _FIGURES = "figures"
 
 _RESOURCES = "resources"
 
+_HINTS = "hints"
+_CREATION = "creation"
+
 _UI = "ui"
 _END_TURN_BTN = "END_TURN_BTN"
 _PLAYERS_TURN_TEXT = "PLAYERS_TURN_TEXT"
@@ -27,6 +31,7 @@ _CAPTURE = "CAPTURE"
 _TO_INFANTRY = "TO_INFANTRY"
 _ATTACK = "ATTACK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
+_COST = "COST"
 
 LANGUAGES_FOLDER = Path("data/languages")
 
@@ -61,6 +66,10 @@ class Language:
     def _ui(self) -> LANGUAGE_SECTION_DICT:
         return self._messages[_UI]
 
+    @property
+    def _hints(self) -> dict[str, LANGUAGE_SECTION_DICT]:
+        return self._messages[_HINTS]
+
     def get_figure_name(self, figure: type[Figure]) -> str:
         return self._figures.get(figure.__name__, figure.__name__)
 
@@ -81,6 +90,19 @@ class Language:
 
     def get_attack_message(self) -> str:
         return self._ui[_ATTACK]
+
+    def get_message_from_resource(self, resource: Resource) -> str:
+        amount = NumberShortener.shorten(resource.amount)
+        return f"{self.get_resource_name(type(resource))}: {amount}"
+
+    def get_cost(self, resource: Resource) -> list[str]:
+        cost = self.get_message_from_resource(resource)
+        message = [line.format(cost=cost) for line in self._ui[_COST]]
+
+        return message
+
+    def get_creation_hint(self, figure: type[Figure]) -> list[str]:
+        return self._hints[_CREATION][figure.__name__]
 
     def get_combat_ability_message(self, combat_ability_ratio: float) -> str:
         combat_ability = f"{100 * combat_ability_ratio:.0f}"

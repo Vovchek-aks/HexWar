@@ -10,7 +10,46 @@
       "CAPTURE": "Capture",
       "TO_INFANTRY": "Unmotorize",
       "ATTACK": "Attack",
-      "COMBAT_ABILITY": "Combat ability: {combat_ability}%"
+      "COMBAT_ABILITY": "Combat ability: {combat_ability}%",
+      "COST": [
+        "Cost:",
+        "    {cost}"
+      ]
+    },
+    "hints": {
+      "creation": {
+        "Infantry": [
+          "Can capture adjacent",
+          "enemy vehicles.",
+          "Can transform into",
+          "motorization.",
+          ""
+        ],
+        "Tank": [
+          "Receives an attack and",
+          "defense bonus from",
+          "adjacent infantry and",
+          "motorization.",
+          ""
+        ],
+        "Artillery": [
+          "Can only move near",
+          "infantry or",
+          "motorization.",
+          "Can attack enemy",
+          "positions two hexes away.",
+          ""
+        ],
+        "Bunker": [
+          "Increases the defense of",
+          "adjacent infantry units.",
+          ""
+        ],
+        "Town": [
+          "Generates income.",
+          ""
+        ]
+      }
     },
     "figures": {
       "Infantry": "Infantry",

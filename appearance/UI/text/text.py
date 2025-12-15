@@ -9,7 +9,7 @@ import appearance.protocols as proto
 
 
 @define
-class TextUi(proto.UiElement):
+class TextUi(proto.ElementUi):
     @classmethod
     def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, data: proto.TextData) -> "TextUi":
         data = (TextDataBuilder.like(data)

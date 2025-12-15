@@ -88,6 +88,9 @@ class TextDataBuilder:
         if not self._text:
             return self
 
+        if rectangle == Rectangle.zero():
+            return self
+
         font = self._font
         for _ in range(2):
             rect_width, rect_height = rectangle.shape

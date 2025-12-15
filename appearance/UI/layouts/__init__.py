@@ -1,2 +1,2 @@
-from .vertical_layout import VerticalLayout
-from .horizontal_layout import HorizontalLayout
+from .vertical_layout import VerticalLayoutUi
+from .horizontal_layout import HorizontalLayoutUi

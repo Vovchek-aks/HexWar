@@ -13,7 +13,7 @@ MARGIN = Vector2(10, 10)
 
 
 @define
-class ButtonUi(proto.UiElement):
+class ButtonUi(proto.ElementUi):
     @classmethod
     def make(cls,
              drawer: proto.UiDrawer,
