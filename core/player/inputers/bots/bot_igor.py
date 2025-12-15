@@ -58,11 +58,11 @@ class BotIgor(proto.Bot):
         if move is not MISSING:
             return move
 
-        move = self._try_attack_with_tanks()
+        move = self._try_advance_forces()
         if move is not MISSING:
             return move
 
-        move = self._try_advance_forces()
+        move = self._try_attack_with_tanks()
         if move is not MISSING:
             return move
 
