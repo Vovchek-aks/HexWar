@@ -20,7 +20,7 @@ class _FiguresRelocation(proto.Move, metaclass=ABCMeta):
         to_cell = board[self.to_coord]
         figure = from_cell.figure
 
-        session.figures_budget.add(figure, figure.get_cost_of(self, board))
+        session.figures_budget.add(figure, figure.get_cost_of(self))
         to_cell.take_from(from_cell)
 
 
@@ -50,7 +50,7 @@ class Assault(_FiguresRelocation):
         if from_cell.strength(board) <= to_cell.hardness(board):
             return INVALID
 
-        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
+        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):
             return INVALID
 
         return ValidMove(self)
@@ -79,7 +79,7 @@ class Relocation(_FiguresRelocation):
         if not movable.can_relocate(self.from_coord, self.to_coord, board):
             return INVALID
 
-        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
+        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):
             return INVALID
 
         return ValidMove(self)

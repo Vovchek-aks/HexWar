@@ -11,6 +11,7 @@
       "TO_INFANTRY": "Unmotorize",
       "ATTACK": "Attack",
       "COMBAT_ABILITY": "Combat ability: {combat_ability}%",
+      "COMBAT_ABILITY_COST": "Requires  {combat_ability_cost}% combat ability",
       "COST": [
         "Cost:",
         "    {cost}"
@@ -47,6 +48,36 @@
         ],
         "Town": [
           "Generates income.",
+          ""
+        ]
+      },
+      "figures_menu": {
+        "ARTILLERY_ATTACK": [
+          "Destroys any piece",
+          "within 2 hexes.",
+          ""
+        ],
+        "TANK_ATTACK": [
+          "Destroys a weaker",
+          "adjacent piece.",
+          ""
+        ],
+        "MOTORIZATION_TO_INFANTRY": [
+          "Transforms this piece",
+          "into infantry.",
+          ""
+        ],
+        "INFANTRY_CAPTURE": [
+          "Captures a weaker",
+          "adjacent piece.",
+          ""
+        ],
+        "INFANTRY_TO_MOTORIZATION": [
+          "Transforms this piece",
+          "into motorization.",
+          "",
+          "Cost:",
+          "    {cost}",
           ""
         ]
       }

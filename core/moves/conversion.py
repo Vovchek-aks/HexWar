@@ -10,13 +10,19 @@ from core.resources import Dollars, Resource
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID
 
+CONVERSIONS = dict[tuple[type[fig.Figure], type[fig.Figure]], tuple[Resource, int]]
+
 
 @frozen
 class Conversion(proto.Move):
-    _CONVERSIONS: ClassVar[dict[tuple[type[fig.Figure], type[fig.Figure]], tuple[Resource, int]]] = {
+    _CONVERSIONS: ClassVar[CONVERSIONS] = {
         (fig.Infantry, fig.Motorization): (Dollars(100_000), 1),
         (fig.Motorization, fig.Infantry): (Dollars(0), 10),
     }
+
+    @classmethod
+    def conversions(cls) -> CONVERSIONS:
+        return dict(cls._CONVERSIONS)
 
     coord: Vector2Int
     target: type[fig.Figure]

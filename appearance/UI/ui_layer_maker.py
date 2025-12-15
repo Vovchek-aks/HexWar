@@ -17,7 +17,8 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction
-from appearance.language import Language
+from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
+    INFANTRY_TO_MOTORIZATION
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
@@ -162,19 +163,13 @@ class UiLayerMaker:
 
         return button
 
-    def _make_figure_creation_button_hint(self,
-                                          figure: type[fig.Figure],
-                                          button: ButtonUi) -> StretcherUi:
+    def _make_figure_creation_button_hint(self, figure: type[fig.Figure], button: ButtonUi) -> StretcherUi:
         title = self._language.get_figure_name(figure)
         content = [
             *self._language.get_creation_hint(figure),
             *self._language.get_cost(figure.FLAGS.get(Creatable).cost)
         ]
-        hint = self._make_null_hint(title, content)
-
-        hint.layer.set_activity(False)
-        self._mouse_movement_observer.mouse_was_moved.subscribe(
-            lambda position: hint.layer.set_activity(button.layer.can_catch(Click(position, MouseButtons()))))
+        hint = self._make_button_hint(title, content, button)
 
         return hint
 
@@ -187,7 +182,8 @@ class UiLayerMaker:
         capture = self._make_activatable_button(self._language.get_capture_message(),
                                                 lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
 
-        return self._make_figure_menu(fig.Infantry, [to_motorize, capture])
+        return self._make_figure_menu(fig.Infantry, [to_motorize, capture],
+                                      [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE])
 
     def _make_motorization_menu(self) -> Layer:
         to_infantry = self._make_null_button(Language.from_meta().get_to_infantry_message())
@@ -195,27 +191,49 @@ class UiLayerMaker:
                                           .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                               fig.Infantry)))
 
-        return self._make_figure_menu(fig.Motorization, [to_infantry])
+        return self._make_figure_menu(fig.Motorization, [to_infantry], [MOTORIZATION_TO_INFANTRY])
 
     def _make_town_menu(self) -> Layer:
-        return self._make_figure_menu(fig.Town, [])
+        return self._make_figure_menu(fig.Town, [], [])
 
     def _make_bunker_menu(self) -> Layer:
-        return self._make_figure_menu(fig.Bunker, [])
+        return self._make_figure_menu(fig.Bunker, [], [])
 
     def _make_tank_menu(self) -> Layer:
         attack = self._make_activatable_button(self._language.get_attack_message(),
                                                lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
-        return self._make_figure_menu(fig.Tank, [attack])
+        return self._make_figure_menu(fig.Tank, [attack], [TANK_ATTACK])
 
     def _make_artillery_menu(self) -> Layer:
         attack = self._make_activatable_button(self._language.get_attack_message(),
                                                lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
-        return self._make_figure_menu(fig.Artillery, [attack])
+        return self._make_figure_menu(fig.Artillery, [attack], [ARTILLERY_ATTACK])
 
-    def _make_figure_menu(self, figure_type: type[fig.Figure], buttons: list[ButtonUi]) -> Layer:
+    def _make_figure_menu(self,
+                          figure: type[fig.Figure],
+                          buttons: list[ButtonUi],
+                          button_tags: list[str]) -> Layer:
+        assert len(buttons) == len(button_tags)
+
+        menu = self._make_figure_menu_without_hints(figure, buttons)
+        menu_width, menu_height = menu.rectangle.shape
+        hint_box = BoxUi(Rectangle(menu.rectangle.position + Vector2.right() * (10 + menu_width),
+                                   Vector2(menu_height, menu_height)))
+
+        for button, tag in zip(buttons, button_tags):
+            hint_box.append(self._make_figure_menu_button_hint(button, tag))
+
+        layer = Layer.as_multiple([
+            menu,
+            hint_box,
+        ])
+
+        self._bind_layer_to_cell_with_figure_selection(layer, figure)
+        return layer
+
+    def _make_figure_menu_without_hints(self, figure_type: type[fig.Figure], buttons: list[ButtonUi]) -> StretcherUi:
         background_margin = Vector2(20, 20)
         background = ImageUi.make(self._drawer,
                                   RectangleBuilder(self._screen_shape)
@@ -284,15 +302,27 @@ class UiLayerMaker:
                                     .build())
         layout.extend(buttons)
 
-        layer = Layer.as_multiple([
+        menu = StretcherUi(background.rectangle)
+        menu.extend([
             title,
             combat_ability,
             layout,
             background,
         ])
 
-        self._bind_layer_to_cell_with_figure_selection(layer, figure_type)
-        return layer
+        return menu
+
+    def _make_figure_menu_button_hint(self, button: ButtonUi, tag: str) -> StretcherUi:
+        return self._make_button_hint(button.text.text, self._language.get_figure_menu_hint_for(tag), button)
+
+    def _make_button_hint(self, title: str, content: list[str], button: ButtonUi) -> StretcherUi:
+        hint = self._make_null_hint(title, content)
+
+        hint.layer.set_activity(False)
+        self._mouse_movement_observer.mouse_was_moved.subscribe(
+            lambda position: hint.layer.set_activity(button.layer.can_catch(Click(position, MouseButtons()))))
+
+        return hint
 
     def _make_null_hint(self, title: str, content: list[str]) -> StretcherUi:
         MIN_LINES_COUNT = 8

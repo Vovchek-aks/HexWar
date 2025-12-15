@@ -24,6 +24,9 @@ class Attack(proto.Move):
         if from_cell.owner is to_cell.owner:
             return INVALID
 
+        if to_cell.is_empty:
+            return INVALID
+
         if (can_attack := figure.FLAGS.get(proto.CanAttack)) is MISSING:
             return INVALID
 
@@ -34,7 +37,7 @@ class Attack(proto.Move):
         if from_cell.strength(board) <= to_cell.hardness(board):
             return INVALID
 
-        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
+        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):
             return INVALID
 
         return ValidMove(self)
@@ -48,4 +51,4 @@ class Attack(proto.Move):
 
         if not to_cell.is_empty:
             to_cell.pop()
-        budget.add(figure, figure.get_cost_of(self, session.board))
+        budget.add(figure, figure.get_cost_of(self))

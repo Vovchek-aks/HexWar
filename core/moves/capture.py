@@ -35,7 +35,7 @@ class Capture(proto.Move):
         if from_cell.strength(board) <= to_cell.hardness(board):
             return INVALID
 
-        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self, session.board)):
+        if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):
             return INVALID
 
         return ValidMove(self)
@@ -48,4 +48,4 @@ class Capture(proto.Move):
         budget = session.figures_budget
 
         to_cell.change_owner(from_cell.owner)
-        budget.add(figure, figure.get_cost_of(self, session.board))
+        budget.add(figure, figure.get_cost_of(self))

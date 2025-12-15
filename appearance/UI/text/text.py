@@ -39,6 +39,10 @@ class TextUi(proto.ElementUi):
     def rectangle(self) -> Rectangle:
         return self._rectangle
 
+    @property
+    def text(self) -> str:
+        return self._data.text
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
         self._data = (TextDataBuilder.like(self._data)

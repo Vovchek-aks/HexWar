@@ -358,7 +358,7 @@ class Figure(ABC):
 
     @classmethod
     @abstractmethod
-    def get_cost_of(cls, move: Move, board: Board) -> int:
+    def get_cost_of(cls, move: Move) -> int:
         ...
 
 

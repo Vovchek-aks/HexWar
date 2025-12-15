@@ -3,13 +3,36 @@ from pathlib import Path
 from attrs import frozen
 
 from appearance.UI.number_shortener import NumberShortener
+from core.moves.attack import Attack
+from core.moves.capture import Capture
+from core.moves.conversion import Conversion
 from core.protocols import Figure, Resource
 from files import read_meta, read_json
+import core.figures.figures as fig
+from mathematics.vector import Vector2Int
 
 LANGUAGE_SECTION_DICT = dict[str, str | list[str]]
 LANGUAGE_DICT = dict[str, LANGUAGE_SECTION_DICT | dict[str, LANGUAGE_SECTION_DICT]]
 
 LANGUAGES_META_DICT = dict[str, str | list[str]]
+
+ARTILLERY_ATTACK = "ARTILLERY_ATTACK"
+TANK_ATTACK = "TANK_ATTACK"
+MOTORIZATION_TO_INFANTRY = "MOTORIZATION_TO_INFANTRY"
+INFANTRY_CAPTURE = "INFANTRY_CAPTURE"
+INFANTRY_TO_MOTORIZATION = "INFANTRY_TO_MOTORIZATION"
+
+_FIGURE_OF_TAG: dict[str, type[Figure]] = {
+    INFANTRY_CAPTURE: fig.Infantry,
+    TANK_ATTACK: fig.Tank,
+    ARTILLERY_ATTACK: fig.Artillery,
+}
+
+_MOVE_OF_TAG = {
+    INFANTRY_CAPTURE: lambda: Capture(Vector2Int.zero(), Vector2Int.zero()),
+    TANK_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+    ARTILLERY_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+}
 
 _SELECTED = "selected"
 
@@ -22,6 +45,7 @@ _RESOURCES = "resources"
 
 _HINTS = "hints"
 _CREATION = "creation"
+_FIGURES_MENU = "figures_menu"
 
 _UI = "ui"
 _END_TURN_BTN = "END_TURN_BTN"
@@ -31,6 +55,7 @@ _CAPTURE = "CAPTURE"
 _TO_INFANTRY = "TO_INFANTRY"
 _ATTACK = "ATTACK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
+_COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
 
 LANGUAGES_FOLDER = Path("data/languages")
@@ -101,8 +126,30 @@ class Language:
 
         return message
 
+    def get_combat_ability_cost_message(self, combat_ability_ratio_cost: float) -> str:
+        combat_ability_cost = f"{100 * combat_ability_ratio_cost:.0f}"
+        return self._ui[_COMBAT_ABILITY_COST].format(combat_ability_cost=combat_ability_cost)
+
     def get_creation_hint(self, figure: type[Figure]) -> list[str]:
         return self._hints[_CREATION][figure.__name__]
+
+    def get_figure_menu_hint_for(self, tag: str) -> list[str]:
+        message = self._hints[_FIGURES_MENU][tag]
+        if tag == INFANTRY_TO_MOTORIZATION:
+            cost, move_cost = Conversion.conversions()[fig.Infantry, fig.Motorization]
+            budget = fig.Infantry.MOVES_BUDGET
+            message = [line.format(cost=self.get_message_from_resource(cost)) for line in message]
+        elif tag == MOTORIZATION_TO_INFANTRY:
+            _, move_cost = Conversion.conversions()[fig.Infantry, fig.Motorization]
+            budget = fig.Motorization.MOVES_BUDGET
+        else:
+            move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())
+            budget = _FIGURE_OF_TAG[tag].MOVES_BUDGET
+
+        combat_ability_cost_ratio = move_cost / budget
+        message.append(self.get_combat_ability_cost_message(combat_ability_cost_ratio))
+
+        return message
 
     def get_combat_ability_message(self, combat_ability_ratio: float) -> str:
         combat_ability = f"{100 * combat_ability_ratio:.0f}"

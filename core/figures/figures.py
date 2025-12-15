@@ -34,7 +34,7 @@ class Empty(_Figure):
         return 0
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
 
@@ -47,7 +47,7 @@ class Settlement(_Figure):
         return 0
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
 
@@ -64,7 +64,7 @@ class Town(_Figure):
         return 0
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
 
@@ -77,7 +77,7 @@ class Capital(_Figure):
         return 0
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
 
@@ -91,7 +91,7 @@ class Bunker(_Figure):
         return 4
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
 
@@ -122,7 +122,7 @@ class Infantry(_Figure):
         return cls.SELF_HARDNESS
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         match move:
             case Relocation():
                 return 1
@@ -149,7 +149,7 @@ class Motorization(_Figure):
         return 1
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         match move:
             case Relocation():
                 return 10
@@ -182,7 +182,7 @@ class Tank(_Figure):
         return cls._SELF_HARDNESS + cls.get_projected_strength(coord, board)
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         match move:
             case Relocation():
                 return 15
@@ -224,7 +224,7 @@ class Artillery(_Figure):
         return 0
 
     @classmethod
-    def get_cost_of(cls, move: proto.Move, board: proto.Board) -> int:
+    def get_cost_of(cls, move: proto.Move) -> int:
         match move:
             case Relocation():
                 return 1
