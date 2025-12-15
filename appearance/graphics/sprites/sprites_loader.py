@@ -22,6 +22,7 @@ _BUTTON_3_TO_2 = "button_3_to_2"
 _BUTTON_3_TO_2_ACTIVE = "button_3_to_2_active"
 _BACKGROUND_3_TO_2 = "background_3_to_2"
 _BACKGROUND_2_TO_3 = "background_2_to_3"
+_LOADING_SCREEN = "loading_screen"
 
 SPRITES_FOLDER = Path("data/sprites")
 
@@ -74,6 +75,10 @@ class SpritesLoader:
 
     def load_background_2_to_3(self) -> Sprite:
         sprite_info = self._ui[_BACKGROUND_2_TO_3]
+        return self._load_sprite(sprite_info)
+
+    def load_loading_screen(self) -> Sprite:
+        sprite_info = self._ui[_LOADING_SCREEN]
         return self._load_sprite(sprite_info)
 
     def has_figure(self, figure: type[Figure]) -> bool:

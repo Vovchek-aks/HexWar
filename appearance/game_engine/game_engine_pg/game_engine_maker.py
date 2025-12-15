@@ -6,12 +6,13 @@ from appearance.game_engine.game_engine_pg.game_engine import GameEngine
 from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
+from appearance.graphics.sprites import SpritesLoader
 from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
 from core.player.player_moves_maker import player_moves_maker
-from mathematics.vector import Vector2Int
+from mathematics.vector import Vector2Int, Vector2
 from appearance.graphics.camera.camera import Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import Draw, DrawMaker
@@ -38,6 +39,8 @@ def make_game_engine(caption: str,
     pg.init()
     screen = pg.display.set_mode(screen_shape.tuple)
     pg.display.set_caption(caption)
+
+    _blit_loading_screen(screen, screen_shape)
 
     timer = Timer.make(ups)
 
@@ -87,3 +90,10 @@ def make_game_engine(caption: str,
 
     return (GameEngine(caption, timer, drawer, updater, UpdatableEvents.new()),
             user_inputer_builder.build())
+
+
+def _blit_loading_screen(screen: pg.Surface, screen_shape: Vector2Int) -> None:
+    loading = SpritesLoader.from_meta().load_loading_screen()
+    loading = loading.reshape(screen_shape)
+    loading.blit_on(screen, Vector2.zero())
+    pg.display.flip()
