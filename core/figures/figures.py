@@ -26,6 +26,7 @@ class _Figure(Figure, metaclass=ABCMeta):
 
 class Empty(_Figure):
     FLAGS = Flags.new(Static(),
+                      Capturable(),
                       Capturable())
     MOVES_BUDGET = 0
 
@@ -54,6 +55,7 @@ class Settlement(_Figure):
 class Town(_Figure):
     FLAGS = Flags.new(Static(),
                       Creatable(Dollars(1_000_000)),
+                      Capturable(),
                       (UpdatableOnTurnStartBuilder()
                        .add_resources(Dollars(120_000))
                        .build()))

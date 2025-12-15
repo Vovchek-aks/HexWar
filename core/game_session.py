@@ -71,11 +71,13 @@ def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
         Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor())),
         Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor())),
     ]
+    random.shuffle(players)
+
     diagonal = board_size * 2 ** .5
     board = Board.from_maker(Vector2Int.ones() * board_size,
-                             lambda coord: Cell((players[0] if coord.x - coord.y <= 0 else players[3])
+                             lambda coord: Cell((players[0] if coord.x - coord.y <= 0 else players[1])
                                                 if coord.x + coord.y <= diagonal * .7 else
-                                                (players[2] if coord.x - coord.y >= 0 else players[1]),
+                                                (players[2] if coord.x - coord.y >= 0 else players[3]),
                                                 fig.Empty()))
 
     per_player_towns = round(board_size ** 2 * initial_town_ratio / len(players))

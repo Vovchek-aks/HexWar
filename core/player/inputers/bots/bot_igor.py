@@ -5,9 +5,12 @@ from attrs import define, field
 from core import protocols as proto
 from core.cells import Cells
 from core.figures import figures as fig
+from core.moves.attack import Attack
+from core.moves.capture import Capture
 from core.moves.conversion import Conversion
 from core.moves.creation import Creation
 from core.moves.relocations import Relocation, Assault
+from core.protocols import Capturable, CanCapture
 from statuses import Status, MISSING, INVALID
 
 
@@ -36,17 +39,36 @@ class BotIgor(proto.Bot):
         self._session = session
 
         cells_count = self._count_of(fig.Figure)
+        if cells_count <= 0:
+            return MISSING
+
         town_count = self._count_of(fig.Town)
         infantry_count = self._count_of(fig.Infantry)
         motorization_count = self._count_of(fig.Motorization)
+        tanks_count = self._count_of(fig.Tank)
+        fronts_length = len(list(self._board.cells.with_owner(self._player).at_front(self._board).all()))
 
         move = (self._try_convert_infantry_to_motorization()
-                if (infantry_count + motorization_count) * .3 >= motorization_count
+                if (infantry_count + motorization_count) * .4 >= motorization_count
                 else MISSING)
         if move is not MISSING:
             return move
 
+        move = self._try_capture()
+        if move is not MISSING:
+            return move
+
+        move = self._try_attack_with_tanks()
+        if move is not MISSING:
+            return move
+
         move = self._try_advance_forces()
+        if move is not MISSING:
+            return move
+
+        move = (self._try_create(fig.Tank)
+                if infantry_count + motorization_count > 0 and tanks_count < 1 else
+                MISSING)
         if move is not MISSING:
             return move
 
@@ -60,13 +82,11 @@ class BotIgor(proto.Bot):
                             if cells_count >= self._cells_count_at_last_turn * .98 and
                                town_count < cells_count * .2 else
                             ((fig.Tank if random.random() > .85 else fig.Infantry)
-                             if cells_count * .2 > (infantry_count + motorization_count + self._count_of(fig.Tank)) else
+                             if fronts_length > (infantry_count + motorization_count + tanks_count) else
                              MISSING))
 
         if figure_to_create is not MISSING:
             move = self._try_create(figure_to_create)
-        else:
-            print(123)
         if move is not MISSING:
             return move
 
@@ -88,24 +108,6 @@ class BotIgor(proto.Bot):
         production = self._board.cells.with_owner(self._player).with_figure(fig.Town)
 
         match figure:
-            # case fig.Infantry:
-            #     tanks = self._board.cells.with_owner(self._player).with_figure(fig.Tank)
-            #     if not tanks:
-            #         return self._get_cell_for_armed_figure(front, production)
-            #
-            #     tanks_at_front = tanks.at_front(self._board)
-            #     if not tanks_at_front:
-            #         return self._get_cell_for_armed_figure(front, production)
-            #
-            #     empties_near_tank: proto.Cells = next(filter(lambda cells: cells,
-            #                                                  map(lambda tank:
-            #                                                      self._board.get_neighbors(tank, include_cell=False),
-            #                                                  tanks_at_front.all())))
-            #     if not empties_near_tank:
-            #         return self._get_cell_for_armed_figure(front, production)
-            #
-            #     return random.choice(list(empties_near_tank.all()))
-
             case fig.Tank:
                 front = Cells({cell for cell in front
                                if self._board.get_neighbors(cell, include_cell=False)
@@ -140,7 +142,7 @@ class BotIgor(proto.Bot):
         if isinstance(cell.figure, fig.Tank):
             targets = Cells({cell for cell in targets
                              if self._board.get_neighbors(cell, include_cell=False)
-                            .with_owner(self._player).with_figure(fig.Infantry)})
+                            .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
 
         if not targets:
             return MISSING
@@ -194,7 +196,7 @@ class BotIgor(proto.Bot):
         front = all_armed.at_front(self._board)
         front = Cells({cell for cell in front
                        if self._board.get_neighbors(cell, include_cell=False)
-                      .with_owner(self._player).with_figure(fig.Infantry)})
+                      .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
         if not front:
             return MISSING
 
@@ -274,6 +276,46 @@ class BotIgor(proto.Bot):
                 continue
 
             move = Assault(self._board.coordinates_of(cell),
+                           self._board.coordinates_of(target))
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                return valid_move
+
+        return MISSING
+
+    def _try_attack_with_tanks(self) -> proto.ValidMove | Status:
+        tanks = self._board.cells.with_owner(self._player).with_figure(fig.Tank)
+        if not tanks:
+            return MISSING
+
+        for tank in tanks.at_front(self._board):
+            neighbors = self._board.get_neighbors(tank, include_cell=False)
+            neighbors -= neighbors.with_owner(self._player)
+            neighbors -= neighbors.with_figure(fig.Empty)
+            if not neighbors:
+                continue
+
+            target: proto.Cell = random.choice(list(neighbors.all()))
+            move = Attack(self._board.coordinates_of(tank),
+                          self._board.coordinates_of(target))
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                return valid_move
+
+        return MISSING
+
+    def _try_capture(self) -> proto.ValidMove | Status:
+        infantries = self._board.cells.with_owner(self._player).with_flag(CanCapture)
+        if not infantries:
+            return MISSING
+
+        for infantry in infantries.at_front(self._board):
+            neighbors = self._board.get_neighbors(infantry, include_cell=False).with_flag(Capturable)
+            neighbors -= neighbors.with_owner(self._player)
+            neighbors -= neighbors.with_figure(fig.Empty)
+            if not neighbors:
+                continue
+
+            target: proto.Cell = random.choice(list(neighbors.all()))
+            move = Capture(self._board.coordinates_of(infantry),
                            self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
                 return valid_move
