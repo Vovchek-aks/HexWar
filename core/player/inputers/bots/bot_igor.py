@@ -51,17 +51,22 @@ class BotIgor(proto.Bot):
             return move
 
         move = (self._try_create(fig.Infantry)
-                if infantry_count + motorization_count < 3 else
+                if infantry_count + motorization_count < 5 else
                 MISSING)
         if move is not MISSING:
             return move
 
         figure_to_create = (fig.Town
-                            if cells_count >= self._cells_count_at_last_turn * .98 and town_count < cells_count * .2 else
-                            ((fig.Tank if random.random() > .85 else fig.Infantry) if cells_count * 3 > (
-                                        infantry_count + motorization_count + self._count_of(fig.Tank)) else MISSING))
+                            if cells_count >= self._cells_count_at_last_turn * .98 and
+                               town_count < cells_count * .2 else
+                            ((fig.Tank if random.random() > .85 else fig.Infantry)
+                             if cells_count * .2 > (infantry_count + motorization_count + self._count_of(fig.Tank)) else
+                             MISSING))
+
         if figure_to_create is not MISSING:
             move = self._try_create(figure_to_create)
+        else:
+            print(123)
         if move is not MISSING:
             return move
 
@@ -304,5 +309,5 @@ class BotIgor(proto.Bot):
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:
         return min(candidates, key=lambda front_cell: sum((self._board.coordinates_of(front_cell) -
-                                                           self._board.coordinates_of(production_cell)).length ** .5
+                                                           self._board.coordinates_of(production_cell)).length ** .25
                                                           for production_cell in targets))

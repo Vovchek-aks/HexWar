@@ -62,3 +62,30 @@ def test_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
     players[3].resources.add(Dollars(2_000_000))
 
     return GameSession(Master(players), board, FiguresRelocationBudget())
+
+
+def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
+    players = [
+        Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor())),
+    ]
+    diagonal = board_size * 2 ** .5
+    board = Board.from_maker(Vector2Int.ones() * board_size,
+                             lambda coord: Cell((players[0] if coord.x - coord.y <= 0 else players[3])
+                                                if coord.x + coord.y <= diagonal * .7 else
+                                                (players[2] if coord.x - coord.y >= 0 else players[1]),
+                                                fig.Empty()))
+
+    per_player_towns = round(board_size ** 2 * initial_town_ratio / len(players))
+    for player in players:
+        while len(board.cells.with_owner(player).with_figure(fig.Town).all()) < per_player_towns:
+            random.choice(list(board.cells.with_owner(player).with_figure(fig.Empty).all())).insert(fig.Town())
+
+    players[0].resources.add(Dollars(5_000_000))
+    players[1].resources.add(Dollars(5_000_000))
+    players[2].resources.add(Dollars(5_000_000))
+    players[3].resources.add(Dollars(5_000_000))
+
+    return GameSession(Master(players), board, FiguresRelocationBudget())
