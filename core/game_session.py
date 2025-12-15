@@ -56,9 +56,9 @@ def test_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
                len(board.cells.with_owner(player).all()) * initial_town_ratio):
             random.choice(list(board.cells.with_owner(player).with_figure(fig.Empty).all())).insert(fig.Town())
 
-    players[0].resources.add(Dollars(5_000_000))
-    players[1].resources.add(Dollars(5_000_000))
-    players[2].resources.add(Dollars(5_000_000))
-    players[3].resources.add(Dollars(5_000_000))
+    players[0].resources.add(Dollars(2_000_000))
+    players[1].resources.add(Dollars(2_000_000))
+    players[2].resources.add(Dollars(2_000_000))
+    players[3].resources.add(Dollars(2_000_000))
 
     return GameSession(Master(players), board, FiguresRelocationBudget())

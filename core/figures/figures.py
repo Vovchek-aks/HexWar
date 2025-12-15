@@ -55,7 +55,7 @@ class Town(_Figure):
     FLAGS = Flags.new(Static(),
                       Creatable(Dollars(1_000_000)),
                       (UpdatableOnTurnStartBuilder()
-                       .add_resources(Dollars(150_000))
+                       .add_resources(Dollars(120_000))
                        .build()))
     MOVES_BUDGET = 0
 
@@ -165,7 +165,7 @@ class Tank(_Figure):
                        .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                  Tank.get_projected_strength(coord, board))
                        .build()),
-                      Creatable(Dollars(500_000)),
+                      Creatable(Dollars(700_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(80_000))

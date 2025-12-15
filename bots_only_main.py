@@ -25,7 +25,7 @@ def main() -> None:
 
 def _is_end(board: proto.Board, player: proto.Player) -> bool:
     cells = board.cells
-    return len(cells.all()) * .8 <= len(cells.with_owner(player).all())
+    return len(cells.all()) * .7 <= len(cells.with_owner(player).all())
 
 
 def _try_reboot(fake_session: proto.GameSession, player: proto.Player) -> None:

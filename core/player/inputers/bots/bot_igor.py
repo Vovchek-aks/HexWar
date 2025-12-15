@@ -15,6 +15,7 @@ from statuses import Status, MISSING, INVALID
 class BotIgor(proto.Bot):
     _session: proto.GameSession | Status = field(init=False, default=MISSING)
     _cells_count_at_last_turn: int = 0
+    _turns_count: int = 0
 
     @property
     def _player(self) -> proto.Player:
@@ -49,10 +50,6 @@ class BotIgor(proto.Bot):
         if move is not MISSING:
             return move
 
-        move = self._try_pull_forces_to_front()
-        if move is not MISSING:
-            return move
-
         move = (self._try_create(fig.Infantry)
                 if infantry_count + motorization_count < 3 else
                 MISSING)
@@ -61,12 +58,19 @@ class BotIgor(proto.Bot):
 
         figure_to_create = (fig.Town
                             if cells_count >= self._cells_count_at_last_turn * .98 and town_count < cells_count * .2 else
-                            (fig.Tank if random.random() > .7 else fig.Infantry))
-        move = self._try_create(figure_to_create)
+                            ((fig.Tank if random.random() > .85 else fig.Infantry) if cells_count * 3 > (
+                                        infantry_count + motorization_count + self._count_of(fig.Tank)) else MISSING))
+        if figure_to_create is not MISSING:
+            move = self._try_create(figure_to_create)
+        if move is not MISSING:
+            return move
+
+        move = self._try_pull_forces_to_front()
         if move is not MISSING:
             return move
 
         self._cells_count_at_last_turn = cells_count
+        self._turns_count += 1
         return MISSING
 
     def _get_cell_for(self, figure: type[fig.Figure]) -> proto.Cell | Status:
@@ -108,7 +112,7 @@ class BotIgor(proto.Bot):
                 return self._get_cell_for_armed_figure(front, production)
             case fig.Town:
                 candidates = back or empties
-                return random.choice(list(candidates.all()))
+                return random.choice(list(candidates.all())[:10])
             case _:
                 return random.choice(list(empties.all()))
 
