@@ -212,6 +212,17 @@ class Click(ABC):
         ...
 
 
+class MouseMovementObserver(ABC):
+    @property
+    @abstractmethod
+    def mouse_was_moved(self) -> OnEventSubscriber[Vector2, None]:
+        ...
+
+    @abstractmethod
+    def update(self, mouse_position: Vector2) -> None:
+        ...
+
+
 class DrawableLayer(ABC):
     @abstractmethod
     def draw(self, mouse_position: Vector2) -> None:
@@ -324,7 +335,7 @@ class InputActionsReader(ABC):
         ...
 
 
-class UiElement(LayerHolder, metaclass=ABCMeta):
+class ElementUi(LayerHolder, metaclass=ABCMeta):
     @property
     @abstractmethod
     def rectangle(self) -> Rectangle:

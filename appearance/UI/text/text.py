@@ -9,7 +9,7 @@ import appearance.protocols as proto
 
 
 @define
-class TextUi(proto.UiElement):
+class TextUi(proto.ElementUi):
     @classmethod
     def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, data: proto.TextData) -> "TextUi":
         data = (TextDataBuilder.like(data)
@@ -38,6 +38,10 @@ class TextUi(proto.UiElement):
     @property
     def rectangle(self) -> Rectangle:
         return self._rectangle
+
+    @property
+    def text(self) -> str:
+        return self._data.text
 
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle

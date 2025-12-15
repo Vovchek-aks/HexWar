@@ -1,4 +1,3 @@
-from abc import ABCMeta
 from typing import Iterable
 
 from attrs import define, field
@@ -9,9 +8,8 @@ from mathematics.rectangle import Rectangle
 
 
 @define
-class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
+class BoxUi(proto.ElementUi):
     _rectangle: Rectangle
-    _margin_ratio: float = .05
     _layer: proto.Layer = field(init=False, factory=Layer.empty)
     _elements: list[proto.ElementUi] = field(init=False, factory=list)
 
@@ -25,16 +23,17 @@ class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
 
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
-        self._reshape_all(self._elements, self._margin_ratio)
+        self._reshape_all()
 
     def append(self, element: proto.ElementUi) -> None:
+        element.set_rectangle(self.rectangle)
         self._elements.append(element)
         self._layer = Layer.as_multiple(self._elements)
-        self._reshape_all(self._elements, self._margin_ratio)
 
     def extend(self, elements: Iterable[proto.ElementUi]) -> None:
         for element in elements:
             self.append(element)
 
-    def _reshape_all(self, elements: list[proto.ElementUi], margin_ratio: float) -> None:
-        ...
+    def _reshape_all(self) -> None:
+        for element in self._elements:
+            element.set_rectangle(self.rectangle)

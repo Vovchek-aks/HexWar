@@ -9,7 +9,7 @@ from mathematics.vector import Vector2, Vector2Int
 
 
 @define
-class ImageUi(proto.UiElement):
+class ImageUi(proto.ElementUi):
     @classmethod
     def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, sprite: Sprite) -> "ImageUi":
         sprite = cls._reshape(sprite, rectangle)
