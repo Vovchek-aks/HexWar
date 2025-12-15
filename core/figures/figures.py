@@ -238,6 +238,11 @@ class Artillery(_Figure):
     @classmethod
     def can_relocate(cls, from_coord: Vector2Int, to_coord: Vector2Int, board: proto.Board) -> bool:
         cell = board[from_coord]
+        target = board[to_coord]
+
+        if target not in board.get_neighbors(cell, include_cell=False):
+            return False
+
         infantry_cells = (board.get_neighbors(cell, include_cell=False)
                           .with_owner(cell.owner)
                           .with_figure(Infantry | Motorization)
@@ -247,7 +252,6 @@ class Artillery(_Figure):
         for infantry_cell in infantry_cells:
             cells += board.get_neighbors(infantry_cell, include_cell=False)
 
-        target = board[to_coord]
         return target in cells
 
 
