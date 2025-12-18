@@ -5,7 +5,7 @@ from core.figures import figures as fig
 from statuses import MISSING
 
 
-@define(hash=True, eq=True)
+@define(hash=True, eq=True, repr=False)
 class Cell(proto.Cell):
     _owner: proto.Player = field(hash=False)
     _figure: proto.Figure = field(hash=False)
@@ -64,5 +64,8 @@ class Cell(proto.Cell):
             self.change_owner(other.owner)
         self._figure = other.pop()
 
-    def __eq__(self, other: proto.Cell) -> bool:
-        return self is other
+    def __str__(self) -> str:
+        return f"{type(self).__name__}(figure: {type(self.figure)}, owner: {self.owner.data.name})"
+
+    def __repr__(self) -> str:
+        return str(self)

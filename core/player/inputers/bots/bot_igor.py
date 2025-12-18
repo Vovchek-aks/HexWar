@@ -13,12 +13,17 @@ from core.moves.relocations import Relocation, Assault
 from core.protocols import Capturable, CanCapture
 from statuses import Status, MISSING, INVALID
 
+_ATTACKING = 0
+_BUILDING = 1
+_PULLING = 2
+
 
 @define
 class BotIgor(proto.Bot):
     _session: proto.GameSession | Status = field(init=False, default=MISSING)
     _cells_count_at_last_turn: int = 0
     _turns_count: int = 0
+    _state: int = _BUILDING
 
     @property
     def _player(self) -> proto.Player:
@@ -35,7 +40,7 @@ class BotIgor(proto.Bot):
         assert self._session is not MISSING
         return self._session.figures_budget
 
-    def get_move(self, session: proto.GameSession) -> proto.ValidMove | Status:
+    def get_move(self, session: proto.GameSession, *, _is_inner: bool = False) -> proto.ValidMove | Status:
         self._session = session
 
         cells_count = self._count_of(fig.Figure)
@@ -48,54 +53,68 @@ class BotIgor(proto.Bot):
         tanks_count = self._count_of(fig.Tank)
         fronts_length = len(list(self._board.cells.with_owner(self._player).at_front(self._board).all()))
 
-        move = (self._try_convert_infantry_to_motorization()
-                if (infantry_count + motorization_count) * .4 >= motorization_count
-                else MISSING)
-        if move is not MISSING:
-            return move
+        if self._state == _BUILDING:
+            move = (self._try_create(fig.Tank)
+                    if infantry_count + motorization_count > 0 and tanks_count < 1 else
+                    MISSING)
+            if move is not MISSING:
+                return move
 
-        move = self._try_capture()
-        if move is not MISSING:
-            return move
+            move = (self._try_create(fig.Infantry)
+                    if infantry_count + motorization_count < 5 else
+                    MISSING)
+            if move is not MISSING:
+                return move
 
-        move = self._try_advance_forces()
-        if move is not MISSING:
-            return move
+            figure_to_create = (fig.Town
+                                if cells_count >= self._cells_count_at_last_turn * .98 and
+                                   town_count < cells_count * .2 else
+                                ((fig.Tank if random.random() > .85 else fig.Infantry)
+                                 if fronts_length * .7 > (infantry_count + motorization_count + tanks_count) else
+                                 MISSING))
 
-        move = self._try_attack_with_tanks()
-        if move is not MISSING:
-            return move
+            if figure_to_create is not MISSING:
+                move = self._try_create(figure_to_create)
+            if move is not MISSING:
+                return move
 
-        move = (self._try_create(fig.Tank)
-                if infantry_count + motorization_count > 0 and tanks_count < 1 else
-                MISSING)
-        if move is not MISSING:
-            return move
+            self._state = _ATTACKING
 
-        move = (self._try_create(fig.Infantry)
-                if infantry_count + motorization_count < 5 else
-                MISSING)
-        if move is not MISSING:
-            return move
+        if self._state == _ATTACKING:
+            move = (self._try_convert_infantry_to_motorization()
+                    if (infantry_count + motorization_count) * .4 >= motorization_count
+                    else MISSING)
+            if move is not MISSING:
+                return move
 
-        figure_to_create = (fig.Town
-                            if cells_count >= self._cells_count_at_last_turn * .98 and
-                               town_count < cells_count * .2 else
-                            ((fig.Tank if random.random() > .85 else fig.Infantry)
-                             if fronts_length > (infantry_count + motorization_count + tanks_count) else
-                             MISSING))
+            move = self._try_capture()
+            if move is not MISSING:
+                return move
 
-        if figure_to_create is not MISSING:
-            move = self._try_create(figure_to_create)
-        if move is not MISSING:
-            return move
+            move = self._try_advance_forces()
+            if move is not MISSING:
+                return move
 
-        move = self._try_pull_forces_to_front()
-        if move is not MISSING:
-            return move
+            move = self._try_attack_with_tanks()
+            if move is not MISSING:
+                return move
+
+            self._state = _PULLING
+
+        if self._state == _PULLING:
+            move = self._try_pull_forces_to_front()
+            if move is not MISSING:
+                return move
+
+            if not _is_inner:
+                self._state = _BUILDING
+                move = self.get_move(session, _is_inner=True)
+                if move is not MISSING:
+                    return move
 
         self._cells_count_at_last_turn = cells_count
         self._turns_count += 1
+        self._state = _BUILDING
         return MISSING
 
     def _get_cell_for(self, figure: type[fig.Figure]) -> proto.Cell | Status:
@@ -173,10 +192,7 @@ class BotIgor(proto.Bot):
         if not neighbors:
             return MISSING
 
-        neighbors = (self._board
-                     .get_neighbors(cell, include_cell=True)
-                     .with_owner(self._player)
-                     .with_figure(fig.Empty))
+        neighbors += Cells({cell})
 
         target = self._min_sqrt_distance_cell(neighbors, front)
         if target == cell:
@@ -194,6 +210,9 @@ class BotIgor(proto.Bot):
             return MISSING
 
         front = all_armed.at_front(self._board)
+        # if cell in front:
+        #     return MISSING
+
         front = Cells({cell for cell in front
                        if self._board.get_neighbors(cell, include_cell=False)
                       .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
@@ -207,10 +226,7 @@ class BotIgor(proto.Bot):
         if not neighbors:
             return MISSING
 
-        neighbors = (self._board
-                     .get_neighbors(cell, include_cell=True)
-                     .with_owner(self._player)
-                     .with_figure(fig.Empty))
+        neighbors += Cells({cell})
 
         target = self._min_sqrt_distance_cell(neighbors, front)
         if target == cell:
