@@ -87,11 +87,9 @@ class BotIgor(proto.Bot):
                     return
 
             figure_to_create = (fig.Town
-                                if cells_count >= self._cells_count_at_last_turn * .98 and
+                                if cells_count >= self._cells_count_at_last_turn * .82 and
                                    town_count < cells_count * .2 else
-                                ((fig.Tank if random.random() > .85 else fig.Infantry)
-                                 if fronts_length * .7 > (infantry_count + motorization_count + tanks_count) else
-                                 MISSING))
+                                (fig.Tank if random.random() > .85 else fig.Infantry))
 
             if figure_to_create is not MISSING:
                 self._try_create(figure_to_create)

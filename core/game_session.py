@@ -79,6 +79,7 @@ def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
                                                 if coord.x + coord.y <= diagonal * .7 else
                                                 (players[2] if coord.x - coord.y >= 0 else players[3]),
                                                 fig.Empty()))
+    random.shuffle(players)
 
     per_player_towns = round(board_size ** 2 * initial_town_ratio / len(players))
     for player in players:
