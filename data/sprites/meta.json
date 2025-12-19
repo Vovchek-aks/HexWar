@@ -36,10 +36,10 @@
       ]
     },
     "Tank": {
-      "file": "figures/tank.png",
+      "file": "figures/tank2.png",
       "pivot": [
-        183,
-        183
+        210,
+        210
       ]
     },
     "Artillery": {

@@ -98,10 +98,9 @@ class BotIgor(proto.Bot):
             self._state = _ATTACKING
 
         if self._state == _ATTACKING:
-            if (infantry_count + motorization_count) * .4 >= motorization_count:
-                self._try_convert_infantry_to_motorization()
-                if self._moves_to_do:
-                    return
+            self._try_convert_infantry_to_motorization()
+            if self._moves_to_do:
+                return
 
             self._try_capture()
             if self._moves_to_do:
@@ -266,6 +265,7 @@ class BotIgor(proto.Bot):
                 self._moves_to_do.append(valid_move)
 
     def _try_convert_infantry_to_motorization(self) -> None:
+
         infantries = (self._board.cells
                       .with_owner(self._player)
                       .with_figure(fig.Infantry))
@@ -273,6 +273,11 @@ class BotIgor(proto.Bot):
             return
 
         for infantry in infantries:
+            infantry_count = self._count_of(fig.Infantry)
+            motorization_count = self._count_of(fig.Motorization)
+            if (infantry_count + motorization_count) * .4 < motorization_count:
+                return
+
             move = Conversion(self._board.coordinates_of(infantry),
                               fig.Motorization)
             if (valid_move := move.validate(self._session)) is not INVALID:
