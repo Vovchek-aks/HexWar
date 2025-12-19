@@ -82,6 +82,8 @@ def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
 
     per_player_towns = round(board_size ** 2 * initial_town_ratio / len(players))
     for player in players:
+        if not board.cells.with_owner(player):
+            continue
         while len(board.cells.with_owner(player).with_figure(fig.Town).all()) < per_player_towns:
             random.choice(list(board.cells.with_owner(player).with_figure(fig.Empty).all())).insert(fig.Town())
 

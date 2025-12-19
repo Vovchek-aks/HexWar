@@ -7,9 +7,13 @@ from core.resources import ResourcesStockpile
 
 @define
 class Player(proto.Player):
-    _data: proto.PlayerData
-    _inputer: proto.PlayerInputer
-    _resources_stockpile: proto.ResourcesStockpile = field(init=False, factory=ResourcesStockpile)
+    _data: proto.PlayerData = field(eq=False)
+    _inputer: proto.PlayerInputer = field(eq=False)
+    _resources_stockpile: proto.ResourcesStockpile = field(init=False, factory=ResourcesStockpile, eq=False)
+    _id: int = field(init=False)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
 
     @property
     def data(self) -> proto.PlayerData:

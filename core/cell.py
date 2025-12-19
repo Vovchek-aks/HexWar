@@ -7,8 +7,8 @@ from statuses import MISSING
 
 @define(hash=True, eq=True, repr=False)
 class Cell(proto.Cell):
-    _owner: proto.Player = field(hash=False)
-    _figure: proto.Figure = field(hash=False)
+    _owner: proto.Player = field(hash=False, eq=False)
+    _figure: proto.Figure = field(hash=False, eq=False)
     _id: int = field(init=False)
 
     def __attrs_post_init__(self) -> None:

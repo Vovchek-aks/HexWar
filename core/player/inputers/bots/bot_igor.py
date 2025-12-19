@@ -1,4 +1,6 @@
+import math
 import random
+from itertools import islice
 
 from attrs import define, field
 
@@ -21,15 +23,11 @@ _PULLING = 2
 @define
 class BotIgor(proto.Bot):
     _session: proto.GameSession | Status = field(init=False, default=MISSING)
+    _player: proto.Player | Status = field(init=False, default=MISSING)
     _cells_count_at_last_turn: int = 0
     _turns_count: int = 0
     _state: int = _BUILDING
     _moves_to_do: list[proto.ValidMove] = field(factory=list)
-
-    @property
-    def _player(self) -> proto.Player:
-        assert self._session is not MISSING
-        return self._session.master.current_player
 
     @property
     def _board(self) -> proto.Board:
@@ -43,6 +41,7 @@ class BotIgor(proto.Bot):
 
     def get_move(self, session: proto.GameSession) -> proto.ValidMove | Status:
         self._session = session
+        self._player = session.master.current_player
 
         cells_count = self._count_of(fig.Figure)
         if cells_count <= 0:
@@ -73,6 +72,10 @@ class BotIgor(proto.Bot):
         fronts_length = len(list(self._board.cells.with_owner(self._player).at_front(self._board).all()))
 
         if self._state == _BUILDING:
+            self._try_convert_infantry_to_motorization()
+            if self._moves_to_do:
+                return
+
             if infantry_count + motorization_count > 0 and tanks_count < 1:
                 self._try_create(fig.Tank)
                 if self._moves_to_do:
@@ -98,10 +101,6 @@ class BotIgor(proto.Bot):
             self._state = _ATTACKING
 
         if self._state == _ATTACKING:
-            self._try_convert_infantry_to_motorization()
-            if self._moves_to_do:
-                return
-
             self._try_capture()
             if self._moves_to_do:
                 return
@@ -265,19 +264,17 @@ class BotIgor(proto.Bot):
                 self._moves_to_do.append(valid_move)
 
     def _try_convert_infantry_to_motorization(self) -> None:
-
         infantries = (self._board.cells
                       .with_owner(self._player)
                       .with_figure(fig.Infantry))
         if not infantries:
             return
 
-        for infantry in infantries:
-            infantry_count = self._count_of(fig.Infantry)
-            motorization_count = self._count_of(fig.Motorization)
-            if (infantry_count + motorization_count) * .4 < motorization_count:
-                return
+        infantry_count = len(infantries.all())
+        motorization_count = self._count_of(fig.Motorization)
+        to_convert = max(0, math.floor((infantry_count + motorization_count) * .6 - motorization_count))
 
+        for infantry in islice(infantries.all(), 0, to_convert):
             move = Conversion(self._board.coordinates_of(infantry),
                               fig.Motorization)
             if (valid_move := move.validate(self._session)) is not INVALID:
