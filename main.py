@@ -1,5 +1,5 @@
 from appearance.game_engine import make_game_engine
-from core.game_session import test_map
+from core.game_session import multibot_map
 from mathematics.vector import Vector2Int
 
 SCREEN_SHAPE = Vector2Int(1280, 720)
@@ -9,7 +9,7 @@ IS_BOTS_ONLY = False
 
 
 def main() -> None:
-    session = test_map(board_size=16, initial_town_ratio=.05)
+    session = multibot_map(board_size=16, initial_town_ratio=.15)
     engine, user_inputer = make_game_engine(CAPTION, UPS, SCREEN_SHAPE, session)
     if not IS_BOTS_ONLY:
         session.master.current_player.change_inputer(user_inputer)

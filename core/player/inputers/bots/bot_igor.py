@@ -69,7 +69,6 @@ class BotIgor(proto.Bot):
         infantry_count = self._count_of(fig.Infantry)
         motorization_count = self._count_of(fig.Motorization)
         tanks_count = self._count_of(fig.Tank)
-        fronts_length = len(list(self._board.cells.with_owner(self._player).at_front(self._board).all()))
 
         if self._state == _BUILDING:
             self._try_convert_infantry_to_motorization()
@@ -87,7 +86,7 @@ class BotIgor(proto.Bot):
                     return
 
             figure_to_create = (fig.Town
-                                if cells_count >= self._cells_count_at_last_turn * .82 and
+                                if cells_count >= self._cells_count_at_last_turn * .85 and
                                    town_count < cells_count * .2 else
                                 (fig.Tank if random.random() > .85 else fig.Infantry))
 

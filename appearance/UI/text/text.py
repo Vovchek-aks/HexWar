@@ -1,6 +1,6 @@
 from attrs import define, field
 
-from appearance.UI.text.text_data_pg import TextDataBuilder
+from appearance.UI.text.text_data_arc import TextDataBuilder
 from appearance.layer import LayerBuilder
 from color import Color
 from mathematics.rectangle import Rectangle
