@@ -80,17 +80,16 @@ class UiLayerMaker:
 
     def _make_current_turn_ui(self, dollars: TextUi, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
-            # self._make_figures_creation_menu(),
-            # self._make_infantry_menu(),
-            # self._make_motorization_menu(),
-            # self._make_tank_menu(),
-            # self._make_artillery_menu(),
-            # self._make_town_menu(),
-            # self._make_bunker_menu(),
-            # dollars,
-            # end_turn_button,
+            self._make_figures_creation_menu(),
+            self._make_infantry_menu(),
+            self._make_motorization_menu(),
+            self._make_tank_menu(),
+            self._make_artillery_menu(),
+            self._make_town_menu(),
+            self._make_bunker_menu(),
+            dollars,
+            end_turn_button,
         ])
-        layer.set_activity(False)
         self._session.master.turn_has_passed.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
 
