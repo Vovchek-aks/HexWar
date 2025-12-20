@@ -38,8 +38,8 @@
     "Tank": {
       "file": "figures/tank2.png",
       "pivot": [
-        210,
-        210
+        640,
+        640
       ]
     },
     "Artillery": {
