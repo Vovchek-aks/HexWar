@@ -47,11 +47,21 @@ class UiLayerMaker:
 
     def make(self, user_inputer_builder: EventPlayerInputerBuilder) -> Layer:
         players_turn = TextUi.make(self._drawer,
-                                   Rectangle(Vector2(10, 10), Vector2(110, 30)),
+                                   (RectangleBuilder(self._screen_shape)
+                                    .from_left_up()
+                                    .move(Vector2(10, 10))
+                                    .set_shape(Vector2(110, 30))
+                                    .adjust_for_shape()
+                                    .build()),
                                    TextData.debug('...'))
 
         dollars = TextUi.make(self._drawer,
-                              Rectangle(Vector2(12, 60), Vector2(100, 20)),
+                              (RectangleBuilder(self._screen_shape)
+                               .from_left_up()
+                               .move(Vector2(12, 60))
+                               .set_shape(Vector2(100, 20))
+                               .adjust_for_shape()
+                               .build()),
                               TextData.debug('...'))
 
         def on_resources_had_changed(resources: ResourcesStockpile) -> None:

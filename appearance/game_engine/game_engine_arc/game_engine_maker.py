@@ -12,7 +12,7 @@ from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
 from core.player.player_moves_maker import player_moves_maker
 from mathematics.vector import Vector2Int, Vector2
-from appearance.graphics.camera.camera import Camera
+from appearance.graphics.camera.camera import Camera, CachedCamera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
 from appearance.input.cell_selector import CellSelector
@@ -42,7 +42,7 @@ def make_game_engine(caption: str,
 
     camera_orientation = CameraOrientation.starter()
     camera_mover = CameraMover(camera_orientation)
-    camera = Camera(screen_shape, ReadonlyCameraOrientation(camera_orientation))
+    camera = CachedCamera.make(Camera(screen_shape.as_vector2, ReadonlyCameraOrientation(camera_orientation)))
 
     hovered_cell_getter = UnderCursorCellGetter(camera, session.board)
 
@@ -78,7 +78,7 @@ def make_game_engine(caption: str,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    updater = Updater.make(camera_mover, screenshot_saver, mouse_movement_observer, layers,
+    updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, mouse_movement_observer, layers,
                            player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
 

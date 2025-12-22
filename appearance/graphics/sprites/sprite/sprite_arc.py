@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import arcade
+import arcade as arc
 from attrs import frozen
 
 from mathematics.vector import Vector2Int, Vector2
@@ -12,10 +12,10 @@ class Sprite:
     def load_raw_image(cls, path: Path | str, pivot: Vector2Int = Vector2Int.zero()) -> "Sprite":
         assert path.exists()
 
-        image = arcade.load_texture(path)
+        image = arc.load_texture(path)
         return cls(image, Vector2Int(*image.size), pivot)
 
-    _image: arcade.Texture
+    _image: arc.Texture
     _shape: Vector2Int
     _pivot: Vector2Int = Vector2Int.zero()
 
@@ -23,12 +23,14 @@ class Sprite:
     def shape(self) -> Vector2Int:
         return self._shape
 
-    def get(self) -> arcade.Texture:
+    def get(self) -> arc.Texture:
         return self._image
 
     def blit_at(self, position: Vector2) -> None:
         screen_position = position - self._pivot.as_vector2
-        arcade.draw_texture_rect(self._image, arcade.rect.XYWH(*screen_position, *self.shape.tuple))
+        arc.draw_texture_rect(self._image, arc.rect.XYWH(*screen_position,
+                                                         *self.shape.tuple,
+                                                         anchor=Vector2.zero()))
 
     def with_pivot(self, pivot: Vector2Int) -> "Sprite":
         return Sprite(self._image, self._shape, pivot)

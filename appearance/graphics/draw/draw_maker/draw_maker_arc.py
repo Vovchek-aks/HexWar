@@ -22,6 +22,6 @@ class DrawMaker:
         figures_sprites = figures_sprites_loader.load(get_figures(), self._on_no_figure_sprite)
         figures_drawer = FiguresDrawer(camera, board, figures_sprites)
 
-        board_drawer = BordDrawer(screen_shape, camera, board)
+        board_drawer = BordDrawer.make(screen_shape, camera, board)
 
         return Draw(board_drawer, figures_drawer)

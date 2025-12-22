@@ -15,18 +15,21 @@ class Updater:
     @classmethod
     def make(cls,
              camera_mover: CameraMover,
+             camera_orientation: proto.CameraOrientation,
              screenshot_saver: ScreenshotSaver,
              mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[Layer],
              player_turner: Iterator[None]) -> "Updater":
         clicks_catcher = ClicksCatcher(layers)
         return cls(camera_mover,
+                   camera_orientation,
                    screenshot_saver,
                    mouse_movement_observer,
                    clicks_catcher,
                    player_turner)
 
     _camera_mover: CameraMover
+    _camera_orientation: proto.CameraOrientation
     _screenshot_saver: ScreenshotSaver
     _mouse_movement_observer: proto.MouseMovementObserver
     _clicks_catcher: ClicksCatcher
@@ -36,6 +39,7 @@ class Updater:
         self._camera_mover.update(input_state.last_frame_mouse_wheel_delta,
                                   input_state.pressed_keys,
                                   input_state.dt)
+        self._camera_orientation.update()
         self._screenshot_saver.update(input_state.pressed_keys)
         self._mouse_movement_observer.update(input_state.mouse_position)
         self._clicks_catcher.update(input_state.last_frame_clicks)

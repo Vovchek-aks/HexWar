@@ -29,7 +29,7 @@ class CameraMover:
 
     def _movement(self, keys: set[int], dt: float) -> None:
         x = _has_key(keys, MOVEMENT_RIGHT) - _has_key(keys, MOVEMENT_LEFT)
-        y = _has_key(keys, MOVEMENT_DOWN) - _has_key(keys, MOVEMENT_UP)
+        y = _has_key(keys, MOVEMENT_UP) - _has_key(keys, MOVEMENT_DOWN)
         direction = Vector2(x, y)
 
         if direction.length() > 1:

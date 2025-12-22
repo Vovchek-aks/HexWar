@@ -7,13 +7,22 @@ from observer import Event, OnEventSubscriber
 
 class Window(arc.Window):
     def __init__(self, ups: float, title: str, screen_shape: Vector2Int) -> None:
-        super().__init__(screen_shape.x, screen_shape.y, title, vsync=True, fixed_rate=ups, draw_rate=ups)
+        dt = 1 / ups
+        super().__init__(screen_shape.x,
+                         screen_shape.y,
+                         title,
+                         vsync=True,
+                         samples=2,
+                         update_rate=dt,
+                         fixed_rate=dt)
         self.background_color = arc.color.BLACK
 
         self._pressed_keys = set[int]()
 
         self._fixed_update_started = Event[float, None]()
         self._fixed_update_finished = Event[float, None]()
+        self._update_started = Event[float, None]()
+        self._update_finished = Event[float, None]()
         self._draw = Event[None]()
 
         self._click_was_made = Event[Click, None]()
@@ -28,6 +37,14 @@ class Window(arc.Window):
     @property
     def fixed_update_finished(self) -> OnEventSubscriber[float, None]:
         return self._fixed_update_finished.subscriber
+
+    @property
+    def update_started(self) -> OnEventSubscriber[float, None]:
+        return self._update_started.subscriber
+
+    @property
+    def update_finished(self) -> OnEventSubscriber[float, None]:
+        return self._update_finished.subscriber
 
     @property
     def draw_event(self) -> OnEventSubscriber[None]:
@@ -52,6 +69,10 @@ class Window(arc.Window):
     def on_fixed_update(self, delta_time: float) -> None:
         self._fixed_update_started.invoke(delta_time)
         self._fixed_update_finished.invoke(delta_time)
+
+    def on_update(self, delta_time: float) -> None:
+        self._update_started.invoke(delta_time)
+        self._update_finished.invoke(delta_time)
 
     def on_draw(self) -> None:
         self.clear()

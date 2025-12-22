@@ -34,7 +34,7 @@ OPPOSITE_NEIGHBOR = {
 }
 
 
-def neighbor_square_deltas() -> dict[Neighbor, Vector2Int]:
+def _neighbor_square_deltas() -> dict[Neighbor, Vector2Int]:
     return {
         TopCenter: Vector2Int(0, -1),
         TopRight: Vector2Int(1, 0),
@@ -45,7 +45,14 @@ def neighbor_square_deltas() -> dict[Neighbor, Vector2Int]:
     }
 
 
-def neighbors_vertexes() -> dict[Neighbor, tuple[Vector2, Vector2]]:
+_NEIGHBOR_SQUARE_DELTAS = _neighbor_square_deltas()
+
+
+def neighbor_square_deltas() -> dict[Neighbor, Vector2Int]:
+    return _NEIGHBOR_SQUARE_DELTAS
+
+
+def _neighbors_vertexes() -> dict[Neighbor, tuple[Vector2, Vector2]]:
     vertex = Vector2(1, 0).rotate(120)
     return {
         TopCenter: (vertex, vertex := vertex.rotate(-60)),
@@ -55,6 +62,13 @@ def neighbors_vertexes() -> dict[Neighbor, tuple[Vector2, Vector2]]:
         DownLeft: (vertex, vertex := vertex.rotate(-60)),
         TopLeft: (vertex, vertex.rotate(-60)),
     }
+
+
+_NEIGHBOR_VERTEXES = _neighbors_vertexes()
+
+
+def neighbors_vertexes() -> dict[Neighbor, tuple[Vector2, Vector2]]:
+    return _NEIGHBOR_VERTEXES
 
 
 DISTANCE_BETWEEN_CENTERS = (1.5 ** 2 + cos(pi / 6) ** 2) ** .5

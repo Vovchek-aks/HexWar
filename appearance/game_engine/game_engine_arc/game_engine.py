@@ -19,7 +19,7 @@ class GameEngine:
              updater: Updater,
              input_state: InputState) -> "GameEngine":
         self = cls(caption, window, drawer, updater, input_state)
-        window.fixed_update_started.subscribe(self.update)
+        window.update_started.subscribe(self.update)
         window.draw_event.subscribe(self.draw)
         return self
 

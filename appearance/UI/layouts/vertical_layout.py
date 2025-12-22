@@ -17,7 +17,7 @@ class VerticalLayoutUi(LayoutUi):
         element_height = (height - total_empty) / len(elements) if len(elements) else 1
         delta = margin + element_height
 
-        for index, element in enumerate(elements):
+        for index, element in enumerate(reversed(elements)):
             element.set_rectangle(
                 Rectangle(Vector2(x, y + index * delta),
                           Vector2(width, element_height))

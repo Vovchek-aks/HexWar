@@ -73,5 +73,5 @@ class Board(proto.Board):
         return self.cell_coords
 
     def __contains__(self, coord: Vector2Int) -> bool:
-        return (coord.x in range(self.width) and
-                coord.y in range(self.height))
+        return (0 <= coord.x < self.width and
+                0 <= coord.y < self.height)

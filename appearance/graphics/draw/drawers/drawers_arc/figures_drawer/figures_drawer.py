@@ -7,7 +7,7 @@ from mathematics.vector import Vector2Int
 import core.figures.figures as fig
 from appearance.graphics.sprites import Sprite
 
-SPRITES_SCALE_RATIO = 1.5
+SPRITES_SCALE_RATIO = 1.6
 
 
 @frozen

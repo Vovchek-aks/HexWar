@@ -10,8 +10,8 @@
     "Town": {
       "file": "figures/town.png",
       "pivot": [
-        183,
-        183
+        170,
+        160
       ]
     },
     "Bunker": {

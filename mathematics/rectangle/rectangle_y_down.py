@@ -74,21 +74,21 @@ class RectangleBuilder:
                                  self._shape.y if self._coordinates_multiplier.y < 0 else 0))
 
     def from_left_up(self) -> "RectangleBuilder":
-        self._position = self._screen_shape.with_x(0).as_vector2
-        self._coordinates_multiplier = Vector2Int(1, -1)
-        return self
-
-    def from_left_bottom(self) -> "RectangleBuilder":
         self._position = Vector2.zero()
         self._coordinates_multiplier = Vector2Int(1, 1)
         return self
 
+    def from_left_bottom(self) -> "RectangleBuilder":
+        self._position = self._screen_shape.with_x(0).as_vector2
+        self._coordinates_multiplier = Vector2Int(1, -1)
+        return self
+
     def from_right_bottom(self) -> "RectangleBuilder":
-        self._position = self._screen_shape.with_y(0).as_vector2
-        self._coordinates_multiplier = Vector2Int(-1, 1)
+        self._position = self._screen_shape.as_vector2
+        self._coordinates_multiplier = Vector2Int(-1, -1)
         return self
 
     def from_right_up(self) -> "RectangleBuilder":
-        self._position = self._screen_shape.as_vector2
-        self._coordinates_multiplier = Vector2Int(-1, -1)
+        self._position = self._screen_shape.with_y(0).as_vector2
+        self._coordinates_multiplier = Vector2Int(-1, 1)
         return self

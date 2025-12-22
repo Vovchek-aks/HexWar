@@ -1,19 +1,27 @@
-from attrs import define, frozen
+from attrs import define, frozen, field
 
 from mathematics.angle import Angle
 from mathematics.vector import Vector2
 from appearance import protocols as proto
+from observer import Event, OnEventSubscriber
 
 
 @define
 class CameraOrientation(proto.CameraOrientation):
     @classmethod
     def starter(cls) -> "CameraOrientation":
-        return cls(Vector2(14, -8), Angle(60), 25)
+        return cls(Vector2(14, -8), Angle(-60), 25)
+
+    _has_changed: Event[None] = field(init=False, factory=Event)
 
     _position: Vector2
     _rotation: Angle
     _zoom: float
+    _had_changed: bool = False
+
+    @property
+    def has_changed(self) -> OnEventSubscriber[None]:
+        return self._has_changed.subscriber
 
     @property
     def position(self) -> Vector2:
@@ -31,22 +39,45 @@ class CameraOrientation(proto.CameraOrientation):
     def tuple(self) -> tuple[Vector2, Angle, float]:
         return self._position, self._rotation, self._zoom
 
+    def update(self) -> None:
+        if not self._had_changed:
+            return
+
+        self._has_changed.invoke()
+        self._had_changed = False
+
     def move(self, delta: Vector2) -> "CameraOrientation":
+        if delta == Vector2.zero():
+            return self
+
         self._position += self._rotation.inverse.apply(delta)
+        self._had_changed = True
         return self
 
     def rotate(self, angle: Angle) -> "CameraOrientation":
+        if angle.degrees == 0:
+            return self
+
         self._rotation += angle
+        self._had_changed = True
         return self
 
     def zoom_in(self, ratio: float) -> "CameraOrientation":
+        if ratio == 0:
+            return self
+
         self._zoom *= ratio
+        self._had_changed = True
         return self
 
 
 @frozen
 class ReadonlyCameraOrientation(proto.ReadonlyCameraOrientation):
     _orientation: proto.CameraOrientation
+
+    @property
+    def has_changed(self) -> OnEventSubscriber[None]:
+        return self._orientation.has_changed
 
     @property
     def position(self) -> Vector2:

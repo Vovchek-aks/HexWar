@@ -30,6 +30,11 @@ class Camera(ABC):
 class CameraOrientation(ABC):
     @property
     @abstractmethod
+    def has_changed(self) -> OnEventSubscriber[None]:
+        ...
+
+    @property
+    @abstractmethod
     def position(self) -> Vector2:
         ...
 
@@ -49,6 +54,10 @@ class CameraOrientation(ABC):
         ...
 
     @abstractmethod
+    def update(self) -> None:
+        ...
+
+    @abstractmethod
     def move(self, delta: Vector2) -> "CameraOrientation":
         ...
 
@@ -62,6 +71,11 @@ class CameraOrientation(ABC):
 
 
 class ReadonlyCameraOrientation(ABC):
+    @property
+    @abstractmethod
+    def has_changed(self) -> OnEventSubscriber[None]:
+        ...
+
     @property
     @abstractmethod
     def position(self) -> Vector2:
@@ -128,18 +142,6 @@ class BordDrawer(ABC):
 
     @abstractmethod
     def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
-        ...
-
-    @abstractmethod
-    def draw_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> None:
-        ...
-
-    @abstractmethod
-    def draw_edges(self, cell_coord: Vector2Int) -> None:
-        ...
-
-    @abstractmethod
-    def draw_hex_background(self, cell_coord: Vector2Int) -> None:
         ...
 
 
@@ -350,6 +352,16 @@ class TextData(ABC):
     @property
     @abstractmethod
     def text(self) -> str:
+        ...
+
+    @property
+    @abstractmethod
+    def color(self) -> Color:
+        ...
+
+    @property
+    @abstractmethod
+    def font(self) -> Font:
         ...
 
     @property

@@ -4,6 +4,8 @@ from attrs import frozen, field
 
 from mathematics.vector import Vector2
 
+ROTATION_DIRECTION = 1
+
 
 @frozen
 class Angle:
@@ -22,7 +24,7 @@ class Angle:
         return self * -1
 
     def apply(self, vector: Vector2) -> Vector2:
-        return vector.rotate(-self.degrees)
+        return vector.rotate(self.degrees * ROTATION_DIRECTION)
 
     def __add__(self, other: "Angle") -> "Angle":
         return type(self)(self.degrees + other.degrees)

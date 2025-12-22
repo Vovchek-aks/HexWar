@@ -18,6 +18,10 @@ class Vector2(pg.Vector2):
     def ones(cls) -> "Vector2":
         return cls(1, 1)
 
+    @property
+    def tuple(self) -> tuple[float, float]:
+        return self.x, self.y
+
     def __str__(self) -> str:
         return f"{type(self).__name__}({self.x}, {self.y})"
 

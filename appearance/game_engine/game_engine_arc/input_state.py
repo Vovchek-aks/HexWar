@@ -16,8 +16,8 @@ class InputState:
         window.keyboard_state_changed.subscribe(self._on_keyboard_state_changed)
         window.click_was_made.subscribe(self._on_click_was_made)
         window.mouse_wheel_has_moved.subscribe(self._on_mouse_wheel_has_moved)
-        window.fixed_update_finished.subscribe(self._on_fixed_update_finished)
-        window.fixed_update_started.subscribe(self._on_fixed_update_started)
+        window.update_finished.subscribe(self._on_update_finished)
+        window.update_started.subscribe(self._on_update_started)
         return self
 
     _dt: float = field(init=False, default=0)
@@ -58,9 +58,9 @@ class InputState:
     def _on_mouse_wheel_has_moved(self, delta: float) -> None:
         self._last_frame_mouse_wheel_delta += delta
 
-    def _on_fixed_update_started(self, dt: float) -> None:
+    def _on_update_started(self, dt: float) -> None:
         self._dt = dt
 
-    def _on_fixed_update_finished(self, _: float) -> None:
+    def _on_update_finished(self, _: float) -> None:
         self._last_frame_clicks.clear()
         self._last_frame_mouse_wheel_delta = 0
