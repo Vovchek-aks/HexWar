@@ -39,6 +39,8 @@ class GameSession(proto.GameSession):
 
 
 def test_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
+    assert 0 <= initial_town_ratio <= 1
+
     players = [
         Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor())),
         Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor())),
@@ -65,6 +67,8 @@ def test_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
 
 
 def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
+    assert 0 <= initial_town_ratio <= 1
+
     players = [
         Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor())),
         Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor())),

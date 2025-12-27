@@ -10,14 +10,16 @@ from observer import Event, OnEventSubscriber
 class CameraOrientation(proto.CameraOrientation):
     @classmethod
     def starter(cls) -> "CameraOrientation":
-        return cls(Vector2(14, -8), Angle(-60), 25)
+        return cls(Vector2(14, -8), Angle(-60), 10)
+        # return cls(Vector2(715, 400), Angle(60), 4.6)
+        # return cls(Vector2(715, 400), Angle(60), 4.6)
 
     _has_changed: Event[None] = field(init=False, factory=Event)
 
     _position: Vector2
     _rotation: Angle
     _zoom: float
-    _had_changed: bool = False
+    _had_changed: bool = field(init=False, default=False)
 
     @property
     def has_changed(self) -> OnEventSubscriber[None]:
@@ -94,3 +96,6 @@ class ReadonlyCameraOrientation(proto.ReadonlyCameraOrientation):
     @property
     def tuple(self) -> tuple[Vector2, Angle, float]:
         return self._orientation.tuple
+
+    def mutable_copy(self) -> proto.CameraOrientation:
+        return CameraOrientation(*self.tuple)

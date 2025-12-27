@@ -70,7 +70,7 @@ def make_game_engine(caption: str,
                              actions_reader)
                 .make(user_inputer_builder))
 
-    draw = DrawMaker().make(screen_shape, camera, session.board)
+    draw = DrawMaker().make(screen_shape, camera, session.board, moves_maker)
 
     layers = [
         ui_layer,

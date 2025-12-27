@@ -96,6 +96,10 @@ class ReadonlyCameraOrientation(ABC):
     def tuple(self) -> tuple[Vector2, Angle, float]:
         ...
 
+    @abstractmethod
+    def mutable_copy(self) -> CameraOrientation:
+        ...
+
 
 class Draw(ABC):
     @abstractmethod
