@@ -54,5 +54,7 @@ class MovesMaker(proto.MovesMaker):
             case Creation(to_coord=coord) | Conversion(coord=coord) | Attack(to_coord=coord):
                 self._cell_changed_figure.invoke(coord)
                 self._board_move_was_made.invoke(move)
-            case Relocation():
+            case Relocation(to_coord=to_coord, from_coord=from_coord):
+                self._cell_changed_figure.invoke(to_coord)
+                self._cell_changed_figure.invoke(from_coord)
                 self._board_move_was_made.invoke(move)

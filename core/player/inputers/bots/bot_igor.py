@@ -1,6 +1,7 @@
 import math
 import random
 from itertools import islice
+from typing import Iterator
 
 from attrs import define, field
 
@@ -13,7 +14,7 @@ from core.moves.conversion import Conversion
 from core.moves.creation import Creation
 from core.moves.relocations import Relocation, Assault
 from core.protocols import Capturable, CanCapture
-from statuses import Status, MISSING, INVALID
+from statuses import Status, MISSING, INVALID, IN_PROGRESS
 
 _ATTACKING = 0
 _BUILDING = 1
@@ -27,7 +28,9 @@ class BotIgor(proto.Bot):
     _cells_count_at_last_turn: int = 0
     _turns_count: int = 0
     _state: int = _BUILDING
-    _moves_to_do: list[proto.ValidMove] = field(factory=list)
+    _moves_to_make: list[proto.ValidMove] = field(factory=list)
+    _moves_generator: Iterator[None] | Status = field(init=False, default=MISSING)
+    _ran_out_of_moves: bool = field(init=False, default=False)
 
     @property
     def _board(self) -> proto.Board:
@@ -43,81 +46,105 @@ class BotIgor(proto.Bot):
         self._session = session
         self._player = session.master.current_player
 
+        if self._moves_generator is not MISSING:
+            if next(self._moves_generator, INVALID) is not INVALID:
+                return IN_PROGRESS
+            self._moves_generator = MISSING
+
         cells_count = self._count_of(fig.Figure)
         if cells_count <= 0:
             return MISSING
 
-        while self._moves_to_do:
-            move = self._moves_to_do.pop(0)
+        if self._moves_to_make:
+            move = self._moves_to_make.pop(0)
             if move.move.validate(session) is not INVALID:
+                self._ran_out_of_moves = False
                 return move
 
-        self._add_moves(cells_count)
+        if not self._ran_out_of_moves:
+            self._moves_generator = self._add_moves(cells_count)
+            self._ran_out_of_moves = False
+            return IN_PROGRESS
 
-        while self._moves_to_do:
-            move = self._moves_to_do.pop(0)
-            if move.move.validate(session) is not INVALID:
-                return move
-
+        # print('\n' * 3)
         self._cells_count_at_last_turn = cells_count
         self._turns_count += 1
         self._state = _BUILDING
+        self._ran_out_of_moves = False
         return MISSING
 
-    def _add_moves(self, cells_count: int, *, _is_inner=False) -> None:
+    def _add_moves(self, cells_count: int, *, _is_inner=False) -> Iterator[None]:
         town_count = self._count_of(fig.Town)
         infantry_count = self._count_of(fig.Infantry)
         motorization_count = self._count_of(fig.Motorization)
         tanks_count = self._count_of(fig.Tank)
 
         if self._state == _BUILDING:
-            self._try_convert_infantry_to_motorization()
-            if self._moves_to_do:
+            yield from self._try_convert_infantry_to_motorization()
+            # print("_try_convert_infantry_to_motorization")
+            if self._moves_to_make:
+                # print('+')
                 return
 
             if infantry_count + motorization_count > 0 and tanks_count < 1:
                 self._try_create(fig.Tank)
-                if self._moves_to_do:
+                # print("_try_create(fig.Tank)")
+                if self._moves_to_make:
+                    # print('+')
                     return
 
             if infantry_count + motorization_count < 5:
                 self._try_create(fig.Infantry)
-                if self._moves_to_do:
+                # print("_try_create(fig.Infantry)")
+                if self._moves_to_make:
+                    # print('+')
                     return
 
             figure_to_create = (fig.Town
-                                if cells_count >= self._cells_count_at_last_turn * .85 and
+                                if cells_count >= self._cells_count_at_last_turn * .95 and
                                    town_count < cells_count * .2 else
                                 (fig.Tank if random.random() > .85 else fig.Infantry))
 
             if figure_to_create is not MISSING:
                 self._try_create(figure_to_create)
-                if self._moves_to_do:
+                # print(f"_try_create({figure_to_create})")
+                if self._moves_to_make:
+                    # print('+')
                     return
 
             self._state = _ATTACKING
 
         if self._state == _ATTACKING:
-            self._try_capture()
-            if self._moves_to_do:
+            yield from self._try_capture()
+            # print("_try_capture")
+            if self._moves_to_make:
+                # print('+')
                 return
-            self._try_advance_forces()
-            if self._moves_to_do:
+            yield from self._try_advance_forces()
+            # print("_try_advance_forces")
+            if self._moves_to_make:
+                # print('+')
                 return
-            self._try_attack_with_tanks()
-            if self._moves_to_do:
+            yield from self._try_attack_with_tanks()
+            # print("_try_attack_with_tanks")
+            if self._moves_to_make:
+                # print('+')
                 return
 
             self._state = _PULLING
 
         if self._state == _PULLING:
-            self._try_pull_forces_to_front()
-            if self._moves_to_do:
+            yield from self._try_pull_forces_to_front()
+            # print("_try_pull_forces_to_front")
+            if self._moves_to_make:
+                # print('+')
                 return
 
             if not _is_inner:
                 self._state = _BUILDING
-                self._add_moves(cells_count, _is_inner=True)
+                yield from self._add_moves(cells_count, _is_inner=True)
+            else:
+                self._ran_out_of_moves = True
 
     def _get_cell_for(self, figure: type[fig.Figure]) -> proto.Cell | Status:
         empties = self._board.cells.with_owner(self._player).with_figure(fig.Empty)
@@ -234,7 +261,7 @@ class BotIgor(proto.Bot):
 
         return target
 
-    def _try_pull_forces_to_front(self) -> None:
+    def _try_pull_forces_to_front(self) -> Iterator[None]:
         all_armed = (self._board.cells
                      .with_owner(self._player)
                      .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
@@ -244,6 +271,7 @@ class BotIgor(proto.Bot):
         front = all_armed.at_front(self._board)
         if not front:
             return
+        yield
 
         back = all_armed - front
         for cell in all_armed:
@@ -251,87 +279,103 @@ class BotIgor(proto.Bot):
                   if not isinstance(cell.figure, fig.Tank)
                   else self._get_pull_tank_cell)
             if (not isinstance(cell.figure, fig.Tank)) and cell not in back:
+                yield
                 continue
             if (target := fn(cell)) is MISSING:
+                yield
                 continue
 
             move = Relocation(self._board.coordinates_of(cell),
                               self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_do.append(valid_move)
+                self._moves_to_make.append(valid_move)
+            yield
 
-    def _try_convert_infantry_to_motorization(self) -> None:
+    def _try_convert_infantry_to_motorization(self) -> Iterator[None]:
         infantries = (self._board.cells
                       .with_owner(self._player)
                       .with_figure(fig.Infantry))
         if not infantries:
             return
+        yield
 
         infantry_count = len(infantries.all())
         motorization_count = self._count_of(fig.Motorization)
         to_convert = max(0, math.floor((infantry_count + motorization_count) * .6 - motorization_count))
+        yield
 
         for infantry in islice(infantries.all(), 0, to_convert):
             move = Conversion(self._board.coordinates_of(infantry),
                               fig.Motorization)
             if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_do.append(valid_move)
+                self._moves_to_make.append(valid_move)
+            yield
 
-    def _try_advance_forces(self) -> None:
+    def _try_advance_forces(self) -> Iterator[None]:
         all_armed = (self._board.cells
                      .with_owner(self._player)
                      .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return
+        yield
 
         armed_front = all_armed.at_front(self._board)
         if not armed_front:
             return
+        yield
 
         for cell in armed_front:
             if (target := self._get_target_enemy(cell)) is MISSING:
+                yield
                 continue
 
             move = Assault(self._board.coordinates_of(cell),
                            self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_do.append(valid_move)
+                self._moves_to_make.append(valid_move)
+            yield
 
-    def _try_attack_with_tanks(self) -> None:
+    def _try_attack_with_tanks(self) -> Iterator[None]:
         tanks = self._board.cells.with_owner(self._player).with_figure(fig.Tank)
         if not tanks:
             return
+        yield
 
         for tank in tanks.at_front(self._board):
             neighbors = self._board.get_neighbors(tank, include_cell=False)
             neighbors -= neighbors.with_owner(self._player)
             neighbors -= neighbors.with_figure(fig.Empty)
             if not neighbors:
+                yield
                 continue
 
             target: proto.Cell = random.choice(list(neighbors.all()))
             move = Attack(self._board.coordinates_of(tank),
                           self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_do.append(valid_move)
+                self._moves_to_make.append(valid_move)
+            yield
 
-    def _try_capture(self) -> None:
+    def _try_capture(self) -> Iterator[None]:
         infantries = self._board.cells.with_owner(self._player).with_flag(CanCapture)
         if not infantries:
             return
+        yield
 
         for infantry in infantries.at_front(self._board):
             neighbors = self._board.get_neighbors(infantry, include_cell=False).with_flag(Capturable)
             neighbors -= neighbors.with_owner(self._player)
             neighbors -= neighbors.with_figure(fig.Empty)
             if not neighbors:
+                yield
                 continue
 
             target: proto.Cell = random.choice(list(neighbors.all()))
             move = Capture(self._board.coordinates_of(infantry),
                            self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_do.append(valid_move)
+                self._moves_to_make.append(valid_move)
+            yield
 
     def _can_create(self, figure: type[fig.Figure], cell: proto.Cell) -> bool:
         if not cell.is_empty:
@@ -356,7 +400,7 @@ class BotIgor(proto.Bot):
             return
 
         valid_move = self._create(figure, cell)
-        self._moves_to_do.append(valid_move)
+        self._moves_to_make.append(valid_move)
 
     def _count_of(self, figure: type[fig.Figure]) -> int:
         return len(self._board.cells.with_owner(self._player).with_figure(figure).all())

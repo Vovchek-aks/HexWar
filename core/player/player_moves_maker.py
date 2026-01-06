@@ -1,7 +1,6 @@
 from typing import Iterator
 
 import core.protocols as proto
-from statuses import MISSING
 
 
 def player_moves_maker(session: proto.GameSession,
@@ -11,7 +10,7 @@ def player_moves_maker(session: proto.GameSession,
             _on_turn_start(session)
             while not player.wants_to_end_turn():
                 move = player.get_move(session)
-                if move is not MISSING:
+                if isinstance(move, proto.ValidMove):
                     moves_maker.make(move)
                 yield
 
