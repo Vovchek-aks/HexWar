@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod, ABCMeta
+from types import TracebackType
 
 from color import Color
 from font import Font
 from mathematics.angle import Angle
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2, Vector2Int
-from mathematics.hex_geometry import Neighbor
 from observer import OnEventSubscriber
 from statuses import Status
 from appearance.graphics.sprites import Sprite
@@ -51,6 +51,10 @@ class CameraOrientation(ABC):
     @property
     @abstractmethod
     def tuple(self) -> tuple[Vector2, Angle, float]:
+        ...
+
+    @abstractmethod
+    def set_starter(self) -> None:
         ...
 
     @abstractmethod
@@ -141,12 +145,24 @@ class BordDrawer(ABC):
         ...
 
     @abstractmethod
+    def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
+        ...
+
+
+class BackgroundDrawer(ABC):
     def draw_background(self) -> None:
         ...
 
-    @abstractmethod
-    def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
-        ...
+
+class CameraAssistant(ABC):
+    def __enter__(self) -> "CameraAssistant":
+        return self
+
+    def __exit__(self,
+                 exc_type: type[BaseException],
+                 exc_val: BaseException,
+                 exc_tb: TracebackType) -> bool | None:
+        return None
 
 
 class UiDrawer(ABC):

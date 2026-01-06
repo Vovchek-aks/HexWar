@@ -1,12 +1,10 @@
 from attrs import frozen
 
-from core.moves.capture import Capture
-from core.moves.relocations import Assault
-from core.protocols import Board, MovesMaker, ValidMove
+from core.protocols import Board, MovesMaker
 import appearance.protocols as proto
 from mathematics.vector import Vector2Int
 from ..draw import Draw
-from ..drawers import BordDrawer, FiguresDrawer
+from ..drawers import BordDrawer, FiguresDrawer, BackgroundDrawer
 from appearance.graphics.sprites import SpritesLoader
 from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresSpritesLoader
 from core.figures.figures import Figure, get_figures
@@ -22,15 +20,10 @@ class DrawMaker:
         sprites_loader = SpritesLoader.from_meta()
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
         figures_sprites = figures_sprites_loader.load(get_figures(), self._on_no_figure_sprite)
-        figures_drawer = FiguresDrawer(camera, board, figures_sprites)
+        figures_drawer = FiguresDrawer.make(board, figures_sprites, camera.orientation)
+        moves_maker.cell_changed_figure.subscribe(figures_drawer.update_cell)
 
-        board_drawer = BordDrawer.make(screen_shape, camera, board)
+        board_drawer = BordDrawer.make(board)
+        moves_maker.cell_changed_owner.subscribe(board_drawer.update_cell)
 
-        def _temp(move: ValidMove) -> None:
-            match move.move:
-                case Assault(to_coord=coord) | Capture(to_coord=coord):
-                    board_drawer.update_cell_color(coord)
-
-        moves_maker.board_move_was_made.subscribe(_temp)
-
-        return Draw(board_drawer, figures_drawer)
+        return Draw(board_drawer, figures_drawer, BackgroundDrawer(screen_shape))

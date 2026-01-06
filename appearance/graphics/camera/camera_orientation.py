@@ -41,6 +41,12 @@ class CameraOrientation(proto.CameraOrientation):
     def tuple(self) -> tuple[Vector2, Angle, float]:
         return self._position, self._rotation, self._zoom
 
+    def set_starter(self) -> None:
+        starter = CameraOrientation.starter()
+        self._position = starter.position
+        self._rotation = starter.rotation
+        self._zoom = starter.zoom
+
     def update(self) -> None:
         if not self._had_changed:
             return

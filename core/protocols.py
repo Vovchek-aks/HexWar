@@ -117,6 +117,16 @@ class MovesMaker(ABC):
     def board_move_was_made(self) -> OnEventSubscriber[ValidMove, None]:
         ...
 
+    @property
+    @abstractmethod
+    def cell_changed_owner(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def cell_changed_figure(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
+
     @abstractmethod
     def make(self, move: ValidMove) -> None:
         ...

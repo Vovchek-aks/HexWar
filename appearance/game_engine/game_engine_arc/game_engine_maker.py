@@ -3,6 +3,7 @@ from appearance.UI.ui_layer_maker import UiLayerMaker
 from appearance.game_engine.game_engine_arc.game_engine import GameEngine
 from appearance.game_engine.game_engine_arc.updater import Updater
 from appearance.game_engine.game_engine_arc.window import Window
+from appearance.graphics.draw.drawers import CameraAssistant
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.graphics.sprites import SpritesLoader
@@ -71,10 +72,11 @@ def make_game_engine(caption: str,
                 .make(user_inputer_builder))
 
     draw = DrawMaker().make(screen_shape, camera, session.board, moves_maker)
+    camera_assistant = CameraAssistant.make(camera)
 
     layers = [
         ui_layer,
-        Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector), board_layer),
+        Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 

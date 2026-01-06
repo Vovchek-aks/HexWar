@@ -2,7 +2,7 @@ from attrs import frozen
 
 import appearance.protocols as proto
 from mathematics.vector import Vector2Int
-from .drawers import BordDrawer, FiguresDrawer
+from .drawers import BordDrawer, FiguresDrawer, BackgroundDrawer
 
 HOVER_HIGHLIGHT_RATIO = .15
 SELECT_HIGHLIGHT_RATIO = .25
@@ -12,9 +12,10 @@ SELECT_HIGHLIGHT_RATIO = .25
 class Draw(proto.Draw):
     _bord_drawer: BordDrawer
     _figures_drawer: FiguresDrawer
+    _background_drawer: BackgroundDrawer
 
     def background(self) -> None:
-        self._bord_drawer.draw_background()
+        self._background_drawer.draw_background()
 
     def board(self) -> None:
         self._bord_drawer.draw_board()

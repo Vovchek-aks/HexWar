@@ -1,63 +1,120 @@
-from typing import Callable
+from collections import defaultdict
 
-from attrs import define
+from attrs import define, field
 import arcade as arc
 
+from appearance.graphics.basic_colors import WHITE
 from appearance import protocols as proto
-from appearance.graphics.colors import BACKGROUND
-from .shape_list_drawer import ShapeListDrawer
+from color import Color
 from core.protocols import Board
-from mathematics.vector import Vector2Int, Vector2
-from mathematics.angle import Angle
-from appearance.graphics.camera.camera_orientation import CameraOrientation
+from mathematics.hex_geometry import Neighbor, neighbors_vertexes, NEIGHBORS, neighbor_square_deltas, \
+    OPPOSITE_NEIGHBOR, get_world_position
+from mathematics.vector import Vector2Int
+
+ShapeList = arc.shape_list.ShapeElementList
+Shape = arc.shape_list.Shape
+
+EDGES_WIDTH_RATIO = 1.1
+EDGES_BRIGHTNESS_RATIO = .6
 
 
 @define
 class BordDrawer(proto.BordDrawer):
     @classmethod
-    def make(cls,
-             screen_shape: Vector2Int,
-             camera: proto.Camera,
-             board: Board) -> "BordDrawer":
-        arcade_camera = arc.Camera2D()
-        shape_list_drawer = ShapeListDrawer.make(board)
-        self = cls(screen_shape, camera, camera.orientation.mutable_copy(), arcade_camera, shape_list_drawer)
-        camera.orientation.has_changed.subscribe(self._update_arcade_camera_orientation)
+    def make(cls, board: Board) -> "BordDrawer":
+        self = cls(board)
+
+        for cell_coord in board.cell_coords:
+            self.append_hex_background(cell_coord)
+        for cell_coord in board.cell_coords:
+            self.append_edges(cell_coord)
+
         return self
 
-    _screen_shape: Vector2Int
-    _camera: proto.Camera
-    _orientation: CameraOrientation
-    _arcade_camera: arc.Camera2D
-    _shape_list_drawer: ShapeListDrawer
+    _board: Board
+
+    _shape_list: ShapeList = field(init=False, factory=ShapeList)
+    _backgrounds: dict[Vector2Int, Shape] = field(init=False, factory=dict)
+    _edges: dict[Vector2Int, list[Shape]] = field(init=False, factory=lambda: defaultdict(list))
 
     def draw_board(self) -> None:
-        self._draw(self._shape_list_drawer.draw)
+        self._shape_list.draw()
 
     def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
-        self._draw(lambda: self._shape_list_drawer.draw_highlighted(cell_coord, highlight_ratio))
+        color = self._get_hex_color(cell_coord).lerp(WHITE, highlight_ratio)
+        self._make_hex_background_no_auto_color(cell_coord, color).draw()
+        self.draw_edges(cell_coord)
 
-    def draw_background(self) -> None:
-        rectangle = arc.rect.LBWH(*Vector2Int.zero().tuple, *self._screen_shape.tuple)
-        arc.draw_rect_filled(rectangle, BACKGROUND)
+    def make_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> Shape:
+        color = self._get_edges_color(cell_coord)
 
-    def update_cell_color(self, cell_coord: Vector2Int) -> None:
-        self._shape_list_drawer.update_color(cell_coord)
+        cell_coord = cell_coord + neighbor_square_deltas()[neighbor]
+        neighbor = OPPOSITE_NEIGHBOR[neighbor]
 
-    def _draw(self, draw: Callable[[], None]) -> None:
-        camera = self._arcade_camera
-        orientation = CameraOrientation(Vector2(*camera.position), Angle(camera.angle), camera.zoom)
-        self._update_arcade_camera(self._orientation)
-        self._arcade_camera.use()
-        draw()
-        self._update_arcade_camera(orientation)
-        self._arcade_camera.use()
+        world_position = get_world_position(cell_coord)
 
-    def _update_arcade_camera_orientation(self) -> None:
-        self._orientation = self._camera.orientation.mutable_copy()
+        left_vertex, right_vertex = neighbors_vertexes()[neighbor]
+        left_vertex_far = left_vertex * EDGES_WIDTH_RATIO
+        right_vertex_far = right_vertex * EDGES_WIDTH_RATIO
+        vertexes = [left_vertex, left_vertex_far, right_vertex_far, right_vertex]
 
-    def _update_arcade_camera(self, orientation: CameraOrientation) -> None:
-        position, rotation, zoom = orientation.tuple
-        self._arcade_camera.position = position.tuple
-        self._arcade_camera.angle = rotation.degrees
-        self._arcade_camera.zoom = zoom
+        points = [vertex + world_position for vertex in vertexes]
+        edge = arc.shape_list.create_polygon(points, color)
+        return edge
+
+    def draw_edges(self, cell_coord: Vector2Int) -> None:
+        for neighbor in NEIGHBORS:
+            if self._should_draw_edge(cell_coord, neighbor):
+                self.make_edge(cell_coord, neighbor).draw()
+
+    def make_hex_background(self, cell_coord: Vector2Int) -> Shape:
+        return self._make_hex_background_no_auto_color(cell_coord, self._get_hex_color(cell_coord))
+
+    def append_edges(self, cell_coord: Vector2Int) -> None:
+        for neighbor in NEIGHBORS:
+            if self._should_draw_edge(cell_coord, neighbor):
+                edge = self.make_edge(cell_coord, neighbor)
+                self._edges[cell_coord].append(edge)
+                self._shape_list.append(edge)
+
+    def append_hex_background(self, cell_coord: Vector2Int) -> None:
+        hexagon = self.make_hex_background(cell_coord)
+        self._backgrounds[cell_coord] = hexagon
+        self._shape_list.append(hexagon)
+
+    def update_cell(self, cell_coord: Vector2Int) -> None:
+        for cell in self._board.get_neighbors(self._board[cell_coord], include_cell=True):
+            self._update_cell_color(self._board.coordinates_of(cell))
+
+    def _update_cell_color(self, cell_coord: Vector2Int) -> None:
+        assert cell_coord in self._backgrounds
+        self._shape_list.remove(self._backgrounds[cell_coord])
+        self.append_hex_background(cell_coord)
+
+        if cell_coord in self._edges:
+            for edge in self._edges[cell_coord]:
+                self._shape_list.remove(edge)
+            self._edges[cell_coord].clear()
+        self.append_edges(cell_coord)
+
+    def _get_hex_color(self, cell_coord: Vector2Int) -> arc.color.Color:
+        return self._board[cell_coord].owner.data.color
+
+    def _get_edges_color(self, cell_coord):
+        return self._get_hex_color(cell_coord).lerp(WHITE, EDGES_BRIGHTNESS_RATIO)
+
+    def _make_hex_background_no_auto_color(self, cell_coord: Vector2Int, color: Color) -> Shape:
+        world_position = get_world_position(cell_coord)
+        points = [vertex_pair[0] + world_position
+                  for vertex_pair in neighbors_vertexes().values()]
+        hexagon = arc.shape_list.create_polygon(points, color)
+        return hexagon
+
+    def _should_draw_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> bool:
+        cell = self._board[cell_coord]
+        neighbor_coord = cell_coord + neighbor_square_deltas()[neighbor]
+        if neighbor_coord not in self._board:
+            return True
+
+        neighbor_cell = self._board[neighbor_coord]
+        return cell.owner != neighbor_cell.owner

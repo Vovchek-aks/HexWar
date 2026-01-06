@@ -23,6 +23,10 @@ class Sprite:
     def shape(self) -> Vector2Int:
         return self._shape
 
+    @property
+    def pivot(self) -> Vector2Int:
+        return self._pivot
+
     def get(self) -> arc.Texture:
         return self._image
 
