@@ -14,7 +14,7 @@ from core.moves.conversion import Conversion
 from core.moves.creation import Creation
 from core.moves.relocations import Relocation, Assault
 from core.protocols import Capturable, CanCapture
-from statuses import Status, MISSING, INVALID, IN_PROGRESS
+from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 _ATTACKING = 0
 _BUILDING = 1
@@ -47,7 +47,7 @@ class BotIgor(proto.Bot):
         self._player = session.master.current_player
 
         if self._moves_generator is not MISSING:
-            if next(self._moves_generator, INVALID) is not INVALID:
+            if next(self._moves_generator, ABORT_NEEDED) is not ABORT_NEEDED:
                 return IN_PROGRESS
             self._moves_generator = MISSING
 
@@ -55,7 +55,7 @@ class BotIgor(proto.Bot):
         if cells_count <= 0:
             return MISSING
 
-        if self._moves_to_make:
+        while self._moves_to_make:
             move = self._moves_to_make.pop(0)
             if move.move.validate(session) is not INVALID:
                 self._ran_out_of_moves = False
@@ -83,21 +83,21 @@ class BotIgor(proto.Bot):
             yield from self._try_convert_infantry_to_motorization()
             # print("_try_convert_infantry_to_motorization")
             if self._moves_to_make:
-                # print('+')
+                # print(self._moves_to_make)
                 return
 
             if infantry_count + motorization_count > 0 and tanks_count < 1:
                 self._try_create(fig.Tank)
                 # print("_try_create(fig.Tank)")
                 if self._moves_to_make:
-                    # print('+')
+                    # print(self._moves_to_make)
                     return
 
             if infantry_count + motorization_count < 5:
                 self._try_create(fig.Infantry)
                 # print("_try_create(fig.Infantry)")
                 if self._moves_to_make:
-                    # print('+')
+                    # print(self._moves_to_make)
                     return
 
             figure_to_create = (fig.Town
@@ -109,7 +109,7 @@ class BotIgor(proto.Bot):
                 self._try_create(figure_to_create)
                 # print(f"_try_create({figure_to_create})")
                 if self._moves_to_make:
-                    # print('+')
+                    # print(self._moves_to_make)
                     return
 
             self._state = _ATTACKING
@@ -118,26 +118,26 @@ class BotIgor(proto.Bot):
             yield from self._try_capture()
             # print("_try_capture")
             if self._moves_to_make:
-                # print('+')
+                # print(self._moves_to_make)
                 return
             yield from self._try_advance_forces()
             # print("_try_advance_forces")
             if self._moves_to_make:
-                # print('+')
+                # print(self._moves_to_make)
                 return
             yield from self._try_attack_with_tanks()
             # print("_try_attack_with_tanks")
             if self._moves_to_make:
-                # print('+')
+                # print(self._moves_to_make)
                 return
 
             self._state = _PULLING
 
         if self._state == _PULLING:
             yield from self._try_pull_forces_to_front()
-            # print("_try_pull_forces_to_front")
+            # print(f"_try_pull_forces_to_front {_is_inner}")
             if self._moves_to_make:
-                # print('+')
+                # print(self._moves_to_make)
                 return
 
             if not _is_inner:
@@ -147,13 +147,14 @@ class BotIgor(proto.Bot):
                 self._ran_out_of_moves = True
 
     def _get_cell_for(self, figure: type[fig.Figure]) -> proto.Cell | Status:
-        empties = self._board.cells.with_owner(self._player).with_figure(fig.Empty)
+        own_cells = self._board.cells.with_owner(self._player)
+        empties = own_cells.with_figure(fig.Empty)
         if not empties:
             return MISSING
 
         front = empties.at_front(self._board)
         back = empties - front
-        production = self._board.cells.with_owner(self._player).with_figure(fig.Town)
+        production = own_cells.with_figure(fig.Town)
 
         match figure:
             case fig.Tank:
