@@ -254,7 +254,7 @@ class UiLayerMaker:
                                   .build(),
                                   self._sprites_loader.load_background_3_to_2())
 
-        title_margin = Vector2(15, 10)
+        title_margin = Vector2(15, background.rectangle.shape.y - 60)
         title = TextUi.make(self._drawer,
                             RectangleBuilder(self._screen_shape)
                             .move(background.rectangle.position + title_margin)
@@ -266,8 +266,8 @@ class UiLayerMaker:
                             .debug_font()
                             .black_colored()
                             .build())
-        *_, title_bottom = title.rectangle.left_right_up_bottom
-        combat_ability_position = Vector2(title.rectangle.position.x, title_bottom)
+        title_bottom = title.rectangle.position.y
+        combat_ability_position = Vector2(title.rectangle.position.x, title_bottom - 20)
         combat_ability = TextUi.make(self._drawer,
                                      RectangleBuilder(self._screen_shape)
                                      .move(combat_ability_position)
@@ -343,7 +343,12 @@ class UiLayerMaker:
                                   self._sprites_loader.load_background_2_to_3())
 
         title_ui = TextUi.make(self._drawer,
-                               Rectangle(Vector2(10, 20), Vector2(180, 30)),
+                               RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
+                               .from_left_up()
+                               .set_shape(Vector2(180, 30))
+                               .move(Vector2(10, 20))
+                               .adjust_for_shape()
+                               .build(),
                                TextDataBuilder()
                                .set_text(title)
                                .debug_font()
@@ -352,7 +357,12 @@ class UiLayerMaker:
 
         white_spaces = [" "] * (MIN_LINES_COUNT - len(content))
         content = white_spaces[:len(white_spaces) // 2] + content + white_spaces[len(white_spaces) // 2:]
-        content_ui = VerticalLayoutUi(Rectangle(Vector2(10, 55), Vector2(180, 235)))
+        content_ui = VerticalLayoutUi(RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
+                                      .from_left_up()
+                                      .set_shape(Vector2(180, 235))
+                                      .move(Vector2(10, 55))
+                                      .adjust_for_shape()
+                                      .build())
         for line in content:
             line_ui = TextUi.make(self._drawer,
                                   Rectangle.zero(),
