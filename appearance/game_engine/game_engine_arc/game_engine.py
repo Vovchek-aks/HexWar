@@ -2,11 +2,8 @@ from types import TracebackType
 
 from attrs import frozen
 
-from appearance.game_engine.game_engine_arc.input_state import InputState
-from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
-from appearance.game_engine.game_engine_arc.updater import Updater
-
 from appearance.game_engine.game_engine_arc.window import Window
+import appearance.protocols as proto
 
 
 @frozen
@@ -15,30 +12,26 @@ class GameEngine:
     def make(cls,
              caption: str,
              window: Window,
-             drawer: FrameDrawer,
-             updater: Updater,
-             input_state: InputState) -> "GameEngine":
-        self = cls(caption, window, drawer, updater, input_state)
+             scene_switcher: proto.SceneSwitcher) -> "GameEngine":
+        self = cls(caption, window, scene_switcher)
         window.update_started.subscribe(self.update)
         window.draw_event.subscribe(self.draw)
         return self
 
     _caption: str
     _window: Window
-    _drawer: FrameDrawer
-    _updater: Updater
-    _input_state: InputState
+    _scene_switcher: proto.SceneSwitcher
 
     def run(self) -> None:
         self._window.run()
 
     def update(self, dt: float) -> None:
-        self._updater.update(self._input_state)
-
+        self._scene_switcher.update()
+        self._scene_switcher.scene.update()
         self._window.set_caption(f"{self._caption} {1 / dt:.0f}FPS")
 
     def draw(self) -> None:
-        self._drawer.draw_frame(self._input_state.mouse_position)
+        self._scene_switcher.scene.draw()
 
     def __enter__(self) -> "GameEngine":
         return self

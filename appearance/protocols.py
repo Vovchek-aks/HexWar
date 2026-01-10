@@ -155,14 +155,16 @@ class BackgroundDrawer(ABC):
 
 
 class CameraAssistant(ABC):
+    @abstractmethod
     def __enter__(self) -> "CameraAssistant":
-        return self
+        ...
 
+    @abstractmethod
     def __exit__(self,
                  exc_type: type[BaseException],
                  exc_val: BaseException,
                  exc_tb: TracebackType) -> bool | None:
-        return None
+        ...
 
 
 class UiDrawer(ABC):
@@ -400,4 +402,79 @@ class TextData(ABC):
 
     @abstractmethod
     def with_color(self, color: Color) -> "TextData":
+        ...
+
+
+class Scene(ABC):
+    @abstractmethod
+    def next(self) -> "Scene | Status":
+        ...
+
+    @abstractmethod
+    def update(self) -> None:
+        ...
+
+    @abstractmethod
+    def draw(self) -> None:
+        ...
+
+    @abstractmethod
+    def __enter__(self) -> "Scene":
+        ...
+
+    @abstractmethod
+    def __exit__(self,
+                 exc_type: type[BaseException],
+                 exc_val: BaseException,
+                 exc_tb: TracebackType) -> bool | None:
+        ...
+
+
+class SceneSwitcher(ABC):
+    @property
+    @abstractmethod
+    def scene(self) -> Scene:
+        ...
+
+    @abstractmethod
+    def update(self) -> None:
+        ...
+
+
+class InputState(ABC):
+    @property
+    @abstractmethod
+    def dt(self) -> float:
+        ...
+
+    @property
+    @abstractmethod
+    def mouse_position(self) -> Vector2:
+        ...
+
+    @property
+    @abstractmethod
+    def pressed_keys(self) -> set[int]:
+        ...
+
+    @property
+    @abstractmethod
+    def last_frame_clicks(self) -> list[Click]:
+        ...
+
+    @property
+    @abstractmethod
+    def last_frame_mouse_wheel_delta(self) -> float:
+        ...
+
+
+class Updater(ABC):
+    @abstractmethod
+    def update(self, input_state: InputState) -> None:
+        ...
+
+
+class FrameDrawer(ABC):
+    @abstractmethod
+    def draw_frame(self, mouse_position: Vector2) -> None:
         ...

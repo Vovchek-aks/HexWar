@@ -3,6 +3,12 @@
     "name": "Русский"
   },
   "messages": {
+    "loading": {
+      "MAP_LOADING": "Загрузка карты...",
+      "INTERMEDIATE_PREPARING": "Промежуточная подготовка...",
+      "UI_MAKING": "Создание пользовательского интерфейса...",
+      "SPRITE_LOADING": "Загрузка спрайтов..."
+    },
     "ui": {
       "END_TURN_BTN": "Завершить ход",
       "PLAYERS_TURN_TEXT": "{player} ходит",

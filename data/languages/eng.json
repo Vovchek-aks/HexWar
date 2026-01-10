@@ -3,6 +3,12 @@
     "name": "English"
   },
   "messages": {
+    "loading": {
+      "MAP_LOADING": "Map loading...",
+      "INTERMEDIATE_PREPARING": "Intermediate preparing...",
+      "UI_MAKING": "User interface making...",
+      "SPRITE_LOADING": "Sprite loading..."
+    },
     "ui": {
       "END_TURN_BTN": "End turn",
       "PLAYERS_TURN_TEXT": "{player}'s turn",

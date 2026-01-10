@@ -3,12 +3,13 @@ from attrs import define, field
 from appearance.game_engine.game_engine_arc.window import Window
 from appearance.input.clicks_catcher.click import Click
 from mathematics.vector import Vector2
+import appearance.protocols as proto
 
 KEYS = set[int]
 
 
 @define
-class InputState:
+class InputState(proto.InputState):
     @classmethod
     def make(cls, window: Window) -> "InputState":
         self = cls()

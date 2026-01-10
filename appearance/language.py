@@ -58,6 +58,12 @@ _COMBAT_ABILITY = "COMBAT_ABILITY"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
 
+_LOADING = "loading"
+_MAP_LOADING = "MAP_LOADING"
+_INTERMEDIATE_PREPARING = "INTERMEDIATE_PREPARING"
+_UI_MAKING = "UI_MAKING"
+_SPRITE_LOADING = "SPRITE_LOADING"
+
 LANGUAGES_FOLDER = Path("data/languages")
 
 
@@ -92,6 +98,10 @@ class Language:
         return self._messages[_UI]
 
     @property
+    def _loading(self) -> LANGUAGE_SECTION_DICT:
+        return self._messages[_LOADING]
+
+    @property
     def _hints(self) -> dict[str, LANGUAGE_SECTION_DICT]:
         return self._messages[_HINTS]
 
@@ -100,6 +110,18 @@ class Language:
 
     def get_resource_name(self, resource: type[Resource]) -> str:
         return self._resources.get(resource.__name__, resource.__name__)
+
+    def get_map_loading_message(self) -> str:
+        return self._loading[_MAP_LOADING]
+
+    def get_intermediate_preparing_message(self) -> str:
+        return self._loading[_INTERMEDIATE_PREPARING]
+
+    def get_ui_making_message(self) -> str:
+        return self._loading[_UI_MAKING]
+
+    def get_sprite_loading_message(self) -> str:
+        return self._loading[_SPRITE_LOADING]
 
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]

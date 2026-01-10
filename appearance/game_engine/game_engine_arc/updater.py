@@ -11,7 +11,7 @@ import appearance.protocols as proto
 
 
 @frozen
-class Updater:
+class Updater(proto.Updater):
     @classmethod
     def make(cls,
              camera_mover: CameraMover,
