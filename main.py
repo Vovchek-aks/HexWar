@@ -20,7 +20,7 @@ def main() -> None:
 def _make_loading_scene(window: Window) -> LoadingScene:
     return LoadingScene.make(SCREEN_SHAPE,
                              load_game(SCREEN_SHAPE, window,
-                                       lambda: multibot_map(board_size=200,
+                                       lambda: multibot_map(board_size=30,
                                                             initial_town_ratio=0.1)))
 
 

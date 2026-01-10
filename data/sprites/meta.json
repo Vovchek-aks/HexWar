@@ -43,10 +43,10 @@
       ]
     },
     "Artillery": {
-      "file": "figures/art.png",
+      "file": "figures/art2.png",
       "pivot": [
-        170,
-        183
+        450,
+        475
       ]
     }
   },
