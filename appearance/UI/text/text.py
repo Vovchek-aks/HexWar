@@ -11,10 +11,13 @@ import appearance.protocols as proto
 @define
 class TextUi(proto.ElementUi):
     @classmethod
-    def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, data: proto.TextData) -> "TextUi":
+    def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, data: proto.TextData, *, is_center=False) -> "TextUi":
         text = arc.Text(data.text, *rectangle.position, color=data.color, font_size=data.font.font_size)
+        if is_center:
+            text.anchor_x = 'center'
+            text.anchor_y = 'center'
 
-        self = cls(drawer, text, rectangle)
+        self = cls(drawer, text, is_center, rectangle)
         self.set_rectangle(rectangle)
 
         layer = (LayerBuilder()
@@ -27,6 +30,7 @@ class TextUi(proto.ElementUi):
 
     _drawer: proto.UiDrawer
     _text: arc.Text
+    _is_center: bool
     _rectangle: Rectangle
     _layer: proto.Layer = field(init=False)
 
@@ -44,7 +48,7 @@ class TextUi(proto.ElementUi):
 
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
-        self._text.position = rectangle.position.tuple
+        self._text.position = (rectangle.center if self._is_center else rectangle.position).tuple
         self._change_font_size_fitting(rectangle)
 
     def set_text(self, text: str) -> None:
@@ -60,11 +64,12 @@ class TextUi(proto.ElementUi):
         if rectangle == Rectangle.zero():
             return
 
-        rect_width, rect_height = rectangle.shape
-        text_rect = Vector2(*self._text.content_size)
+        for _ in range(3):
+            rect_width, rect_height = rectangle.shape
+            text_rect = Vector2(*self._text.content_size)
 
-        scale_x = rect_width / text_rect.x
-        scale_y = rect_height / text_rect.y
-        scale = min(scale_x * .85, scale_y * 1.45)
-        new_size = max(1, int(self._text.font_size * scale))
-        self._text.font_size = new_size
+            scale_x = rect_width / text_rect.x
+            scale_y = rect_height / text_rect.y
+            scale = min(scale_x, scale_y * 1.45)
+            new_size = max(1, int(self._text.font_size * scale))
+            self._text.font_size = new_size

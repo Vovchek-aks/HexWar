@@ -258,7 +258,7 @@ class UiLayerMaker:
         title = TextUi.make(self._drawer,
                             RectangleBuilder(self._screen_shape)
                             .move(background.rectangle.position + title_margin)
-                            .set_shape(Vector2(background.rectangle.shape.x / 2 - title_margin.x,
+                            .set_shape(Vector2(background.rectangle.shape.x - title_margin.x * 2,
                                                background.rectangle.shape.y / 4))
                             .build(),
                             TextDataBuilder()
@@ -267,7 +267,7 @@ class UiLayerMaker:
                             .black_colored()
                             .build())
         title_bottom = title.rectangle.position.y
-        combat_ability_position = Vector2(title.rectangle.position.x, title_bottom - 20)
+        combat_ability_position = Vector2(title.rectangle.position.x, title_bottom - 40)
         combat_ability = TextUi.make(self._drawer,
                                      RectangleBuilder(self._screen_shape)
                                      .move(combat_ability_position)

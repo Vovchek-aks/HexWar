@@ -16,8 +16,8 @@ CONVERSIONS = dict[tuple[type[fig.Figure], type[fig.Figure]], tuple[Resource, in
 @frozen
 class Conversion(proto.Move):
     _CONVERSIONS: ClassVar[CONVERSIONS] = {
-        (fig.Infantry, fig.Motorization): (Dollars(100_000), 1),
-        (fig.Motorization, fig.Infantry): (Dollars(0), 10),
+        (fig.Infantry, fig.Motorization): (Dollars(100_000), round(fig.Infantry.MOVES_BUDGET / 3)),
+        (fig.Motorization, fig.Infantry): (Dollars(0), round(fig.Motorization.MOVES_BUDGET / 3)),
     }
 
     @classmethod

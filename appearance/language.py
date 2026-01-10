@@ -140,7 +140,7 @@ class Language:
             budget = fig.Infantry.MOVES_BUDGET
             message = [line.format(cost=self.get_message_from_resource(cost)) for line in message]
         elif tag == MOTORIZATION_TO_INFANTRY:
-            _, move_cost = Conversion.conversions()[fig.Infantry, fig.Motorization]
+            _, move_cost = Conversion.conversions()[fig.Motorization, fig.Infantry]
             budget = fig.Motorization.MOVES_BUDGET
         else:
             move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())

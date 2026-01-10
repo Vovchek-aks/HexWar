@@ -21,7 +21,7 @@ class ButtonUi(proto.ElementUi):
              sprite: Sprite,
              text_data: proto.TextData) -> "ButtonUi":
         image = ImageUi.make(drawer, rectangle, sprite)
-        text = TextUi.make(drawer, get_text_rectangle(rectangle), text_data)
+        text = TextUi.make(drawer, get_text_rectangle(rectangle), text_data, is_center=True)
 
         layers = [
             text,
