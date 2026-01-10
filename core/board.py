@@ -15,10 +15,13 @@ class Board(proto.Board):
     @classmethod
     def from_maker(cls, shape: Vector2Int, cell_maker: CELL_MAKER) -> proto.Board:
         cells = [cell_maker(Vector2Int(x, y)) for x, y in product(range(shape.x), range(shape.y))]
-        return cls(shape, cells)
+        index_of = {cell: index for index, cell in enumerate(cells)}
+        return cls(shape, cells, set(cells), index_of)
 
     shape: Vector2Int
     _cells: list[proto.Cell] = field()
+    _cells_set: set[proto.Cell]
+    _index_of: dict[proto.Cell, int]
 
     @_cells.validator
     def _validate_cells(self, _, cells: list[proto.Cell]) -> None:
@@ -42,12 +45,12 @@ class Board(proto.Board):
         return map(lambda coord: Vector2Int(*coord), product(*map(range, self.shape.tuple)))
 
     def has(self, cell: proto.Cell) -> bool:
-        return cell in self._cells
+        return cell in self._cells_set
 
     def coordinates_of(self, cell: proto.Cell) -> Vector2Int:
         assert self.has(cell)
 
-        idx = self._cells.index(cell)
+        idx = self._index_of[cell]
         y, x = divmod(idx, self.width)
         return Vector2Int(x, y)
 

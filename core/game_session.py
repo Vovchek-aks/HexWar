@@ -3,6 +3,7 @@ import random
 from attrs import frozen
 
 import core.protocols as proto
+from core.cells import Cells
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
 from core.resources import Dollars
@@ -87,10 +88,13 @@ def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
 
     per_player_towns = round(board_size ** 2 * initial_town_ratio / len(players))
     for player in players:
-        if not board.cells.with_owner(player):
+        if not (player_cells := board.cells.with_owner(player)):
             continue
-        while len(board.cells.with_owner(player).with_figure(fig.Town).all()) < per_player_towns:
-            random.choice(list(board.cells.with_owner(player).with_figure(fig.Empty).all())).insert(fig.Town())
+
+        for _ in range(per_player_towns):
+            cell = random.choice(list(player_cells.with_figure(fig.Empty).all()))
+            cell.insert(fig.Town())
+            player_cells -= Cells({cell})
 
     players[0].resources.add(Dollars(5_000_000))
     players[1].resources.add(Dollars(5_000_000))
