@@ -90,7 +90,7 @@ class MainMenuUiLayerMaker:
                 .build())
 
     def _make_build_info(self) -> Layer:
-        shape = Vector2(self._screen_shape.x / 2, 12)
+        shape = Vector2(self._screen_shape.x / 2, 15)
         title = TextUi.make(self._drawer,
                             Rectangle(Vector2.zero(), shape),
                             TextData.debug(_get_version_message()))
