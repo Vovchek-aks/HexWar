@@ -1,4 +1,4 @@
-from appearance.game_engine import make_game_engine
+from appearance.game_engine import GameEngine
 from appearance.scenes.loading_scenes_makers import make_main_menu_loading_scene
 from mathematics.vector import Vector2Int
 
@@ -8,9 +8,7 @@ CAPTION = "HexWar"
 
 
 def main() -> None:
-    engine = make_game_engine(CAPTION, UPS, SCREEN_SHAPE, make_main_menu_loading_scene)
-
-    with engine:
+    with GameEngine.make(CAPTION, UPS, SCREEN_SHAPE, make_main_menu_loading_scene) as engine:
         engine.run()
 
 

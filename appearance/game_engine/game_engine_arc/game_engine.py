@@ -1,18 +1,23 @@
 from types import TracebackType
+from typing import Callable
 
 from attrs import frozen
 
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
+from appearance.scenes.scene_switcher import SceneSwitcher
+from mathematics.vector import Vector2Int
 
 
 @frozen
 class GameEngine:
     @classmethod
-    def make(cls,
-             caption: str,
-             window: Window,
-             scene_switcher: proto.SceneSwitcher) -> "GameEngine":
+    def make(cls, caption: str,
+             ups: int,
+             screen_shape: Vector2Int,
+             make_scene: Callable[[Vector2Int, Window], proto.Scene]) -> "GameEngine":
+        window = Window(ups, caption, screen_shape)
+        scene_switcher = SceneSwitcher.make(make_scene(screen_shape, window))
         self = cls(caption, window, scene_switcher)
         window.update_started.subscribe(self.update)
         window.draw_event.subscribe(self.draw)
