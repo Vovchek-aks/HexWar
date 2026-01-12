@@ -10,7 +10,7 @@ from mathematics.vector import Vector2Int
 def make_game_engine(caption: str,
                      ups: int,
                      screen_shape: Vector2Int,
-                     make_scene: Callable[[Window], Scene]) -> GameEngine:
+                     make_scene: Callable[[Vector2Int, Window], Scene]) -> GameEngine:
     window = Window(ups, caption, screen_shape)
-    scene_switcher = SceneSwitcher.make(make_scene(window))
+    scene_switcher = SceneSwitcher.make(make_scene(screen_shape, window))
     return GameEngine.make(caption, window, scene_switcher)

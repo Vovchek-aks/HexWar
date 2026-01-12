@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod, ABCMeta
 from types import TracebackType
+from typing import Callable
 
 from color import Color
 from font import Font
@@ -437,7 +438,7 @@ class SceneSwitcher(ABC):
         ...
 
     @abstractmethod
-    def update(self) -> None:
+    def update(self, on_game_exit: Callable[[], None]) -> None:
         ...
 
 

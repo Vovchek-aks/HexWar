@@ -57,6 +57,8 @@ _ATTACK = "ATTACK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
+_PLAY = "PLAY"
+_EXIT = "EXIT"
 
 _LOADING = "loading"
 _MAP_LOADING = "MAP_LOADING"
@@ -122,6 +124,12 @@ class Language:
 
     def get_sprite_loading_message(self) -> str:
         return self._loading[_SPRITE_LOADING]
+
+    def get_play_message(self) -> str:
+        return self._ui[_PLAY]
+
+    def get_exit_message(self) -> str:
+        return self._ui[_EXIT]
 
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]

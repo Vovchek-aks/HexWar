@@ -7,6 +7,8 @@ from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
 import appearance.protocols as proto
 
+HEIGHT_TO_WIDTH_RATIO = 1.45
+
 
 @define
 class TextUi(proto.ElementUi):
@@ -48,14 +50,22 @@ class TextUi(proto.ElementUi):
 
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
-        self._text.position = (rectangle.center if self._is_center else rectangle.position).tuple
         self._change_font_size_fitting(rectangle)
+        self._set_text_position(rectangle)
 
     def set_text(self, text: str) -> None:
         self._text.text = text
 
     def set_color(self, color: Color) -> None:
         self._text.color = color
+
+    def _set_text_position(self, rectangle: Rectangle) -> None:
+        if not self._is_center:
+            self._text.position = rectangle.position
+            return
+
+        y = rectangle.center.y + self._text.font_size * HEIGHT_TO_WIDTH_RATIO / 10
+        self._text.position = rectangle.center.with_y(y).tuple
 
     def _draw(self, _: Vector2) -> None:
         self._text.draw()
@@ -70,6 +80,6 @@ class TextUi(proto.ElementUi):
 
             scale_x = rect_width / text_rect.x
             scale_y = rect_height / text_rect.y
-            scale = min(scale_x, scale_y * 1.45)
+            scale = min(scale_x, scale_y * HEIGHT_TO_WIDTH_RATIO)
             new_size = max(1, int(self._text.font_size * scale))
             self._text.font_size = new_size

@@ -32,7 +32,7 @@ from statuses import MISSING, Status
 
 
 @frozen
-class UiLayerMaker:
+class GameUiLayerMaker:
     _drawer: UiDrawer
     _screen_shape: Vector2Int
     _session: GameSession

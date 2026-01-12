@@ -1,7 +1,7 @@
 import pygame as pg
 
 from appearance.UI.drawer import UiDrawer
-from appearance.UI.ui_layer_maker import UiLayerMaker
+from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.game_engine.game_engine_pg.game_engine import GameEngine
 from appearance.game_engine.game_engine_pg.updater import Updater
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
@@ -66,14 +66,14 @@ def make_game_engine(caption: str,
 
     user_inputer_builder = EventPlayerInputerBuilder()
     user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
-    ui_layer = (UiLayerMaker(UiDrawer(screen),
-                             screen_shape,
-                             session,
-                             cell_selector,
-                             mouse_movement_observer,
-                             button_press_action_happened,
-                             moves_maker,
-                             actions_reader)
+    ui_layer = (GameUiLayerMaker(UiDrawer(screen),
+                                 screen_shape,
+                                 session,
+                                 cell_selector,
+                                 mouse_movement_observer,
+                                 button_press_action_happened,
+                                 moves_maker,
+                                 actions_reader)
                 .make(user_inputer_builder))
 
     draw = DrawMaker(Draw).make(screen, camera, session.board)

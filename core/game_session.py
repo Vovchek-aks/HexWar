@@ -91,10 +91,8 @@ def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
         if not (player_cells := board.cells.with_owner(player)):
             continue
 
-        for _ in range(per_player_towns):
-            cell = random.choice(list(player_cells.with_figure(fig.Empty).all()))
+        for cell in random.sample(list(player_cells.all()), per_player_towns):
             cell.insert(fig.Town())
-            player_cells -= Cells({cell})
 
     players[0].resources.add(Dollars(5_000_000))
     players[1].resources.add(Dollars(5_000_000))

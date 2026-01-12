@@ -10,6 +10,9 @@
       "SPRITE_LOADING": "Sprite loading..."
     },
     "ui": {
+      "PLAY": "Play",
+      "EXIT": "Exit game",
+
       "END_TURN_BTN": "End turn",
       "PLAYERS_TURN_TEXT": "{player}'s turn",
       "TO_MOTORIZATION": "Motorize",

@@ -10,6 +10,9 @@
       "SPRITE_LOADING": "Загрузка спрайтов..."
     },
     "ui": {
+      "PLAY": "Играть",
+      "EXIT": "Выйти из игры",
+
       "END_TURN_BTN": "Завершить ход",
       "PLAYERS_TURN_TEXT": "{player} ходит",
       "TO_MOTORIZATION": "Околёситься",

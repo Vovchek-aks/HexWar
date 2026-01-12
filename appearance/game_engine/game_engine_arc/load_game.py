@@ -1,7 +1,7 @@
 from typing import Callable, Iterator
 
 from appearance.UI.drawer import UiDrawer
-from appearance.UI.ui_layer_maker import UiLayerMaker
+from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.game_engine.game_engine_arc.updater import Updater
@@ -19,6 +19,7 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer import MovesInputer
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
+from appearance.input.pause_menu_opener import PauseMenuOpener
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
@@ -37,7 +38,8 @@ from statuses import Status
 
 def load_game(screen_shape: Vector2Int,
               window: Window,
-              make_session: Callable[[], GameSession]) -> Iterator[proto.Scene | Status]:
+              make_session: Callable[[], GameSession],
+              make_main_menu_loading_scene: Callable[[], proto.Scene]) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
@@ -68,15 +70,18 @@ def load_game(screen_shape: Vector2Int,
     user_inputer_builder = EventPlayerInputerBuilder()
     user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
 
+    pause_menu_open_requested = Event[None]()
+    pause_menu_opener = PauseMenuOpener(pause_menu_open_requested.invoke)
+
     yield language.get_ui_making_message()
-    ui_layer = (UiLayerMaker(UiDrawer(),
-                             screen_shape,
-                             session,
-                             cell_selector,
-                             mouse_movement_observer,
-                             button_press_action_happened,
-                             moves_maker,
-                             actions_reader)
+    ui_layer = (GameUiLayerMaker(UiDrawer(),
+                                 screen_shape,
+                                 session,
+                                 cell_selector,
+                                 mouse_movement_observer,
+                                 button_press_action_happened,
+                                 moves_maker,
+                                 actions_reader)
                 .make(user_inputer_builder))
 
     yield language.get_sprite_loading_message()
@@ -88,10 +93,11 @@ def load_game(screen_shape: Vector2Int,
         Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
-    updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, mouse_movement_observer, layers,
-                           player_moves_maker(session, moves_maker))
+    updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
+                           mouse_movement_observer, layers, player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
     session.master.current_player.change_inputer(user_inputer_builder.build())
 
-    scene = GameScene(drawer, updater, InputState.make(window))
+    scene = GameScene(drawer, updater, InputState.make(window), make_main_menu_loading_scene)
+    pause_menu_open_requested.subscribe(scene.on_pause_menu_open_requested)
     yield scene
