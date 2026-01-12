@@ -61,6 +61,8 @@ def load_game(screen_shape: Vector2Int,
     actions_reader = InputActionsReader.make(board_layer, null_layer, button_press_action_happened.subscriber)
 
     moves_maker = MovesMaker(session)
+    moves_maker.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
+    moves_maker.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
 
     cell_selector = CellSelector.make(actions_reader, moves_maker, session.master)
     moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
@@ -96,7 +98,7 @@ def load_game(screen_shape: Vector2Int,
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers, player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
-    session.master.current_player.change_inputer(user_inputer_builder.build())
+    # session.master.current_player.change_inputer(user_inputer_builder.build())
 
     scene = GameScene(drawer, updater, InputState.make(window), make_main_menu_loading_scene)
     pause_menu_open_requested.subscribe(scene.on_pause_menu_open_requested)

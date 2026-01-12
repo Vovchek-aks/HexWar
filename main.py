@@ -17,7 +17,7 @@ def main() -> None:
 
 def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return make_main_menu_loading_scene(screen_shape, window,
-                                        lambda: multibot_map(board_size=50, initial_town_ratio=0.1))
+                                        lambda: multibot_map(board_size=30, initial_town_ratio=0.15))
 
 
 if __name__ == '__main__':

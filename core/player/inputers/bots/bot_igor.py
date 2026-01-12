@@ -86,14 +86,18 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            if infantry_count + motorization_count > 0 and tanks_count < 1:
+            initial_army_size = (len((self._session.cells.with_owner(self._player) &
+                                      self._session.cells.at_front).all()) * .3
+                                 if town_count > math.ceil(cells_count * 0.05) else 5)
+
+            if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
                 self._try_create(fig.Tank)
                 # print("_try_create(fig.Tank)")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
 
-            if infantry_count + motorization_count < 5:
+            if infantry_count + motorization_count < initial_army_size:
                 self._try_create(fig.Infantry)
                 # print("_try_create(fig.Infantry)")
                 if self._moves_to_make:
@@ -101,7 +105,7 @@ class BotIgor(proto.Bot):
                     return
 
             figure_to_create = (fig.Town
-                                if cells_count >= self._cells_count_at_last_turn * .95 and
+                                if cells_count >= self._cells_count_at_last_turn * .8 and
                                    town_count < cells_count * .2 else
                                 (fig.Tank if random.random() > .85 else fig.Infantry))
 
@@ -147,14 +151,14 @@ class BotIgor(proto.Bot):
                 self._ran_out_of_moves = True
 
     def _get_cell_for(self, figure: type[fig.Figure]) -> proto.Cell | Status:
-        own_cells = self._board.cells.with_owner(self._player)
-        empties = own_cells.with_figure(fig.Empty)
+        own_cells = self._session.cells.with_owner(self._player)
+        empties = own_cells & self._session.cells.with_figure(fig.Empty)
         if not empties:
             return MISSING
 
-        front = empties.at_front(self._board)
+        front = empties & self._session.cells.at_front
         back = empties - front
-        production = own_cells.with_figure(fig.Town)
+        production = own_cells & self._session.cells.with_figure(fig.Town)
 
         match figure:
             case fig.Tank:
@@ -174,7 +178,9 @@ class BotIgor(proto.Bot):
 
         assert False
 
-    def _get_cell_for_armed_figure(self, front: proto.Cells, production: proto.Cells) -> proto.Cell | Status:
+    def _get_cell_for_armed_figure(self,
+                                   front: proto.Cells,
+                                   production: proto.Cells) -> proto.Cell | Status:
         if not front:
             return MISSING
         if not production:
@@ -205,13 +211,12 @@ class BotIgor(proto.Bot):
     def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
         assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
 
-        all_armed = (self._board.cells
-                     .with_owner(self._player)
+        all_armed = (self._session.cells.with_owner(self._player)
                      .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return MISSING
 
-        front = all_armed.at_front(self._board)
+        front = all_armed & self._session.cells.at_front
         if not front:
             return MISSING
 
@@ -233,13 +238,12 @@ class BotIgor(proto.Bot):
     def _get_pull_tank_cell(self, cell: proto.Cell) -> proto.Cell | Status:
         assert isinstance(cell.figure, fig.Tank)
 
-        all_armed = (self._board.cells
-                     .with_owner(self._player)
+        all_armed = (self._session.cells.with_owner(self._player)
                      .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return MISSING
 
-        front = all_armed.at_front(self._board)
+        front = all_armed & self._session.cells.at_front
 
         front = Cells({cell for cell in front
                        if self._board.get_neighbors(cell, include_cell=False)
@@ -263,13 +267,12 @@ class BotIgor(proto.Bot):
         return target
 
     def _try_pull_forces_to_front(self) -> Iterator[None]:
-        all_armed = (self._board.cells
-                     .with_owner(self._player)
+        all_armed = (self._session.cells.with_owner(self._player)
                      .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return
 
-        front = all_armed.at_front(self._board)
+        front = all_armed & self._session.cells.at_front
         if not front:
             return
         yield
@@ -293,9 +296,8 @@ class BotIgor(proto.Bot):
             yield
 
     def _try_convert_infantry_to_motorization(self) -> Iterator[None]:
-        infantries = (self._board.cells
-                      .with_owner(self._player)
-                      .with_figure(fig.Infantry))
+        infantries = (self._session.cells.with_owner(self._player) &
+                      self._session.cells.with_figure(fig.Infantry))
         if not infantries:
             return
         yield
@@ -313,14 +315,13 @@ class BotIgor(proto.Bot):
             yield
 
     def _try_advance_forces(self) -> Iterator[None]:
-        all_armed = (self._board.cells
-                     .with_owner(self._player)
+        all_armed = (self._session.cells.with_owner(self._player)
                      .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return
         yield
 
-        armed_front = all_armed.at_front(self._board)
+        armed_front = all_armed & self._session.cells.at_front
         if not armed_front:
             return
         yield
@@ -337,7 +338,8 @@ class BotIgor(proto.Bot):
             yield
 
     def _try_attack_with_tanks(self) -> Iterator[None]:
-        tanks = self._board.cells.with_owner(self._player).with_figure(fig.Tank)
+        tanks = (self._session.cells.with_owner(self._player) &
+                 self._session.cells.with_figure(fig.Tank))
         if not tanks:
             return
         yield
@@ -358,12 +360,12 @@ class BotIgor(proto.Bot):
             yield
 
     def _try_capture(self) -> Iterator[None]:
-        infantries = self._board.cells.with_owner(self._player).with_flag(CanCapture)
+        infantries = self._session.cells.with_owner(self._player).with_flag(CanCapture)
         if not infantries:
             return
         yield
 
-        for infantry in infantries.at_front(self._board):
+        for infantry in infantries & self._session.cells.at_front:
             neighbors = self._board.get_neighbors(infantry, include_cell=False).with_flag(Capturable)
             neighbors -= neighbors.with_owner(self._player)
             neighbors -= neighbors.with_figure(fig.Empty)

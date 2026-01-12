@@ -183,6 +183,25 @@ class Board(ABC):
         ...
 
 
+class CellsCache(ABC):
+    @property
+    @abstractmethod
+    def at_front(self) -> "Cells":
+        ...
+
+    @abstractmethod
+    def with_owner(self, player: Player) -> "Cells":
+        ...
+
+    @abstractmethod
+    def with_figure(self, figure: type["Figure"]) -> "Cells":
+        ...
+
+    @abstractmethod
+    def update(self, cell: "Cell") -> None:
+        ...
+
+
 class GameSession(ABC):
     @property
     @abstractmethod
@@ -197,6 +216,11 @@ class GameSession(ABC):
     @property
     @abstractmethod
     def board(self) -> Board:
+        ...
+
+    @property
+    @abstractmethod
+    def cells(self) -> CellsCache:
         ...
 
     @abstractmethod

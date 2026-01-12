@@ -4,7 +4,7 @@ from appearance.game_engine.game_engine_arc.load_game import load_game
 from appearance.game_engine.game_engine_arc.load_main_menu import load_main_menu
 from appearance.game_engine.game_engine_arc.window import Window
 from appearance.scenes.loading_scene import LoadingScene
-from core.game_session import multibot_map, GameSession
+from core.game_session import GameSession
 from mathematics.vector import Vector2Int
 
 
@@ -24,4 +24,4 @@ def make_game_loading_scene(screen_shape: Vector2Int,
                              load_game(screen_shape,
                                        window,
                                        make_game_session,
-                                       lambda: make_main_menu_loading_scene(screen_shape, window)))
+                                       lambda: make_main_menu_loading_scene(screen_shape, window, make_game_session)))

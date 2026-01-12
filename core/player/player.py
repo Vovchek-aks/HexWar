@@ -5,11 +5,12 @@ from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.resources import ResourcesStockpile
 
 
-@define
+@define(eq=True, hash=True)
 class Player(proto.Player):
-    _data: proto.PlayerData = field(eq=False)
-    _inputer: proto.PlayerInputer = field(eq=False)
-    _resources_stockpile: proto.ResourcesStockpile = field(init=False, factory=ResourcesStockpile, eq=False)
+    _data: proto.PlayerData = field(eq=False, hash=False)
+    _inputer: proto.PlayerInputer = field(eq=False, hash=False)
+
+    _resources_stockpile: proto.ResourcesStockpile = field(init=False, factory=ResourcesStockpile, eq=False, hash=False)
     _id: int = field(init=False)
 
     def __attrs_post_init__(self) -> None:
