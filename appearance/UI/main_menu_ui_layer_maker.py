@@ -9,6 +9,7 @@ from appearance.UI.text import TextData, TextUi
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
+from files import read_build_info
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 
@@ -26,7 +27,8 @@ class MainMenuUiLayerMaker:
              on_exit_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
-            self._make_buttons(on_play_was_pressed, on_exit_was_pressed)
+            self._make_buttons(on_play_was_pressed, on_exit_was_pressed),
+            self._make_build_info(),
         ]
 
         return Layer.as_multiple(layers)
@@ -86,3 +88,24 @@ class MainMenuUiLayerMaker:
                 .move(Vector2(x, top_margin))
                 .adjust_for_shape()
                 .build())
+
+    def _make_build_info(self) -> Layer:
+        shape = Vector2(self._screen_shape.x / 2, 12)
+        title = TextUi.make(self._drawer,
+                            Rectangle(Vector2.zero(), shape),
+                            TextData.debug(_get_version_message()))
+        title.set_rectangle(RectangleBuilder(self._screen_shape)
+                            .from_right_bottom()
+                            .move(Vector2(5, 5))
+                            .set_shape(title.text_shape)
+                            .adjust_for_shape()
+                            .build())
+        return title.layer
+
+
+def _get_version_message() -> str:
+    version_prefix = "version_prefix"
+    version = "version"
+    date = "date"
+    build_info = read_build_info()
+    return f"{build_info[version_prefix]} {build_info[version]} from {build_info[date]}"

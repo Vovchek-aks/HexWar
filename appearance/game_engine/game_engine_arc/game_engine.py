@@ -12,7 +12,8 @@ from mathematics.vector import Vector2Int
 @frozen
 class GameEngine:
     @classmethod
-    def make(cls, caption: str,
+    def make(cls,
+             caption: str,
              ups: int,
              screen_shape: Vector2Int,
              make_scene: Callable[[Vector2Int, Window], proto.Scene]) -> "GameEngine":

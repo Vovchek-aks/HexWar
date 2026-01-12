@@ -48,6 +48,10 @@ class TextUi(proto.ElementUi):
     def text(self) -> str:
         return self._text.text
 
+    @property
+    def text_shape(self) -> Vector2:
+        return Vector2(*self._text.content_size)
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
         self._change_font_size_fitting(rectangle)
@@ -76,10 +80,9 @@ class TextUi(proto.ElementUi):
 
         for _ in range(3):
             rect_width, rect_height = rectangle.shape
-            text_rect = Vector2(*self._text.content_size)
 
-            scale_x = rect_width / text_rect.x
-            scale_y = rect_height / text_rect.y
+            scale_x = rect_width / self.text_shape.x
+            scale_y = rect_height / self.text_shape.y
             scale = min(scale_x, scale_y * HEIGHT_TO_WIDTH_RATIO)
             new_size = max(1, int(self._text.font_size * scale))
             self._text.font_size = new_size
