@@ -104,7 +104,7 @@ class Infantry(_Figure):
                       Creatable(Dollars(150_000)),
                       CanCapture(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(20_000))
+                       .try_take_else_die(Dollars(50_000))
                        .build()))
     MOVES_BUDGET = 3
 
@@ -141,7 +141,7 @@ class Motorization(_Figure):
                        .constant_strength(3)
                        .build()),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(40_000))
+                       .try_take_else_die(Dollars(100_000))
                        .build()))
     MOVES_BUDGET = 60
 
@@ -169,7 +169,7 @@ class Tank(_Figure):
                       Creatable(Dollars(700_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(80_000))
+                       .try_take_else_die(Dollars(200_000))
                        .build()),
                       CanAttack(1))
     MOVES_BUDGET = 60
@@ -177,10 +177,11 @@ class Tank(_Figure):
     SELF_STRENGTH = 3
     _SELF_HARDNESS = 2
     _PER_INFANTRY_STRENGTH_RATIO = .5
+    _PER_INFANTRY_HARDNESS_RATIO = .3
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return cls._SELF_HARDNESS + cls.get_projected_strength(coord, board)
+        return cls._SELF_HARDNESS + cls._get_projected(coord, board, cls._PER_INFANTRY_HARDNESS_RATIO)
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
@@ -196,9 +197,13 @@ class Tank(_Figure):
 
     @classmethod
     def get_projected_strength(cls, coord: Vector2Int, board: proto.Board) -> int:
+        return cls._get_projected(coord, board, cls._PER_INFANTRY_STRENGTH_RATIO)
+
+    @classmethod
+    def _get_projected(cls, coord: Vector2Int, board: proto.Board, per_infantry_ratio: float) -> int:
         cell = board[coord]
 
-        return int(cls._PER_INFANTRY_STRENGTH_RATIO *
+        return int(per_infantry_ratio *
                    sum(map(lambda infantry_cell: infantry_cell.strength(board),
                            board.get_neighbors(cell, include_cell=False)
                            .with_owner(cell.owner)
@@ -215,7 +220,7 @@ class Artillery(_Figure):
                       Creatable(Dollars(250_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(100_000))
+                       .try_take_else_die(Dollars(250_000))
                        .build()),
                       CanAttack(2))
     MOVES_BUDGET = 3
