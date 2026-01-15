@@ -15,9 +15,10 @@ class GameEngine:
     def make(cls,
              caption: str,
              ups: int,
+             is_fullscreen: bool,
              screen_shape: Vector2Int,
              make_scene: Callable[[Vector2Int, Window], proto.Scene]) -> "GameEngine":
-        window = Window(ups, caption, screen_shape)
+        window = Window(ups, is_fullscreen, caption, screen_shape)
         scene_switcher = SceneSwitcher.make(make_scene(screen_shape, window))
         self = cls(caption, window, scene_switcher)
         window.update_started.subscribe(self.update)

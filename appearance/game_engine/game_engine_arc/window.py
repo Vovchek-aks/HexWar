@@ -6,7 +6,7 @@ from observer import Event, OnEventSubscriber
 
 
 class Window(arc.Window):
-    def __init__(self, ups: float, title: str, screen_shape: Vector2Int) -> None:
+    def __init__(self, ups: float, is_fullscreen: bool, title: str, screen_shape: Vector2Int) -> None:
         dt = 1 / ups
         super().__init__(screen_shape.x,
                          screen_shape.y,
@@ -14,7 +14,8 @@ class Window(arc.Window):
                          vsync=True,
                          samples=2,
                          update_rate=dt,
-                         fixed_rate=dt)
+                         fixed_rate=dt,
+                         fullscreen=is_fullscreen)
         self.background_color = arc.color.BLACK
 
         self._pressed_keys = set[int]()

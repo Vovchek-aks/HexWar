@@ -5,19 +5,21 @@ from appearance.scenes.loading_scenes_makers import make_main_menu_loading_scene
 from core.game_session import multibot_map
 from mathematics.vector import Vector2Int
 
-SCREEN_SHAPE = Vector2Int(1280, 720)
+# SCREEN_SHAPE = Vector2Int(1280, 720)
+SCREEN_SHAPE = Vector2Int(1920, 1080)
+IS_FULLSCREEN = True
 UPS = 60
 CAPTION = "HexWar"
 
 
 def main() -> None:
-    with GameEngine.make(CAPTION, UPS, SCREEN_SHAPE, _make_main_menu_loading_scene) as engine:
+    with GameEngine.make(CAPTION, UPS, IS_FULLSCREEN, SCREEN_SHAPE, _make_main_menu_loading_scene) as engine:
         engine.run()
 
 
 def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return make_main_menu_loading_scene(screen_shape, window,
-                                        lambda: multibot_map(board_size=20, initial_town_ratio=0.15))
+                                        lambda: multibot_map(ups=UPS, board_size=50, initial_town_ratio=0.15))
 
 
 if __name__ == '__main__':

@@ -3,7 +3,6 @@ import random
 from attrs import frozen
 
 import core.protocols as proto
-from core.cells import Cells
 from core.cells_cache import CellsCache
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
@@ -73,14 +72,15 @@ class GameSession(proto.GameSession):
 #     return GameSession(Master(players), board, FiguresRelocationBudget())
 
 
-def multibot_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
+def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> GameSession:
     assert 0 <= initial_town_ratio <= 1
 
+    bots_per_frame_thinking_time = .95 / ups
     players = [
-        Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor())),
-        Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor())),
-        Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor())),
-        Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
     ]
     random.shuffle(players)
 

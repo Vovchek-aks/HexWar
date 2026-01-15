@@ -1,14 +1,16 @@
 from types import TracebackType
+from time import time
 
 from attrs import define, field
 
 import core.protocols as proto
-from statuses import Status, MISSING
+from statuses import Status, MISSING, IN_PROGRESS
 
 
 @define
 class BotPlayerInputer(proto.PlayerInputer):
     _bot: proto.Bot
+    _time_to_think: float = 0
 
     _wants_to_end_turn: bool = field(init=False, default=False)
 
@@ -18,7 +20,12 @@ class BotPlayerInputer(proto.PlayerInputer):
     def get_move(self, session: proto.GameSession) -> proto.ValidMove | Status:
         assert self._bot is not MISSING
 
-        move = self._bot.get_move(session)
+        start_thinking = time()
+        while (move := self._bot.get_move(session)) is IN_PROGRESS:
+            thinking_time = time() - start_thinking
+            if thinking_time >= self._time_to_think:
+                break
+
         if move is MISSING:
             self._wants_to_end_turn = True
         return move
