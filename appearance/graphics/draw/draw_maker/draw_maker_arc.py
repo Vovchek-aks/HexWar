@@ -1,6 +1,6 @@
 from attrs import frozen
 
-from core.protocols import Board, MovesMaker
+from core.protocols import Board, CellsChangesObserver
 import appearance.protocols as proto
 from mathematics.vector import Vector2Int
 from ..draw import Draw
@@ -16,14 +16,18 @@ class DrawMaker:
     def _on_no_figure_sprite(figure: type[Figure]) -> None:
         print(f"No sprite for [{figure.__name__}] figure was found.")
 
-    def make(self, screen_shape: Vector2Int, camera: proto.Camera, board: Board, moves_maker: MovesMaker) -> Draw:
+    def make(self,
+             screen_shape: Vector2Int,
+             camera: proto.Camera,
+             board: Board,
+             cells_change_observer: CellsChangesObserver) -> Draw:
         sprites_loader = SpritesLoader.from_meta()
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
         figures_sprites = figures_sprites_loader.load(get_figures(), self._on_no_figure_sprite)
         figures_drawer = FiguresDrawer.make(board, figures_sprites, camera.orientation)
-        moves_maker.cell_changed_figure.subscribe(figures_drawer.update_cell)
+        cells_change_observer.cell_changed_figure.subscribe(figures_drawer.update_cell)
 
         board_drawer = BordDrawer.make(board)
-        moves_maker.cell_changed_owner.subscribe(board_drawer.update_cell)
+        cells_change_observer.cell_changed_owner.subscribe(board_drawer.update_cell)
 
         return Draw(board_drawer, figures_drawer, BackgroundDrawer(screen_shape))

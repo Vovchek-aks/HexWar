@@ -48,13 +48,17 @@ class MovesMaker(proto.MovesMaker):
                 self._cell_changed_figure.invoke(to_coord)
                 self._cell_changed_figure.invoke(from_coord)
                 self._board_move_was_made.invoke(move)
+                # print(move.move, self._session.board[from_coord], self._session.board[to_coord])
             case Capture(to_coord=to_coord):
                 self._cell_changed_owner.invoke(to_coord)
                 self._board_move_was_made.invoke(move)
+                # print(move.move, self._session.board[move.move.from_coord], self._session.board[to_coord])
             case Creation(to_coord=coord) | Conversion(coord=coord) | Attack(to_coord=coord):
                 self._cell_changed_figure.invoke(coord)
                 self._board_move_was_made.invoke(move)
+                # print(move.move, self._session.board[coord])
             case Relocation(to_coord=to_coord, from_coord=from_coord):
                 self._cell_changed_figure.invoke(to_coord)
                 self._cell_changed_figure.invoke(from_coord)
                 self._board_move_was_made.invoke(move)
+                # print(move.move, self._session.board[from_coord], self._session.board[to_coord])

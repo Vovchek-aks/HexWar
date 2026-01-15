@@ -60,12 +60,14 @@ class Cell(proto.Cell):
         self._owner = player
 
     def take_from(self, other: proto.Cell) -> None:
+        assert self.is_empty
+
         if self.owner != other.owner:
             self.change_owner(other.owner)
         self._figure = other.pop()
 
     def __str__(self) -> str:
-        return f"{type(self).__name__}(figure: {type(self.figure)}, owner: {self.owner.data.name})"
+        return f"{type(self).__name__}(figure: {type(self.figure).__name__}, owner: {self.owner.data.name})"
 
     def __repr__(self) -> str:
         return str(self)

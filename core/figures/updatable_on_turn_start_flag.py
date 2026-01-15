@@ -4,12 +4,19 @@ from attrs import frozen, define
 
 import core.protocols as proto
 from mathematics.vector import Vector2Int
+from observer import Event, OnEventSubscriber
 from statuses import Status, MISSING
+
+_CELL_WAS_POPPED = Event[Vector2Int, None]()
 
 
 @frozen
 class UpdatableOnTurnStart(proto.UpdatableOnTurnStart):
     EXCLUDES = set[type[proto.Flag]]()
+
+    @classmethod
+    def cell_was_popped(cls) -> OnEventSubscriber[Vector2Int, None]:
+        return _CELL_WAS_POPPED.subscriber
 
     _update: Callable[[Vector2Int, proto.GameSession], None]
 
@@ -43,5 +50,6 @@ class UpdatableOnTurnStartBuilder:
                 resources.take(resource)
                 return
             session.board[coord].pop()
+            _CELL_WAS_POPPED.invoke(coord)
 
         return self.set_update(update)

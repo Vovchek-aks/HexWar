@@ -25,6 +25,8 @@ from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
+from core.cells_changes_observer import CellsChangesObserver
+from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStart
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.player_moves_maker import player_moves_maker
@@ -61,8 +63,13 @@ def load_game(screen_shape: Vector2Int,
     actions_reader = InputActionsReader.make(board_layer, null_layer, button_press_action_happened.subscriber)
 
     moves_maker = MovesMaker(session)
-    moves_maker.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
-    moves_maker.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
+
+    cells_change_observer = CellsChangesObserver.make([moves_maker.cell_changed_owner],
+                                                      [moves_maker.cell_changed_figure,
+                                                       UpdatableOnTurnStart.cell_was_popped()])
+    cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
+    cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
+    cells_change_observer.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
 
     cell_selector = CellSelector.make(actions_reader, moves_maker, session.master)
     moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
@@ -87,7 +94,7 @@ def load_game(screen_shape: Vector2Int,
                 .make(user_inputer_builder))
 
     yield language.get_sprite_loading_message()
-    draw = DrawMaker().make(screen_shape, camera, session.board, moves_maker)
+    draw = DrawMaker().make(screen_shape, camera, session.board, cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [

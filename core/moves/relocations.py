@@ -21,6 +21,8 @@ class _FiguresRelocation(proto.Move, metaclass=ABCMeta):
         figure = from_cell.figure
 
         session.figures_budget.add(figure, figure.get_cost_of(self))
+        if not to_cell.is_empty:
+            to_cell.pop()
         to_cell.take_from(from_cell)
 
 

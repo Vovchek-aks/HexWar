@@ -151,14 +151,15 @@ class BotIgor(proto.Bot):
                 self._ran_out_of_moves = True
 
     def _get_cell_for(self, figure: type[fig.Figure]) -> proto.Cell | Status:
-        own_cells = self._session.cells.with_owner(self._player)
-        empties = own_cells & self._session.cells.with_figure(fig.Empty)
+        cells = self._session.cells
+        own_cells = cells.with_owner(self._player)
+        empties = own_cells & cells.with_figure(fig.Empty)
         if not empties:
             return MISSING
 
-        front = empties & self._session.cells.at_front
+        front = empties & cells.at_front
         back = empties - front
-        production = own_cells & self._session.cells.with_figure(fig.Town)
+        production = own_cells & cells.with_figure(fig.Town)
 
         match figure:
             case fig.Tank:
@@ -211,12 +212,13 @@ class BotIgor(proto.Bot):
     def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
         assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
 
-        all_armed = (self._session.cells.with_owner(self._player)
-                     .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
+        cells = self._session.cells
+        all_armed = (cells.with_owner(self._player) &
+                     cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return MISSING
 
-        front = all_armed & self._session.cells.at_front
+        front = all_armed & cells.at_front
         if not front:
             return MISSING
 
@@ -236,10 +238,12 @@ class BotIgor(proto.Bot):
         return target
 
     def _get_pull_tank_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        assert isinstance(cell.figure, fig.Tank)
+        if not isinstance(cell.figure, fig.Tank):
+            assert False
 
-        all_armed = (self._session.cells.with_owner(self._player)
-                     .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
+        cells = self._session.cells
+        all_armed = (cells.with_owner(self._player) &
+                     cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return MISSING
 
@@ -267,8 +271,9 @@ class BotIgor(proto.Bot):
         return target
 
     def _try_pull_forces_to_front(self) -> Iterator[None]:
-        all_armed = (self._session.cells.with_owner(self._player)
-                     .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
+        cells = self._session.cells
+        all_armed = (cells.with_owner(self._player) &
+                     cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return
 
@@ -280,9 +285,9 @@ class BotIgor(proto.Bot):
         back = all_armed - front
         for cell in all_armed:
             fn = (self._get_pull_infantry_motorization_cell
-                  if not isinstance(cell.figure, fig.Tank)
+                  if (is_infmoto := isinstance(cell.figure, fig.Motorization | fig.Infantry))
                   else self._get_pull_tank_cell)
-            if (not isinstance(cell.figure, fig.Tank)) and cell not in back:
+            if is_infmoto and cell not in back:
                 yield
                 continue
             if (target := fn(cell)) is MISSING:
@@ -315,13 +320,14 @@ class BotIgor(proto.Bot):
             yield
 
     def _try_advance_forces(self) -> Iterator[None]:
-        all_armed = (self._session.cells.with_owner(self._player)
-                     .with_figure(fig.Infantry | fig.Motorization | fig.Tank))
+        cells = self._session.cells
+        all_armed = (cells.with_owner(self._player) &
+                     cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
         if not all_armed:
             return
         yield
 
-        armed_front = all_armed & self._session.cells.at_front
+        armed_front = all_armed & cells.at_front
         if not armed_front:
             return
         yield
@@ -409,6 +415,7 @@ class BotIgor(proto.Bot):
         return len(self._board.cells.with_owner(self._player).with_figure(figure).all())
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:
-        return min(candidates, key=lambda front_cell: sum((self._board.coordinates_of(front_cell) -
-                                                           self._board.coordinates_of(production_cell)).length ** .25
+        coord_of = self._board.coordinates_of
+        return min(candidates, key=lambda front_cell: sum((coord_of(front_cell) -
+                                                           coord_of(production_cell)).length ** .25
                                                           for production_cell in targets))

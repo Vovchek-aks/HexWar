@@ -132,6 +132,18 @@ class MovesMaker(ABC):
         ...
 
 
+class CellsChangesObserver(ABC):
+    @property
+    @abstractmethod
+    def cell_changed_owner(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def cell_changed_figure(self) -> OnEventSubscriber[Vector2Int, None]:
+        ...
+
+
 class Board(ABC):
     @property
     @abstractmethod
@@ -194,7 +206,7 @@ class CellsCache(ABC):
         ...
 
     @abstractmethod
-    def with_figure(self, figure: type["Figure"]) -> "Cells":
+    def with_figure(self, figure: type["Figure"] | UnionType) -> "Cells":
         ...
 
     @abstractmethod

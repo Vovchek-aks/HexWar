@@ -1,4 +1,6 @@
 from collections import defaultdict
+from types import UnionType
+from typing import get_args
 
 from attrs import frozen, field
 
@@ -23,8 +25,14 @@ class CellsCache(proto.CellsCache):
     def with_owner(self, player: proto.Player) -> Cells:
         return Cells(self._cells_of[player])
 
-    def with_figure(self, figure: type[proto.Figure]) -> Cells:
-        return Cells(self._cells_with[figure])
+    def with_figure(self, figure: type[proto.Figure] | UnionType) -> Cells:
+        if not isinstance(figure, UnionType):
+            return Cells(self._cells_with[figure])
+
+        result = set()
+        for concrete_figure in get_args(figure):
+            result |= self._cells_with[concrete_figure]
+        return Cells(result)
 
     def update(self, cell: proto.Cell) -> None:
         self._update_front(cell)
@@ -41,13 +49,13 @@ class CellsCache(proto.CellsCache):
         old_owner = self._owner_of[cell]
         old_figure = self._figure_of[cell]
 
-        if cell.owner != old_owner:
+        if cell.owner is not old_owner:
             self._cells_of[old_owner].remove(cell)
             self._cells_of[cell.owner].add(cell)
 
             self._owner_of[cell] = cell.owner
 
-        if figure != old_figure:
+        if figure is not old_figure:
             self._cells_with[old_figure].remove(cell)
             self._cells_with[figure].add(cell)
 

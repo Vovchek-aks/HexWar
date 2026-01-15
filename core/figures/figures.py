@@ -26,7 +26,6 @@ class _Figure(Figure, metaclass=ABCMeta):
 
 class Empty(_Figure):
     FLAGS = Flags.new(Static(),
-                      Capturable(),
                       Capturable())
     MOVES_BUDGET = 0
 
