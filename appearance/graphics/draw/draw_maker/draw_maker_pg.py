@@ -8,7 +8,7 @@ from ..drawers.drawers_pg.bord_drawer import BordDrawer
 from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresDrawer
 from appearance.graphics.sprites import SpritesLoader
 from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresSpritesLoader
-from core.figures.figures import Figure, get_figures
+from core.figures.figure import Figure, get_figures
 
 
 @frozen

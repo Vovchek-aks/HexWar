@@ -8,7 +8,7 @@ from core.moves.capture import Capture
 from core.moves.conversion import Conversion
 from core.protocols import Figure, Resource
 from files import read_meta, read_json
-import core.figures.figures as fig
+import core.figures.figure as fig
 from mathematics.vector import Vector2Int
 
 LANGUAGE_SECTION_DICT = dict[str, str | list[str]]

@@ -2,6 +2,7 @@ from abc import ABCMeta
 
 from attrs import frozen
 
+from core.figures.figures_flags import CanPull
 from core.figures.movable_flag import Movable
 import core.protocols as proto
 from core.moves.valid_move import ValidMove
@@ -10,24 +11,39 @@ from statuses import Status, INVALID, MISSING
 
 
 @frozen
-class _FiguresRelocation(proto.Move, metaclass=ABCMeta):
+class FiguresRelocation(proto.Move, metaclass=ABCMeta):
     from_coord: Vector2Int
     to_coord: Vector2Int
+
+    def pullable_cell(self, session: proto.GameSession) -> proto.Cell | Status:
+        figure = session.board[self.from_coord].figure
+        if CanPull in figure.FLAGS and session.pulling_connections.is_puller(figure):
+            pullable = session.pulling_connections.get_pullable(figure)
+            pullable_cell = session.cells.locate_figure(pullable)
+            assert pullable_cell is not MISSING
+            return pullable_cell
+        return MISSING
 
     def execute(self, session: proto.GameSession) -> None:
         board = session.board
         from_cell = board[self.from_coord]
         to_cell = board[self.to_coord]
+        pullable_cell = self.pullable_cell(session)
         figure = from_cell.figure
 
         session.figures_budget.add(figure, figure.get_cost_of(self))
         if not to_cell.is_empty:
-            to_cell.pop()
-        to_cell.take_from(from_cell)
+            session.figures.remove(to_cell.figure)
+        session.figures.move(figure, self.to_coord)
+
+        if pullable_cell is not MISSING:
+            pullable = pullable_cell.figure
+            session.figures_budget.add(pullable, pullable.get_cost_of(Relocation(self.from_coord, self.to_coord)))
+            session.figures.move(pullable, self.from_coord)
 
 
 @frozen
-class Assault(_FiguresRelocation):
+class Assault(FiguresRelocation):
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
         board = session.board
         from_cell = board[self.from_coord]
@@ -55,11 +71,17 @@ class Assault(_FiguresRelocation):
         if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):
             return INVALID
 
+        if CanPull in figure.FLAGS and session.pulling_connections.is_puller(figure):
+            pullable = session.pulling_connections.get_pullable(figure)
+            if not session.figures_budget.can_spend(pullable,
+                                                    pullable.get_cost_of(Relocation(self.from_coord, self.to_coord))):
+                return INVALID
+
         return ValidMove(self)
 
 
 @frozen
-class Relocation(_FiguresRelocation):
+class Relocation(FiguresRelocation):
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
         board = session.board
         from_cell = board[self.from_coord]
@@ -83,5 +105,11 @@ class Relocation(_FiguresRelocation):
 
         if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):
             return INVALID
+
+        if CanPull in figure.FLAGS and session.pulling_connections.is_puller(figure):
+            pullable = session.pulling_connections.get_pullable(figure)
+            if not session.figures_budget.can_spend(pullable,
+                                                    pullable.get_cost_of(Relocation(self.from_coord, self.to_coord))):
+                return INVALID
 
         return ValidMove(self)

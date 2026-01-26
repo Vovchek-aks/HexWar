@@ -1,6 +1,7 @@
 from attrs import frozen
 
 import core.protocols as proto
+from core.figures.figures_flags import PreventCaptures
 from core.moves.valid_move import ValidMove
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID
@@ -29,10 +30,10 @@ class Capture(proto.Move):
         if proto.Capturable not in to_cell.figure.FLAGS:
             return INVALID
 
-        if from_cell not in board.get_neighbors(to_cell, include_cell=False):
+        if from_cell not in (neighbors := board.get_neighbors(to_cell, include_cell=False)):
             return INVALID
 
-        if from_cell.strength(board) <= to_cell.hardness(board):
+        if neighbors.with_owner(to_cell.owner).with_flag(PreventCaptures):
             return INVALID
 
         if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):

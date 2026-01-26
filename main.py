@@ -5,9 +5,10 @@ from appearance.scenes.loading_scenes_makers import make_main_menu_loading_scene
 from core.game_session import multibot_map
 from mathematics.vector import Vector2Int
 
-# SCREEN_SHAPE = Vector2Int(1280, 720)
-SCREEN_SHAPE = Vector2Int(1920, 1080)
-IS_FULLSCREEN = True
+IS_FULLSCREEN = False
+SCREEN_SHAPE = (Vector2Int(1920, 1080)
+                if IS_FULLSCREEN else
+                Vector2Int(1280, 720))
 UPS = 60
 CAPTION = "HexWar"
 

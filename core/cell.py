@@ -1,7 +1,7 @@
 from attrs import define, field
 
 import core.protocols as proto
-from core.figures import figures as fig
+from core.figures import figure as fig
 from statuses import MISSING
 
 

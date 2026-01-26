@@ -49,6 +49,5 @@ class Attack(proto.Move):
         figure = from_cell.figure
         budget = session.figures_budget
 
-        if not to_cell.is_empty:
-            to_cell.pop()
+        session.figures.remove(to_cell.figure)
         budget.add(figure, figure.get_cost_of(self))

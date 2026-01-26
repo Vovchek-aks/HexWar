@@ -4,8 +4,10 @@ from attrs import frozen
 
 import core.protocols as proto
 from core.cells_cache import CellsCache
+from core.figures.figures import Figures
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
+from core.pulling_connections import PullingConnections
 from core.resources import Dollars
 from mathematics.vector import Vector2Int
 from appearance.graphics import colors
@@ -14,7 +16,7 @@ from core.cell import Cell
 from core.figures.figures_relocation_budget import FiguresRelocationBudget
 from core.master import Master
 from core.player import PlayerData, Player
-import core.figures.figures as fig
+import core.figures.figure as fig
 
 
 @frozen
@@ -22,7 +24,9 @@ class GameSession(proto.GameSession):
     _master: proto.Master
     _board: proto.Board
     _figures_budget: proto.FiguresRelocationBudget
+    _pulling_connections: proto.PullingConnections
     _cells: proto.CellsCache
+    _figures: proto.Figures
 
     @property
     def master(self) -> proto.Master:
@@ -33,12 +37,20 @@ class GameSession(proto.GameSession):
         return self._figures_budget
 
     @property
+    def pulling_connections(self) -> proto.PullingConnections:
+        return self._pulling_connections
+
+    @property
     def board(self) -> proto.Board:
         return self._board
 
     @property
     def cells(self) -> proto.CellsCache:
         return self._cells
+
+    @property
+    def figures(self) -> proto.Figures:
+        return self._figures
 
     def make(self, move: proto.ValidMove) -> None:
         move.move.execute(self)
@@ -92,6 +104,9 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
                                                 fig.Empty()))
     random.shuffle(players)
 
+    figures = Figures(board)
+    pulling_connections = PullingConnections.make(figures)
+
     cells = CellsCache(board)
     per_player_towns = round(board_size ** 2 * initial_town_ratio / len(players))
     for player in players:
@@ -99,7 +114,8 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
             continue
 
         for cell in random.sample(list(player_cells.all()), per_player_towns):
-            cell.insert(fig.Town())
+            coord = board.coordinates_of(cell)
+            figures.add(fig.Town, coord)
 
     for _ in range(1):
         for cell in board.cells:
@@ -110,4 +126,4 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
     players[2].resources.add(Dollars(5_000_000))
     players[3].resources.add(Dollars(5_000_000))
 
-    return GameSession(Master(players), board, FiguresRelocationBudget(), cells)
+    return GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)

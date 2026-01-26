@@ -32,8 +32,8 @@ class Creation(proto.Move):
 
     def execute(self, session: proto.GameSession) -> None:
         board = session.board
-        figure = self.figure_type()
 
-        board[self.to_coord].insert(figure)
+        session.figures.add(self.figure_type, self.to_coord)
+        figure = board[self.to_coord].figure
 
         session.master.current_player.resources.take(figure.FLAGS.get(Creatable).cost)

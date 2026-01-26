@@ -26,7 +26,7 @@ from core.protocols import GameSession, Player, MovesMaker, ValidMove, Resources
 from core.resources import Dollars
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
-import core.figures.figures as fig
+import core.figures.figure as fig
 from observer import Event
 from statuses import MISSING, Status
 

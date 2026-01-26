@@ -7,7 +7,7 @@ from attrs import define, field
 
 from core import protocols as proto
 from core.cells import Cells
-from core.figures import figures as fig
+from core.figures import figure as fig
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion

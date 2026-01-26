@@ -45,6 +45,16 @@ class Static(proto.Static):
 
 
 @frozen
+class Pullable(proto.Pullable):
+    EXCLUDES = {proto.Static}
+
+
+@frozen
+class CanPull(proto.CanPull):
+    EXCLUDES = {proto.Static, proto.Capturable}
+
+
+@frozen
 class Creatable(proto.Creatable):
     EXCLUDES = set[type[Flag]]()
 
@@ -58,7 +68,12 @@ class CanCapture(proto.CanCapture):
 
 @frozen
 class Capturable(proto.Capturable):
-    EXCLUDES = set[type[Flag]]()
+    EXCLUDES = {proto.PreventCaptures}
+
+
+@frozen
+class PreventCaptures(proto.PreventCaptures):
+    EXCLUDES = {proto.Capturable}
 
 
 @frozen

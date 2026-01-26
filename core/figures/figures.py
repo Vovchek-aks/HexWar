@@ -1,275 +1,89 @@
-from abc import ABCMeta
+from attrs import frozen, field
 
-from attrs import define, field
-
-from core import protocols as proto
-from core.cells import Cells
-from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack
-from core.figures.movable_flag import MovableBuilder
-from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
-from core.moves.attack import Attack
-from core.moves.capture import Capture
-from core.moves.relocations import Relocation, Assault
-from core.resources import Dollars
-from exceptions import NotSupportedMove
+import core.protocols as proto
 from mathematics.vector import Vector2Int
-from core.protocols import Figure
+from observer import Event, OnEventSubscriber
+import core.figures.figure as fig
 
 
-@define(hash=True, eq=True)
-class _Figure(Figure, metaclass=ABCMeta):
-    _id: int = field(init=False)
+@frozen
+class Figures(proto.Figures):
+    _board: proto.Board
+    _coord_of: dict[fig.Figure, Vector2Int] = field(init=False, factory=dict)
 
-    def __attrs_post_init__(self) -> None:
-        self._id = id(self)
+    _figure_was_added: Event[fig.Figure, Vector2Int, None] = field(init=False, factory=Event)
+    _figure_was_removed: Event[fig.Figure, Vector2Int, None] = field(init=False, factory=Event)
+    _figure_was_moved: Event[fig.Figure, Vector2Int, Vector2Int, None] = field(init=False, factory=Event)
+    _figure_was_converted: Event[fig.Figure, fig.Figure, Vector2Int, None] = field(init=False, factory=Event)
 
+    @property
+    def figure_was_added_at(self) -> OnEventSubscriber[fig.Figure, Vector2Int, None]:
+        return self._figure_was_added.subscriber
 
-class Empty(_Figure):
-    FLAGS = Flags.new(Static(),
-                      Capturable())
-    MOVES_BUDGET = 0
+    @property
+    def figure_was_removed(self) -> OnEventSubscriber[fig.Figure, Vector2Int, None]:
+        return self._figure_was_removed.subscriber
 
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 0
+    @property
+    def figure_was_moved(self) -> OnEventSubscriber[fig.Figure, Vector2Int, Vector2Int, None]:
+        return self._figure_was_moved.subscriber
 
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+    @property
+    def figure_was_converted(self) -> OnEventSubscriber[fig.Figure, fig.Figure, Vector2Int, None]:
+        return self._figure_was_converted.subscriber
 
+    def add(self, figure_type: type[fig.Figure], coord: Vector2Int) -> None:
+        assert not issubclass(figure_type, fig.Empty)
 
-class Settlement(_Figure):
-    FLAGS = Flags.new(Static())
-    MOVES_BUDGET = 0
+        cell = self._board[coord]
+        assert cell.is_empty
 
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 0
+        figure = figure_type()
+        self._coord_of[figure] = coord
+        cell.insert(figure)
 
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+        self._figure_was_added.invoke(figure, coord)
 
+    def remove_at(self, coord: Vector2Int) -> None:
+        figure = self._board[coord].figure
+        self.remove(figure)
 
-class Town(_Figure):
-    FLAGS = Flags.new(Static(),
-                      Creatable(Dollars(1_000_000)),
-                      Capturable(),
-                      (UpdatableOnTurnStartBuilder()
-                       .add_resources(Dollars(120_000))
-                       .build()))
-    MOVES_BUDGET = 0
+    def remove(self, figure: fig.Figure) -> None:
+        assert figure in self._coord_of
 
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 0
+        coord = self._coord_of[figure]
+        cell = self._board[coord]
+        assert not cell.is_empty
 
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+        self._coord_of.pop(figure)
+        cell.pop()
 
+        self._figure_was_removed.invoke(figure, coord)
 
-class Capital(_Figure):
-    FLAGS = Flags.new(Static())
-    MOVES_BUDGET = 0
+    def move(self, figure: fig.Figure, target: Vector2Int) -> None:
+        assert figure in self._coord_of
 
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 0
+        target_cell = self._board[target]
+        assert target_cell.is_empty
 
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+        coord = self._coord_of[figure]
+        cell = self._board[coord]
 
+        self._coord_of[figure] = target
+        target_cell.take_from(cell)
+        self._figure_was_moved.invoke(figure, coord, target)
 
-class Bunker(_Figure):
-    FLAGS = Flags.new(Static(),
-                      Creatable(Dollars(1_000_000)))
-    MOVES_BUDGET = 0
+    def convert(self, figure: fig.Figure, target_type: type[fig.Figure]) -> None:
+        assert figure in self._coord_of
+        assert not issubclass(target_type, fig.Empty)
 
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 4
+        coord = self._coord_of[figure]
+        cell = self._board[coord]
 
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+        target = target_type()
+        self._coord_of.pop(figure)
+        self._coord_of[target] = coord
+        cell.pop()
+        cell.insert(target)
 
-
-class Infantry(_Figure):
-    FLAGS = Flags.new((MovableBuilder()
-                       .can_move_to_neighbor()
-                       .constant_strength(3)
-                       .build()),
-                      Creatable(Dollars(150_000)),
-                      CanCapture(),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(50_000))
-                       .build()))
-    MOVES_BUDGET = 3
-
-    SELF_HARDNESS = 2
-    _NEAR_BUNKER_HARDNESS = 6
-
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        cell = board[coord]
-        has_bunker = bool(board.get_neighbors(cell, include_cell=False)
-                          .with_owner(cell.owner)
-                          .with_figure(Bunker))
-        if has_bunker:
-            return cls._NEAR_BUNKER_HARDNESS
-
-        return cls.SELF_HARDNESS
-
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        match move:
-            case Relocation():
-                return 1
-            case Assault():
-                return 3
-            case Capture():
-                return 2
-            case _:
-                raise NotSupportedMove(move)
-
-
-class Motorization(_Figure):
-    FLAGS = Flags.new((MovableBuilder()
-                       .can_move_to_neighbor()
-                       .constant_strength(3)
-                       .build()),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(100_000))
-                       .build()))
-    MOVES_BUDGET = 60
-
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 1
-
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        match move:
-            case Relocation():
-                return 10
-            case Assault():
-                return 15
-            case _:
-                raise NotSupportedMove(move)
-
-
-class Tank(_Figure):
-    FLAGS = Flags.new((MovableBuilder()
-                       .can_move_to_neighbor()
-                       .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
-                                                                 Tank.get_projected_strength(coord, board))
-                       .build()),
-                      Creatable(Dollars(700_000)),
-                      Capturable(),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(200_000))
-                       .build()),
-                      CanAttack(1))
-    MOVES_BUDGET = 60
-
-    SELF_STRENGTH = 3
-    _SELF_HARDNESS = 2
-    _PER_INFANTRY_STRENGTH_RATIO = .5
-    _PER_INFANTRY_HARDNESS_RATIO = .3
-
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return cls._SELF_HARDNESS + cls._get_projected(coord, board, cls._PER_INFANTRY_HARDNESS_RATIO)
-
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        match move:
-            case Relocation():
-                return 15
-            case Assault():
-                return 20
-            case Attack():
-                return 20
-            case _:
-                raise NotSupportedMove(move)
-
-    @classmethod
-    def get_projected_strength(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return cls._get_projected(coord, board, cls._PER_INFANTRY_STRENGTH_RATIO)
-
-    @classmethod
-    def _get_projected(cls, coord: Vector2Int, board: proto.Board, per_infantry_ratio: float) -> int:
-        cell = board[coord]
-
-        return int(per_infantry_ratio *
-                   sum(map(lambda infantry_cell: infantry_cell.strength(board),
-                           board.get_neighbors(cell, include_cell=False)
-                           .with_owner(cell.owner)
-                           .with_figure(Infantry | Motorization)
-                           .all())))
-
-
-class Artillery(_Figure):
-    FLAGS = Flags.new(MovableBuilder()
-                      .constant_strength(7)
-                      .set_can_relocate(lambda from_coord, to_coord, board:
-                                        Artillery.can_relocate(from_coord, to_coord, board))
-                      .build(),
-                      Creatable(Dollars(250_000)),
-                      Capturable(),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(250_000))
-                       .build()),
-                      CanAttack(2))
-    MOVES_BUDGET = 3
-
-    @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 0
-
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        match move:
-            case Relocation():
-                return 1
-            case Assault():
-                return cls.MOVES_BUDGET + 1
-            case Attack():
-                return 2
-            case _:
-                raise NotSupportedMove(move)
-
-    @classmethod
-    def can_relocate(cls, from_coord: Vector2Int, to_coord: Vector2Int, board: proto.Board) -> bool:
-        cell = board[from_coord]
-        target = board[to_coord]
-
-        if target not in board.get_neighbors(cell, include_cell=False):
-            return False
-
-        infantry_cells = (board.get_neighbors(cell, include_cell=False)
-                          .with_owner(cell.owner)
-                          .with_figure(Infantry | Motorization)
-                          .all())
-
-        cells = Cells()
-        for infantry_cell in infantry_cells:
-            cells += board.get_neighbors(infantry_cell, include_cell=False)
-
-        return target in cells
-
-
-def get_figures() -> list[type[_Figure]]:
-    return [
-        Empty,
-        Settlement,
-        Town,
-        Capital,
-        Bunker,
-        Infantry,
-        Motorization,
-        Tank,
-        Artillery
-    ]
+        self._figure_was_converted.invoke(figure, target, coord)

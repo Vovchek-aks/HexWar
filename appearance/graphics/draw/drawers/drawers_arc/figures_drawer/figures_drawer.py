@@ -5,7 +5,7 @@ import appearance.protocols as proto
 from core.protocols import Board
 from mathematics.hex_geometry import get_world_position
 from mathematics.vector import Vector2Int, Vector2
-import core.figures.figures as fig
+import core.figures.figure as fig
 from appearance.graphics.sprites import Sprite
 
 SpriteList = arc.sprite_list.SpriteList

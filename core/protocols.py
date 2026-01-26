@@ -122,11 +122,6 @@ class MovesMaker(ABC):
     def cell_changed_owner(self) -> OnEventSubscriber[Vector2Int, None]:
         ...
 
-    @property
-    @abstractmethod
-    def cell_changed_figure(self) -> OnEventSubscriber[Vector2Int, None]:
-        ...
-
     @abstractmethod
     def make(self, move: ValidMove) -> None:
         ...
@@ -202,6 +197,10 @@ class CellsCache(ABC):
         ...
 
     @abstractmethod
+    def locate_figure(self, figure: "Figure") -> "Cell | Status":
+        ...
+
+    @abstractmethod
     def with_owner(self, player: Player) -> "Cells":
         ...
 
@@ -227,12 +226,22 @@ class GameSession(ABC):
 
     @property
     @abstractmethod
+    def pulling_connections(self) -> "PullingConnections":
+        ...
+
+    @property
+    @abstractmethod
     def board(self) -> Board:
         ...
 
     @property
     @abstractmethod
     def cells(self) -> CellsCache:
+        ...
+
+    @property
+    @abstractmethod
+    def figures(self) -> "Figures":
         ...
 
     @abstractmethod
@@ -359,6 +368,10 @@ class Capturable(Flag, metaclass=ABCMeta):
     ...
 
 
+class PreventCaptures(Flag, metaclass=ABCMeta):
+    ...
+
+
 class CanAttack(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
@@ -378,6 +391,14 @@ class Movable(Flag, metaclass=ABCMeta):
     @abstractmethod
     def can_relocate(self, from_coord: Vector2Int, to_coord: Vector2Int, board: Board) -> bool:
         ...
+
+
+class Pullable(Flag, metaclass=ABCMeta):
+    ...
+
+
+class CanPull(Flag, metaclass=ABCMeta):
+    ...
 
 
 class Creatable(Flag, metaclass=ABCMeta):
@@ -408,6 +429,48 @@ class Figure(ABC):
         ...
 
 
+class Figures(ABC):
+    @property
+    @abstractmethod
+    def figure_was_added_at(self) -> OnEventSubscriber[Figure, Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def figure_was_removed(self) -> OnEventSubscriber[Figure, Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def figure_was_moved(self) -> OnEventSubscriber[Figure, Vector2Int, Vector2Int, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def figure_was_converted(self) -> OnEventSubscriber[Figure, Figure, Vector2Int, None]:
+        ...
+
+    @abstractmethod
+    def add(self, figure_type: type[Figure], coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def remove_at(self, coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def remove(self, figure: Figure) -> None:
+        ...
+
+    @abstractmethod
+    def move(self, figure: Figure, target: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def convert(self, figure: Figure, target_type: type[Figure]) -> None:
+        ...
+
+
 class FiguresRelocationBudget(ABC):
     @abstractmethod
     def clear(self) -> None:
@@ -427,6 +490,46 @@ class FiguresRelocationBudget(ABC):
 
     @abstractmethod
     def add(self, figure: Figure, pay_count: int) -> None:
+        ...
+
+
+class PullingConnections(ABC):
+    @property
+    @abstractmethod
+    def pair_added(self) -> OnEventSubscriber[Figure, Figure, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def pair_removed(self) -> OnEventSubscriber[Figure, Figure, None]:
+        ...
+
+    @abstractmethod
+    def register(self, puller: Figure, pullable: Figure) -> None:
+        ...
+
+    @abstractmethod
+    def unregister(self, puller: Figure, pullable: Figure) -> None:
+        ...
+
+    @abstractmethod
+    def is_puller(self, figure: Figure) -> bool:
+        ...
+
+    @abstractmethod
+    def is_pullable(self, figure: Figure) -> bool:
+        ...
+
+    @abstractmethod
+    def get_pullable(self, puller: Figure) -> Figure:
+        ...
+
+    @abstractmethod
+    def get_puller(self, pullable: Figure) -> Figure:
+        ...
+
+    @abstractmethod
+    def __contains__(self, item: tuple[Figure, Figure]) -> bool:
         ...
 
 

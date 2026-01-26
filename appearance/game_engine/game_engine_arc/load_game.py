@@ -26,7 +26,6 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
 from core.cells_changes_observer import CellsChangesObserver
-from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStart
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.player_moves_maker import player_moves_maker
@@ -64,10 +63,15 @@ def load_game(screen_shape: Vector2Int,
 
     moves_maker = MovesMaker(session)
 
+    cell_changed_figure = Event[Vector2Int, None]()
+    session.figures.figure_was_added_at.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
+    session.figures.figure_was_removed.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
+    session.figures.figure_was_converted.subscribe(lambda _, __, coord: cell_changed_figure.invoke(coord))
+    session.figures.figure_was_moved.subscribe(lambda _, coord, __: cell_changed_figure.invoke(coord))
+    session.figures.figure_was_moved.subscribe(lambda _, __, coord: cell_changed_figure.invoke(coord))
     cells_change_observer = CellsChangesObserver.make([moves_maker.cell_changed_owner],
-                                                      [moves_maker.cell_changed_figure,
-                                                       UpdatableOnTurnStart.cell_was_popped()])
-    cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
+                                                      [cell_changed_figure.subscriber])
+
     cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
     cells_change_observer.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
 
@@ -105,7 +109,7 @@ def load_game(screen_shape: Vector2Int,
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers, player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
-    # session.master.current_player.change_inputer(user_inputer_builder.build())
+    session.master.current_player.change_inputer(user_inputer_builder.build())
 
     scene = GameScene(drawer, updater, InputState.make(window), make_main_menu_loading_scene)
     pause_menu_open_requested.subscribe(scene.on_pause_menu_open_requested)
