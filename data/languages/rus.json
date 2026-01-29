@@ -19,8 +19,10 @@
       "CAPTURE": "Захватить",
       "TO_INFANTRY": "Обесколёситься",
       "ATTACK": "Атаковать",
+      "INITIATE_PULLING": "Прицепиться",
+      "TERMINATE_PULLING": "Отцепиться",
       "COMBAT_ABILITY": "Боеспособность: {combat_ability}%",
-      "COMBAT_ABILITY_COST": "Требует {combat_ability_cost}% боеспособности",
+      "COMBAT_ABILITY_COST": "Затрачивает {combat_ability_cost}% боеспособности",
       "COST": [
         "Стоимость:",
         "    {cost}"
@@ -68,8 +70,20 @@
           ""
         ],
         "TANK_ATTACK": [
-          " Уничтожает более слабую",
+          "Уничтожает более слабую",
           "фигуру по соседству.",
+          ""
+        ],
+        "ARTILLERY_INITIATE_PULLING": [
+          "Прицепляет артиллерию",
+          "к выбранной пехоте",
+          "или мотор-пехоте.",
+          ""
+        ],
+        "ARTILLERY_TERMINATE_PULLING": [
+          "Отцепляет артиллерию",
+          "от прицеплённой пехоты",
+          "или мотор-пехоты.",
           ""
         ],
         "MOTORIZATION_TO_INFANTRY": [

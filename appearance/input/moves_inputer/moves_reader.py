@@ -4,10 +4,12 @@ from attrs import frozen
 
 from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction, CreationButtonPressAction, \
-    ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, ButtonPressAction
+    ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, ButtonPressAction, \
+    PullingInitiationButtonPressAction, PullingTerminationButtonPressAction
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
+from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
 from core.moves.creation import Creation
 from core.protocols import ValidMove, GameSession, Move
@@ -29,6 +31,8 @@ class MoveReaders:
             self._try_read_conversion_move,
             self._try_read_capture_move,
             self._try_read_attack_move,
+            self._try_read_pulling_initiation_move,
+            self._try_read_pulling_termination_move,
         ]
 
     def _try_read_relocation_move(self, actions: list[InputAction]) -> ValidMove | Status:
@@ -77,11 +81,25 @@ class MoveReaders:
             case _:
                 return INVALID
 
+    def _try_read_pulling_termination_move(self, actions: list[InputAction]) -> ValidMove | Status:
+        match actions:
+            case [PullingTerminationButtonPressAction()]:
+                if (coord := self._cell_selector.get_coord()) is MISSING:
+                    return INVALID
+
+                return PullingTermination(coord).validate(self._session)
+
+            case _:
+                return INVALID
+
     def _try_read_capture_move(self, actions: list[InputAction]) -> ValidMove | Status:
         return self._try_read_right_click_after(CaptureButtonPressAction, Capture, actions)
 
     def _try_read_attack_move(self, actions: list[InputAction]) -> ValidMove | Status:
         return self._try_read_right_click_after(AttackButtonPressAction, Attack, actions)
+
+    def _try_read_pulling_initiation_move(self, actions: list[InputAction]) -> ValidMove | Status:
+        return self._try_read_right_click_after(PullingInitiationButtonPressAction, PullingInitiation, actions)
 
     def _try_read_right_click_after[T: Move](self,
                                              action_type: type[ButtonPressAction],

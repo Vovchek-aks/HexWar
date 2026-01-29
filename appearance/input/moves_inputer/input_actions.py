@@ -47,3 +47,13 @@ class CaptureButtonPressAction(ButtonPressAction):
 @frozen
 class AttackButtonPressAction(ButtonPressAction):
     ...
+
+
+@frozen
+class PullingInitiationButtonPressAction(ButtonPressAction):
+    ...
+
+
+@frozen
+class PullingTerminationButtonPressAction(ButtonPressAction):
+    ...

@@ -6,7 +6,6 @@ from attrs import frozen, field
 
 import core.protocols as proto
 from core.cells import Cells
-from statuses import Status, MISSING
 
 
 @frozen
@@ -22,12 +21,6 @@ class CellsCache(proto.CellsCache):
     @property
     def at_front(self) -> Cells:
         return Cells(self._front)
-
-    def locate_figure(self, figure: proto.Figure) -> proto.Cell | Status:
-        for cell in self._cells_with[type(figure)]:
-            if cell.figure is figure:
-                return cell
-        return MISSING
 
     def with_owner(self, player: proto.Player) -> Cells:
         return Cells(self._cells_of[player])

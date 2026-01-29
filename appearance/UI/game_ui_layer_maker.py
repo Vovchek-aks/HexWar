@@ -3,7 +3,7 @@ from typing import Callable
 from attrs import frozen, Factory
 
 from appearance.UI.box import BoxUi
-from appearance.UI.button import ButtonUi, get_image_rectangle
+from appearance.UI.button import ButtonUi, SwitchButtonUI, get_image_rectangle
 from appearance.UI.image import ImageUi
 from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
@@ -16,9 +16,10 @@ from appearance.input.clicks_catcher.click import Click, MouseButtons
 from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
-    ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction
+    ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, PullingInitiationButtonPressAction, \
+    PullingTerminationButtonPressAction
 from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION
+    INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
@@ -219,12 +220,38 @@ class GameUiLayerMaker:
         attack = self._make_activatable_button(self._language.get_attack_message(),
                                                lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
-        return self._make_figure_menu(fig.Artillery, [attack], [ARTILLERY_ATTACK])
+        attach = self._make_activatable_button(self._language.get_initiate_pulling_message(),
+                                               lambda: PullingInitiationButtonPressAction(
+                                                   self._cell_selector.get_coord()))
+
+        detach = self._make_null_button(self._language.get_terminate_pulling_message())
+        detach.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                     .invoke(PullingTerminationButtonPressAction(self._cell_selector.get_coord())))
+
+        attach_detach = SwitchButtonUI.make(Rectangle(Vector2.zero(), Vector2.ones()), attach, detach)
+
+        def switch_if_needed() -> None:
+            cell = self._session.board[self._cell_selector.get_coord()]
+            if not isinstance(figure := cell.figure, fig.Artillery):
+                return
+
+            is_pullable = self._session.pulling_connections.is_pullable(figure)
+            is_attach_button_active = attach.layer.is_active
+
+            if is_pullable == is_attach_button_active:
+                attach_detach.next()
+
+        self._cell_selector.cell_was_selected.subscribe(lambda _: switch_if_needed())
+        self._moves_maker.board_move_was_made.subscribe(lambda _: switch_if_needed())
+
+        return self._make_figure_menu(fig.Artillery,
+                                      [attack, attach_detach],
+                                      [ARTILLERY_ATTACK, (ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING)])
 
     def _make_figure_menu(self,
                           figure: type[fig.Figure],
-                          buttons: list[ButtonUi],
-                          button_tags: list[str]) -> Layer:
+                          buttons: list[ButtonUi | SwitchButtonUI],
+                          button_tags: list[str | tuple[str, ...]]) -> Layer:
         assert len(buttons) == len(button_tags)
 
         menu = self._make_figure_menu_without_hints(figure, buttons)
@@ -233,7 +260,11 @@ class GameUiLayerMaker:
                                    Vector2(menu_height, menu_height)))
 
         for button, tag in zip(buttons, button_tags):
-            hint_box.append(self._make_figure_menu_button_hint(button, tag))
+            if not isinstance(button, SwitchButtonUI):
+                hint_box.append(self._make_figure_menu_button_hint(button, tag))
+                continue
+            for button_, tag_ in zip(button.buttons, tag):
+                hint_box.append(self._make_figure_menu_button_hint(button_, tag_))
 
         layer = Layer.as_multiple([
             menu,
@@ -243,7 +274,9 @@ class GameUiLayerMaker:
         self._bind_layer_to_cell_with_figure_selection(layer, figure)
         return layer
 
-    def _make_figure_menu_without_hints(self, figure_type: type[fig.Figure], buttons: list[ButtonUi]) -> StretcherUi:
+    def _make_figure_menu_without_hints(self,
+                                        figure_type: type[fig.Figure],
+                                        buttons: list[ButtonUi | SwitchButtonUI]) -> StretcherUi:
         background_margin = Vector2(20, 20)
         background = ImageUi.make(self._drawer,
                                   RectangleBuilder(self._screen_shape)
@@ -328,9 +361,18 @@ class GameUiLayerMaker:
     def _make_button_hint(self, title: str, content: list[str], button: ButtonUi) -> StretcherUi:
         hint = self._make_null_hint(title, content)
 
+        def get_hint_activity() -> bool:
+            if not button.layer.is_active:
+                return False
+
+            fake_click = Click(self._mouse_movement_observer.mouse_position, MouseButtons())
+            return button.layer.can_catch(fake_click)
+
         hint.layer.set_activity(False)
         self._mouse_movement_observer.mouse_was_moved.subscribe(
-            lambda position: hint.layer.set_activity(button.layer.can_catch(Click(position, MouseButtons()))))
+            lambda _: hint.layer.set_activity(get_hint_activity()))
+        button.was_clicked.subscribe(
+            lambda: hint.layer.set_activity(get_hint_activity()))
 
         return hint
 

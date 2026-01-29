@@ -9,6 +9,7 @@ from core.figures.movable_flag import MovableBuilder
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
 from core.resources import Dollars
 from exceptions import NotSupportedMove
@@ -133,6 +134,10 @@ class Infantry(_Figure):
                 return 3
             case Capture():
                 return 2
+            case PullingInitiation():
+                return 0
+            case PullingTermination():
+                return 0
             case _:
                 raise NotSupportedMove(move)
 
@@ -160,6 +165,10 @@ class Motorization(_Figure):
                 return 10
             case Assault():
                 return 15
+            case PullingInitiation():
+                return 0
+            case PullingTermination():
+                return 0
             case _:
                 raise NotSupportedMove(move)
 
@@ -242,6 +251,10 @@ class Artillery(_Figure):
                 return cls.MOVES_BUDGET + 1
             case Attack():
                 return 2
+            case PullingInitiation():
+                return 0
+            case PullingTermination():
+                return 0
             case _:
                 raise NotSupportedMove(move)
 

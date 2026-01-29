@@ -197,10 +197,6 @@ class CellsCache(ABC):
         ...
 
     @abstractmethod
-    def locate_figure(self, figure: "Figure") -> "Cell | Status":
-        ...
-
-    @abstractmethod
     def with_owner(self, player: Player) -> "Cells":
         ...
 
@@ -448,6 +444,10 @@ class Figures(ABC):
     @property
     @abstractmethod
     def figure_was_converted(self) -> OnEventSubscriber[Figure, Figure, Vector2Int, None]:
+        ...
+
+    @abstractmethod
+    def locate(self, figure: Figure) -> Vector2Int:
         ...
 
     @abstractmethod

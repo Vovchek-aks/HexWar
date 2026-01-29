@@ -32,6 +32,11 @@ class Figures(proto.Figures):
     def figure_was_converted(self) -> OnEventSubscriber[fig.Figure, fig.Figure, Vector2Int, None]:
         return self._figure_was_converted.subscriber
 
+    def locate(self, figure: fig.Figure) -> Vector2Int:
+        assert figure in self._coord_of
+
+        return self._coord_of[figure]
+
     def add(self, figure_type: type[fig.Figure], coord: Vector2Int) -> None:
         assert not issubclass(figure_type, fig.Empty)
 

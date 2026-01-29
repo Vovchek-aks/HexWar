@@ -19,7 +19,7 @@ class FiguresRelocation(proto.Move, metaclass=ABCMeta):
         figure = session.board[self.from_coord].figure
         if CanPull in figure.FLAGS and session.pulling_connections.is_puller(figure):
             pullable = session.pulling_connections.get_pullable(figure)
-            pullable_cell = session.cells.locate_figure(pullable)
+            pullable_cell = session.board[session.figures.locate(pullable)]
             assert pullable_cell is not MISSING
             return pullable_cell
         return MISSING

@@ -3,12 +3,14 @@ from attrs import frozen, field
 import core.protocols as proto
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.pulling import PullingTermination, PullingInitiation
 from core.moves.relocations import Relocation, Assault, FiguresRelocation
 from core.moves.creation import Creation
 from core.moves.conversion import Conversion
+from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 from observer import Event, OnEventSubscriber
-from statuses import INVALID, MISSING
+from statuses import INVALID
 
 
 @frozen
@@ -68,3 +70,10 @@ class MovesMaker(proto.MovesMaker):
 
                 self._board_move_was_made.invoke(move)
                 # print(move.move, self._session.board[coord])
+            case PullingInitiation() | PullingTermination():
+                self._session.make(move)
+                self._move_was_made.invoke(move)
+
+                self._board_move_was_made.invoke(move)
+            case move:
+                raise NotSupportedMove(move)

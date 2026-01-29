@@ -19,6 +19,8 @@
       "CAPTURE": "Capture",
       "TO_INFANTRY": "Unmotorize",
       "ATTACK": "Attack",
+      "INITIATE_PULLING": "Attach",
+      "TERMINATE_PULLING": "Detach",
       "COMBAT_ABILITY": "Combat ability: {combat_ability}%",
       "COMBAT_ABILITY_COST": "Requires  {combat_ability_cost}% combat ability",
       "COST": [
@@ -69,6 +71,18 @@
         "TANK_ATTACK": [
           "Destroys a weaker",
           "adjacent piece.",
+          ""
+        ],
+        "ARTILLERY_INITIATE_PULLING": [
+          "Attaches artillery to",
+          "selected infantry",
+          "or motorization.",
+          ""
+        ],
+        "ARTILLERY_TERMINATE_PULLING": [
+          "Detaches artillery",
+          "from attached infantry",
+          "or motorization.",
           ""
         ],
         "MOTORIZATION_TO_INFANTRY": [

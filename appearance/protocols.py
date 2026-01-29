@@ -243,6 +243,11 @@ class MouseMovementObserver(ABC):
     def mouse_was_moved(self) -> OnEventSubscriber[Vector2, None]:
         ...
 
+    @property
+    @abstractmethod
+    def mouse_position(self) -> Vector2:
+        ...
+
     @abstractmethod
     def update(self, mouse_position: Vector2) -> None:
         ...

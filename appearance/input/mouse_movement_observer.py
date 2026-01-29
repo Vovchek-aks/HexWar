@@ -7,16 +7,21 @@ import appearance.protocols as proto
 
 @define
 class MouseMovementObserver(proto.MouseMovementObserver):
+    _mouse_position: Vector2 = field(init=False, default=Vector2.zero())
+
     _mouse_was_moved: Event[Vector2, None] = field(init=False, factory=Event)
-    _previous_mouse_position: Vector2 = field(init=False, default=Vector2.zero())
 
     @property
     def mouse_was_moved(self) -> OnEventSubscriber[Vector2, None]:
         return self._mouse_was_moved.subscriber
 
+    @property
+    def mouse_position(self) -> Vector2:
+        return self._mouse_position
+
     def update(self, mouse_position: Vector2) -> None:
-        if mouse_position == self._previous_mouse_position:
+        if mouse_position == self._mouse_position:
             return
 
-        self._previous_mouse_position = mouse_position
+        self._mouse_position = mouse_position
         self._mouse_was_moved.invoke(mouse_position)

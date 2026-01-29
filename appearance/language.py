@@ -6,6 +6,7 @@ from appearance.UI.number_shortener import NumberShortener
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
+from core.moves.pulling import PullingInitiation, PullingTermination
 from core.protocols import Figure, Resource
 from files import read_meta, read_json
 import core.figures.figure as fig
@@ -18,6 +19,8 @@ LANGUAGES_META_DICT = dict[str, str | list[str]]
 
 ARTILLERY_ATTACK = "ARTILLERY_ATTACK"
 TANK_ATTACK = "TANK_ATTACK"
+ARTILLERY_INITIATE_PULLING = "ARTILLERY_INITIATE_PULLING"
+ARTILLERY_TERMINATE_PULLING = "ARTILLERY_TERMINATE_PULLING"
 MOTORIZATION_TO_INFANTRY = "MOTORIZATION_TO_INFANTRY"
 INFANTRY_CAPTURE = "INFANTRY_CAPTURE"
 INFANTRY_TO_MOTORIZATION = "INFANTRY_TO_MOTORIZATION"
@@ -26,12 +29,16 @@ _FIGURE_OF_TAG: dict[str, type[Figure]] = {
     INFANTRY_CAPTURE: fig.Infantry,
     TANK_ATTACK: fig.Tank,
     ARTILLERY_ATTACK: fig.Artillery,
+    ARTILLERY_INITIATE_PULLING: fig.Artillery,
+    ARTILLERY_TERMINATE_PULLING: fig.Artillery,
 }
 
 _MOVE_OF_TAG = {
     INFANTRY_CAPTURE: lambda: Capture(Vector2Int.zero(), Vector2Int.zero()),
     TANK_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+    ARTILLERY_INITIATE_PULLING: lambda: PullingInitiation(Vector2Int.zero(), Vector2Int.zero()),
+    ARTILLERY_TERMINATE_PULLING: lambda: PullingTermination(Vector2Int.zero()),
 }
 
 _SELECTED = "selected"
@@ -54,6 +61,8 @@ _TO_MOTORIZATION = "TO_MOTORIZATION"
 _CAPTURE = "CAPTURE"
 _TO_INFANTRY = "TO_INFANTRY"
 _ATTACK = "ATTACK"
+_INITIATE_PULLING = "INITIATE_PULLING"
+_TERMINATE_PULLING = "TERMINATE_PULLING"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
@@ -145,6 +154,12 @@ class Language:
 
     def get_attack_message(self) -> str:
         return self._ui[_ATTACK]
+
+    def get_initiate_pulling_message(self) -> str:
+        return self._ui[_INITIATE_PULLING]
+
+    def get_terminate_pulling_message(self) -> str:
+        return self._ui[_TERMINATE_PULLING]
 
     def get_message_from_resource(self, resource: Resource) -> str:
         amount = NumberShortener.shorten(resource.amount)
