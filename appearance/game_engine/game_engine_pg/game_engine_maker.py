@@ -73,8 +73,7 @@ def make_game_engine(caption: str,
                                  mouse_movement_observer,
                                  button_press_action_happened,
                                  moves_maker,
-                                 actions_reader)
-                .make(user_inputer_builder))
+                                 actions_reader))
 
     draw = DrawMaker(Draw).make(screen, camera, session.board, )
 

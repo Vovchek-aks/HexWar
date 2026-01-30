@@ -11,12 +11,22 @@ from color import Color
 class Master(ABC):
     @property
     @abstractmethod
-    def turn_has_passed(self) -> OnEventSubscriber["Player", None]:
+    def current_player(self) -> "Player":
         ...
 
     @property
     @abstractmethod
-    def current_player(self) -> "Player":
+    def players(self) -> list["Player"]:
+        ...
+
+    @property
+    @abstractmethod
+    def turn_had_started(self) -> OnEventSubscriber["Player", None]:
+        ...
+
+    @property
+    @abstractmethod
+    def turn_has_passed(self) -> OnEventSubscriber["Player", None]:
         ...
 
     @abstractmethod

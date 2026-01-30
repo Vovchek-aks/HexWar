@@ -29,7 +29,7 @@ from core.cells_changes_observer import CellsChangesObserver
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.player_moves_maker import player_moves_maker
-from core.protocols import GameSession
+from core.protocols import GameSession, Player
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -40,7 +40,9 @@ from statuses import Status
 def load_game(screen_shape: Vector2Int,
               window: Window,
               make_session: Callable[[], GameSession],
-              make_main_menu_loading_scene: Callable[[], proto.Scene]) -> Iterator[proto.Scene | Status]:
+              make_main_menu_loading_scene: Callable[[], proto.Scene],
+              *,
+              is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
@@ -78,24 +80,24 @@ def load_game(screen_shape: Vector2Int,
     cell_selector = CellSelector.make(actions_reader, moves_maker, session.master)
     moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
 
-    mouse_movement_observer = MouseMovementObserver()
-
-    user_inputer_builder = EventPlayerInputerBuilder()
-    user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
-
     pause_menu_open_requested = Event[None]()
     pause_menu_opener = PauseMenuOpener(pause_menu_open_requested.invoke)
 
+    mouse_movement_observer = MouseMovementObserver()
+
     yield language.get_ui_making_message()
-    ui_layer = (GameUiLayerMaker(UiDrawer(),
-                                 screen_shape,
-                                 session,
-                                 cell_selector,
-                                 mouse_movement_observer,
-                                 button_press_action_happened,
-                                 moves_maker,
-                                 actions_reader)
-                .make(user_inputer_builder))
+    end_turn_button_was_clicked = Event[None]()
+    game_ui_layer_maker = GameUiLayerMaker(UiDrawer(),
+                                           screen_shape,
+                                           session,
+                                           cell_selector,
+                                           mouse_movement_observer,
+                                           button_press_action_happened,
+                                           moves_maker,
+                                           actions_reader)
+    ui_layer = (game_ui_layer_maker.make_multibot(end_turn_button_was_clicked.invoke)
+                if is_multibot else
+                game_ui_layer_maker.make(end_turn_button_was_clicked.invoke))
 
     yield language.get_sprite_loading_message()
     draw = DrawMaker().make(screen_shape, camera, session.board, cells_change_observer)
@@ -109,8 +111,22 @@ def load_game(screen_shape: Vector2Int,
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers, player_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
-    session.master.current_player.change_inputer(user_inputer_builder.build())
 
     scene = GameScene(drawer, updater, InputState.make(window), make_main_menu_loading_scene)
-    pause_menu_open_requested.subscribe(scene.on_pause_menu_open_requested)
+    if is_multibot:
+        def reload_if_bot_won(bot: Player) -> None:
+            bots_cells = len(session.cells.with_owner(bot).all())
+            all_cells = session.board.shape.x * session.board.shape.y
+
+            if bots_cells >= all_cells * .9:
+                scene.on_pause_menu_open_requested()
+
+        session.master.turn_has_passed.subscribe(reload_if_bot_won)
+    else:
+        user_inputer_builder = EventPlayerInputerBuilder()
+        user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
+        user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
+        session.master.current_player.change_inputer(user_inputer_builder.build())
+        pause_menu_open_requested.subscribe(scene.on_pause_menu_open_requested)
+
     yield scene

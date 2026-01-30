@@ -22,7 +22,6 @@ from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZ
     INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
-from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile, Creatable
 from core.resources import Dollars
 from mathematics.rectangle import Rectangle, RectangleBuilder
@@ -46,7 +45,7 @@ class GameUiLayerMaker:
     _language: Language = Factory(Language.from_meta)
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
-    def make(self, user_inputer_builder: EventPlayerInputerBuilder) -> Layer:
+    def make(self, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
         players_turn = TextUi.make(self._drawer,
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
@@ -71,17 +70,61 @@ class GameUiLayerMaker:
         self._session.master.current_player.resources.has_changed.subscribe(on_resources_had_changed)
 
         end_turn_button = self._make_end_turn_button()
-        user_inputer_builder.set_need_to_end_turn(end_turn_button.was_clicked)
+        end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
             players_turn.set_text(self._language.get_players_turn_message(name))
 
-        self._session.master.turn_has_passed.subscribe(on_turn_passed)
+        self._session.master.turn_had_started.subscribe(on_turn_passed)
 
         layers = [
             players_turn,
             self._make_current_turn_ui(dollars, end_turn_button)
+        ]
+
+        on_turn_passed(self._session.master.current_player)
+        on_resources_had_changed(self._session.master.current_player.resources)
+
+        return Layer.as_multiple(layers)
+
+    def make_multibot(self, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
+        players_turn = TextUi.make(self._drawer,
+                                   (RectangleBuilder(self._screen_shape)
+                                    .from_left_up()
+                                    .move(Vector2(10, 10))
+                                    .set_shape(Vector2(110, 30))
+                                    .adjust_for_shape()
+                                    .build()),
+                                   TextData.debug('...'))
+
+        dollars = TextUi.make(self._drawer,
+                              (RectangleBuilder(self._screen_shape)
+                               .from_left_up()
+                               .move(Vector2(12, 60))
+                               .set_shape(Vector2(100, 20))
+                               .adjust_for_shape()
+                               .build()),
+                              TextData.debug('...'))
+
+        def on_resources_had_changed(resources: ResourcesStockpile) -> None:
+            dollars.set_text(self._language.get_message_from_resource(resources.get(Dollars)))
+
+        for player in self._session.master.players:
+            player.resources.has_changed.subscribe(on_resources_had_changed)
+
+        end_turn_button = self._make_end_turn_button()
+        end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
+
+        def on_turn_passed(player: Player) -> None:
+            name = player.data.name
+            players_turn.set_text(self._language.get_players_turn_message(name))
+
+        self._session.master.turn_had_started.subscribe(on_turn_passed)
+
+        layers = [
+            players_turn,
+            dollars
         ]
 
         on_turn_passed(self._session.master.current_player)
@@ -101,7 +144,7 @@ class GameUiLayerMaker:
             dollars,
             end_turn_button,
         ])
-        self._session.master.turn_has_passed.subscribe(lambda player: layer.set_activity(player.need_ui))
+        self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
 
     def _make_end_turn_button(self) -> ButtonUi:
@@ -231,7 +274,11 @@ class GameUiLayerMaker:
         attach_detach = SwitchButtonUI.make(Rectangle(Vector2.zero(), Vector2.ones()), attach, detach)
 
         def switch_if_needed() -> None:
-            cell = self._session.board[self._cell_selector.get_coord()]
+            coord = self._cell_selector.get_coord()
+            if coord is MISSING:
+                return
+
+            cell = self._session.board[coord]
             if not isinstance(figure := cell.figure, fig.Artillery):
                 return
 
@@ -332,7 +379,7 @@ class GameUiLayerMaker:
         self._cell_selector.cell_was_selected.subscribe(update_combat_ability)
         self._moves_maker.board_move_was_made.subscribe(
             lambda _: update_combat_ability(self._cell_selector.get_coord()))
-        self._session.master.turn_has_passed.subscribe(
+        self._session.master.turn_had_started.subscribe(
             lambda _: update_combat_ability(self._cell_selector.get_coord()))
 
         layout_margin = Vector2(15, 15)
