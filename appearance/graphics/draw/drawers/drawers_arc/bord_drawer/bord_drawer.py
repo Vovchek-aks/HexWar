@@ -1,3 +1,4 @@
+import random
 from collections import defaultdict
 
 from attrs import define, field
@@ -16,6 +17,10 @@ Shape = arc.shape_list.Shape
 
 EDGES_WIDTH_RATIO = 1.1
 EDGES_BRIGHTNESS_RATIO = .6
+
+AVERAGE_COLOR_VARIATION_AMPLITUDE = 50
+MAX_COLOR_VARIATION_AMPLITUDE = 10
+MAJOR_COLOR_VARIATION_FREQUENCY = 0.05
 
 
 @define
@@ -97,13 +102,30 @@ class BordDrawer(proto.BordDrawer):
             self._edges[cell_coord].clear()
         self.append_edges(cell_coord)
 
-    def _get_hex_color(self, cell_coord: Vector2Int) -> arc.color.Color:
-        return self._board[cell_coord].owner.data.color
+    def _get_hex_color(self, cell_coord: Vector2Int) -> Color:
+        hex_color = self._board[cell_coord].owner.data.color
+        state = random.getstate()
+        random.seed(str(cell_coord.tuple))
+        color = Color(
+            r=self._get_variated_channel(hex_color.r),
+            g=self._get_variated_channel(hex_color.g),
+            b=self._get_variated_channel(hex_color.b)
+        )
+        random.setstate(state)
+        return color
+
+    @staticmethod
+    def _get_variated_channel(channel: int) -> int:
+        max_value = min(255, channel + MAX_COLOR_VARIATION_AMPLITUDE)
+        min_value = max(0, channel - MAX_COLOR_VARIATION_AMPLITUDE)
+        return max(min_value, min(max_value, channel + round(random.gauss(sigma=MAJOR_COLOR_VARIATION_FREQUENCY) *
+                                                             AVERAGE_COLOR_VARIATION_AMPLITUDE)))
 
     def _get_edges_color(self, cell_coord):
         return self._get_hex_color(cell_coord).lerp(WHITE, EDGES_BRIGHTNESS_RATIO)
 
-    def _make_hex_background_no_auto_color(self, cell_coord: Vector2Int, color: Color) -> Shape:
+    @staticmethod
+    def _make_hex_background_no_auto_color(cell_coord: Vector2Int, color: Color) -> Shape:
         world_position = get_world_position(cell_coord)
         points = [vertex_pair[0] + world_position
                   for vertex_pair in neighbors_vertexes().values()]
