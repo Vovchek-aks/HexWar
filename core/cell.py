@@ -2,20 +2,21 @@ from attrs import define, field
 
 import core.protocols as proto
 from core.figures import figure as fig
-from statuses import MISSING
+from statuses import MISSING, Status
 
 
 @define(hash=True, eq=True, repr=False)
 class Cell(proto.Cell):
-    _owner: proto.Player = field(hash=False, eq=False)
+    _owner: proto.Player | Status = field(hash=False, eq=False)
     _figure: proto.Figure = field(hash=False, eq=False)
     _id: int = field(init=False)
 
     def __attrs_post_init__(self) -> None:
         self._id = id(self)
+        self._set_figure(self._figure)
 
     @property
-    def owner(self) -> proto.Player:
+    def owner(self) -> proto.Player | Status:
         return self._owner
 
     @property
@@ -24,7 +25,7 @@ class Cell(proto.Cell):
 
     @property
     def is_empty(self) -> bool:
-        return isinstance(self.figure, fig.Empty)
+        return proto.Empty in self.figure.FLAGS
 
     def hardness(self, board: proto.Board) -> int:
         assert board.has(self)
@@ -47,13 +48,14 @@ class Cell(proto.Cell):
         assert not self.is_empty
 
         figure = self.figure
-        self._figure = fig.Empty()
+        self._figure = fig.Land() if figure.is_on_land() else fig.Water()
         return figure
 
     def insert(self, figure: proto.Figure) -> None:
         assert self.is_empty
+        assert self.figure.is_on_land() == figure.is_on_land()
 
-        self._figure = figure
+        self._set_figure(figure)
 
     def change_owner(self, player: proto.Player) -> None:
         assert self._owner != player
@@ -61,13 +63,23 @@ class Cell(proto.Cell):
 
     def take_from(self, other: proto.Cell) -> None:
         assert self.is_empty
+        assert self.figure.is_on_land() == other.figure.is_on_land()
 
         if self.owner != other.owner:
             self.change_owner(other.owner)
-        self._figure = other.pop()
+        self._set_figure(other.pop())
+
+    def _set_figure(self, figure: proto.Figure) -> None:
+        if proto.DontHaveOwner in self.figure.FLAGS:
+            self._owner = MISSING
+
+        self._figure = figure
 
     def __str__(self) -> str:
-        return f"{type(self).__name__}(figure: {type(self.figure).__name__}, owner: {self.owner.data.name})"
+        if self.owner is not MISSING:
+            return f"{type(self).__name__}(figure: {type(self.figure).__name__}, owner: {self.owner.data.name})"
+
+        return f"{type(self).__name__}(figure: {type(self.figure).__name__})"
 
     def __repr__(self) -> str:
         return str(self)

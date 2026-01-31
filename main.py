@@ -24,12 +24,12 @@ def main() -> None:
 
 def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return make_main_menu_loading_scene(screen_shape, window,
-                                        lambda: multibot_map(ups=UPS, board_size=50, initial_town_ratio=0.15))
+                                        lambda: multibot_map(ups=UPS, board_size=150, initial_town_ratio=0.15))
 
 
 def _make_multibot_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return make_multibot_loading_scene(screen_shape, window,
-                                       lambda: multibot_map(ups=UPS, board_size=40, initial_town_ratio=0.15))
+                                       lambda: multibot_map(ups=UPS, board_size=70, initial_town_ratio=0.1))
 
 
 if __name__ == '__main__':

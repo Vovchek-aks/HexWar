@@ -30,7 +30,7 @@ class Capture(proto.Move):
         if proto.Capturable not in to_cell.figure.FLAGS:
             return INVALID
 
-        if from_cell not in (neighbors := board.get_neighbors(to_cell, include_cell=False)):
+        if from_cell not in (neighbors := board.get_neighbors(to_cell, include_cell=False).with_flag(proto.OnLand)):
             return INVALID
 
         if neighbors.with_owner(to_cell.owner).with_flag(PreventCaptures):

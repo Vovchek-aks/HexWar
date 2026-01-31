@@ -24,7 +24,7 @@ class FiguresDrawer(proto.FiguresDrawer):
 
     def draw_figure(self, cell_coord: Vector2Int) -> None:
         figure = self._board[cell_coord].figure
-        if isinstance(figure, fig.Empty):
+        if isinstance(figure, fig.Land):
             return
 
         sprite = self._figures_sprites.get(type(figure))

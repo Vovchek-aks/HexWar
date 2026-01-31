@@ -56,6 +56,9 @@ class Assault(FiguresRelocation):
         if from_cell.owner is to_cell.owner:
             return INVALID
 
+        if to_cell.figure.is_on_land() != from_cell.figure.is_on_land():
+            return INVALID
+
         if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
             return INVALID
 
@@ -95,6 +98,12 @@ class Relocation(FiguresRelocation):
             return INVALID
 
         if not to_cell.is_empty:
+            return INVALID
+
+        if to_cell.figure.is_on_land() != from_cell.figure.is_on_land():
+            return INVALID
+
+        if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
             return INVALID
 
         if (movable := from_cell.figure.FLAGS.get(Movable)) is MISSING:

@@ -30,7 +30,10 @@ class PullingInitiation(proto.Move):
         if proto.Pullable not in pullable.FLAGS:
             return INVALID
 
-        if puller_cell not in board.get_neighbors(pullable_cell, include_cell=False):
+        if puller.is_on_land() != pullable.is_on_land():
+            return INVALID
+
+        if puller_cell not in board.get_neighbors(pullable_cell, include_cell=False).with_flag(proto.OnLand):
             return INVALID
 
         if not session.figures_budget.can_spend(puller, puller.get_cost_of(self)):
@@ -78,6 +81,7 @@ class PullingTermination(proto.Move):
 
         assert proto.CanPull in puller.FLAGS
         assert puller_cell.owner is pullable_cell.owner
+        assert puller.is_on_land() == pullable.is_on_land()
 
         if not session.figures_budget.can_spend(puller, puller.get_cost_of(self)):
             return INVALID

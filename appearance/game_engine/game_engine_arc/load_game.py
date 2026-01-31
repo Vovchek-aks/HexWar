@@ -29,7 +29,7 @@ from core.cells_changes_observer import CellsChangesObserver
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.player_moves_maker import player_moves_maker
-from core.protocols import GameSession, Player
+from core.protocols import GameSession, Player, OnLand
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -114,11 +114,11 @@ def load_game(screen_shape: Vector2Int,
 
     scene = GameScene(drawer, updater, InputState.make(window), make_main_menu_loading_scene)
     if is_multibot:
+        all_cells = len(session.board.cells.with_flag(OnLand).all())
         def reload_if_bot_won(bot: Player) -> None:
             bots_cells = len(session.cells.with_owner(bot).all())
-            all_cells = session.board.shape.x * session.board.shape.y
 
-            if bots_cells >= all_cells * .9:
+            if bots_cells >= all_cells * .8:
                 scene.on_pause_menu_open_requested()
 
         session.master.turn_has_passed.subscribe(reload_if_bot_won)

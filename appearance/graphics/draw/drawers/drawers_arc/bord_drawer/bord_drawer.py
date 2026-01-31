@@ -5,6 +5,7 @@ from attrs import define, field
 import arcade as arc
 
 from appearance.graphics.basic_colors import WHITE
+from appearance.graphics.colors import WATER
 from appearance import protocols as proto
 from color import Color
 from core.protocols import Board
@@ -103,7 +104,8 @@ class BordDrawer(proto.BordDrawer):
         self.append_edges(cell_coord)
 
     def _get_hex_color(self, cell_coord: Vector2Int) -> Color:
-        hex_color = self._board[cell_coord].owner.data.color
+        figure = self._board[cell_coord].figure
+        hex_color = self._board[cell_coord].owner.data.color if figure.is_on_land() else WATER
         state = random.getstate()
         random.seed(str(cell_coord.tuple))
         color = Color(
@@ -136,6 +138,14 @@ class BordDrawer(proto.BordDrawer):
         cell = self._board[cell_coord]
         neighbor_coord = cell_coord + neighbor_square_deltas()[neighbor]
         if neighbor_coord not in self._board:
+            return True
+
+        neighbor_cell = self._board[neighbor_coord]
+        is_neighbor_on_land = neighbor_cell.figure.is_on_land()
+        if not cell.figure.is_on_land():
+            return is_neighbor_on_land
+
+        if not is_neighbor_on_land:
             return True
 
         neighbor_cell = self._board[neighbor_coord]

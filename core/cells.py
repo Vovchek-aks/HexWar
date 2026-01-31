@@ -32,7 +32,7 @@ class Cells(proto.Cells):
         assert self == self.with_owner(player)
 
         return Cells({cell for cell in self._cells
-                      if (neighbors := board.get_neighbors(cell, include_cell=False)) !=
+                      if (neighbors := board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)) !=
                       neighbors.with_owner(player)})
 
     def __add__(self, other_cells: "Cells") -> "Cells":

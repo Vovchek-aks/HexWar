@@ -40,8 +40,40 @@ class Flags(proto.Flags):
 
 
 @frozen
+class Empty(proto.Empty):
+    EXCLUDES = {proto.Movable,
+                proto.Pullable,
+                proto.CanPull,
+                proto.PreventCaptures,
+                proto.CanAttack,
+                proto.Creatable,
+                proto.CanCapture}
+
+
+@frozen
+class OnLand(proto.OnLand):
+    EXCLUDES = {proto.AtWater}
+
+
+@frozen
+class AtWater(proto.AtWater):
+    EXCLUDES = {proto.OnLand}
+
+
+@frozen
 class Static(proto.Static):
     EXCLUDES = {proto.Movable}
+
+
+@frozen
+class DontHaveOwner(proto.DontHaveOwner):
+    EXCLUDES = {proto.Movable,
+                proto.Pullable,
+                proto.CanPull,
+                proto.PreventCaptures,
+                proto.CanAttack,
+                proto.Creatable,
+                proto.CanCapture}
 
 
 @frozen

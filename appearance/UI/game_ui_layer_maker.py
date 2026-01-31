@@ -175,7 +175,7 @@ class GameUiLayerMaker:
         layout.append(buttons)
         layout.append(hint_box)
 
-        self._bind_layer_to_cell_with_figure_selection(layout.layer, fig.Empty)
+        self._bind_layer_to_cell_with_figure_selection(layout.layer, fig.Land)
 
         return layout.layer
 

@@ -22,6 +22,9 @@ class Creation(proto.Move):
         if not to_cell.is_empty:
             return INVALID
 
+        if to_cell.figure.is_on_land() != self.figure_type.is_on_land():
+            return INVALID
+
         if (creatable := self.figure_type.FLAGS.get(Creatable)) is MISSING:
             return INVALID
 

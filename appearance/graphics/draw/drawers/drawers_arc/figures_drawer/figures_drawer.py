@@ -50,7 +50,7 @@ class FiguresDrawer(proto.FiguresDrawer):
         assert cell_coord not in self._figures
 
         figure = self._board[cell_coord].figure
-        if isinstance(figure, fig.Empty):
+        if isinstance(figure, fig.Land | fig.Water):
             return
 
         sprite = self._make_figure_sprite(cell_coord)
@@ -59,7 +59,7 @@ class FiguresDrawer(proto.FiguresDrawer):
 
     def _make_figure_sprite(self, cell_coord: Vector2Int) -> arc.Sprite:
         figure = self._board[cell_coord].figure
-        assert not isinstance(figure, fig.Empty)
+        assert not isinstance(figure, fig.Land)
 
         sprite = self._figures_sprites.get(type(figure))
         world_position = get_world_position(cell_coord)

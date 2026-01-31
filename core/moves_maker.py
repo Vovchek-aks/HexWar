@@ -4,7 +4,7 @@ import core.protocols as proto
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.pulling import PullingTermination, PullingInitiation
-from core.moves.relocations import Relocation, Assault, FiguresRelocation
+from core.moves.relocations import Relocation, Assault
 from core.moves.creation import Creation
 from core.moves.conversion import Conversion
 from exceptions import NotSupportedMove
@@ -38,9 +38,6 @@ class MovesMaker(proto.MovesMaker):
 
         match move.move:  # move move
             case Assault(to_coord=to_coord, from_coord=from_coord):
-                relocation: FiguresRelocation = move.move
-                pullable_cell = relocation.pullable_cell(self._session)
-
                 self._session.make(move)
                 self._move_was_made.invoke(move)
 
@@ -49,9 +46,6 @@ class MovesMaker(proto.MovesMaker):
                 self._board_move_was_made.invoke(move)
                 # print(move.move, self._session.board[from_coord], self._session.board[to_coord])
             case Relocation(to_coord=to_coord, from_coord=from_coord):
-                relocation: FiguresRelocation = move.move
-                pullable_cell = relocation.pullable_cell(self._session)
-
                 self._session.make(move)
                 self._move_was_made.invoke(move)
                     

@@ -52,6 +52,6 @@ class MovableBuilder:
         def can_relocate(from_coord: Vector2Int, to_coord: Vector2Int, board: Board) -> bool:
             from_cell = board[from_coord]
             to_cell = board[to_coord]
-            return to_cell in board.get_neighbors(from_cell, include_cell=False)
+            return to_cell in board.get_neighbors(from_cell, include_cell=False).with_flag(proto.OnLand)
 
         return self.set_can_relocate(can_relocate)

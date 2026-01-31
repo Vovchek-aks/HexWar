@@ -4,7 +4,7 @@ from attrs import define, field
 
 from core import protocols as proto
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
-    PreventCaptures, CanPull
+    PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner
 from core.figures.movable_flag import MovableBuilder
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
 from core.moves.attack import Attack
@@ -15,18 +15,29 @@ from core.resources import Dollars
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 from core.protocols import Figure
+from statuses import MISSING
 
 
 @define(hash=True, eq=True)
 class _Figure(Figure, metaclass=ABCMeta):
     _id: int = field(init=False)
 
+    @classmethod
+    def is_on_land(cls) -> bool:
+        if OnLand in cls.FLAGS:
+            return True
+
+        assert AtWater in cls.FLAGS
+        return False
+
     def __attrs_post_init__(self) -> None:
         self._id = id(self)
 
 
-class Empty(_Figure):
-    FLAGS = Flags.new(Static(),
+class Land(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Empty(),
+                      Static(),
                       Capturable())
     MOVES_BUDGET = 0
 
@@ -39,8 +50,25 @@ class Empty(_Figure):
         return 0
 
 
+class Water(_Figure):
+    FLAGS = Flags.new(AtWater(),
+                      Empty(),
+                      DontHaveOwner(),
+                      Static())
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
 class Settlement(_Figure):
-    FLAGS = Flags.new(Static())
+    FLAGS = Flags.new(OnLand(),
+                      Static())
     MOVES_BUDGET = 0
 
     @classmethod
@@ -53,7 +81,8 @@ class Settlement(_Figure):
 
 
 class Town(_Figure):
-    FLAGS = Flags.new(Static(),
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
                       Creatable(Dollars(1_000_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
@@ -71,7 +100,8 @@ class Town(_Figure):
 
 
 class Capital(_Figure):
-    FLAGS = Flags.new(Static())
+    FLAGS = Flags.new(OnLand(),
+                      Static())
     MOVES_BUDGET = 0
 
     @classmethod
@@ -84,7 +114,8 @@ class Capital(_Figure):
 
 
 class Bunker(_Figure):
-    FLAGS = Flags.new(Static(),
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
                       Creatable(Dollars(1_000_000)))
     MOVES_BUDGET = 0
 
@@ -98,7 +129,8 @@ class Bunker(_Figure):
 
 
 class Infantry(_Figure):
-    FLAGS = Flags.new((MovableBuilder()
+    FLAGS = Flags.new(OnLand(),
+                      (MovableBuilder()
                        .can_move_to_neighbor()
                        .constant_strength(3)
                        .build()),
@@ -118,6 +150,7 @@ class Infantry(_Figure):
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         cell = board[coord]
         has_bunker = bool(board.get_neighbors(cell, include_cell=False)
+                          .with_flag(proto.OnLand)
                           .with_owner(cell.owner)
                           .with_figure(Bunker))
         if has_bunker:
@@ -143,7 +176,8 @@ class Infantry(_Figure):
 
 
 class Motorization(_Figure):
-    FLAGS = Flags.new((MovableBuilder()
+    FLAGS = Flags.new(OnLand(),
+                      (MovableBuilder()
                        .can_move_to_neighbor()
                        .constant_strength(3)
                        .build()),
@@ -174,7 +208,8 @@ class Motorization(_Figure):
 
 
 class Tank(_Figure):
-    FLAGS = Flags.new((MovableBuilder()
+    FLAGS = Flags.new(OnLand(),
+                      (MovableBuilder()
                        .can_move_to_neighbor()
                        .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                  Tank.get_projected_strength(coord, board))
@@ -190,7 +225,7 @@ class Tank(_Figure):
     SELF_STRENGTH = 3
     _SELF_HARDNESS = 2
     _PER_INFANTRY_STRENGTH_RATIO = .5
-    _PER_INFANTRY_HARDNESS_RATIO = .3
+    _PER_INFANTRY_HARDNESS_RATIO = .5
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -219,13 +254,15 @@ class Tank(_Figure):
         return int(per_infantry_ratio *
                    sum(map(lambda infantry_cell: infantry_cell.strength(board),
                            board.get_neighbors(cell, include_cell=False)
+                           .with_flag(proto.OnLand)
                            .with_owner(cell.owner)
                            .with_figure(Infantry | Motorization)
                            .all())))
 
 
 class Artillery(_Figure):
-    FLAGS = Flags.new(MovableBuilder()
+    FLAGS = Flags.new(OnLand(),
+                      MovableBuilder()
                       .constant_strength(7)
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
@@ -261,7 +298,8 @@ class Artillery(_Figure):
 
 def get_figures() -> list[type[_Figure]]:
     return [
-        Empty,
+        Land,
+        Water,
         Settlement,
         Town,
         Capital,

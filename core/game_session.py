@@ -101,19 +101,19 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
                              lambda coord: Cell((players[0] if coord.x - coord.y <= 0 else players[1])
                                                 if coord.x + coord.y <= diagonal * .7 else
                                                 (players[2] if coord.x - coord.y >= 0 else players[3]),
-                                                fig.Empty()))
+                                                _get_empty_figure(coord, board_size)))
     random.shuffle(players)
 
     figures = Figures(board)
     pulling_connections = PullingConnections.make(figures)
 
     cells = CellsCache(board)
-    per_player_towns = round(board_size ** 2 * initial_town_ratio / len(players))
+    per_player_towns = round(len(board.cells.with_figure(fig.Land).all()) * initial_town_ratio / len(players))
     for player in players:
         if not (player_cells := board.cells.with_owner(player)):
             continue
 
-        for cell in random.sample(list(player_cells.all()), per_player_towns):
+        for cell in random.sample(list(player_cells.with_figure(fig.Land).all()), per_player_towns):
             coord = board.coordinates_of(cell)
             figures.add(fig.Town, coord)
 
@@ -127,3 +127,15 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
     players[3].resources.add(Dollars(5_000_000))
 
     return GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)
+
+
+def _get_empty_figure(coord: Vector2Int, board_size: int) -> proto.Figure:
+    half_size = board_size // 2
+    center = Vector2Int.ones() * half_size
+
+    if (center - coord).length < 10:
+        return fig.Water()
+
+    return (fig.Land()
+            if (center - coord).length < (half_size - 10) else
+            fig.Water())

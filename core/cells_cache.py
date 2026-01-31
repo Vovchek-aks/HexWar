@@ -35,6 +35,9 @@ class CellsCache(proto.CellsCache):
         return Cells(result)
 
     def update(self, cell: proto.Cell) -> None:
+        if not cell.figure.is_on_land():
+            return
+
         self._update_front(cell)
 
         figure = type(cell.figure)
@@ -62,9 +65,11 @@ class CellsCache(proto.CellsCache):
             self._figure_of[cell] = figure
 
     def _update_front(self, changed_cell: proto.Cell) -> None:
-        for cell in self._board.get_neighbors(changed_cell, include_cell=True):
+        for cell in self._board.get_neighbors(changed_cell, include_cell=True).with_flag(proto.OnLand):
             at_front = any(neighbor.owner is not cell.owner
-                           for neighbor in self._board.get_neighbors(cell, include_cell=False))
+                           for neighbor in self._board
+                           .get_neighbors(cell, include_cell=False)
+                           .with_flag(proto.OnLand))
             if at_front:
                 self._front.add(cell)
             else:

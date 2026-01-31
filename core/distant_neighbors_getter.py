@@ -15,7 +15,7 @@ class DistantNeighborsGetter:
         for _ in range(distance):
             additional_cells = Cells.empty()
             for cell in last_layer:
-                additional_cells += self.board.get_neighbors(cell, include_cell=False)
+                additional_cells += self.board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
             additional_cells -= cells
             last_layer = additional_cells
             cells += additional_cells

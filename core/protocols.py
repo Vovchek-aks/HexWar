@@ -184,7 +184,7 @@ class Board(ABC):
         ...
 
     @abstractmethod
-    def get_neighbors(self, cell: "Cell", *, include_cell: bool) -> "Cells":
+    def get_neighbors(self, cell: "Cell", *, include_cell: bool = False) -> "Cells":
         ...
 
     @abstractmethod
@@ -258,7 +258,7 @@ class GameSession(ABC):
 class Cell(ABC):
     @property
     @abstractmethod
-    def owner(self) -> "Player":
+    def owner(self) -> "Player | Status":
         ...
 
     @property
@@ -366,6 +366,18 @@ class Flags(ABC):
         ...
 
 
+class Empty(Flag, metaclass=ABCMeta):
+    ...
+
+
+class OnLand(Flag, metaclass=ABCMeta):
+    ...
+
+
+class AtWater(Flag, metaclass=ABCMeta):
+    ...
+
+
 class CanCapture(Flag, metaclass=ABCMeta):
     ...
 
@@ -386,6 +398,10 @@ class CanAttack(Flag, metaclass=ABCMeta):
 
 
 class Static(Flag, metaclass=ABCMeta):
+    ...
+
+
+class DontHaveOwner(Flag, metaclass=ABCMeta):
     ...
 
 
@@ -423,6 +439,11 @@ class UpdatableOnTurnStart(Flag, metaclass=ABCMeta):
 class Figure(ABC):
     FLAGS: ClassVar[Flags]
     MOVES_BUDGET: ClassVar[int]
+
+    @classmethod
+    @abstractmethod
+    def is_on_land(cls) -> bool:
+        ...
 
     @classmethod
     @abstractmethod

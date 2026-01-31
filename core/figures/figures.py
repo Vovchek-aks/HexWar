@@ -1,6 +1,7 @@
 from attrs import frozen, field
 
 import core.protocols as proto
+from core.protocols import Empty
 from mathematics.vector import Vector2Int
 from observer import Event, OnEventSubscriber
 import core.figures.figure as fig
@@ -38,7 +39,7 @@ class Figures(proto.Figures):
         return self._coord_of[figure]
 
     def add(self, figure_type: type[fig.Figure], coord: Vector2Int) -> None:
-        assert not issubclass(figure_type, fig.Empty)
+        assert Empty not in figure_type.FLAGS
 
         cell = self._board[coord]
         assert cell.is_empty
@@ -80,7 +81,7 @@ class Figures(proto.Figures):
 
     def convert(self, figure: fig.Figure, target_type: type[fig.Figure]) -> None:
         assert figure in self._coord_of
-        assert not issubclass(target_type, fig.Empty)
+        assert Empty not in target_type.FLAGS
 
         coord = self._coord_of[figure]
         cell = self._board[coord]

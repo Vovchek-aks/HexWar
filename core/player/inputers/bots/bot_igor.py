@@ -106,7 +106,7 @@ class BotIgor(proto.Bot):
 
             figure_to_create = (fig.Town
                                 if cells_count >= self._cells_count_at_last_turn * .8 and
-                                   town_count < cells_count * .2 else
+                                   town_count < cells_count * .15 else
                                 (fig.Tank if random.random() > .85 else fig.Infantry))
 
             if figure_to_create is not MISSING:
@@ -153,7 +153,7 @@ class BotIgor(proto.Bot):
     def _get_cell_for(self, figure: type[fig.Figure]) -> proto.Cell | Status:
         cells = self._session.cells
         own_cells = cells.with_owner(self._player)
-        empties = own_cells & cells.with_figure(fig.Empty)
+        empties = own_cells & cells.with_figure(fig.Land)
         if not empties:
             return MISSING
 
@@ -164,7 +164,7 @@ class BotIgor(proto.Bot):
         match figure:
             case fig.Tank:
                 front = Cells({cell for cell in front
-                               if self._board.get_neighbors(cell, include_cell=False)
+                               if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
                               .with_owner(self._player).with_figure(fig.Infantry)})
                 if not front:
                     return MISSING
@@ -173,7 +173,7 @@ class BotIgor(proto.Bot):
                 return self._get_cell_for_armed_figure(front, production)
             case fig.Town:
                 candidates = back or empties
-                return random.choice(list(candidates.all())[:10])
+                return random.choice(list(candidates.all()))
             case _:
                 return random.choice(list(empties.all()))
 
@@ -190,20 +190,20 @@ class BotIgor(proto.Bot):
         return self._min_sqrt_distance_cell(front, production)
 
     def _get_target_enemy(self, cell: proto.Cell) -> proto.Cell | Status:
-        neighbors = self._board.get_neighbors(cell, include_cell=False)
+        neighbors = self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
         if not neighbors:
             return MISSING
 
         targets = neighbors - neighbors.with_owner(self._player)
         if isinstance(cell.figure, fig.Tank):
             targets = Cells({cell for cell in targets
-                             if self._board.get_neighbors(cell, include_cell=False)
+                             if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
                             .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
 
         if not targets:
             return MISSING
 
-        empty_targets = targets.with_figure(fig.Empty)
+        empty_targets = targets.with_figure(fig.Land)
         not_empty_targets = targets - empty_targets
         targets = not_empty_targets or empty_targets
 
@@ -224,8 +224,9 @@ class BotIgor(proto.Bot):
 
         neighbors = (self._board
                      .get_neighbors(cell, include_cell=False)
+                     .with_flag(proto.OnLand)
                      .with_owner(self._player)
-                     .with_figure(fig.Empty))
+                     .with_figure(fig.Land))
         if not neighbors:
             return MISSING
 
@@ -250,15 +251,16 @@ class BotIgor(proto.Bot):
         front = all_armed & self._session.cells.at_front
 
         front = Cells({cell for cell in front
-                       if self._board.get_neighbors(cell, include_cell=False)
+                       if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
                       .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
         if not front:
             return MISSING
 
         neighbors = (self._board
                      .get_neighbors(cell, include_cell=False)
+                     .with_flag(proto.OnLand)
                      .with_owner(self._player)
-                     .with_figure(fig.Empty))
+                     .with_figure(fig.Land))
         if not neighbors:
             return MISSING
 
@@ -351,9 +353,9 @@ class BotIgor(proto.Bot):
         yield
 
         for tank in tanks.at_front(self._board):
-            neighbors = self._board.get_neighbors(tank, include_cell=False)
+            neighbors = self._board.get_neighbors(tank, include_cell=False).with_flag(proto.OnLand)
             neighbors -= neighbors.with_owner(self._player)
-            neighbors -= neighbors.with_figure(fig.Empty)
+            neighbors -= neighbors.with_figure(fig.Land)
             if not neighbors:
                 yield
                 continue
@@ -372,9 +374,11 @@ class BotIgor(proto.Bot):
         yield
 
         for infantry in infantries & self._session.cells.at_front:
-            neighbors = self._board.get_neighbors(infantry, include_cell=False).with_flag(Capturable)
+            neighbors = (self._board.get_neighbors(infantry, include_cell=False)
+                         .with_flag(Capturable)
+                         .with_flag(proto.OnLand))
             neighbors -= neighbors.with_owner(self._player)
-            neighbors -= neighbors.with_figure(fig.Empty)
+            neighbors -= neighbors.with_figure(fig.Land)
             if not neighbors:
                 yield
                 continue
@@ -415,6 +419,7 @@ class BotIgor(proto.Bot):
         return len(self._board.cells.with_owner(self._player).with_figure(figure).all())
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:
+        # return list(candidates.all())[0]
         coord_of = self._board.coordinates_of
         return min(candidates, key=lambda front_cell: sum((coord_of(front_cell) -
                                                            coord_of(production_cell)).length ** .25
