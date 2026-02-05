@@ -30,6 +30,7 @@ from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.player_moves_maker import player_moves_maker
 from core.protocols import GameSession, Player, OnLand
+from core.resources import Dollars
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -118,7 +119,7 @@ def load_game(screen_shape: Vector2Int,
         def reload_if_bot_won(bot: Player) -> None:
             bots_cells = len(session.cells.with_owner(bot).all())
 
-            if bots_cells >= all_cells * .8:
+            if bots_cells >= all_cells * .85 or bot.resources.get(Dollars).amount > 500_000_000:
                 scene.on_pause_menu_open_requested()
 
         session.master.turn_has_passed.subscribe(reload_if_bot_won)

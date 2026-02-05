@@ -132,10 +132,25 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
 def _get_empty_figure(coord: Vector2Int, board_size: int) -> proto.Figure:
     half_size = board_size // 2
     center = Vector2Int.ones() * half_size
+    x, y = coord.tuple
+    diagonal = board_size * 2 ** .5
 
-    if (center - coord).length < 10:
+    if (center - coord).length > (half_size - 10):
         return fig.Water()
 
-    return (fig.Land()
-            if (center - coord).length < (half_size - 10) else
-            fig.Water())
+    if (center - coord).length < 5:
+        return fig.Water()
+
+    if abs(x - y) * 2 <= 4:
+        return fig.Land()
+
+    if abs(coord.x + coord.y - diagonal * .7) <= 4:
+        return fig.Land()
+
+    if (center - coord).length < 13:
+        return fig.Land()
+
+    if (center - coord).length < 20:
+        return fig.Water()
+
+    return fig.Land()
