@@ -89,18 +89,28 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
 
     bots_per_frame_thinking_time = .95 / ups
     players = [
-        Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
-        Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
-        Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
-        Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[0], "Red"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[1], "Blue"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[2], "Green"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[3], "Yellow"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[4], "Abobus1"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[5], "Abobus2"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[6], "Abobus3"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
+        Player(PlayerData(colors.PLAYERS[7], "Abobus4"), BotPlayerInputer(BotIgor(), bots_per_frame_thinking_time)),
     ]
     random.shuffle(players)
 
     diagonal = board_size * 2 ** .5
+    half_size = board_size // 2
+    center = Vector2Int.ones() * half_size
     board = Board.from_maker(Vector2Int.ones() * board_size,
-                             lambda coord: Cell((players[0] if coord.x - coord.y <= 0 else players[1])
-                                                if coord.x + coord.y <= diagonal * .7 else
-                                                (players[2] if coord.x - coord.y >= 0 else players[3]),
+                             lambda coord: Cell(((players[0] if coord.x - coord.y <= 0 else players[1])
+                                                 if coord.x + coord.y <= diagonal * .7 else
+                                                 (players[2] if coord.x - coord.y >= 0 else players[3]))
+                                                if (center - coord).length < 15 else
+                                                ((players[4] if coord.x - coord.y <= 0 else players[5])
+                                                 if coord.x + coord.y <= diagonal * .7 else
+                                                 (players[6] if coord.x - coord.y >= 0 else players[7])),
                                                 _get_empty_figure(coord, board_size)))
     random.shuffle(players)
 
