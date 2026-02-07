@@ -115,7 +115,7 @@ class Capital(_Figure):
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable(Dollars(250_000)))
+                      Creatable(Dollars(150_000)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -140,7 +140,7 @@ class Infantry(_Figure):
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(25_000))
                        .build()))
-    MOVES_BUDGET = 3
+    MOVES_BUDGET = 4
 
     SELF_HARDNESS = 2
     _NEAR_BUNKER_HARDNESS = 6
@@ -163,7 +163,7 @@ class Infantry(_Figure):
             case Relocation():
                 return 1
             case Assault():
-                return 3
+                return 2
             case Capture():
                 return 2
             case PullingInitiation():
@@ -183,9 +183,9 @@ class Motorization(_Figure):
                       CanPull(),
                       PreventCaptures(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(50_000))
+                       .try_take_else_die(Dollars(75_000))
                        .build()))
-    MOVES_BUDGET = 60
+    MOVES_BUDGET = 100
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -195,9 +195,9 @@ class Motorization(_Figure):
     def get_cost_of(cls, move: proto.Move) -> int:
         match move:
             case Relocation():
-                return 10
+                return 5
             case Assault():
-                return 15
+                return 20
             case PullingInitiation():
                 return 0
             case PullingTermination():
@@ -219,7 +219,7 @@ class Tank(_Figure):
                        .try_take_else_die(Dollars(100_000))
                        .build()),
                       CanAttack(1))
-    MOVES_BUDGET = 60
+    MOVES_BUDGET = 100
 
     SELF_STRENGTH = 3
     _SELF_HARDNESS = 2
@@ -236,7 +236,7 @@ class Tank(_Figure):
             case Relocation():
                 return 15
             case Assault():
-                return 20
+                return 25
             case Attack():
                 return 20
             case _:
@@ -262,7 +262,7 @@ class Tank(_Figure):
 class Artillery(_Figure):
     FLAGS = Flags.new(OnLand(),
                       MovableBuilder()
-                      .constant_strength(7)
+                      .constant_strength(1_000_000)
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
                       Pullable(),
@@ -272,7 +272,7 @@ class Artillery(_Figure):
                        .try_take_else_die(Dollars(150_000))
                        .build()),
                       CanAttack(3))
-    MOVES_BUDGET = 3
+    MOVES_BUDGET = 7
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -286,7 +286,7 @@ class Artillery(_Figure):
             case Assault():
                 return cls.MOVES_BUDGET + 1
             case Attack():
-                return 2
+                return 4
             case PullingInitiation():
                 return 0
             case PullingTermination():

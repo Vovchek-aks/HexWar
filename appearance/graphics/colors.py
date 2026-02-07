@@ -3,6 +3,7 @@ from color import Color
 BACKGROUND = Color(111, 139, 158)
 # WATER = Color(26, 108, 152)
 WATER = Color.from_hex_string("#4c7d9e")
+SHORE = Color.from_hex_string("#5ACCCE")
 
 PLAYERS = [
     Color(173, 82, 64),
@@ -10,7 +11,6 @@ PLAYERS = [
     Color(59, 134, 93),
     Color(215, 151, 60),
     Color.from_hex_string("#61937D"),
-    # Color.from_hex_string("#5ACCCE"),
     Color.from_hex_string("#AAC25A"),
     Color.from_hex_string("#CDBD50"),
     Color.from_hex_string("#DC7438"),

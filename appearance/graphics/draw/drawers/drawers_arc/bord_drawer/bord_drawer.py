@@ -5,10 +5,11 @@ from attrs import define, field
 import arcade as arc
 
 from appearance.graphics.basic_colors import WHITE
-from appearance.graphics.colors import WATER
+from appearance.graphics.colors import WATER, SHORE
 from appearance import protocols as proto
 from color import Color
-from core.protocols import Board
+from core.distant_neighbors_getter import DistantNeighborsGetter
+from core.protocols import Board, OnLand
 from mathematics.hex_geometry import Neighbor, neighbors_vertexes, NEIGHBORS, neighbor_square_deltas, \
     OPPOSITE_NEIGHBOR, get_world_position
 from mathematics.vector import Vector2Int
@@ -105,7 +106,9 @@ class BordDrawer(proto.BordDrawer):
 
     def _get_hex_color(self, cell_coord: Vector2Int) -> Color:
         figure = self._board[cell_coord].figure
-        hex_color = self._board[cell_coord].owner.data.color if figure.is_on_land() else WATER
+        hex_color = (self._board[cell_coord].owner.data.color
+                     if figure.is_on_land() else
+                     self._get_water_color(cell_coord))
         state = random.getstate()
         random.seed(str(cell_coord.tuple))
         color = Color(
@@ -115,6 +118,15 @@ class BordDrawer(proto.BordDrawer):
         )
         random.setstate(state)
         return color
+
+    def _get_water_color(self, cell_coord: Vector2Int) -> Color:
+        water = self._board[cell_coord]
+        neighbors = DistantNeighborsGetter(water, self._board).get_all_not_farther_than(2, include_cell=True)
+
+        return Color.weighted_average(*((SHORE, .5)
+                                        if cell.figure.is_on_land() else
+                                        (WATER, 1)
+                                        for cell in neighbors))
 
     @staticmethod
     def _get_variated_channel(channel: int) -> int:

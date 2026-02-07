@@ -96,6 +96,14 @@ class BotIgor(proto.Bot):
             has_developed = town_count > cells_count * .08
             is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
 
+            bunker_ratio = .1 if has_developed and not is_rich else 0.75
+            if bunkers_count < empty_front_length * bunker_ratio:
+                self._try_create(fig.Bunker)
+                # print("_try_create(fig.Bunker)")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
             if has_developed:
                 yield from self._try_convert_infantry_to_motorization()
                 # print("_try_convert_infantry_to_motorization")
@@ -111,7 +119,7 @@ class BotIgor(proto.Bot):
 
             initial_army_size = max(5., len((cells.with_owner(self._player) &
                                              cells.at_front).all()) *
-                                    (.3 if has_developed else .1))
+                                    (.1 if has_developed else .0))
 
             if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
                 self._try_create(fig.Tank)
@@ -127,20 +135,13 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            bunker_ratio = .1 if has_developed and not is_rich else 0.5
-            if bunkers_count < empty_front_length * bunker_ratio:
-                self._try_create(fig.Bunker)
-                # print("_try_create(fig.Bunker)")
+            if has_developed:
+                yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .3) -
+                                                                 artillery_count)
+                # print("_try_spawn_and_connect_artillery")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
-
-            yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .15) -
-                                                             artillery_count)
-            # print("_try_spawn_and_connect_artillery")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
 
             figure_to_create = (fig.Town
                                 if town_count < cells_count * .15 else
@@ -216,8 +217,10 @@ class BotIgor(proto.Bot):
                 if not front:
                     return MISSING
                 return self._get_cell_for_armed_figure(front, production)
-            case fig.Infantry | fig.Bunker:
+            case fig.Infantry:
                 return self._get_cell_for_armed_figure(front, production)
+            case fig.Bunker:
+                return self._get_cell_for_bunker(front, production)
             case fig.Town:
                 candidates = back or empties
                 return random.choice(list(candidates.all()))
@@ -225,6 +228,23 @@ class BotIgor(proto.Bot):
                 return random.choice(list(empties.all()))
 
         assert False
+
+    def _get_cell_for_bunker(self,
+                             front: proto.Cells,
+                             production: proto.Cells) -> proto.Cell | Status:
+        candidates = set[proto.Cell]()
+        for candidate in front:
+            nearby_bunkers = (self._session.board
+                              .get_neighbors(candidate)
+                              .with_owner(self._player)
+                              .with_figure(fig.Bunker))
+            if not nearby_bunkers:
+                candidates.add(candidate)
+
+        cell = self._get_cell_for_armed_figure(Cells(candidates), production)
+        if cell is not MISSING:
+            return cell
+        return self._get_cell_for_armed_figure(front, production)
 
     def _get_cell_for_armed_figure(self,
                                    front: proto.Cells,
@@ -245,12 +265,26 @@ class BotIgor(proto.Bot):
         for cell in front:
             neighbors = self._session.board.get_neighbors(cell).with_flag(proto.OnLand)
             enemies = neighbors - neighbors.with_owner(self._player)
-            armed_enemies = enemies - enemies.with_figure(fig.Land)
+            armed_enemies = enemies - enemies.with_figure(fig.Land | fig.Bunker)
             if armed_enemies:
                 unsafe.add(cell)
         return Cells(unsafe)
 
+    def _get_front_near_armed(self, front: Cells) -> Cells:
+        near_armed = set[proto.Cell]()
+        for cell in front:
+            armed = (self._session.board
+                     .get_neighbors(cell)
+                     .with_owner(self._player)
+                     .with_figure(fig.Infantry | fig.Motorization | fig.Tank | fig.Artillery | fig.Bunker))
+            if armed:
+                near_armed.add(cell)
+        return Cells(near_armed)
+
     def _try_spawn_and_connect_artillery(self, amount: int) -> Iterator[None]:
+        if amount <= 0:
+            return
+
         cells = self._session.cells
         infantries = (cells.with_owner(self._player) &
                       cells.with_figure(fig.Infantry))
