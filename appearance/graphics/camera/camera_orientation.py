@@ -10,7 +10,7 @@ from observer import Event, OnEventSubscriber
 class CameraOrientation(proto.CameraOrientation):
     @classmethod
     def starter(cls) -> "CameraOrientation":
-        return cls(Vector2(52.5, -30.5), Angle(-60), 11.5)
+        return cls(Vector2(52.5, -30.5), Angle(-60), 9.5)
         # return cls(Vector2(715, 400), Angle(60), 4.6)
         # return cls(Vector2(715, 400), Angle(60), 4.6)
 
