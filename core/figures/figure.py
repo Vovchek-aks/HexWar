@@ -15,7 +15,6 @@ from core.resources import Dollars
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 from core.protocols import Figure
-from statuses import MISSING
 
 
 @define(hash=True, eq=True)
@@ -116,7 +115,7 @@ class Capital(_Figure):
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable(Dollars(1_000_000)))
+                      Creatable(Dollars(250_000)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -135,11 +134,11 @@ class Infantry(_Figure):
                        .constant_strength(3)
                        .build()),
                       CanPull(),
-                      Creatable(Dollars(150_000)),
+                      Creatable(Dollars(100_000)),
                       CanCapture(),
                       PreventCaptures(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(50_000))
+                       .try_take_else_die(Dollars(25_000))
                        .build()))
     MOVES_BUDGET = 3
 
@@ -184,7 +183,7 @@ class Motorization(_Figure):
                       CanPull(),
                       PreventCaptures(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(100_000))
+                       .try_take_else_die(Dollars(50_000))
                        .build()))
     MOVES_BUDGET = 60
 
@@ -214,10 +213,10 @@ class Tank(_Figure):
                        .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                  Tank.get_projected_strength(coord, board))
                        .build()),
-                      Creatable(Dollars(700_000)),
+                      Creatable(Dollars(500_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(200_000))
+                       .try_take_else_die(Dollars(100_000))
                        .build()),
                       CanAttack(1))
     MOVES_BUDGET = 60
@@ -270,9 +269,9 @@ class Artillery(_Figure):
                       Creatable(Dollars(250_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(250_000))
+                       .try_take_else_die(Dollars(150_000))
                        .build()),
-                      CanAttack(2))
+                      CanAttack(3))
     MOVES_BUDGET = 3
 
     @classmethod

@@ -1,7 +1,6 @@
 from attrs import frozen, field
 
 import core.protocols as proto
-from core.figures.figures_flags import CanPull, Pullable
 from core.protocols import Figure
 from observer import Event, OnEventSubscriber
 
@@ -30,17 +29,19 @@ class PullingConnections(proto.PullingConnections):
         return self._pair_removed.subscriber
 
     def register(self, puller: Figure, pullable: Figure) -> None:
-        assert CanPull in puller.FLAGS
-        assert Pullable in pullable.FLAGS
+        assert proto.CanPull in puller.FLAGS
+        assert proto.Pullable in pullable.FLAGS
         assert (puller, pullable) not in self
+        assert not self.is_puller(puller)
+        assert not self.is_pullable(pullable)
 
         self._pullable_of[puller] = pullable
         self._puller_of[pullable] = puller
         self._pair_added.invoke(puller, pullable)
 
     def unregister(self, puller: Figure, pullable: Figure) -> None:
-        assert CanPull in puller.FLAGS
-        assert Pullable in pullable.FLAGS
+        assert proto.CanPull in puller.FLAGS
+        assert proto.Pullable in pullable.FLAGS
         assert (puller, pullable) in self
 
         self._pullable_of.pop(puller)
@@ -48,11 +49,11 @@ class PullingConnections(proto.PullingConnections):
         self._pair_removed.invoke(puller, pullable)
 
     def is_puller(self, figure: Figure) -> bool:
-        assert CanPull in figure.FLAGS
+        assert proto.CanPull in figure.FLAGS
         return figure in self._pullable_of
 
     def is_pullable(self, figure: Figure) -> bool:
-        assert Pullable in figure.FLAGS
+        assert proto.Pullable in figure.FLAGS
         return figure in self._puller_of
 
     def get_pullable(self, puller: Figure) -> Figure:
@@ -64,24 +65,26 @@ class PullingConnections(proto.PullingConnections):
         return self._puller_of[pullable]
 
     def _on_figure_deleted(self, figure: Figure) -> None:
-        if CanPull in figure.FLAGS and self.is_puller(figure):
-            self.unregister(figure, self._pullable_of[figure])
-        if Pullable in figure.FLAGS and self.is_pullable(figure):
-            self.unregister(self._puller_of[figure], figure)
+        if proto.CanPull in figure.FLAGS and self.is_puller(figure):
+            self.unregister(figure, self.get_pullable(figure))
+            assert not self.is_puller(figure)
+        if proto.Pullable in figure.FLAGS and self.is_pullable(figure):
+            self.unregister(self.get_puller(figure), figure)
+            assert not self.is_pullable(figure)
 
     def _on_figure_was_converted(self, figure: Figure, target: Figure) -> None:
-        if CanPull not in figure.FLAGS or not self.is_puller(figure):
+        if proto.CanPull not in figure.FLAGS or not self.is_puller(figure):
             return
 
-        pullable = self._pullable_of[figure]
+        pullable = self.get_pullable(figure)
         self.unregister(figure, pullable)
-        if CanPull in target.FLAGS:
+        if proto.CanPull in target.FLAGS:
             self.register(target, pullable)
 
     def __contains__(self, item: tuple[Figure, Figure]) -> bool:
         puller, pullable = item
-        has_puller = puller in self._pullable_of
-        has_pullable = pullable in self._puller_of
+        has_puller = self.is_puller(puller)
+        has_pullable = self.is_pullable(pullable)
         if not (has_puller and has_pullable):
             return False
 

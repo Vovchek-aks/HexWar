@@ -24,13 +24,19 @@ class PullingInitiation(proto.Move):
         if puller_cell.owner is not session.master.current_player:
             return INVALID
 
+        if puller.is_on_land() != pullable.is_on_land():
+            return INVALID
+
         if proto.CanPull not in puller.FLAGS:
+            return INVALID
+
+        if session.pulling_connections.is_puller(puller):
             return INVALID
 
         if proto.Pullable not in pullable.FLAGS:
             return INVALID
 
-        if puller.is_on_land() != pullable.is_on_land():
+        if session.pulling_connections.is_pullable(pullable):
             return INVALID
 
         if puller_cell not in board.get_neighbors(pullable_cell, include_cell=False).with_flag(proto.OnLand):

@@ -65,7 +65,7 @@
       "figures_menu": {
         "ARTILLERY_ATTACK": [
           "Destroys any piece",
-          "within 2 hexes.",
+          "within 3 hexes.",
           ""
         ],
         "TANK_ATTACK": [

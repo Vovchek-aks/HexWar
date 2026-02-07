@@ -7,14 +7,17 @@ from attrs import define, field
 
 from core import protocols as proto
 from core.cells import Cells
+from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures import figure as fig
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
 from core.moves.creation import Creation
+from core.moves.pulling import PullingInitiation
 from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
 from core.protocols import Capturable, CanCapture
+from core.resources import Dollars
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
@@ -79,6 +82,7 @@ class BotIgor(proto.Bot):
         cells = self._session.cells
         town_count = self._count_of(fig.Town)
         infantry_count = self._count_of(fig.Infantry)
+        artillery_count = self._count_of(fig.Artillery)
         motorization_count = self._count_of(fig.Motorization)
         bunkers_count = len((cells.with_owner(self._player) &
                              cells.with_figure(fig.Bunker) &
@@ -89,15 +93,25 @@ class BotIgor(proto.Bot):
         tanks_count = self._count_of(fig.Tank)
 
         if self._state == _BUILDING:
-            yield from self._try_convert_infantry_to_motorization()
-            # print("_try_convert_infantry_to_motorization")
+            has_developed = town_count > cells_count * .08
+            is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
+
+            if has_developed:
+                yield from self._try_convert_infantry_to_motorization()
+                # print("_try_convert_infantry_to_motorization")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
+            yield from self._try_connect_pullerless_artillery()
+            # print("_try_connect_pullerless_artillery")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
 
-            initial_army_size = (len((self._session.cells.with_owner(self._player) &
-                                      self._session.cells.at_front).all()) * .3
-                                 if town_count > math.ceil(cells_count * 0.05) else 5)
+            initial_army_size = max(5., len((cells.with_owner(self._player) &
+                                             cells.at_front).all()) *
+                                    (.3 if has_developed else .1))
 
             if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
                 self._try_create(fig.Tank)
@@ -113,16 +127,23 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            if bunkers_count < empty_front_length * .05:
+            bunker_ratio = .1 if has_developed and not is_rich else 0.5
+            if bunkers_count < empty_front_length * bunker_ratio:
                 self._try_create(fig.Bunker)
                 # print("_try_create(fig.Bunker)")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
 
+            yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .15) -
+                                                             artillery_count)
+            # print("_try_spawn_and_connect_artillery")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
             figure_to_create = (fig.Town
-                                if cells_count >= self._cells_count_at_last_turn * .75 and
-                                   town_count < cells_count * .15 else
+                                if town_count < cells_count * .15 else
                                 (fig.Tank if random.random() > .85 else fig.Infantry))
 
             if figure_to_create is not MISSING:
@@ -137,6 +158,11 @@ class BotIgor(proto.Bot):
         if self._state == _ATTACKING:
             yield from self._try_capture()
             # print("_try_capture")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+            yield from self._try_attack_with_artillery()
+            # print("_try_attack_with_artillery")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
@@ -223,6 +249,66 @@ class BotIgor(proto.Bot):
             if armed_enemies:
                 unsafe.add(cell)
         return Cells(unsafe)
+
+    def _try_spawn_and_connect_artillery(self, amount: int) -> Iterator[None]:
+        cells = self._session.cells
+        infantries = (cells.with_owner(self._player) &
+                      cells.with_figure(fig.Infantry))
+        if not infantries:
+            return
+        yield
+
+        not_puller = {infantry for infantry in infantries
+                      if not self._session.pulling_connections.is_puller(infantry.figure)}
+        if not not_puller:
+            return
+        yield
+
+        added = 0
+        for cell in not_puller:
+            places = self._board.get_neighbors(cell).with_owner(self._player).with_figure(fig.Land)
+            if not places:
+                yield
+                continue
+
+            place = random.choice(list(places.all()))
+            make = Creation(fig.Artillery, self._board.coordinates_of(place))
+            connect = PullingInitiation(self._board.coordinates_of(place), self._board.coordinates_of(cell))
+            if (valid_move := make.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+                self._moves_to_make.append(ValidMove(connect))
+                added += 1
+                if added >= amount:
+                    return
+            yield
+
+    def _try_connect_pullerless_artillery(self) -> Iterator[None]:
+        cells = self._session.cells
+        artilleries = (cells.with_owner(self._player) &
+                       cells.with_figure(fig.Artillery))
+        if not artilleries:
+            return
+        yield
+
+        not_pullable = {artillery for artillery in artilleries
+                        if not self._session.pulling_connections.is_pullable(artillery.figure)}
+        if not not_pullable:
+            return
+        yield
+
+        for cell in not_pullable:
+            places = self._board.get_neighbors(cell).with_owner(self._player).with_figure(fig.Land)
+            if not places:
+                yield
+                continue
+
+            place = random.choice(list(places.all()))
+            make = Creation(fig.Infantry, self._board.coordinates_of(place))
+            connect = PullingInitiation(self._board.coordinates_of(cell), self._board.coordinates_of(place))
+            if (valid_move := make.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+                self._moves_to_make.append(ValidMove(connect))
+            yield
 
     def _get_target_enemy(self, cell: proto.Cell) -> proto.Cell | Status:
         neighbors = self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
@@ -436,6 +522,37 @@ class BotIgor(proto.Bot):
 
             target: proto.Cell = random.choice(list(neighbors.all()))
             move = Attack(self._board.coordinates_of(tank),
+                          self._board.coordinates_of(target))
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+            yield
+
+    def _try_attack_with_artillery(self) -> Iterator[None]:
+        artilleries = (self._session.cells.with_owner(self._player) &
+                       self._session.cells.with_figure(fig.Artillery))
+        if not artilleries:
+            return
+        yield
+
+        for artillery in artilleries:
+            neighbors = (DistantNeighborsGetter(artillery, self._board)
+                         .get_all_not_farther_than(fig.Artillery.FLAGS.get(proto.CanAttack).max_distance,
+                                                   include_cell=False)
+                         .with_flag(proto.OnLand))
+            neighbors -= neighbors.with_owner(self._player)
+            neighbors -= neighbors.with_figure(fig.Land)
+            if not neighbors:
+                yield
+                continue
+
+            targets = neighbors.with_figure(fig.Artillery)
+            if not targets:
+                targets = neighbors.with_figure(fig.Tank | fig.Bunker)
+            if not targets:
+                targets = neighbors
+
+            target = max(targets.all(), key=lambda cell: cell.hardness(self._board))
+            move = Attack(self._board.coordinates_of(artillery),
                           self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
