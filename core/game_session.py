@@ -107,7 +107,7 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
                              lambda coord: Cell(((players[0] if coord.x - coord.y <= 0 else players[1])
                                                  if coord.x + coord.y <= diagonal * .7 else
                                                  (players[2] if coord.x - coord.y >= 0 else players[3]))
-                                                if (center - coord).length < 24 else
+                                                if (center - coord).length < 17 else
                                                 ((players[4] if coord.x - coord.y <= 0 else players[5])
                                                  if coord.x + coord.y <= diagonal * .7 else
                                                  (players[6] if coord.x - coord.y >= 0 else players[7])),
@@ -145,10 +145,10 @@ def _get_empty_figure(coord: Vector2Int, board_size: int) -> proto.Figure:
     x, y = coord.tuple
     diagonal = board_size * 2 ** .5
 
-    if (center - coord).length > (half_size - 5):
+    if (center - coord).length > (half_size - 10):
         return fig.Water()
 
-    if (center - coord).length < 6:
+    if (center - coord).length < 5:
         return fig.Water()
 
     if abs(x - y) * 2 <= 4:
@@ -157,10 +157,10 @@ def _get_empty_figure(coord: Vector2Int, board_size: int) -> proto.Figure:
     if abs(coord.x + coord.y - diagonal * .7) <= 4:
         return fig.Land()
 
-    if (center - coord).length < 15:
+    if (center - coord).length < 13:
         return fig.Land()
 
-    if (center - coord).length < 24:
+    if (center - coord).length < 20:
         return fig.Water()
 
     return fig.Land()
