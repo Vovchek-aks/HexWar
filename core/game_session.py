@@ -107,7 +107,7 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
                              lambda coord: Cell(((players[0] if coord.x - coord.y <= 0 else players[1])
                                                  if coord.x + coord.y <= diagonal * .7 else
                                                  (players[2] if coord.x - coord.y >= 0 else players[3]))
-                                                if (center - coord).length < 15 else
+                                                if (center - coord).length < 17 else
                                                 ((players[4] if coord.x - coord.y <= 0 else players[5])
                                                  if coord.x + coord.y <= diagonal * .7 else
                                                  (players[6] if coord.x - coord.y >= 0 else players[7])),
@@ -118,12 +118,12 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
     pulling_connections = PullingConnections.make(figures)
 
     cells = CellsCache(board)
-    per_player_towns = round(len(board.cells.with_figure(fig.Land).all()) * initial_town_ratio / len(players))
     for player in players:
-        if not (player_cells := board.cells.with_owner(player)):
+        if not (player_cells := board.cells.with_owner(player).with_figure(fig.Land)):
             continue
 
-        for cell in random.sample(list(player_cells.with_figure(fig.Land).all()), per_player_towns):
+        per_player_towns = round(len(player_cells.at_front(board).all()) * initial_town_ratio)
+        for cell in random.sample(list(player_cells.all()), per_player_towns):
             coord = board.coordinates_of(cell)
             figures.add(fig.Town, coord)
 

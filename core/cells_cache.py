@@ -1,6 +1,6 @@
 from collections import defaultdict
 from types import UnionType
-from typing import get_args
+from typing import get_args, Union
 
 from attrs import frozen, field
 

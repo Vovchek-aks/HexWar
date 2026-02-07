@@ -13,7 +13,9 @@ from core.moves.capture import Capture
 from core.moves.conversion import Conversion
 from core.moves.creation import Creation
 from core.moves.relocations import Relocation, Assault
+from core.moves.valid_move import ValidMove
 from core.protocols import Capturable, CanCapture
+from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 _ATTACKING = 0
@@ -51,7 +53,7 @@ class BotIgor(proto.Bot):
                 return IN_PROGRESS
             self._moves_generator = MISSING
 
-        cells_count = self._count_of(fig.Figure)
+        cells_count = len(session.cells.with_owner(self._player).all())
         if cells_count <= 0:
             return MISSING
 
@@ -74,9 +76,16 @@ class BotIgor(proto.Bot):
         return MISSING
 
     def _add_moves(self, cells_count: int, *, _is_inner=False) -> Iterator[None]:
+        cells = self._session.cells
         town_count = self._count_of(fig.Town)
         infantry_count = self._count_of(fig.Infantry)
         motorization_count = self._count_of(fig.Motorization)
+        bunkers_count = len((cells.with_owner(self._player) &
+                             cells.with_figure(fig.Bunker) &
+                             cells.at_front).all())
+        empty_front_length = len((cells.with_owner(self._player) &
+                                  cells.at_front &
+                                  cells.with_figure(fig.Land)).all())
         tanks_count = self._count_of(fig.Tank)
 
         if self._state == _BUILDING:
@@ -104,8 +113,15 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
+            if bunkers_count < empty_front_length * .05:
+                self._try_create(fig.Bunker)
+                # print("_try_create(fig.Bunker)")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
             figure_to_create = (fig.Town
-                                if cells_count >= self._cells_count_at_last_turn * .8 and
+                                if cells_count >= self._cells_count_at_last_turn * .75 and
                                    town_count < cells_count * .15 else
                                 (fig.Tank if random.random() > .85 else fig.Infantry))
 
@@ -121,6 +137,11 @@ class BotIgor(proto.Bot):
         if self._state == _ATTACKING:
             yield from self._try_capture()
             # print("_try_capture")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+            yield from self._try_breakthrough_with_tanks()
+            # print("_try_breakthrough_with_tanks")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
@@ -187,7 +208,21 @@ class BotIgor(proto.Bot):
         if not production:
             return random.choice(list(front.all()))
 
+        unsafe_front = self._get_unsafe_front(front)
+        if unsafe_front:
+            front = unsafe_front
+
         return self._min_sqrt_distance_cell(front, production)
+
+    def _get_unsafe_front(self, front: Cells) -> Cells:
+        unsafe = set[proto.Cell]()
+        for cell in front:
+            neighbors = self._session.board.get_neighbors(cell).with_flag(proto.OnLand)
+            enemies = neighbors - neighbors.with_owner(self._player)
+            armed_enemies = enemies - enemies.with_figure(fig.Land)
+            if armed_enemies:
+                unsafe.add(cell)
+        return Cells(unsafe)
 
     def _get_target_enemy(self, cell: proto.Cell) -> proto.Cell | Status:
         neighbors = self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
@@ -311,7 +346,7 @@ class BotIgor(proto.Bot):
 
         infantry_count = len(infantries.all())
         motorization_count = self._count_of(fig.Motorization)
-        to_convert = max(0, math.floor((infantry_count + motorization_count) * .6 - motorization_count))
+        to_convert = max(0, math.floor((infantry_count + motorization_count) * .5 - motorization_count))
         yield
 
         for infantry in islice(infantries.all(), 0, to_convert):
@@ -343,6 +378,45 @@ class BotIgor(proto.Bot):
                            self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
+            yield
+
+    def _try_breakthrough_with_tanks(self) -> Iterator[None]:
+        cells = self._session.cells
+        tanks = (cells.with_owner(self._player) &
+                 cells.with_figure(fig.Tank) &
+                 cells.at_front)
+        if not tanks:
+            return
+        yield
+
+        for cell in tanks:
+            if (target := self._get_target_enemy(cell)) is MISSING:
+                yield
+                continue
+
+            supports = (self._session.board
+                        .get_neighbors(cell)
+                        .with_owner(self._player)
+                        .with_figure(fig.Motorization | fig.Infantry))
+            if not supports:
+                continue
+
+            support = min((sup.figure for sup in supports.all()),
+                          key=lambda figure: self._session.figures_budget.of(figure) /
+                                             figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
+            if not self._session.figures_budget.can_spend(support, support.get_cost_of(Relocation(Vector2Int.zero(),
+                                                                                                  Vector2Int.zero()))):
+                continue
+
+            support_coord = self._session.figures.locate(support)
+
+            assault = Assault(self._board.coordinates_of(cell),
+                              self._board.coordinates_of(target))
+            relocation = Relocation(support_coord,
+                                    self._board.coordinates_of(cell))
+            if (valid_move := assault.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+                self._moves_to_make.append(ValidMove(relocation))
             yield
 
     def _try_attack_with_tanks(self) -> Iterator[None]:
@@ -416,7 +490,10 @@ class BotIgor(proto.Bot):
         self._moves_to_make.append(valid_move)
 
     def _count_of(self, figure: type[fig.Figure]) -> int:
-        return len(self._board.cells.with_owner(self._player).with_figure(figure).all())
+        cells = self._session.cells
+        res = len((cells.with_owner(self._player) &
+                   cells.with_figure(figure)).all())
+        return res
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:
         # return list(candidates.all())[0]
