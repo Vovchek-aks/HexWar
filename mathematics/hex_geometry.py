@@ -86,6 +86,10 @@ def get_board_position(point: Vector2) -> Vector2Int:
     return Vector2Int.from_vector2(_matrix.inverse.apply(point), strict=False)
 
 
+def get_direction(from_coord: Vector2Int, to_coord: Vector2Int) -> Vector2:
+    return (get_world_position(to_coord) - get_world_position(from_coord)).normalize()
+
+
 if __name__ == '__main__':
     print(neighbor_square_deltas())
     print(neighbors_vertexes())

@@ -115,8 +115,8 @@ def load_game(screen_shape: Vector2Int,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer)
-    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, speed_multiplier=2)
+    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera)
+    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, speed_multiplier=3)
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
