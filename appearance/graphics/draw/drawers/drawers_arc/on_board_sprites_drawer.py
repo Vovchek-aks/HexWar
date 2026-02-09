@@ -30,6 +30,11 @@ class OnBoardSpritesDrawer(proto.OnBoardSpritesDrawer):
         self._sprites[index] = arc_sprite
         return index
 
+    def get_sprite(self, index: int) -> arc.Sprite:
+        assert index in self._sprites
+
+        return self._sprites[index]
+
     def draw(self) -> None:
         self._sprite_list.draw()
 

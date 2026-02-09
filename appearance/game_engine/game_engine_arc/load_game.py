@@ -106,7 +106,7 @@ def load_game(screen_shape: Vector2Int,
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
-    draw = DrawMaker().make(screen_shape, on_board_sprites_drawer, session.board, cells_change_observer)
+    draw, figures_drawer = DrawMaker().make(screen_shape, on_board_sprites_drawer, session.board, cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
@@ -115,8 +115,8 @@ def load_game(screen_shape: Vector2Int,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer)
-    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, speed_multiplier=1)
+    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer)
+    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, speed_multiplier=2)
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,

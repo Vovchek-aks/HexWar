@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod, ABCMeta
 from types import TracebackType
 from typing import Callable, Iterator
 
+import arcade as arc
+
 from color import Color
 from font import Font
 from mathematics.angle import Angle
@@ -138,11 +140,19 @@ class OnBoardSpritesDrawer(ABC):
         ...
 
     @abstractmethod
+    def get_sprite(self, index: int) -> arc.Sprite:
+        ...
+
+    @abstractmethod
     def remove_sprite(self, index: int) -> None:
         ...
 
 
 class FiguresDrawer(ABC):
+    @abstractmethod
+    def get_figure_index(self, cell_coord) -> int:
+        ...
+
     @abstractmethod
     def update_cell(self, cell_coord: Vector2Int) -> None:
         ...

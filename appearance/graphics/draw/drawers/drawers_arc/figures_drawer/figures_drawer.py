@@ -24,6 +24,11 @@ class FiguresDrawer(proto.FiguresDrawer):
 
     _figures: dict[Vector2Int, int] = field(init=False, factory=dict)
 
+    def get_figure_index(self, cell_coord) -> int:
+        assert cell_coord in self._figures
+
+        return self._figures[cell_coord]
+
     def update_cell(self, cell_coord: Vector2Int) -> None:
         if cell_coord in self._figures:
             self._on_board_sprites_drawer.remove_sprite(self._figures.pop(cell_coord))
