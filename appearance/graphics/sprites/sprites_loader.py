@@ -24,6 +24,9 @@ _BACKGROUND_3_TO_2 = "background_3_to_2"
 _BACKGROUND_2_TO_3 = "background_2_to_3"
 _LOADING_SCREEN = "loading_screen"
 
+_EFFECTS = "effects"
+_EXPLOSION = "explosion"
+
 SPRITES_FOLDER = Path("data/sprites")
 
 
@@ -53,6 +56,10 @@ class SpritesLoader:
     def _ui(self) -> SPRITES_GROUP_DICT:
         return self._meta[_UI]
 
+    @property
+    def _effects(self) -> SPRITES_GROUP_DICT:
+        return self._meta[_EFFECTS]
+
     def load_no_sprite(self) -> Sprite:
         sprite_info = self._meta[_NO_SPRITE]
         return self._load_sprite(sprite_info)
@@ -79,6 +86,10 @@ class SpritesLoader:
 
     def load_loading_screen(self) -> Sprite:
         sprite_info = self._ui[_LOADING_SCREEN]
+        return self._load_sprite(sprite_info)
+
+    def load_explosion(self) -> Sprite:
+        sprite_info = self._effects[_EXPLOSION]
         return self._load_sprite(sprite_info)
 
     def has_figure(self, figure: type[Figure]) -> bool:

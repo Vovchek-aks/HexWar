@@ -1,17 +1,28 @@
-from typing import Iterator
+from typing import Iterator, Callable
 
 import core.protocols as proto
+from statuses import Status, MISSING
+
+MovePreparationGetter = Callable[[proto.Move], Iterator[None] | Status]
 
 
-def player_moves_maker(session: proto.GameSession,
-                       moves_maker: proto.MovesMaker) -> Iterator[None]:
+def players_moves_maker(session: proto.GameSession,
+                        moves_maker: proto.MovesMaker,
+                        get_move_preparation_process: MovePreparationGetter = lambda _: MISSING) -> Iterator[None]:
     while True:
         with session.master.current_player.inputer as player:
             _on_turn_start(session)
             while not player.wants_to_end_turn():
                 move = player.get_move(session)
-                if isinstance(move, proto.ValidMove):
-                    moves_maker.make(move)
+                if not isinstance(move, proto.ValidMove):
+                    yield
+                    continue
+
+                process = get_move_preparation_process(move.move)
+                if process is not MISSING:
+                    yield from process
+
+                moves_maker.make(move)
                 yield
 
         session.master.pass_turn_to_next_player()

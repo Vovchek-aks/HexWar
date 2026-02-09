@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod, ABCMeta
 from types import TracebackType
-from typing import Callable
+from typing import Callable, Iterator
 
 from color import Color
 from font import Font
@@ -124,13 +124,27 @@ class Draw(ABC):
         ...
 
     @abstractmethod
-    def figures(self) -> None:
+    def board_sprites(self) -> None:
+        ...
+
+
+class OnBoardSpritesDrawer(ABC):
+    @abstractmethod
+    def add_sprite(self, sprite: Sprite, coord: Vector2Int, *, scale_ratio: float = 1) -> int:
+        ...
+
+    @abstractmethod
+    def draw(self) -> None:
+        ...
+
+    @abstractmethod
+    def remove_sprite(self, index: int) -> None:
         ...
 
 
 class FiguresDrawer(ABC):
     @abstractmethod
-    def draw_figures(self) -> None:
+    def update_cell(self, cell_coord: Vector2Int) -> None:
         ...
 
 
@@ -165,6 +179,11 @@ class CameraAssistant(ABC):
                  exc_type: type[BaseException],
                  exc_val: BaseException,
                  exc_tb: TracebackType) -> bool | None:
+        ...
+
+
+class MovesAnimator(ABC):
+    def get_animation(self, move: proto.Move) -> Iterator[None] | Status:
         ...
 
 

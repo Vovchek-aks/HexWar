@@ -11,7 +11,7 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
-from core.player.player_moves_maker import player_moves_maker
+from core.player.players_moves_maker import players_moves_maker
 from mathematics.vector import Vector2Int, Vector2
 from appearance.graphics.camera.camera import Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
@@ -84,7 +84,7 @@ def make_game_engine(caption: str,
     ]
 
     updater = Updater.make(camera_mover, screenshot_saver, mouse_movement_observer, layers,
-                           player_moves_maker(session, moves_maker))
+                           players_moves_maker(session, moves_maker))
     drawer = FrameDrawer.make(layers)
 
     return (GameEngine(caption, timer, drawer, updater, UpdatableEvents.new()),

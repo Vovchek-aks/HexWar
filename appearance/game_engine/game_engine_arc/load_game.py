@@ -5,10 +5,13 @@ from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.game_engine.game_engine_arc.updater import Updater
+from appearance.graphics.animations.moves_animator import MovesAnimator
+from appearance.graphics.animations.moves_animators_switcher import MovesAnimatorsSwitcher
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
+from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.input.camera_mover import CameraMover
@@ -27,8 +30,9 @@ from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
 from core.cells_changes_observer import CellsChangesObserver
 from core.moves_maker import MovesMaker
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
-from core.player.player_moves_maker import player_moves_maker
+from core.player.players_moves_maker import players_moves_maker
 from core.protocols import GameSession, Player, OnLand
 from core.resources import Dollars
 from mathematics.vector import Vector2Int
@@ -101,7 +105,8 @@ def load_game(screen_shape: Vector2Int,
                 game_ui_layer_maker.make(end_turn_button_was_clicked.invoke))
 
     yield language.get_sprite_loading_message()
-    draw = DrawMaker().make(screen_shape, camera, session.board, cells_change_observer)
+    on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
+    draw = DrawMaker().make(screen_shape, on_board_sprites_drawer, session.board, cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
@@ -109,13 +114,21 @@ def load_game(screen_shape: Vector2Int,
         Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
+
+    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer)
+    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, speed_multiplier=1)
+    animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
+
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
-                           mouse_movement_observer, layers, player_moves_maker(session, moves_maker))
+                           mouse_movement_observer, layers,
+                           players_moves_maker(session, moves_maker,
+                                               lambda move: animators_switcher.get().get_animation(move)))
     drawer = FrameDrawer.make(layers)
 
     scene = GameScene(drawer, updater, InputState.make(window), make_main_menu_loading_scene)
     if is_multibot:
         all_cells = len(session.board.cells.with_flag(OnLand).all())
+
         def reload_if_bot_won(bot: Player) -> None:
             bots_cells = len(session.cells.with_owner(bot).all())
 

@@ -25,4 +25,4 @@ class BoardDrawableLayer(proto.DrawableLayer):
         if (selected_coord := self._cell_selector.get_coord()) is not MISSING:
             self._draw.selected_cell(selected_coord)
 
-        self._draw.figures()
+        self._draw.board_sprites()
