@@ -9,7 +9,7 @@ import appearance.protocols as proto
 from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
 from core.moves.relocations import Assault, Relocation
-from core.protocols import Move
+from core.protocols import Move, GameSession
 from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS, get_direction
 from mathematics.parabola import Parabola
 from mathematics.vector import Vector2Int, Vector2
@@ -24,6 +24,7 @@ ATTACK_KICKBACK_RETURN_DURATION = .2
 ATTACK_KICKBACK_DELTA_POSITION = DISTANCE_BETWEEN_CENTERS / 4
 
 RELOCATION_JUMP_DURATION = .2
+RELOCATION_PULLING_LAG = .05
 RELOCATION_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 2
 
 
@@ -34,6 +35,7 @@ class MovesAnimator(proto.MovesAnimator):
              on_board_sprites_drawer: proto.OnBoardSpritesDrawer,
              figures_drawer: proto.FiguresDrawer,
              camera: proto.Camera,
+             session: GameSession,
              *,
              speed_multiplier: float = 1) -> "MovesAnimator":
         sprites_loader = SpritesLoader.from_meta()
@@ -41,6 +43,7 @@ class MovesAnimator(proto.MovesAnimator):
             speed_multiplier,
             figures_drawer,
             camera,
+            session,
             on_board_sprites_drawer,
             sprites_loader.load_explosion()
         )
@@ -50,6 +53,7 @@ class MovesAnimator(proto.MovesAnimator):
 
     _figures_drawer: proto.FiguresDrawer
     _camera: proto.Camera
+    _session: GameSession
 
     _on_board_sprites_drawer: proto.OnBoardSpritesDrawer
     _explosion: proto.Sprite
@@ -60,7 +64,12 @@ class MovesAnimator(proto.MovesAnimator):
                 return self._get_attack_animation(coord, target)
             case (Relocation(from_coord=from_coord, to_coord=to_coord) |
                   Assault(from_coord=from_coord, to_coord=to_coord)):
-                return self.get_relocation_animation(from_coord, to_coord)
+                animation = self.get_relocation_animation(from_coord, to_coord)
+                if (pullable := move.pullable_cell(self._session)) is MISSING:
+                    return animation
+                pulling = self.get_relocation_animation(self._session.board.coordinates_of(pullable), from_coord)
+                return _group(chain(animation, _cycle(_no_animation)),
+                              chain(self._sleep(RELOCATION_PULLING_LAG), pulling))
             case _:
                 return MISSING
         assert False
@@ -99,7 +108,7 @@ class MovesAnimator(proto.MovesAnimator):
                                             Vector2(1, 0))
 
             to_end = direction * (end - start).length() * t
-            to_periapsis = -camera.screen_to_world(Vector2.up()).normalize() * parabola.value(t)
+            to_periapsis = camera.orientation.rotation.inverse.apply(Vector2.up()).normalize() * parabola.value(t)
 
             delta_position = to_end + to_periapsis
             return delta_position

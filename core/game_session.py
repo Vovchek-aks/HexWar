@@ -131,10 +131,8 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
         for cell in board.cells:
             cells.update(cell)
 
-    players[0].resources.add(Dollars(5_000_000))
-    players[1].resources.add(Dollars(5_000_000))
-    players[2].resources.add(Dollars(5_000_000))
-    players[3].resources.add(Dollars(5_000_000))
+    for player in players:
+        player.resources.add(Dollars(5_000_000))
 
     return GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)
 

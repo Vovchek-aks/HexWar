@@ -115,8 +115,9 @@ def load_game(screen_shape: Vector2Int,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera)
-    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, speed_multiplier=3)
+    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session)
+    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
+                                               speed_multiplier=5)
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
@@ -141,6 +142,7 @@ def load_game(screen_shape: Vector2Int,
         user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
         user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
         session.master.current_player.change_inputer(user_inputer_builder.build())
+        animators_switcher.switch(session.master.current_player)
         pause_menu_open_requested.subscribe(scene.on_pause_menu_open_requested)
 
     yield scene

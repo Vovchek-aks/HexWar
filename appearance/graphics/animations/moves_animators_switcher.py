@@ -13,8 +13,8 @@ class MovesAnimatorsSwitcher:
              players_moves_animator: proto.MovesAnimator,
              bots_moves_animator: proto.MovesAnimator) -> "MovesAnimatorsSwitcher":
         self = cls(players_moves_animator, bots_moves_animator, players_moves_animator)
-        master.turn_had_started.subscribe(self._switch)
-        self._switch(master.current_player)
+        master.turn_had_started.subscribe(self.switch)
+        self.switch(master.current_player)
         return self
 
     _players_moves_animator: proto.MovesAnimator
@@ -25,7 +25,7 @@ class MovesAnimatorsSwitcher:
     def get(self) -> proto.MovesAnimator:
         return self._animator
 
-    def _switch(self, player: Player) -> None:
+    def switch(self, player: Player) -> None:
         if isinstance(player.inputer, BotPlayerInputer):
             self._animator = self._bots_moves_animator
             return
