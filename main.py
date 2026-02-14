@@ -5,7 +5,7 @@ from appearance.scenes.loading_scenes_makers import make_main_menu_loading_scene
 from core.game_session import multibot_map
 from mathematics.vector import Vector2Int
 
-IS_MULTIBOT = False
+IS_MULTIBOT = True
 
 IS_FULLSCREEN = False
 SCREEN_SHAPE = (Vector2Int(1920, 1080)

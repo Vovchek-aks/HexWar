@@ -24,6 +24,10 @@ class FiguresDrawer(proto.FiguresDrawer):
 
     _figures: dict[Vector2Int, int] = field(init=False, factory=dict)
 
+    @property
+    def figures_sprites(self) -> proto.FiguresSprites:
+        return self._figures_sprites
+
     def get_figure_index(self, cell_coord) -> int:
         assert cell_coord in self._figures
 

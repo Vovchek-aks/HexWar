@@ -348,13 +348,13 @@ class BotIgor(proto.Bot):
                 self._moves_to_make.append(ValidMove(connect))
             yield
 
-    def _get_target_enemy(self, cell: proto.Cell) -> proto.Cell | Status:
+    def _get_target_enemy(self, cell: proto.Cell, *, save_tanks: bool = True) -> proto.Cell | Status:
         neighbors = self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
         if not neighbors:
             return MISSING
 
         targets = neighbors - neighbors.with_owner(self._player)
-        if isinstance(cell.figure, fig.Tank):
+        if isinstance(cell.figure, fig.Tank) and save_tanks:
             targets = Cells({cell for cell in targets
                              if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
                             .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
@@ -514,7 +514,7 @@ class BotIgor(proto.Bot):
         yield
 
         for cell in tanks:
-            if (target := self._get_target_enemy(cell)) is MISSING:
+            if (target := self._get_target_enemy(cell, save_tanks=False)) is MISSING:
                 yield
                 continue
 

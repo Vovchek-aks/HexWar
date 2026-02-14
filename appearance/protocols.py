@@ -149,6 +149,11 @@ class OnBoardSpritesDrawer(ABC):
 
 
 class FiguresDrawer(ABC):
+    @property
+    @abstractmethod
+    def figures_sprites(self) -> "FiguresSprites":
+        ...
+
     @abstractmethod
     def get_figure_index(self, cell_coord) -> int:
         ...

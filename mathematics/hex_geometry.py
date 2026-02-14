@@ -86,8 +86,13 @@ def get_board_position(point: Vector2) -> Vector2Int:
     return Vector2Int.from_vector2(_matrix.inverse.apply(point), strict=False)
 
 
-def get_direction(from_coord: Vector2Int, to_coord: Vector2Int) -> Vector2:
-    return (get_world_position(to_coord) - get_world_position(from_coord)).normalize()
+def get_direction(from_coord: Vector2Int, to_coord: Vector2Int, *, strict: bool = True) -> Vector2:
+    delta = (get_world_position(to_coord) - get_world_position(from_coord))
+    if delta.length() == 0:
+        assert not strict
+        return delta
+
+    return delta.normalize()
 
 
 if __name__ == '__main__':

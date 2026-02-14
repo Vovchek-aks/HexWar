@@ -9,21 +9,20 @@ import appearance.protocols as proto
 from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.creation import Creation
 from core.moves.relocations import Assault, Relocation
-from core.protocols import Move, GameSession
+from core.protocols import Move, GameSession, Figure
 from mathematics.angle import Angle
 from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS, get_direction
 from mathematics.parabola import Parabola
 from mathematics.vector import Vector2Int, Vector2
 from statuses import Status, MISSING
 
-Animation = Iterator[None]
-
 ATTACK_EXPLOSION_DURATION = .3
-ATTACK_EXPLOSION_SCALE_RATIO = 1.5
 ATTACK_KICKBACK_DURATION = .1
 ATTACK_KICKBACK_RETURN_DURATION = .2
 ATTACK_KICKBACK_DELTA_POSITION = DISTANCE_BETWEEN_CENTERS / 4
+ATTACK_EXPLOSION_SCALE_RATIO = 1.5
 
 RELOCATION_JUMP_DURATION = .2
 RELOCATION_PULLING_LAG = .05
@@ -33,6 +32,15 @@ CAPTURE_DURATION = .5
 CAPTURE_SHAKING_DURATION_RATIO = .8
 CAPTURE_SHAKE_ANGLE = Angle(15)
 CAPTURE_SCALE_RATIO = 1.5
+
+CREATION_DURATION = .5
+CREATION_FIRST_JUMP_DURATION_RATIO = .6
+CREATION_FIRST_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 3
+CREATION_SECOND_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 8
+CREATION_INITIAL_SCALE_RATIO = 0.2
+CREATION_FINAL_SCALE_RATIO = 1.1
+
+Animation = Iterator[None]
 
 
 @frozen
@@ -66,19 +74,24 @@ class MovesAnimator(proto.MovesAnimator):
     _explosion: proto.Sprite
 
     def get_animation(self, move: Move) -> Animation | Status:
+        if self._speed_multiplier == float('inf'):
+            return MISSING
+
         match move:
             case Attack(from_coord=coord, to_coord=target):
                 return self._get_attack_animation(coord, target)
             case (Relocation(from_coord=from_coord, to_coord=to_coord) |
                   Assault(from_coord=from_coord, to_coord=to_coord)):
-                animation = self.get_relocation_animation(from_coord, to_coord)
+                animation = self._get_relocation_animation(from_coord, to_coord)
                 if (pullable := move.pullable_cell(self._session)) is MISSING:
                     return animation
-                pulling = self.get_relocation_animation(self._session.board.coordinates_of(pullable), from_coord)
+                pulling = self._get_relocation_animation(self._session.board.coordinates_of(pullable), from_coord)
                 return _group(chain(animation, _cycle(_no_animation)),
                               chain(self._sleep(RELOCATION_PULLING_LAG), pulling))
             case Capture(to_coord=coord):
                 return self._get_capture_animation(coord)
+            case Creation(to_coord=coord, figure_type=figure):
+                return self._get_creation_animation(coord, figure)
             case _:
                 return MISSING
         assert False
@@ -102,27 +115,9 @@ class MovesAnimator(proto.MovesAnimator):
                          _call(lambda: self._figures_drawer.update_cell(coord)))
         return _group(explosion, kickback)
 
-    def get_relocation_animation(self, from_coord: Vector2Int, to_coord: Vector2Int) -> Animation:
-        figure = self._get_sprite_at(from_coord)
-        direction = get_direction(from_coord, to_coord)
-        start = get_world_position(from_coord)
-        end = get_world_position(to_coord)
-
-        def get_delta_position(t: float) -> Vector2:
-            camera = self._camera
-
-            t /= RELOCATION_JUMP_DURATION
-            parabola = Parabola.from_points(Vector2.zero(),
-                                            Vector2(.5, RELOCATION_JUMP_HEIGHT),
-                                            Vector2(1, 0))
-
-            to_end = direction * (end - start).length() * t
-            to_periapsis = camera.orientation.rotation.inverse.apply(Vector2.up()).normalize() * parabola.value(t)
-
-            delta_position = to_end + to_periapsis
-            return delta_position
-
-        return self._translate_sprite(figure, get_delta_position, RELOCATION_JUMP_DURATION)
+    def _get_relocation_animation(self, from_coord: Vector2Int, to_coord: Vector2Int) -> Animation:
+        return self._jump(self._get_sprite_at(from_coord), from_coord, to_coord,
+                          RELOCATION_JUMP_HEIGHT, RELOCATION_JUMP_DURATION)
 
     def _get_capture_animation(self, coord: Vector2Int) -> Animation:
         sprite = self._get_sprite_at(coord)
@@ -148,6 +143,58 @@ class MovesAnimator(proto.MovesAnimator):
                      _group(self._resize_sprite(sprite, lambda t: -size_changing_speed * t, resizing_duration),
                             self._rotate_sprite(sprite, lambda t: angle_changing_speed * t, resizing_duration)),
                      _call(lambda: self._figures_drawer.update_cell(coord)))
+
+    def _get_creation_animation(self, coord: Vector2Int, figure_type: type[Figure]) -> Animation:
+        figure = self._figures_drawer.figures_sprites.get(figure_type)
+        sprite_index = self._on_board_sprites_drawer.add_sprite(figure, coord, scale_ratio=CREATION_INITIAL_SCALE_RATIO)
+        sprite = self._on_board_sprites_drawer.get_sprite(sprite_index)
+
+        first_jump_duration = CREATION_DURATION * CREATION_FIRST_JUMP_DURATION_RATIO
+        second_jump_duration = CREATION_DURATION - first_jump_duration
+
+        first_resizing_speed = (sprite.scale[0] *
+                                (CREATION_FINAL_SCALE_RATIO / CREATION_INITIAL_SCALE_RATIO - 1))
+        second_resizing_speed = (sprite.scale[0] *
+                                 (CREATION_FINAL_SCALE_RATIO / CREATION_INITIAL_SCALE_RATIO) *
+                                 (1 / CREATION_FINAL_SCALE_RATIO - 1) /
+                                 second_jump_duration)
+
+        try:
+            yield from chain(_group(self._jump(sprite, coord, coord, CREATION_FIRST_JUMP_HEIGHT, first_jump_duration),
+                                    self._resize_sprite(sprite,
+                                                        lambda t: first_resizing_speed * (t / first_jump_duration) ** 2,
+                                                        first_jump_duration)),
+                             _group(self._jump(sprite, coord, coord, CREATION_SECOND_JUMP_HEIGHT, second_jump_duration),
+                                    self._resize_sprite(sprite, lambda t: second_resizing_speed * t,
+                                                        second_jump_duration)))
+        finally:
+            self._on_board_sprites_drawer.remove_sprite(sprite_index)
+
+    def _jump(self,
+              sprite: arc.Sprite,
+              from_coord: Vector2Int,
+              to_coord: Vector2Int,
+              height: float,
+              duration: float) -> Animation:
+        direction = get_direction(from_coord, to_coord, strict=False)
+        start = get_world_position(from_coord)
+        end = get_world_position(to_coord)
+
+        def get_delta_position(t: float) -> Vector2:
+            camera = self._camera
+
+            t /= duration
+            parabola = Parabola.from_points(Vector2.zero(),
+                                            Vector2(.5, height),
+                                            Vector2(1, 0))
+
+            to_end = direction * (end - start).length() * t
+            to_periapsis = camera.orientation.rotation.inverse.apply(Vector2.up()).normalize() * parabola.value(t)
+
+            delta_position = to_end + to_periapsis
+            return delta_position
+
+        return self._translate_sprite(sprite, get_delta_position, duration)
 
     def _get_sprite_at(self, coord: Vector2Int) -> arc.Sprite:
         return self._on_board_sprites_drawer.get_sprite(self._figures_drawer.get_figure_index(coord))
