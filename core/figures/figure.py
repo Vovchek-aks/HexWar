@@ -4,11 +4,12 @@ from attrs import define, field
 
 from core import protocols as proto
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
-    PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner
+    PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik
 from core.figures.movable_flag import MovableBuilder
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
 from core.resources import Dollars
@@ -125,6 +126,30 @@ class Bunker(_Figure):
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
         return 0
+
+
+class MissileSilo(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Creatable(Dollars(3_000_000)),
+                      Capturable(),
+                      CanLaunchOreshnik(min_distance=10,
+                                        cost=Dollars(750_000),
+                                        spread_radius=3,
+                                        targets_per_layer=3))
+    MOVES_BUDGET = 1
+
+    @classmethod
+    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        match move:
+            case OreshnikLaunch():
+                return 1
+            case _:
+                raise NotSupportedMove(move)
 
 
 class Infantry(_Figure):
@@ -303,6 +328,7 @@ def get_figures() -> list[type[_Figure]]:
         Town,
         Capital,
         Bunker,
+        MissileSilo,
         Infantry,
         Motorization,
         Tank,

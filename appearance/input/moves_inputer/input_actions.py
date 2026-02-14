@@ -57,3 +57,8 @@ class PullingInitiationButtonPressAction(ButtonPressAction):
 @frozen
 class PullingTerminationButtonPressAction(ButtonPressAction):
     ...
+
+
+@frozen
+class OreshnikLaunchButtonPressAction(ButtonPressAction):
+    ...

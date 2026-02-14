@@ -17,9 +17,9 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, PullingInitiationButtonPressAction, \
-    PullingTerminationButtonPressAction
+    PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction
 from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING
+    INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile, Creatable
@@ -141,6 +141,7 @@ class GameUiLayerMaker:
             self._make_artillery_menu(),
             self._make_town_menu(),
             self._make_bunker_menu(),
+            self._make_missile_silo_menu(),
             dollars,
             end_turn_button,
         ])
@@ -163,15 +164,15 @@ class GameUiLayerMaker:
         return button
 
     def _make_figures_creation_menu(self) -> Layer:
+        hint_box = BoxUi(Rectangle(Vector2.zero(), Vector2(200, 200)))
+        buttons = self._make_figures_creation_buttons(hint_box)
+
         layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
                                     .from_left_bottom()
                                     .move(Vector2(20, 20))
-                                    .set_shape(Vector2(410, 210))
+                                    .set_shape(Vector2(410, buttons.rectangle.shape.y))
                                     .adjust_for_shape()
                                     .build())
-
-        hint_box = BoxUi(Rectangle(Vector2.zero(), Vector2(200, 200)))
-        buttons = self._make_figures_creation_buttons(hint_box)
         layout.append(buttons)
         layout.append(hint_box)
 
@@ -183,12 +184,13 @@ class GameUiLayerMaker:
         layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
                                   .from_left_bottom()
                                   .move(Vector2(20, 20))
-                                  .set_shape(Vector2(200, 210))
+                                  .set_shape(Vector2(200, 250))
                                   .adjust_for_shape()
                                   .build(),
                                   margin_ratio=.2)
         layout.append(self._make_figure_creation_button(fig.Town, hint_box))
         layout.append(self._make_figure_creation_button(fig.Bunker, hint_box))
+        layout.append(self._make_figure_creation_button(fig.MissileSilo, hint_box))
 
         horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.07)
         layout.append(horizontal_layout)
@@ -252,6 +254,13 @@ class GameUiLayerMaker:
 
     def _make_bunker_menu(self) -> Layer:
         return self._make_figure_menu(fig.Bunker, [], [])
+
+    def _make_missile_silo_menu(self) -> Layer:
+        launch_oreshnik = self._make_activatable_button(self._language.get_launch_oreshnik_message(),
+                                                        lambda: OreshnikLaunchButtonPressAction(
+                                                            self._cell_selector.get_coord()))
+
+        return self._make_figure_menu(fig.MissileSilo, [launch_oreshnik], [LAUNCH_ORESHNIK])
 
     def _make_tank_menu(self) -> Layer:
         attack = self._make_activatable_button(self._language.get_attack_message(),

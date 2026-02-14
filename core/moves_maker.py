@@ -3,6 +3,7 @@ from attrs import frozen, field
 import core.protocols as proto
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingTermination, PullingInitiation
 from core.moves.relocations import Relocation, Assault
 from core.moves.creation import Creation
@@ -37,6 +38,12 @@ class MovesMaker(proto.MovesMaker):
         assert move.move.validate(self._session) is not INVALID
 
         match move.move:  # move move
+            case OreshnikLaunch():
+                self._session.make(move)
+                self._move_was_made.invoke(move)
+
+                self._board_move_was_made.invoke(move)
+
             case Assault(to_coord=to_coord, from_coord=from_coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)

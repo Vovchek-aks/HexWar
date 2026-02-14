@@ -113,3 +113,13 @@ class CanAttack(proto.CanAttack):
     EXCLUDES = set[type[Flag]]()
 
     max_distance: int
+
+
+@frozen
+class CanLaunchOreshnik(proto.CanLaunchOreshnik):
+    EXCLUDES = set[type[Flag]]()
+
+    min_distance: int
+    cost: proto.Resource
+    spread_radius: int
+    targets_per_layer: int

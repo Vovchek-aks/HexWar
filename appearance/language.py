@@ -7,6 +7,7 @@ from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
 from core.moves.pulling import PullingInitiation, PullingTermination
+from core.moves.oreshnik_launch import OreshnikLaunch
 from core.protocols import Figure, Resource
 from files import read_meta, read_json
 import core.figures.figure as fig
@@ -24,6 +25,7 @@ ARTILLERY_TERMINATE_PULLING = "ARTILLERY_TERMINATE_PULLING"
 MOTORIZATION_TO_INFANTRY = "MOTORIZATION_TO_INFANTRY"
 INFANTRY_CAPTURE = "INFANTRY_CAPTURE"
 INFANTRY_TO_MOTORIZATION = "INFANTRY_TO_MOTORIZATION"
+LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 
 _FIGURE_OF_TAG: dict[str, type[Figure]] = {
     INFANTRY_CAPTURE: fig.Infantry,
@@ -31,6 +33,7 @@ _FIGURE_OF_TAG: dict[str, type[Figure]] = {
     ARTILLERY_ATTACK: fig.Artillery,
     ARTILLERY_INITIATE_PULLING: fig.Artillery,
     ARTILLERY_TERMINATE_PULLING: fig.Artillery,
+    LAUNCH_ORESHNIK: fig.MissileSilo,
 }
 
 _MOVE_OF_TAG = {
@@ -39,6 +42,7 @@ _MOVE_OF_TAG = {
     ARTILLERY_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_INITIATE_PULLING: lambda: PullingInitiation(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_TERMINATE_PULLING: lambda: PullingTermination(Vector2Int.zero()),
+    LAUNCH_ORESHNIK: lambda: OreshnikLaunch(Vector2Int.zero(), Vector2Int.zero())
 }
 
 _SELECTED = "selected"
@@ -63,6 +67,7 @@ _TO_INFANTRY = "TO_INFANTRY"
 _ATTACK = "ATTACK"
 _INITIATE_PULLING = "INITIATE_PULLING"
 _TERMINATE_PULLING = "TERMINATE_PULLING"
+_LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
@@ -160,6 +165,9 @@ class Language:
 
     def get_terminate_pulling_message(self) -> str:
         return self._ui[_TERMINATE_PULLING]
+
+    def get_launch_oreshnik_message(self) -> str:
+        return self._ui[_LAUNCH_ORESHNIK]
 
     def get_message_from_resource(self, resource: Resource) -> str:
         amount = NumberShortener.shorten(resource.amount)

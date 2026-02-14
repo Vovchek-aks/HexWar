@@ -21,6 +21,13 @@
         183
       ]
     },
+    "MissileSilo": {
+      "file": "figures/silo.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
     "Infantry": {
       "file": "figures/inf2.png",
       "pivot": [

@@ -5,10 +5,11 @@ from attrs import frozen
 from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, ButtonPressAction, \
-    PullingInitiationButtonPressAction, PullingTerminationButtonPressAction
+    PullingInitiationButtonPressAction, PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
+from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
 from core.moves.creation import Creation
@@ -33,6 +34,7 @@ class MoveReaders:
             self._try_read_attack_move,
             self._try_read_pulling_initiation_move,
             self._try_read_pulling_termination_move,
+            self._try_read_oreshnik_launch_move
         ]
 
     def _try_read_relocation_move(self, actions: list[InputAction]) -> ValidMove | Status:
@@ -100,6 +102,9 @@ class MoveReaders:
 
     def _try_read_pulling_initiation_move(self, actions: list[InputAction]) -> ValidMove | Status:
         return self._try_read_right_click_after(PullingInitiationButtonPressAction, PullingInitiation, actions)
+
+    def _try_read_oreshnik_launch_move(self, actions: list[InputAction]) -> ValidMove | Status:
+        return self._try_read_right_click_after(OreshnikLaunchButtonPressAction, OreshnikLaunch, actions)
 
     def _try_read_right_click_after[T: Move](self,
                                              action_type: type[ButtonPressAction],

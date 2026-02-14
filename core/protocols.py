@@ -397,6 +397,28 @@ class CanAttack(Flag, metaclass=ABCMeta):
         ...
 
 
+class CanLaunchOreshnik(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def min_distance(self) -> int:
+        ...
+
+    @property
+    @abstractmethod
+    def cost(self) -> "Resource":
+        ...
+
+    @property
+    @abstractmethod
+    def spread_radius(self) -> int:
+        ...
+
+    @property
+    @abstractmethod
+    def targets_per_layer(self) -> int:
+        ...
+
+
 class Static(Flag, metaclass=ABCMeta):
     ...
 
