@@ -162,21 +162,25 @@ class BotIgor(proto.Bot):
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
+
             yield from self._try_attack_with_artillery()
             # print("_try_attack_with_artillery")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
+
             yield from self._try_breakthrough_with_tanks()
             # print("_try_breakthrough_with_tanks")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
+
             yield from self._try_advance_forces()
             # print("_try_advance_forces")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
+
             yield from self._try_attack_with_tanks()
             # print("_try_attack_with_tanks")
             if self._moves_to_make:

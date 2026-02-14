@@ -8,8 +8,10 @@ import arcade as arc
 import appearance.protocols as proto
 from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
+from core.moves.capture import Capture
 from core.moves.relocations import Assault, Relocation
 from core.protocols import Move, GameSession
+from mathematics.angle import Angle
 from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS, get_direction
 from mathematics.parabola import Parabola
 from mathematics.vector import Vector2Int, Vector2
@@ -26,6 +28,11 @@ ATTACK_KICKBACK_DELTA_POSITION = DISTANCE_BETWEEN_CENTERS / 4
 RELOCATION_JUMP_DURATION = .2
 RELOCATION_PULLING_LAG = .05
 RELOCATION_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 2
+
+CAPTURE_DURATION = .5
+CAPTURE_SHAKING_DURATION_RATIO = .8
+CAPTURE_SHAKE_ANGLE = Angle(15)
+CAPTURE_SCALE_RATIO = 1.5
 
 
 @frozen
@@ -70,6 +77,8 @@ class MovesAnimator(proto.MovesAnimator):
                 pulling = self.get_relocation_animation(self._session.board.coordinates_of(pullable), from_coord)
                 return _group(chain(animation, _cycle(_no_animation)),
                               chain(self._sleep(RELOCATION_PULLING_LAG), pulling))
+            case Capture(to_coord=coord):
+                return self._get_capture_animation(coord)
             case _:
                 return MISSING
         assert False
@@ -83,7 +92,7 @@ class MovesAnimator(proto.MovesAnimator):
             sprite.position = position
 
         delta = -ATTACK_KICKBACK_DELTA_POSITION * get_direction(coord, target)
-        artillery = self.get_sprite_at(coord)
+        artillery = self._get_sprite_at(coord)
         artillery_position = artillery.position
         kickback = chain(self._translate_sprite(artillery, lambda t: delta * t / ATTACK_KICKBACK_DURATION,
                                                 ATTACK_KICKBACK_DURATION),
@@ -94,7 +103,7 @@ class MovesAnimator(proto.MovesAnimator):
         return _group(explosion, kickback)
 
     def get_relocation_animation(self, from_coord: Vector2Int, to_coord: Vector2Int) -> Animation:
-        figure = self.get_sprite_at(from_coord)
+        figure = self._get_sprite_at(from_coord)
         direction = get_direction(from_coord, to_coord)
         start = get_world_position(from_coord)
         end = get_world_position(to_coord)
@@ -115,7 +124,32 @@ class MovesAnimator(proto.MovesAnimator):
 
         return self._translate_sprite(figure, get_delta_position, RELOCATION_JUMP_DURATION)
 
-    def get_sprite_at(self, coord: Vector2Int) -> arc.Sprite:
+    def _get_capture_animation(self, coord: Vector2Int) -> Animation:
+        sprite = self._get_sprite_at(coord)
+        initial_rotation = Angle(sprite.angle)
+        shaking_duration = CAPTURE_DURATION * CAPTURE_SHAKING_DURATION_RATIO
+        resizing_duration = (CAPTURE_DURATION - shaking_duration) / 2
+        size_changing_speed = (CAPTURE_SCALE_RATIO - 1) * sprite.scale[0] / resizing_duration
+        angle_changing_speed = CAPTURE_SHAKE_ANGLE * (1 / resizing_duration)
+        shaking_angle_changing_speed = CAPTURE_SHAKE_ANGLE * (1 / shaking_duration)
+
+        def set_rotation(rotation: Angle) -> None:
+            sprite.angle = rotation.degrees
+
+        return chain(_group(self._resize_sprite(sprite, lambda t: size_changing_speed * t, resizing_duration),
+                            self._rotate_sprite(sprite, lambda t: angle_changing_speed * t, resizing_duration)),
+                     _call(lambda: set_rotation(initial_rotation + CAPTURE_SHAKE_ANGLE)),
+                     self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * -t * 6, shaking_duration / 3),
+                     _call(lambda: set_rotation(initial_rotation + -CAPTURE_SHAKE_ANGLE)),
+                     self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * t * 6, shaking_duration / 3),
+                     _call(lambda: set_rotation(initial_rotation + CAPTURE_SHAKE_ANGLE)),
+                     self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * -t * 6, shaking_duration / 3),
+                     _call(lambda: set_rotation(initial_rotation + -CAPTURE_SHAKE_ANGLE)),
+                     _group(self._resize_sprite(sprite, lambda t: -size_changing_speed * t, resizing_duration),
+                            self._rotate_sprite(sprite, lambda t: angle_changing_speed * t, resizing_duration)),
+                     _call(lambda: self._figures_drawer.update_cell(coord)))
+
+    def _get_sprite_at(self, coord: Vector2Int) -> arc.Sprite:
         return self._on_board_sprites_drawer.get_sprite(self._figures_drawer.get_figure_index(coord))
 
     def _sleep(self, duration: float) -> Animation:
@@ -137,6 +171,7 @@ class MovesAnimator(proto.MovesAnimator):
                           sprite: arc.Sprite,
                           delta_position: Callable[[float], Vector2],
                           duration: float) -> Animation:
+        yield
         sprite_position = Vector2(*sprite.position)
         start = time()
 
@@ -146,16 +181,46 @@ class MovesAnimator(proto.MovesAnimator):
 
         yield from _group(self._sleep(duration), _cycle(lambda: _call(update_position)))
 
+    def _rotate_sprite(self,
+                       sprite: arc.Sprite,
+                       delta_angle: Callable[[float], Angle],
+                       duration: float) -> Animation:
+        yield
+        sprite_angle = Angle(sprite.angle)
+        start = time()
+
+        def update_rotation() -> None:
+            delta_time = time() - start
+            sprite.angle = (sprite_angle + delta_angle(delta_time * self._speed_multiplier)).degrees
+
+        yield from _group(self._sleep(duration), _cycle(lambda: _call(update_rotation)))
+
+    def _resize_sprite(self,
+                       sprite: arc.Sprite,
+                       delta_size: Callable[[float], float],
+                       duration: float) -> Animation:
+        yield
+        sprite_size = sprite.scale[0]
+        ratio = sprite.scale[1] / sprite.scale[0]
+        start = time()
+
+        def update_size() -> None:
+            delta_time = time() - start
+            sprite.scale = (Vector2(1, ratio) * (sprite_size + delta_size(delta_time * self._speed_multiplier))).tuple
+
+        yield from _group(self._sleep(duration), _cycle(lambda: _call(update_size)))
+
 
 def _sleep_realtime(duration: float) -> Animation:
+    yield
     start = time()
     while time() - start < duration:
         yield
 
 
 def _call(function: Callable[[], None]) -> Animation:
-    function()
     yield
+    function()
 
 
 def _cycle(get_animation: Callable[[], Animation]) -> Animation:
@@ -168,7 +233,5 @@ def _no_animation() -> Animation:
 
 
 def _group(*animations: Animation, strict: bool = False) -> Animation:
-    for frame in zip(*animations, strict=strict):
-        for _ in frame:
-            ...
+    for _ in zip(*animations, strict=strict):
         yield
