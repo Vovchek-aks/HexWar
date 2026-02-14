@@ -101,6 +101,13 @@
         600,
         600
       ]
+    },
+    "rocket": {
+      "file": "effects/rocket.png",
+      "pivot": [
+        183,
+        183
+      ]
     }
   }
 }

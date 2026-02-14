@@ -132,7 +132,12 @@ class Draw(ABC):
 
 class OnBoardSpritesDrawer(ABC):
     @abstractmethod
-    def add_sprite(self, sprite: Sprite, coord: Vector2Int, *, scale_ratio: float = 1) -> int:
+    def add_sprite(self,
+                   sprite: Sprite,
+                   coord: Vector2Int,
+                   *,
+                   scale_ratio: float = 1,
+                   need_rotation: bool = True) -> int:
         ...
 
     @abstractmethod
@@ -145,6 +150,10 @@ class OnBoardSpritesDrawer(ABC):
 
     @abstractmethod
     def remove_sprite(self, index: int) -> None:
+        ...
+
+    @abstractmethod
+    def discard_sprite(self, index: int) -> bool:
         ...
 
 

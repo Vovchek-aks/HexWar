@@ -26,6 +26,7 @@ _LOADING_SCREEN = "loading_screen"
 
 _EFFECTS = "effects"
 _EXPLOSION = "explosion"
+_ROCKET = "rocket"
 
 SPRITES_FOLDER = Path("data/sprites")
 
@@ -90,6 +91,10 @@ class SpritesLoader:
 
     def load_explosion(self) -> Sprite:
         sprite_info = self._effects[_EXPLOSION]
+        return self._load_sprite(sprite_info)
+
+    def load_rocket(self) -> Sprite:
+        sprite_info = self._effects[_ROCKET]
         return self._load_sprite(sprite_info)
 
     def has_figure(self, figure: type[Figure]) -> bool:

@@ -22,12 +22,20 @@ class OnBoardSpritesDrawer(proto.OnBoardSpritesDrawer):
     _camera_orientation: proto.ReadonlyCameraOrientation
     _sprite_list: SpriteList = field(init=False, factory=SpriteList)
     _sprites: dict[int, arc.Sprite] = field(init=False, factory=dict)
+    _dont_need_rotation: set[int] = field(init=False, factory=set)
 
-    def add_sprite(self, sprite: Sprite, coord: Vector2Int, *, scale_ratio: float = 1) -> int:
+    def add_sprite(self,
+                   sprite: Sprite,
+                   coord: Vector2Int,
+                   *,
+                   scale_ratio: float = 1,
+                   need_rotation: bool = True) -> int:
         arc_sprite = self._get_arc_sprite(sprite, coord, scale_ratio=scale_ratio)
         index = id(arc_sprite)
         self._sprite_list.append(arc_sprite)
         self._sprites[index] = arc_sprite
+        if not need_rotation:
+            self._dont_need_rotation.add(index)
         return index
 
     def get_sprite(self, index: int) -> arc.Sprite:
@@ -39,12 +47,23 @@ class OnBoardSpritesDrawer(proto.OnBoardSpritesDrawer):
         self._sprite_list.draw()
 
     def remove_sprite(self, index: int) -> None:
+        assert index in self._sprites
+
         sprite = self._sprites.pop(index)
         self._sprite_list.remove(sprite)
+        self._dont_need_rotation.discard(index)
+
+    def discard_sprite(self, index: int) -> bool:
+        if index not in self._sprites:
+            return False
+
+        self.remove_sprite(index)
+        return True
 
     def _rotate_sprites(self) -> None:
-        for sprite in self._sprites.values():
-            sprite.angle = self._camera_orientation.rotation.degrees
+        for index, sprite in self._sprites.items():
+            if index not in self._dont_need_rotation:
+                sprite.angle = self._camera_orientation.rotation.degrees
 
     def _get_arc_sprite(self, sprite: Sprite, coord: Vector2Int, *, scale_ratio: float) -> arc.Sprite:
         position = get_world_position(coord)

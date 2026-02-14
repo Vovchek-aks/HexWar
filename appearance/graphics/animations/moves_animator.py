@@ -1,3 +1,4 @@
+import random
 from typing import Iterator, Callable
 from time import perf_counter as time
 from itertools import chain
@@ -10,8 +11,9 @@ from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.creation import Creation
+from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.relocations import Assault, Relocation
-from core.protocols import Move, GameSession, Figure
+from core.protocols import Move, GameSession, Figure, Cells, Empty
 from mathematics.angle import Angle
 from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS, get_direction
 from mathematics.parabola import Parabola
@@ -40,6 +42,16 @@ CREATION_SECOND_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 8
 CREATION_INITIAL_SCALE_RATIO = 0.2
 CREATION_FINAL_SCALE_RATIO = 1.1
 
+ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION = 5
+ORESHNIK_LAUNCH_VISIBLE_FLIGHT_DURATION_RATIO = .95
+ORESHNIK_LAUNCH_FLIGHT_HEIGHT = DISTANCE_BETWEEN_CENTERS * 20
+ORESHNIK_LAUNCH_ROCKET_SCALE = 1
+ORESHNIK_LAUNCH_EXPLOSIONS_DURATION = .3
+ORESHNIK_LAUNCH_EXPLOSIONS_MIN_LAG = 0
+ORESHNIK_LAUNCH_EXPLOSIONS_MAX_LAG = .3
+ORESHNIK_LAUNCH_EXPLOSIONS_MIN_SCALE_RATIO = 1
+ORESHNIK_LAUNCH_EXPLOSIONS_MAX_SCALE_RATIO = 1.5
+
 Animation = Iterator[None]
 
 
@@ -60,7 +72,8 @@ class MovesAnimator(proto.MovesAnimator):
             camera,
             session,
             on_board_sprites_drawer,
-            sprites_loader.load_explosion()
+            sprites_loader.load_explosion(),
+            sprites_loader.load_rocket(),
         )
         return self
 
@@ -72,6 +85,7 @@ class MovesAnimator(proto.MovesAnimator):
 
     _on_board_sprites_drawer: proto.OnBoardSpritesDrawer
     _explosion: proto.Sprite
+    _rocket: proto.Sprite
 
     def get_animation(self, move: Move) -> Animation | Status:
         if self._speed_multiplier == float('inf'):
@@ -92,6 +106,8 @@ class MovesAnimator(proto.MovesAnimator):
                 return self._get_capture_animation(coord)
             case Creation(to_coord=coord, figure_type=figure):
                 return self._get_creation_animation(coord, figure)
+            case OreshnikLaunch(from_coord=coord, to_coord=target):
+                return self._get_oreshnik_launch_animation(coord, target, move.get_target_cells(self._session))
             case _:
                 return MISSING
         assert False
@@ -168,7 +184,60 @@ class MovesAnimator(proto.MovesAnimator):
                                     self._resize_sprite(sprite, lambda t: second_resizing_speed * t,
                                                         second_jump_duration)))
         finally:
-            self._on_board_sprites_drawer.remove_sprite(sprite_index)
+            self._on_board_sprites_drawer.discard_sprite(sprite_index)
+
+    def _get_oreshnik_launch_animation(self, coord: Vector2Int, target: Vector2Int, targets: Cells) -> Animation:
+        explosions = _group(*[chain(self._sleep(random.uniform(ORESHNIK_LAUNCH_EXPLOSIONS_MIN_LAG,
+                                                               ORESHNIK_LAUNCH_EXPLOSIONS_MAX_LAG)),
+                                    self._show_sprite(self._explosion,
+                                                      self._session.board.coordinates_of(explosion_cell),
+                                                      ORESHNIK_LAUNCH_EXPLOSIONS_DURATION,
+                                                      scale_ratio=random.uniform(
+                                                          ORESHNIK_LAUNCH_EXPLOSIONS_MIN_SCALE_RATIO,
+                                                          ORESHNIK_LAUNCH_EXPLOSIONS_MAX_SCALE_RATIO)),
+                                    (self._hide_figure(self._session.board.coordinates_of(explosion_cell))
+                                     if Empty not in explosion_cell.figure.FLAGS else
+                                     _no_animation()),
+                                    _cycle(_no_animation))
+                              for explosion_cell in targets],
+                            self._sleep(ORESHNIK_LAUNCH_EXPLOSIONS_DURATION + ORESHNIK_LAUNCH_EXPLOSIONS_MAX_LAG))
+
+        rocket_index = self._on_board_sprites_drawer.add_sprite(self._rocket, coord,
+                                                                scale_ratio=ORESHNIK_LAUNCH_ROCKET_SCALE)
+        rocket = self._on_board_sprites_drawer.get_sprite(rocket_index)
+
+        jump_arguments = (coord,
+                          target,
+                          ORESHNIK_LAUNCH_FLIGHT_HEIGHT,
+                          ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION)
+        get_jump_delta_position = self._get_jump_delta_position_getter(*jump_arguments)
+
+        def get_rocket_delta_angle(t: float) -> Angle:
+            if t == 0:
+                return Angle(0)
+
+            dt = 0.01
+            if t <= dt:
+                return Angle(0)
+
+            delta_position = ((get_jump_delta_position(t) - get_jump_delta_position(t - dt)) / dt)
+            if delta_position.length() == 0:
+                return Angle(0)
+
+            direction = delta_position.with_x(-delta_position.y).with_y(delta_position.x).normalize()
+            up = self._camera.orientation.rotation.inverse.apply(-Vector2.right()).normalize()
+            return -Angle(up.angle_to(direction))
+
+        flight = chain(_group(self._jump(rocket, *jump_arguments),
+                              self._rotate_sprite(rocket, get_rocket_delta_angle, ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION),
+                              self._sleep(ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION *
+                                          ORESHNIK_LAUNCH_VISIBLE_FLIGHT_DURATION_RATIO)),
+                       _call(lambda: self._on_board_sprites_drawer.discard_sprite(rocket_index)))
+
+        try:
+            yield from chain(flight, explosions)
+        finally:
+            self._on_board_sprites_drawer.discard_sprite(rocket_index)
 
     def _jump(self,
               sprite: arc.Sprite,
@@ -176,6 +245,14 @@ class MovesAnimator(proto.MovesAnimator):
               to_coord: Vector2Int,
               height: float,
               duration: float) -> Animation:
+        get_delta_position = self._get_jump_delta_position_getter(from_coord, to_coord, height, duration)
+        return self._translate_sprite(sprite, get_delta_position, duration)
+
+    def _get_jump_delta_position_getter(self,
+                                        from_coord: Vector2Int,
+                                        to_coord: Vector2Int,
+                                        height: float,
+                                        duration: float) -> Callable[[float], Vector2]:
         direction = get_direction(from_coord, to_coord, strict=False)
         start = get_world_position(from_coord)
         end = get_world_position(to_coord)
@@ -194,13 +271,18 @@ class MovesAnimator(proto.MovesAnimator):
             delta_position = to_end + to_periapsis
             return delta_position
 
-        return self._translate_sprite(sprite, get_delta_position, duration)
+        return get_delta_position
 
     def _get_sprite_at(self, coord: Vector2Int) -> arc.Sprite:
         return self._on_board_sprites_drawer.get_sprite(self._figures_drawer.get_figure_index(coord))
 
     def _sleep(self, duration: float) -> Animation:
         yield from _sleep_realtime(duration / self._speed_multiplier)
+
+    def _hide_figure(self, coord: Vector2Int) -> Animation:
+        yield
+        sprite = self._get_sprite_at(coord)
+        sprite.scale = 0
 
     def _show_sprite(self,
                      sprite: proto.Sprite,
@@ -212,7 +294,7 @@ class MovesAnimator(proto.MovesAnimator):
         try:
             yield from self._sleep(duration)
         finally:
-            self._on_board_sprites_drawer.remove_sprite(index)
+            self._on_board_sprites_drawer.discard_sprite(index)
 
     def _translate_sprite(self,
                           sprite: arc.Sprite,
@@ -265,7 +347,7 @@ def _sleep_realtime(duration: float) -> Animation:
         yield
 
 
-def _call(function: Callable[[], None]) -> Animation:
+def _call(function: Callable[[], ...]) -> Animation:
     yield
     function()
 
