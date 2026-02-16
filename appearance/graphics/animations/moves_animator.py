@@ -14,7 +14,7 @@ from core.moves.creation import Creation
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.relocations import Assault, Relocation
 from core.moves.conversion import Conversion
-from core.protocols import Move, GameSession, Figure, Cells, Empty
+from core.protocols import Move, GameSession, Figure, Cells, Empty, Creatable
 from mathematics.angle import Angle
 from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS, get_direction
 from mathematics.parabola import Parabola
@@ -38,6 +38,7 @@ CAPTURE_SCALE_RATIO = 1.5
 
 CONVERSION_DURATION = .5
 
+# CREATION_DURATION_RATIO = .3
 CREATION_DURATION = .5
 CREATION_FIRST_JUMP_DURATION_RATIO = .6
 CREATION_FIRST_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 3
@@ -163,6 +164,9 @@ class MovesAnimator(proto.MovesAnimator):
                      other_half())
 
     def _get_capture_animation(self, coord: Vector2Int) -> Animation:
+        if self._session.board[coord].is_empty:
+            return _no_animation()
+
         sprite = self._get_sprite_at(coord)
         initial_rotation = Angle(sprite.angle)
         shaking_duration = CAPTURE_DURATION * CAPTURE_SHAKING_DURATION_RATIO
@@ -188,12 +192,16 @@ class MovesAnimator(proto.MovesAnimator):
                      _call(lambda: self._figures_drawer.update_cell(coord)))
 
     def _get_creation_animation(self, coord: Vector2Int, figure_type: type[Figure]) -> Animation:
+        # cost = figure_type.FLAGS.get(Creatable).cost.amount
+        # duration = CREATION_DURATION_RATIO * (cost / 100_000)**.5
+        duration = CREATION_DURATION
+
         figure = self._figures_drawer.figures_sprites.get(figure_type)
         sprite_index = self._on_board_sprites_drawer.add_sprite(figure, coord, scale_ratio=CREATION_INITIAL_SCALE_RATIO)
         sprite = self._on_board_sprites_drawer.get_sprite(sprite_index)
 
-        first_jump_duration = CREATION_DURATION * CREATION_FIRST_JUMP_DURATION_RATIO
-        second_jump_duration = CREATION_DURATION - first_jump_duration
+        first_jump_duration = duration * CREATION_FIRST_JUMP_DURATION_RATIO
+        second_jump_duration = duration - first_jump_duration
 
         first_resizing_speed = (sprite.scale[0] *
                                 (CREATION_FINAL_SCALE_RATIO / CREATION_INITIAL_SCALE_RATIO - 1))

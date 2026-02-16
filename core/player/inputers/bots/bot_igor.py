@@ -307,7 +307,6 @@ class BotIgor(proto.Bot):
         assert isinstance(silo.figure, fig.MissileSilo)
 
         cells = self._session.cells
-        our_silos_count = self._count_of(fig.MissileSilo)
 
         targets = list[tuple[Cells, Cells]]()
         for player in self._session.master.players:
@@ -316,8 +315,6 @@ class BotIgor(proto.Bot):
                 continue
 
             silos = cells.with_owner(player) & cells.with_figure(fig.MissileSilo)
-            if len(silos.all()) >= our_silos_count * 2:
-                continue
 
             targets.append((silos,
                             cells.with_owner(player) & cells.with_figure(fig.Town)))
