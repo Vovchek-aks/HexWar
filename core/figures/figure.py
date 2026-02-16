@@ -4,7 +4,7 @@ from attrs import define, field
 
 from core import protocols as proto
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
-    PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik
+    PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend
 from core.figures.movable_flag import MovableBuilder
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
 from core.moves.attack import Attack
@@ -133,6 +133,7 @@ class MissileSilo(_Figure):
                       Static(),
                       Creatable(Dollars(3_000_000)),
                       Capturable(),
+                      StartsWithBudgetSpend(1),
                       CanLaunchOreshnik(min_distance=10,
                                         cost=Dollars(750_000),
                                         spread_radius=3,

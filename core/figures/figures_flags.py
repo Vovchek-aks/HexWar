@@ -116,6 +116,13 @@ class CanAttack(proto.CanAttack):
 
 
 @frozen
+class StartsWithBudgetSpend(proto.StartsWithBudgetSpend):
+    EXCLUDES = set[type[Flag]]()
+
+    amount: int
+
+
+@frozen
 class CanLaunchOreshnik(proto.CanLaunchOreshnik):
     EXCLUDES = set[type[Flag]]()
 

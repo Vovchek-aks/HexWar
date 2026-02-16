@@ -397,6 +397,13 @@ class CanAttack(Flag, metaclass=ABCMeta):
         ...
 
 
+class StartsWithBudgetSpend(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def amount(self) -> int:
+        ...
+
+
 class CanLaunchOreshnik(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
