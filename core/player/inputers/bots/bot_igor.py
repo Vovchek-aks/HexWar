@@ -1,6 +1,6 @@
 import math
 import random
-from itertools import islice
+from itertools import islice, chain
 from typing import Iterator
 
 from attrs import define, field
@@ -13,6 +13,7 @@ from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
 from core.moves.creation import Creation
+from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation
 from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
@@ -91,6 +92,7 @@ class BotIgor(proto.Bot):
                                   cells.at_front &
                                   cells.with_figure(fig.Land)).all())
         tanks_count = self._count_of(fig.Tank)
+        silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _BUILDING:
             has_developed = town_count > cells_count * .08
@@ -100,6 +102,14 @@ class BotIgor(proto.Bot):
             if bunkers_count < empty_front_length * bunker_ratio:
                 self._try_create(fig.Bunker)
                 # print("_try_create(fig.Bunker)")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
+            target_silos_count = max(1, town_count // 20)
+            if silos_count < target_silos_count:
+                self._try_create(fig.MissileSilo)
+                # print("_try_create(fig.MissileSilo)")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
@@ -187,6 +197,13 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
+            for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
+                yield from self._try_launch_oreshnik(self._board.coordinates_of(silo))
+                # print("_try_launch_oreshnik")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
             self._state = _PULLING
 
         if self._state == _PULLING:
@@ -225,7 +242,7 @@ class BotIgor(proto.Bot):
                 return self._get_cell_for_armed_figure(front, production)
             case fig.Bunker:
                 return self._get_cell_for_bunker(front, production)
-            case fig.Town:
+            case fig.Town | fig.MissileSilo:
                 candidates = back or empties
                 return random.choice(list(candidates.all()))
             case _:
@@ -284,6 +301,51 @@ class BotIgor(proto.Bot):
             if armed:
                 near_armed.add(cell)
         return Cells(near_armed)
+
+    def _try_launch_oreshnik(self, silo_coord: Vector2Int) -> Iterator[None]:
+        silo = self._board[silo_coord]
+        assert isinstance(silo.figure, fig.MissileSilo)
+
+        cells = self._session.cells
+        our_silos_count = self._count_of(fig.MissileSilo)
+
+        targets = list[tuple[Cells, Cells]]()
+        for player in self._session.master.players:
+            yield
+            if player == self._player:
+                continue
+
+            silos = cells.with_owner(player) & cells.with_figure(fig.MissileSilo)
+            if len(silos.all()) >= our_silos_count * 2:
+                continue
+
+            targets.append((silos,
+                            cells.with_owner(player) & cells.with_figure(fig.Town)))
+
+        target = max(targets, key=lambda t: (len(t[1].all()), -len(t[0].all())))
+
+        for cell in target[0]:
+            yield
+            move = OreshnikLaunch(silo_coord, self._board.coordinates_of(cell))
+            if (valid_move := move.validate(self._session)) is INVALID:
+                continue
+
+            self._moves_to_make.append(valid_move)
+            return
+
+        valid_moves = list[OreshnikLaunch]()
+        for cell in target[1]:
+            yield
+            move = OreshnikLaunch(silo_coord, self._board.coordinates_of(cell))
+            if move.validate(self._session) is not INVALID:
+                valid_moves.append(move)
+
+        if not valid_moves:
+            return
+
+        most_profitable = max(valid_moves, key=lambda move: len((move.get_target_cells(self._session) -
+                                                                 cells.with_figure(fig.Land | fig.Water)).all()))
+        self._moves_to_make.append(ValidMove(most_profitable))
 
     def _try_spawn_and_connect_artillery(self, amount: int) -> Iterator[None]:
         if amount <= 0:
