@@ -29,6 +29,9 @@ class Angle:
     def __add__(self, other: "Angle") -> "Angle":
         return type(self)(self.degrees + other.degrees)
 
+    def __sub__(self, other: "Angle") -> "Angle":
+        return self + -other
+
     def __mul__(self, other: float) -> "Angle":
         return type(self)(self.degrees * other)
 

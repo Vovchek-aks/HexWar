@@ -3,7 +3,7 @@ from typing import Iterator, Callable
 from time import perf_counter as time
 from itertools import chain
 
-from attrs import frozen
+from attrs import frozen, define, field
 import arcade as arc
 
 import appearance.protocols as proto
@@ -315,14 +315,16 @@ class MovesAnimator(proto.MovesAnimator):
                        delta_angle: Callable[[float], Angle],
                        duration: float) -> Animation:
         yield
-        sprite_angle = Angle(sprite.angle)
         start = time()
+        rotator = SpriteRotator(sprite, self._camera.orientation)
+        self._camera.orientation.has_changed.subscribe(rotator.on_camera_orientation_changed)
 
         def update_rotation() -> None:
             delta_time = time() - start
-            sprite.angle = (sprite_angle + delta_angle(delta_time * self._speed_multiplier)).degrees
+            rotator.update(delta_angle(delta_time * self._speed_multiplier))
 
         yield from _group(self._sleep(duration), _cycle(lambda: _call(update_rotation)))
+        self._camera.orientation.has_changed.unsubscribe(rotator.on_camera_orientation_changed)
 
     def _resize_sprite(self,
                        sprite: arc.Sprite,
@@ -338,6 +340,27 @@ class MovesAnimator(proto.MovesAnimator):
             sprite.scale = (Vector2(1, ratio) * (sprite_size + delta_size(delta_time * self._speed_multiplier))).tuple
 
         yield from _group(self._sleep(duration), _cycle(lambda: _call(update_size)))
+
+
+@define
+class SpriteRotator:
+    _sprite: arc.Sprite
+    _camera_orientation: proto.ReadonlyCameraOrientation
+
+    _previous_camera_angle: Angle = field(init=False)
+    _initial_sprite_angle: Angle = field(init=False)
+
+    def __attrs_post_init__(self) -> None:
+        self._initial_sprite_angle = Angle(self._sprite.angle)
+        self._previous_camera_angle = self._camera_orientation.rotation
+
+    def update(self, delta_angle: Angle) -> None:
+        self._sprite.angle = (self._initial_sprite_angle + delta_angle).degrees
+
+    def on_camera_orientation_changed(self) -> None:
+        delta_angle = self._camera_orientation.rotation - self._previous_camera_angle
+        self._previous_camera_angle = self._camera_orientation.rotation
+        self._initial_sprite_angle += delta_angle
 
 
 def _sleep_realtime(duration: float) -> Animation:
