@@ -35,5 +35,8 @@ class Angle:
     def __mul__(self, other: float) -> "Angle":
         return type(self)(self.degrees * other)
 
+    def __truediv__(self, other: float) -> "Angle":
+        return type(self)(self.degrees / other)
+
     def __neg__(self) -> "Angle":
         return self.inverse

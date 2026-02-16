@@ -13,6 +13,7 @@ from core.moves.capture import Capture
 from core.moves.creation import Creation
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.relocations import Assault, Relocation
+from core.moves.conversion import Conversion
 from core.protocols import Move, GameSession, Figure, Cells, Empty
 from mathematics.angle import Angle
 from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS, get_direction
@@ -34,6 +35,8 @@ CAPTURE_DURATION = .5
 CAPTURE_SHAKING_DURATION_RATIO = .8
 CAPTURE_SHAKE_ANGLE = Angle(15)
 CAPTURE_SCALE_RATIO = 1.5
+
+CONVERSION_DURATION = .5
 
 CREATION_DURATION = .5
 CREATION_FIRST_JUMP_DURATION_RATIO = .6
@@ -104,6 +107,8 @@ class MovesAnimator(proto.MovesAnimator):
                               chain(self._sleep(RELOCATION_PULLING_LAG), pulling))
             case Capture(to_coord=coord):
                 return self._get_capture_animation(coord)
+            case Conversion(coord=coord, target=target):
+                return self._get_conversion_animation(coord, target)
             case Creation(to_coord=coord, figure_type=figure):
                 return self._get_creation_animation(coord, figure)
             case OreshnikLaunch(from_coord=coord, to_coord=target):
@@ -134,6 +139,28 @@ class MovesAnimator(proto.MovesAnimator):
     def _get_relocation_animation(self, from_coord: Vector2Int, to_coord: Vector2Int) -> Animation:
         return self._jump(self._get_sprite_at(from_coord), from_coord, to_coord,
                           RELOCATION_JUMP_HEIGHT, RELOCATION_JUMP_DURATION)
+
+    def _get_conversion_animation(self, coord: Vector2Int, figure_type: type[Figure]) -> Animation:
+        sprite_index = self._figures_drawer.get_figure_index(coord)
+        sprite = self._on_board_sprites_drawer.get_sprite(sprite_index)
+        half_rotation_duration = CONVERSION_DURATION / 2
+        half_circle = Angle(180)
+        rotation_speed = half_circle.degrees / half_rotation_duration
+
+        def other_half() -> Animation:
+            figure = self._figures_drawer.figures_sprites.get(figure_type)
+            target_index = self._on_board_sprites_drawer.add_sprite(figure, coord)
+            target = self._on_board_sprites_drawer.get_sprite(target_index)
+            target.angle += half_circle.degrees
+
+            try:
+                yield from self._rotate_sprite(target, lambda t: Angle(rotation_speed * t), half_rotation_duration)
+            finally:
+                self._on_board_sprites_drawer.remove_sprite(target_index)
+
+        return chain(self._rotate_sprite(sprite, lambda t: Angle(rotation_speed * t), half_rotation_duration),
+                     self._hide_figure(coord),
+                     other_half())
 
     def _get_capture_animation(self, coord: Vector2Int) -> Animation:
         sprite = self._get_sprite_at(coord)
