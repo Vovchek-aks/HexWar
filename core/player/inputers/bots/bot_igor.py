@@ -19,6 +19,8 @@ from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
 from core.protocols import Capturable, CanCapture
 from core.resources import Dollars
+from mathematics.greedy_path_searcher import GreedyPathSearcher
+from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
@@ -445,42 +447,31 @@ class BotIgor(proto.Bot):
         assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
 
         cells = self._session.cells
-        all_armed = (cells.with_owner(self._player) &
-                     cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
-        if not all_armed:
-            return MISSING
-
-        front = all_armed & cells.at_front
+        front = cells.at_front & cells.with_owner(self._player) & cells.with_figure(fig.Land)
         if not front:
             return MISSING
 
-        neighbors = (self._board
-                     .get_neighbors(cell, include_cell=False)
-                     .with_flag(proto.OnLand)
-                     .with_owner(self._player)
-                     .with_figure(fig.Land))
-        if not neighbors:
+        target_front = min(front.all(),
+                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
+                                                               self._board.coordinates_of(front_cell)))
+
+        targets = (GreedyPathSearcher(self._board,
+                                      cells.with_figure(fig.Land) & cells.with_owner(self._player) + Cells({cell}),
+                                      target_front)
+                   .search_from(cell))
+        if not targets:
             return MISSING
 
-        neighbors += Cells({cell})
-
-        target = self._min_sqrt_distance_cell(neighbors, front)
-        if target == cell:
-            return MISSING
-
-        return target
+        return self._board[targets[1]]
 
     def _get_pull_tank_cell(self, cell: proto.Cell) -> proto.Cell | Status:
         if not isinstance(cell.figure, fig.Tank):
             assert False
 
         cells = self._session.cells
-        all_armed = (cells.with_owner(self._player) &
-                     cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
-        if not all_armed:
+        front = cells.at_front & cells.with_owner(self._player) & cells.with_figure(fig.Land)
+        if not front:
             return MISSING
-
-        front = all_armed & self._session.cells.at_front
 
         front = Cells({cell for cell in front
                        if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
@@ -488,21 +479,17 @@ class BotIgor(proto.Bot):
         if not front:
             return MISSING
 
-        neighbors = (self._board
-                     .get_neighbors(cell, include_cell=False)
-                     .with_flag(proto.OnLand)
-                     .with_owner(self._player)
-                     .with_figure(fig.Land))
-        if not neighbors:
+        target_front = min(cells.at_front.all(),
+                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
+                                                               self._board.coordinates_of(front_cell)))
+        targets = (GreedyPathSearcher(self._board,
+                                      cells.with_figure(fig.Land) & cells.with_owner(self._player) + Cells({cell}),
+                                      cell)
+                   .search_from(target_front))
+        if not targets:
             return MISSING
 
-        neighbors += Cells({cell})
-
-        target = self._min_sqrt_distance_cell(neighbors, front)
-        if target == cell:
-            return MISSING
-
-        return target
+        return self._board[targets[1]]
 
     def _try_pull_forces_to_front(self) -> Iterator[None]:
         cells = self._session.cells
@@ -724,7 +711,6 @@ class BotIgor(proto.Bot):
         return res
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:
-        # return list(candidates.all())[0]
         coord_of = self._board.coordinates_of
         return min(candidates, key=lambda front_cell: sum((coord_of(front_cell) -
                                                            coord_of(production_cell)).length ** .25

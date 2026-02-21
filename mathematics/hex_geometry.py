@@ -82,6 +82,10 @@ def get_world_position(cell_coord: Vector2Int) -> Vector2:
     return X_NORM * cell_coord.x + Y_NORM * cell_coord.y
 
 
+def get_distance(from_coord: Vector2Int, to_coord: Vector2Int) -> float:
+    return (get_world_position(to_coord) - get_world_position(from_coord)).length()
+
+
 def get_board_position(point: Vector2) -> Vector2Int:
     return Vector2Int.from_vector2(_matrix.inverse.apply(point), strict=False)
 
