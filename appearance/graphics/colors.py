@@ -1,9 +1,10 @@
 from color import Color
 
 BACKGROUND = Color(111, 139, 158)
-# WATER = Color(26, 108, 152)
 WATER = Color.from_hex_string("#4c7d9e")
 SHORE = Color.from_hex_string("#5ACCCE")
+
+PAUSE_MENU_BACKGROUND = Color(0, 0, 0, 150)
 
 PLAYERS = [
     Color(173, 82, 64),

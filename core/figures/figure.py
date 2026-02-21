@@ -86,7 +86,7 @@ class Town(_Figure):
                       Creatable(Dollars(1_000_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .add_resources(Dollars(120_000))
+                       .add_resources(Dollars(200_000))
                        .build()))
     MOVES_BUDGET = 0
 
@@ -223,7 +223,7 @@ class Motorization(_Figure):
             case Relocation():
                 return 5
             case Assault():
-                return 20
+                return 14
             case PullingInitiation():
                 return 0
             case PullingTermination():

@@ -5,6 +5,7 @@ import appearance.protocols as proto
 from mathematics.vector import Vector2Int
 from ..draw import Draw
 from ..drawers import BordDrawer, FiguresDrawer, BackgroundDrawer
+from appearance.graphics.colors import BACKGROUND
 from appearance.graphics.sprites import SpritesLoader
 from appearance.graphics.draw.drawers.drawers_arc.figures_drawer import FiguresSpritesLoader
 from core.figures.figure import Figure, get_figures
@@ -30,5 +31,5 @@ class DrawMaker:
         board_drawer = BordDrawer.make(board)
         cells_change_observer.cell_changed_owner.subscribe(board_drawer.update_cell)
 
-        return (Draw(board_drawer, on_board_sprites_drawer, BackgroundDrawer(screen_shape)),
+        return (Draw(board_drawer, on_board_sprites_drawer, BackgroundDrawer(screen_shape, BACKGROUND)),
                 figures_drawer)

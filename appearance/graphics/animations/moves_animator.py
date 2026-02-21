@@ -1,12 +1,12 @@
 import random
 from typing import Iterator, Callable
-from time import perf_counter as time
 from itertools import chain
 
 from attrs import frozen, define, field
 import arcade as arc
 
 import appearance.protocols as proto
+from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
 from core.moves.capture import Capture
@@ -67,11 +67,13 @@ class MovesAnimator(proto.MovesAnimator):
              figures_drawer: proto.FiguresDrawer,
              camera: proto.Camera,
              session: GameSession,
+             in_game_time: InGameTime,
              *,
              speed_multiplier: float = 1) -> "MovesAnimator":
         sprites_loader = SpritesLoader.from_meta()
         self = cls(
             speed_multiplier,
+            in_game_time,
             figures_drawer,
             camera,
             session,
@@ -82,6 +84,7 @@ class MovesAnimator(proto.MovesAnimator):
         return self
 
     _speed_multiplier: float
+    _in_game_time: InGameTime
 
     _figures_drawer: proto.FiguresDrawer
     _camera: proto.Camera
@@ -312,7 +315,13 @@ class MovesAnimator(proto.MovesAnimator):
         return self._on_board_sprites_drawer.get_sprite(self._figures_drawer.get_figure_index(coord))
 
     def _sleep(self, duration: float) -> Animation:
-        yield from _sleep_realtime(duration / self._speed_multiplier)
+        yield from self._sleep_realtime(duration / self._speed_multiplier)
+
+    def _sleep_realtime(self, duration: float) -> Animation:
+        yield
+        start = self._in_game_time.get()
+        while self._in_game_time.get() - start < duration:
+            yield
 
     def _hide_figure(self, coord: Vector2Int) -> Animation:
         yield
@@ -337,10 +346,10 @@ class MovesAnimator(proto.MovesAnimator):
                           duration: float) -> Animation:
         yield
         sprite_position = Vector2(*sprite.position)
-        start = time()
+        start = self._in_game_time.get()
 
         def update_position() -> None:
-            delta_time = time() - start
+            delta_time = self._in_game_time.get() - start
             sprite.position = (sprite_position + delta_position(delta_time * self._speed_multiplier)).tuple
 
         yield from _group(self._sleep(duration), _cycle(lambda: _call(update_position)))
@@ -350,12 +359,12 @@ class MovesAnimator(proto.MovesAnimator):
                        delta_angle: Callable[[float], Angle],
                        duration: float) -> Animation:
         yield
-        start = time()
+        start = self._in_game_time.get()
         rotator = SpriteRotator(sprite, self._camera.orientation)
         self._camera.orientation.has_changed.subscribe(rotator.on_camera_orientation_changed)
 
         def update_rotation() -> None:
-            delta_time = time() - start
+            delta_time = self._in_game_time.get() - start
             rotator.update(delta_angle(delta_time * self._speed_multiplier))
 
         yield from _group(self._sleep(duration), _cycle(lambda: _call(update_rotation)))
@@ -368,10 +377,10 @@ class MovesAnimator(proto.MovesAnimator):
         yield
         sprite_size = sprite.scale[0]
         ratio = sprite.scale[1] / sprite.scale[0]
-        start = time()
+        start = self._in_game_time.get()
 
         def update_size() -> None:
-            delta_time = time() - start
+            delta_time = self._in_game_time.get() - start
             sprite.scale = (Vector2(1, ratio) * (sprite_size + delta_size(delta_time * self._speed_multiplier))).tuple
 
         yield from _group(self._sleep(duration), _cycle(lambda: _call(update_size)))
@@ -396,13 +405,6 @@ class SpriteRotator:
         delta_angle = self._camera_orientation.rotation - self._previous_camera_angle
         self._previous_camera_angle = self._camera_orientation.rotation
         self._initial_sprite_angle += delta_angle
-
-
-def _sleep_realtime(duration: float) -> Animation:
-    yield
-    start = time()
-    while time() - start < duration:
-        yield
 
 
 def _call(function: Callable[[], ...]) -> Animation:

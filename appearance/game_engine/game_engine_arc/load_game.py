@@ -1,8 +1,12 @@
 from typing import Callable, Iterator
 
+from attrs import frozen
+
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
+from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
+from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.game_engine.game_engine_arc.updater import Updater
 from appearance.graphics.animations.moves_animator import MovesAnimator
@@ -10,6 +14,7 @@ from appearance.graphics.animations.moves_animators_switcher import MovesAnimato
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
+from appearance.graphics.draw.drawers.drawers_arc.background_drawer import BackgroundDrawer
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
@@ -28,26 +33,25 @@ from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
+from appearance.scenes.game_with_pause_scene import GameWithPauseScene
+from appearance.scenes.pause_menu import PauseMenu
 from core.cells_changes_observer import CellsChangesObserver
 from core.moves_maker import MovesMaker
-from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
-from core.protocols import GameSession, Player, OnLand
-from core.resources import Dollars
+from core.protocols import GameSession
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
 from statuses import Status
+from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 
 def load_game(screen_shape: Vector2Int,
               window: Window,
               make_session: Callable[[], GameSession],
-              make_main_menu_loading_scene: Callable[[], proto.Scene],
-              *,
-              is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
+              make_main_menu_loading_scene: Callable[[], proto.Scene]) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
@@ -100,9 +104,7 @@ def load_game(screen_shape: Vector2Int,
                                            button_press_action_happened,
                                            moves_maker,
                                            actions_reader)
-    ui_layer = (game_ui_layer_maker.make_multibot(end_turn_button_was_clicked.invoke)
-                if is_multibot else
-                game_ui_layer_maker.make(end_turn_button_was_clicked.invoke))
+    ui_layer = game_ui_layer_maker.make(end_turn_button_was_clicked.invoke)
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
@@ -115,35 +117,49 @@ def load_game(screen_shape: Vector2Int,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session)
+    in_game_time = InGameTime()
+    players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
+                                                  in_game_time)
     bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
-                                               speed_multiplier=3)
+                                               in_game_time, speed_multiplier=3)
     # speed_multiplier=float('inf'))
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker,
-                                               lambda move: animators_switcher.get().get_animation(move)))
+                                               lambda move: animators_switcher.get().get_animation(move)),
+                           in_game_time)
     drawer = FrameDrawer.make(layers)
 
-    scene = GameScene(drawer, updater, InputState.make(window), make_main_menu_loading_scene)
-    if is_multibot:
-        all_cells = len(session.board.cells.with_flag(OnLand).all())
+    continue_was_pressed = Event[None]()
+    to_main_menu_was_pressed = Event[None]()
+    pause_menu_layers = [
+        PauseMenuUiLayerMaker(UiDrawer(), screen_shape).make(continue_was_pressed.invoke,
+                                                             to_main_menu_was_pressed.invoke),
+        Layer(WholeScreenDrawableLayer(Draw(BackgroundDrawer(screen_shape, PAUSE_MENU_BACKGROUND))), null_layer)
+    ]
 
-        def reload_if_bot_won(bot: Player) -> None:
-            bots_cells = len(session.cells.with_owner(bot).all())
+    game = GameScene(drawer, updater, InputState.make(window))
+    pause_menu = PauseMenu.make(screenshot_saver, InputState.make(window), pause_menu_layers, pause_menu_opener)
+    scene = GameWithPauseScene(game, pause_menu)
 
-            if bots_cells >= all_cells * .85 or bot.resources.get(Dollars).amount > 500_000_000:
-                scene.on_pause_menu_open_requested()
+    user_inputer_builder = EventPlayerInputerBuilder()
+    user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
+    user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
+    session.master.current_player.change_inputer(user_inputer_builder.build())
+    animators_switcher.switch(session.master.current_player)
 
-        session.master.turn_has_passed.subscribe(reload_if_bot_won)
-    else:
-        user_inputer_builder = EventPlayerInputerBuilder()
-        user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
-        user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
-        session.master.current_player.change_inputer(user_inputer_builder.build())
-        animators_switcher.switch(session.master.current_player)
-        pause_menu_open_requested.subscribe(scene.on_pause_menu_open_requested)
+    pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
+    continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
+    to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_main_menu_loading_scene()))
 
     yield scene
+
+
+@frozen
+class Draw:
+    _background_drawer: BackgroundDrawer
+
+    def background(self) -> None:
+        self._background_drawer.draw_background()

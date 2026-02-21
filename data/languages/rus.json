@@ -12,6 +12,9 @@
     "ui": {
       "PLAY": "Играть",
       "EXIT": "Выйти из игры",
+      "PAUSE": "Пауза",
+      "CONTINUE": "Продолжить",
+      "TO_MAIN_MENU": "Выйти в главное меню",
 
       "END_TURN_BTN": "Завершить ход",
       "PLAYERS_TURN_TEXT": "{player} ходит",

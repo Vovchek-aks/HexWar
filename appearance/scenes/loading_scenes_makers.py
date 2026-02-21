@@ -34,5 +34,4 @@ def make_multibot_loading_scene(screen_shape: Vector2Int,
                              load_game(screen_shape,
                                        window,
                                        make_game_session,
-                                       lambda: make_multibot_loading_scene(screen_shape, window, make_game_session),
-                                       is_multibot=True))
+                                       lambda: make_multibot_loading_scene(screen_shape, window, make_game_session)))

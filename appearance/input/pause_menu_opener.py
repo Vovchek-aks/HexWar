@@ -1,17 +1,23 @@
 from typing import Callable
 
-from attrs import frozen
+from attrs import define
 import arcade as arc
 
 PAUSE_MENU_KEY = arc.key.ESCAPE
 
 
-@frozen
+@define
 class PauseMenuOpener:
-    _open_pause_manu: Callable[[], None]
+    _open_pause_menu: Callable[[], None]
+    _is_currently_pressed: bool = False
 
     def update(self, keys: set[int]) -> None:
         if PAUSE_MENU_KEY not in keys:
+            self._is_currently_pressed = False
             return
 
-        self._open_pause_manu()
+        if self._is_currently_pressed:
+            return
+
+        self._is_currently_pressed = True
+        self._open_pause_menu()

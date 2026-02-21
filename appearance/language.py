@@ -74,6 +74,10 @@ _COST = "COST"
 _PLAY = "PLAY"
 _EXIT = "EXIT"
 
+_PAUSE = "PAUSE"
+_CONTINUE = "CONTINUE"
+_TO_MAIN_MENU = "TO_MAIN_MENU"
+
 _LOADING = "loading"
 _MAP_LOADING = "MAP_LOADING"
 _INTERMEDIATE_PREPARING = "INTERMEDIATE_PREPARING"
@@ -144,6 +148,15 @@ class Language:
 
     def get_exit_message(self) -> str:
         return self._ui[_EXIT]
+
+    def get_pause_message(self) -> str:
+        return self._ui[_PAUSE]
+
+    def get_continue_message(self) -> str:
+        return self._ui[_CONTINUE]
+
+    def get_to_main_menu_message(self) -> str:
+        return self._ui[_TO_MAIN_MENU]
 
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]

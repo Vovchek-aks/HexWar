@@ -106,6 +106,14 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
+            if has_developed:
+                for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
+                    yield from self._try_launch_oreshnik(self._board.coordinates_of(silo))
+                    # print("_try_launch_oreshnik")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
+
             target_silos_count = max(1, town_count // 20)
             if silos_count < target_silos_count:
                 self._try_create(fig.MissileSilo)
@@ -193,13 +201,6 @@ class BotIgor(proto.Bot):
 
             yield from self._try_attack_with_tanks()
             # print("_try_attack_with_tanks")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
-
-            for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
-                yield from self._try_launch_oreshnik(self._board.coordinates_of(silo))
-                # print("_try_launch_oreshnik")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
@@ -306,6 +307,14 @@ class BotIgor(proto.Bot):
         silo = self._board[silo_coord]
         assert isinstance(silo.figure, fig.MissileSilo)
 
+        if self._player.resources.get(Dollars).amount < silo.figure.FLAGS.get(proto.CanLaunchOreshnik).cost.amount:
+            return
+
+        if not self._session.figures_budget.can_spend(silo.figure,
+                                                      silo.figure.get_cost_of(OreshnikLaunch(Vector2Int.zero(),
+                                                                                             Vector2Int.zero()))):
+            return
+
         cells = self._session.cells
 
         targets = list[tuple[Cells, Cells]]()
@@ -334,6 +343,11 @@ class BotIgor(proto.Bot):
         for cell in target[1]:
             yield
             move = OreshnikLaunch(silo_coord, self._board.coordinates_of(cell))
+            if (move.get_target_cells(self._session) &
+                    cells.with_owner(self._player) -
+                    cells.with_figure(fig.Land | fig.Water)):
+                continue
+
             if move.validate(self._session) is not INVALID:
                 valid_moves.append(move)
 

@@ -2,6 +2,7 @@ from typing import Iterator
 
 from attrs import frozen
 
+from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.input.camera_mover import CameraMover
 from appearance.input.clicks_catcher import ClicksCatcher
@@ -21,7 +22,8 @@ class Updater(proto.Updater):
              pause_manu_opener: PauseMenuOpener,
              mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[Layer],
-             player_turner: Iterator[None]) -> "Updater":
+             player_turner: Iterator[None],
+             in_game_time: InGameTime) -> "Updater":
         clicks_catcher = ClicksCatcher(layers)
         return cls(camera_mover,
                    camera_orientation,
@@ -29,7 +31,8 @@ class Updater(proto.Updater):
                    pause_manu_opener,
                    mouse_movement_observer,
                    clicks_catcher,
-                   player_turner)
+                   player_turner,
+                   in_game_time)
 
     _camera_mover: CameraMover
     _camera_orientation: proto.CameraOrientation
@@ -38,6 +41,7 @@ class Updater(proto.Updater):
     _mouse_movement_observer: proto.MouseMovementObserver
     _clicks_catcher: ClicksCatcher
     _player_turner: Iterator[None]
+    _in_game_time: InGameTime
 
     def update(self, input_state: InputState) -> None:
         self._camera_mover.update(input_state.last_frame_mouse_wheel_delta,
@@ -48,4 +52,5 @@ class Updater(proto.Updater):
         self._pause_manu_opener.update(input_state.pressed_keys)
         self._mouse_movement_observer.update(input_state.mouse_position)
         self._clicks_catcher.update(input_state.last_frame_clicks)
+        self._in_game_time.update(input_state.dt)
         next(self._player_turner)
