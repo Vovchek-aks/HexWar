@@ -10,6 +10,13 @@ from core.cells import Cells
 
 @frozen
 class CellsCache(proto.CellsCache):
+    @classmethod
+    def make(cls, board: proto.Board) -> "CellsCache":
+        self = CellsCache(board)
+        for cell in board.cells:
+            self.update(cell)
+        return self
+
     _board: proto.Board
 
     _cells_of: dict[proto.Player, set[proto.Cell]] = field(init=False, factory=lambda: defaultdict(set))

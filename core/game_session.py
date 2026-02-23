@@ -7,6 +7,8 @@ from core.cells_cache import CellsCache
 from core.figures.figures import Figures
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
+from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
+from core.player.players_moves_maker import on_turn_start
 from core.pulling_connections import PullingConnections
 from core.resources import Dollars
 from mathematics.vector import Vector2Int
@@ -113,6 +115,7 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
                                                  (players[6] if coord.x - coord.y >= 0 else players[7])),
                                                 _get_empty_figure(coord, board_size)))
     random.shuffle(players)
+    players[0].change_inputer(WantsToBeEventPlayerInputer())
 
     figures = Figures(board)
     pulling_connections = PullingConnections.make(figures)
@@ -127,14 +130,15 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
             coord = board.coordinates_of(cell)
             figures.add(fig.Town, coord)
 
-    for _ in range(1):
-        for cell in board.cells:
-            cells.update(cell)
+    for cell in board.cells:
+        cells.update(cell)
 
     for player in players:
         player.resources.add(Dollars(5_000_000))
 
-    return GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)
+    session = GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)
+    on_turn_start(session)
+    return session
 
 
 def _get_empty_figure(coord: Vector2Int, board_size: int) -> proto.Figure:

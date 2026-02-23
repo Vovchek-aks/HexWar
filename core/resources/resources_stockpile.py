@@ -7,18 +7,18 @@ from observer import Event, OnEventSubscriber
 
 @frozen
 class ResourcesStockpile(proto.ResourcesStockpile):
-    _has_changed: Event["ResourcesStockpile", None] = field(init=False, factory=Event)
-
-    resources: list[Resource] = field(init=False, factory=lambda: [
+    _resources: list[Resource] = field(factory=lambda: [
         resource() for resource in get_resources_types()
     ])
+
+    _has_changed: Event["ResourcesStockpile", None] = field(init=False, factory=Event)
 
     @property
     def has_changed(self) -> OnEventSubscriber["ResourcesStockpile", None]:
         return self._has_changed.subscriber
 
     def get(self, target: type[Resource]) -> Resource:
-        for resource in self.resources:
+        for resource in self._resources:
             if isinstance(resource, target):
                 return resource
 
@@ -30,14 +30,14 @@ class ResourcesStockpile(proto.ResourcesStockpile):
 
     def add(self, additional_resource: Resource) -> None:
         resource = self.get(type(additional_resource))
-        index = self.resources.index(resource)
-        self.resources[index] += additional_resource
+        index = self._resources.index(resource)
+        self._resources[index] += additional_resource
         self._has_changed.invoke(self)
 
     def take(self, taken_resource: Resource) -> None:
         assert self.can_take(taken_resource)
 
         resource = self.get(type(taken_resource))
-        index = self.resources.index(resource)
-        self.resources[index] -= taken_resource
+        index = self._resources.index(resource)
+        self._resources[index] -= taken_resource
         self._has_changed.invoke(self)

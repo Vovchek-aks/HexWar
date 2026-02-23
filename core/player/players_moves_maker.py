@@ -11,7 +11,6 @@ def players_moves_maker(session: proto.GameSession,
                         get_move_preparation_process: MovePreparationGetter = lambda _: MISSING) -> Iterator[None]:
     while True:
         with session.master.current_player.inputer as player:
-            _on_turn_start(session)
             while not player.wants_to_end_turn():
                 move = player.get_move(session)
                 if not isinstance(move, proto.ValidMove):
@@ -27,12 +26,13 @@ def players_moves_maker(session: proto.GameSession,
 
         session.master.pass_turn_to_next_player()
         session.figures_budget.clear()
+        on_turn_start(session)
 
 
-def _on_turn_start(session: proto.GameSession) -> None:
+def on_turn_start(session: proto.GameSession) -> None:
     player = session.master.current_player
     board = session.board
-    cells = (board.cells
+    cells = (session.cells
              .with_owner(player)
              .with_flag(proto.UpdatableOnTurnStart))
 

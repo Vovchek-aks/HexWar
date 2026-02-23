@@ -9,8 +9,8 @@ from core.resources import ResourcesStockpile
 class Player(proto.Player):
     _data: proto.PlayerData = field(eq=False, hash=False)
     _inputer: proto.PlayerInputer = field(eq=False, hash=False)
+    _resources_stockpile: proto.ResourcesStockpile = field(factory=ResourcesStockpile, eq=False, hash=False)
 
-    _resources_stockpile: proto.ResourcesStockpile = field(init=False, factory=ResourcesStockpile, eq=False, hash=False)
     _id: int = field(init=False)
 
     def __attrs_post_init__(self) -> None:

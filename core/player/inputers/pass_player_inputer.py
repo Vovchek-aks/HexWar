@@ -12,6 +12,10 @@ class PassPlayerInputer(proto.PlayerInputer):
     _timeout: float = 0
     _move_start_time: float = field(init=False, default=0)
 
+    @property
+    def timeout(self) -> float:
+        return self._timeout
+
     def get_move(self, session: proto.GameSession) -> proto.ValidMove | Status:
         return MISSING
 

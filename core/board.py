@@ -14,9 +14,13 @@ CELL_MAKER = Callable[[Vector2Int], proto.Cell]
 class Board(proto.Board):
     @classmethod
     def from_maker(cls, shape: Vector2Int, cell_maker: CELL_MAKER) -> proto.Board:
-        cells = [cell_maker(Vector2Int(x, y)) for x, y in product(range(shape.x), range(shape.y))]
+        cells = [cell_maker(coord) for coord in cls.get_cell_coords(shape)]
         index_of = {cell: index for index, cell in enumerate(cells)}
         return cls(shape, cells, set(cells), index_of)
+
+    @staticmethod
+    def get_cell_coords(shape: Vector2Int) -> Iterable[Vector2Int]:
+        return map(lambda coord: Vector2Int(coord[1], coord[0]), product(*map(range, shape.tuple[::-1])))
 
     shape: Vector2Int
     _cells: list[proto.Cell] = field()
@@ -42,7 +46,7 @@ class Board(proto.Board):
 
     @property
     def cell_coords(self) -> Iterable[Vector2Int]:
-        return map(lambda coord: Vector2Int(*coord), product(*map(range, self.shape.tuple)))
+        return self.get_cell_coords(self.shape)
 
     def has(self, cell: proto.Cell) -> bool:
         return cell in self._cells_set

@@ -36,6 +36,7 @@ from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.pause_menu import PauseMenu
 from core.cells_changes_observer import CellsChangesObserver
+from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from game_session_saver import GameSessionSaver
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
@@ -148,7 +149,12 @@ def load_game(screen_shape: Vector2Int,
     user_inputer_builder = EventPlayerInputerBuilder()
     user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
     user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
-    session.master.current_player.change_inputer(user_inputer_builder.build())
+
+    for player in session.master.players:
+        if not isinstance(player.inputer, WantsToBeEventPlayerInputer):
+            continue
+        player.change_inputer(user_inputer_builder.build())
+
     animators_switcher.switch(session.master.current_player)
 
     pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
