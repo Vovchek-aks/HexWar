@@ -532,6 +532,11 @@ class Figures(ABC):
 
 
 class FiguresRelocationBudget(ABC):
+    @property
+    @abstractmethod
+    def figures_bills(self) -> dict[Figure, int]:
+        ...
+
     @abstractmethod
     def clear(self) -> None:
         ...
@@ -554,6 +559,11 @@ class FiguresRelocationBudget(ABC):
 
 
 class PullingConnections(ABC):
+    @property
+    @abstractmethod
+    def pullable_of(self) -> dict[Figure, Figure]:
+        ...
+
     @property
     @abstractmethod
     def pair_added(self) -> OnEventSubscriber[Figure, Figure, None]:

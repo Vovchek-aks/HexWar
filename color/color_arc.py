@@ -21,6 +21,9 @@ class Color(arc.color.Color):
                    math.floor(total_g / total),
                    math.floor(total_b / total))
 
+    def hex(self) -> str:
+        return f"#{hex(self.r)[2:]}{hex(self.g)[2:]}{hex(self.b)[2:]}"
+
     def lerp(self, color: "Color", ratio: float) -> "Color":
         return Color(
             min(255, round(self.r * (1 - ratio) + color.r * ratio)),

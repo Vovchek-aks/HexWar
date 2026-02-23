@@ -36,6 +36,7 @@ from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.pause_menu import PauseMenu
 from core.cells_changes_observer import CellsChangesObserver
+from game_session_saver import GameSessionSaver
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
@@ -153,6 +154,7 @@ def load_game(screen_shape: Vector2Int,
     pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
     continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
     to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_main_menu_loading_scene()))
+    to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save("aboba.json"))
 
     yield scene
 

@@ -7,6 +7,8 @@ from mathematics.vector import Vector2Int
 from .sprite import Sprite
 from files import read_meta
 
+SPRITES_FOLDER = Path("data/sprites")
+
 SPRITE_DICT = dict[str, str | list[int]]
 SPRITES_GROUP_DICT = dict[str, SPRITE_DICT]
 SPRITES_META_DICT = dict[str, SPRITE_DICT | SPRITES_GROUP_DICT]
@@ -27,8 +29,6 @@ _LOADING_SCREEN = "loading_screen"
 _EFFECTS = "effects"
 _EXPLOSION = "explosion"
 _ROCKET = "rocket"
-
-SPRITES_FOLDER = Path("data/sprites")
 
 
 @frozen

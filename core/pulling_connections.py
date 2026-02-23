@@ -21,6 +21,10 @@ class PullingConnections(proto.PullingConnections):
     _pair_removed: Event[Figure, Figure, None] = field(init=False, factory=Event)
 
     @property
+    def pullable_of(self) -> dict[Figure, Figure]:
+        return dict(self._pullable_of)
+
+    @property
     def pair_added(self) -> OnEventSubscriber[Figure, Figure, None]:
         return self._pair_added.subscriber
 

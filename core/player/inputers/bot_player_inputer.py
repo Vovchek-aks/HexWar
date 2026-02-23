@@ -14,6 +14,14 @@ class BotPlayerInputer(proto.PlayerInputer):
 
     _wants_to_end_turn: bool = field(init=False, default=False)
 
+    @property
+    def bot(self) -> proto.Bot:
+        return self._bot
+
+    @property
+    def time_to_think(self) -> float:
+        return self._time_to_think
+
     def wants_to_end_turn(self) -> bool:
         return self._wants_to_end_turn
 
