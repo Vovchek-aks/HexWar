@@ -444,7 +444,7 @@ class BotIgor(proto.Bot):
         return random.choice(list(targets.all()))
 
     def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
+        # assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
 
         cells = self._session.cells
         front = cells.at_front & cells.with_owner(self._player) & cells.with_figure(fig.Land)
@@ -504,13 +504,14 @@ class BotIgor(proto.Bot):
         yield
 
         back = all_armed - front
-        for cell in all_armed:
-            fn = (self._get_pull_infantry_motorization_cell
-                  if (is_infmoto := isinstance(cell.figure, fig.Motorization | fig.Infantry))
-                  else self._get_pull_tank_cell)
-            if is_infmoto and cell not in back:
-                yield
-                continue
+        for cell in back:
+            # fn = (self._get_pull_infantry_motorization_cell
+            #       if (is_infmoto := isinstance(cell.figure, fig.Motorization | fig.Infantry))
+            #       else self._get_pull_tank_cell)
+            fn = self._get_pull_infantry_motorization_cell
+            # if is_infmoto and cell not in back:
+            #     yield
+            #     continue
             if (target := fn(cell)) is MISSING:
                 yield
                 continue

@@ -2,11 +2,11 @@ from appearance.game_engine import GameEngine
 from appearance.game_engine.game_engine_arc.window import Window
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_makers import make_main_menu_loading_scene, make_multibot_loading_scene
-from core.game_session import multibot_map
-from game_session_saver import GameSessionLoader
+from core.game_session import test_map
+# from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
 
-IS_MULTIBOT = False
+IS_MULTIBOT = True
 
 IS_FULLSCREEN = False
 SCREEN_SHAPE = (Vector2Int(1920, 1080)
@@ -25,13 +25,13 @@ def main() -> None:
 
 def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return make_main_menu_loading_scene(screen_shape, window,
-                                        lambda: multibot_map(ups=UPS, board_size=70, initial_town_ratio=.75))
+                                        lambda: test_map(ups=UPS, board_size=70, initial_town_ratio=.75))
     # lambda: GameSessionLoader.make("aboba.json", UPS).load())
 
 
 def _make_multibot_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return make_multibot_loading_scene(screen_shape, window,
-                                       lambda: multibot_map(ups=UPS, board_size=70, initial_town_ratio=1))
+                                       lambda: test_map(ups=UPS, board_size=70, initial_town_ratio=1, is_multibot=True))
 
 
 if __name__ == '__main__':

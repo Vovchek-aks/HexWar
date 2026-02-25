@@ -86,7 +86,7 @@ class GameSession(proto.GameSession):
 #     return GameSession(Master(players), board, FiguresRelocationBudget())
 
 
-def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> GameSession:
+def test_map(*, ups: float, board_size: int, initial_town_ratio: float, is_multibot: bool = False) -> GameSession:
     assert 0 <= initial_town_ratio <= 1
 
     bots_per_frame_thinking_time = .95 / ups
@@ -115,7 +115,8 @@ def multibot_map(*, ups: float, board_size: int, initial_town_ratio: float) -> G
                                                  (players[6] if coord.x - coord.y >= 0 else players[7])),
                                                 _get_empty_figure(coord, board_size)))
     random.shuffle(players)
-    players[0].change_inputer(WantsToBeEventPlayerInputer())
+    if not is_multibot:
+        players[0].change_inputer(WantsToBeEventPlayerInputer())
 
     figures = Figures(board)
     pulling_connections = PullingConnections.make(figures)

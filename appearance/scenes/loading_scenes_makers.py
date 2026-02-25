@@ -21,9 +21,7 @@ def make_game_loading_scene(screen_shape: Vector2Int,
                             window: Window,
                             make_game_session: Callable[[], GameSession]) -> LoadingScene:
     return LoadingScene.make(screen_shape,
-                             load_game(screen_shape,
-                                       window,
-                                       make_game_session,
+                             load_game(screen_shape, window, make_game_session,
                                        lambda: make_main_menu_loading_scene(screen_shape, window, make_game_session)))
 
 
@@ -31,7 +29,6 @@ def make_multibot_loading_scene(screen_shape: Vector2Int,
                                 window: Window,
                                 make_game_session: Callable[[], GameSession]) -> LoadingScene:
     return LoadingScene.make(screen_shape,
-                             load_game(screen_shape,
-                                       window,
-                                       make_game_session,
-                                       lambda: make_multibot_loading_scene(screen_shape, window, make_game_session)))
+                             load_game(screen_shape, window, make_game_session,
+                                       lambda: make_multibot_loading_scene(screen_shape, window, make_game_session),
+                                       is_multibot=True))

@@ -34,14 +34,16 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
+from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
 from core.cells_changes_observer import CellsChangesObserver
+from core.figures.figure import Town
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from game_session_saver import GameSessionSaver
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
-from core.protocols import GameSession
+from core.protocols import GameSession, Player
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -53,7 +55,9 @@ from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 def load_game(screen_shape: Vector2Int,
               window: Window,
               make_session: Callable[[], GameSession],
-              make_main_menu_loading_scene: Callable[[], proto.Scene]) -> Iterator[proto.Scene | Status]:
+              make_next_scene_loading: Callable[[], proto.Scene],
+              *,
+              is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
@@ -106,7 +110,9 @@ def load_game(screen_shape: Vector2Int,
                                            button_press_action_happened,
                                            moves_maker,
                                            actions_reader)
-    ui_layer = game_ui_layer_maker.make(end_turn_button_was_clicked.invoke)
+    ui_layer = (game_ui_layer_maker.make_multibot()
+                if is_multibot else
+                game_ui_layer_maker.make(end_turn_button_was_clicked.invoke))
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
@@ -143,24 +149,35 @@ def load_game(screen_shape: Vector2Int,
     ]
 
     game = GameScene(drawer, updater, InputState.make(window))
-    pause_menu = PauseMenu.make(screenshot_saver, InputState.make(window), pause_menu_layers, pause_menu_opener)
-    scene = GameWithPauseScene(game, pause_menu)
+    if is_multibot:
+        scene = MultibotScene(game)
 
-    user_inputer_builder = EventPlayerInputerBuilder()
-    user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
-    user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
+        def on_player_turn_ended(player: Player) -> None:
+            towns = session.cells.with_figure(Town)
+            player_towns = session.cells.with_owner(player) & towns
+            if len(player_towns.all()) > len(towns.all()) * .9:
+                scene.on_reload(make_next_scene_loading())
 
-    for player in session.master.players:
-        if not isinstance(player.inputer, WantsToBeEventPlayerInputer):
-            continue
-        player.change_inputer(user_inputer_builder.build())
+        session.master.turn_has_passed.subscribe(on_player_turn_ended)
+    else:
+        pause_menu = PauseMenu.make(screenshot_saver, InputState.make(window), pause_menu_layers, pause_menu_opener)
+        scene = GameWithPauseScene(game, pause_menu)
 
-    animators_switcher.switch(session.master.current_player)
+        user_inputer_builder = EventPlayerInputerBuilder()
+        user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
+        user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
 
-    pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
-    continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
-    to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_main_menu_loading_scene()))
-    to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save("aboba.json"))
+        for player in session.master.players:
+            if not isinstance(player.inputer, WantsToBeEventPlayerInputer):
+                continue
+            player.change_inputer(user_inputer_builder.build())
+
+        animators_switcher.switch(session.master.current_player)
+
+        pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
+        continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
+        to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
+        to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save("aboba.json"))
 
     yield scene
 

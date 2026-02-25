@@ -88,7 +88,7 @@ class GameUiLayerMaker:
 
         return Layer.as_multiple(layers)
 
-    def make_multibot(self, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
+    def make_multibot(self) -> Layer:
         players_turn = TextUi.make(self._drawer,
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
@@ -112,9 +112,6 @@ class GameUiLayerMaker:
 
         for player in self._session.master.players:
             player.resources.has_changed.subscribe(on_resources_had_changed)
-
-        end_turn_button = self._make_end_turn_button()
-        end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
