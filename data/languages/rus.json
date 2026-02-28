@@ -14,7 +14,8 @@
       "EXIT": "Выйти из игры",
       "PAUSE": "Пауза",
       "CONTINUE": "Продолжить",
-      "TO_MAIN_MENU": "Выйти в главное меню",
+      "TO_MAIN_MENU": "Сохраниться и выйти",
+      "BACK": "Назад",
 
       "END_TURN_BTN": "Завершить ход",
       "PLAYERS_TURN_TEXT": "{player} ходит",

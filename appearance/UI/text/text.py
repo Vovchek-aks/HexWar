@@ -84,5 +84,5 @@ class TextUi(proto.ElementUi):
             scale_x = rect_width / self.text_shape.x
             scale_y = rect_height / self.text_shape.y
             scale = min(scale_x, scale_y * HEIGHT_TO_WIDTH_RATIO)
-            new_size = max(1, int(self._text.font_size * scale))
+            new_size = min(312, max(1, int(self._text.font_size * scale)))
             self._text.font_size = new_size

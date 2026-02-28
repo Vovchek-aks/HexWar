@@ -14,7 +14,8 @@
       "EXIT": "Exit game",
       "PAUSE": "Pause",
       "CONTINUE": "Continue",
-      "TO_MAIN_MENU": "Exit to main menu",
+      "TO_MAIN_MENU": "Save and exit",
+      "BACK": "Back",
 
       "END_TURN_BTN": "End turn",
       "PLAYERS_TURN_TEXT": "{player}'s turn",

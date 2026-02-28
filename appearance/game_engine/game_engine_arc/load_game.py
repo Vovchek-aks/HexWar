@@ -39,7 +39,7 @@ from appearance.scenes.pause_menu import PauseMenu
 from core.cells_changes_observer import CellsChangesObserver
 from core.figures.figure import Town
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
-from game_session_saver import GameSessionSaver
+from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
@@ -177,7 +177,7 @@ def load_game(screen_shape: Vector2Int,
         pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
         continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
         to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
-        to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save("aboba.json"))
+        to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save(SAVE_FILE))
 
     yield scene
 

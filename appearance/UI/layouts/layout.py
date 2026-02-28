@@ -38,3 +38,6 @@ class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
 
     def _reshape_all(self, elements: list[proto.ElementUi], margin_ratio: float) -> None:
         ...
+
+    def __len__(self) -> int:
+        return len(self._elements)

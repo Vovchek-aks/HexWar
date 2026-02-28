@@ -1,3 +1,4 @@
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -26,6 +27,8 @@ from core.resources import get_resources_types, ResourcesStockpile
 from statuses import MISSING
 
 SAVE_FOLDER = Path("data") / "saves"
+
+SAVE_FILE = "last_save.json"
 
 PLAYER_DICT = dict[str, str | list[str] | dict[str, int]]
 BUDGET_DICT = dict[str, int]
@@ -166,7 +169,7 @@ class GameSessionLoader:
         board = self._load_board(master)
         figures = self._load_figures(board)
         pulling_connections = self._load_pulling_connections(board, figures)
-        budget = self.load_figures_budget(board)
+        budget = self._load_figures_budget(board)
         cells = CellsCache.make(board)
 
         return GameSession(master, board, budget, pulling_connections, cells, figures)
@@ -232,7 +235,7 @@ class GameSessionLoader:
                                  board[self._coord_from(pullable_key)].figure)
         return connections
 
-    def load_figures_budget(self, board: Board) -> FiguresRelocationBudget:
+    def _load_figures_budget(self, board: Board) -> FiguresRelocationBudget:
         budget = FiguresRelocationBudget()
         bill_of: BUDGET_DICT = self._json[_BUDGET]
         for key, bill in bill_of.items():
@@ -242,3 +245,12 @@ class GameSessionLoader:
     @staticmethod
     def _coord_from(key: str) -> Vector2Int:
         return Vector2Int(*map(int, key.split()))
+
+
+def get_saved_maps() -> list[str]:
+    maps = list[str]()
+    for file in map(Path, os.listdir(SAVE_FOLDER)):
+        if file.suffix != ".json":
+            continue
+        maps.append(file.stem)
+    return maps

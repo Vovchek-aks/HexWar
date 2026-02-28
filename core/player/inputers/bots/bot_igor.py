@@ -1,7 +1,7 @@
 import math
 import random
 from itertools import islice, chain
-from typing import Iterator
+from typing import Iterator, Callable
 
 from attrs import define, field
 
@@ -27,6 +27,7 @@ from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 _ATTACKING = 0
 _BUILDING = 1
 _PULLING = 2
+_INITIAL_STATE = _BUILDING
 
 
 @define
@@ -35,7 +36,7 @@ class BotIgor(proto.Bot):
     _player: proto.Player | Status = field(init=False, default=MISSING)
     _cells_count_at_last_turn: int = 0
     _turns_count: int = 0
-    _state: int = _BUILDING
+    _state: int = _INITIAL_STATE
     _moves_to_make: list[proto.ValidMove] = field(factory=list)
     _moves_generator: Iterator[None] | Status = field(init=False, default=MISSING)
     _ran_out_of_moves: bool = field(init=False, default=False)
@@ -77,7 +78,7 @@ class BotIgor(proto.Bot):
         # print('\n' * 3)
         self._cells_count_at_last_turn = cells_count
         self._turns_count += 1
-        self._state = _BUILDING
+        self._state = _INITIAL_STATE
         self._ran_out_of_moves = False
         return MISSING
 
@@ -211,9 +212,9 @@ class BotIgor(proto.Bot):
 
         if self._state == _PULLING:
             yield from self._try_pull_forces_to_front()
-            # print(f"_try_pull_forces_to_front {_is_inner}")
+            print(f"_try_pull_forces_to_front {_is_inner}")
             if self._moves_to_make:
-                # print(self._moves_to_make)
+                print(self._moves_to_make)
                 return
 
             if not _is_inner:
@@ -323,6 +324,12 @@ class BotIgor(proto.Bot):
         for player in self._session.master.players:
             yield
             if player == self._player:
+                continue
+
+            to_player_front = Cells()
+            for front in cells.at_front & cells.with_owner(player):
+                to_player_front += self._board.get_neighbors(front)
+            if not cells.with_owner(self._player) & to_player_front:
                 continue
 
             silos = cells.with_owner(player) & cells.with_figure(fig.MissileSilo)
@@ -443,54 +450,6 @@ class BotIgor(proto.Bot):
 
         return random.choice(list(targets.all()))
 
-    def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        # assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
-
-        cells = self._session.cells
-        front = cells.at_front & cells.with_owner(self._player) & cells.with_figure(fig.Land)
-        if not front:
-            return MISSING
-
-        target_front = min(front.all(),
-                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
-                                                               self._board.coordinates_of(front_cell)))
-
-        targets = (GreedyPathSearcher(self._board,
-                                      cells.with_figure(fig.Land) & cells.with_owner(self._player) + Cells({cell}),
-                                      target_front)
-                   .search_from(cell))
-        if not targets:
-            return MISSING
-
-        return self._board[targets[1]]
-
-    def _get_pull_tank_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        if not isinstance(cell.figure, fig.Tank):
-            assert False
-
-        cells = self._session.cells
-        front = cells.at_front & cells.with_owner(self._player) & cells.with_figure(fig.Land)
-        if not front:
-            return MISSING
-
-        front = Cells({cell for cell in front
-                       if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
-                      .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
-        if not front:
-            return MISSING
-
-        target_front = min(cells.at_front.all(),
-                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
-                                                               self._board.coordinates_of(front_cell)))
-        targets = (GreedyPathSearcher(self._board,
-                                      cells.with_figure(fig.Land) & cells.with_owner(self._player) + Cells({cell}),
-                                      cell)
-                   .search_from(target_front))
-        if not targets:
-            return MISSING
-
-        return self._board[targets[1]]
-
     def _try_pull_forces_to_front(self) -> Iterator[None]:
         cells = self._session.cells
         all_armed = (cells.with_owner(self._player) &
@@ -498,29 +457,105 @@ class BotIgor(proto.Bot):
         if not all_armed:
             return
 
-        front = all_armed & self._session.cells.at_front
-        if not front:
-            return
-        yield
+        tanks = all_armed.with_figure(fig.Tank)
+        not_tanks = all_armed - tanks
 
-        back = all_armed - front
-        for cell in back:
-            # fn = (self._get_pull_infantry_motorization_cell
-            #       if (is_infmoto := isinstance(cell.figure, fig.Motorization | fig.Infantry))
-            #       else self._get_pull_tank_cell)
-            fn = self._get_pull_infantry_motorization_cell
-            # if is_infmoto and cell not in back:
-            #     yield
-            #     continue
-            if (target := fn(cell)) is MISSING:
-                yield
+        for cell in not_tanks:
+            yield
+            target = self._get_pull_infantry_motorization_cell(cell)
+            if target is MISSING:
                 continue
 
-            move = Relocation(self._board.coordinates_of(cell),
-                              self._board.coordinates_of(target))
-            if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_make.append(valid_move)
+            self._add_distant_relocation_moves(cell, target)
+            if self._moves_to_make:
+                return
+
+        for cell in tanks:
             yield
+            target = self._get_pull_tank_cell(cell)
+            if target is MISSING:
+                continue
+
+            self._add_distant_relocation_moves(cell, target)
+            if self._moves_to_make:
+                return
+
+    # def _get_pull_cell_and_pull(self,
+    #                             to_pull: Cells,
+    #                             pull_cell_getter: Callable[[proto.Cell], proto.Cell]) -> Iterator[None]:
+    #     for cell in to_pull:
+    #         yield
+    #         target = pull_cell_getter(cell)
+    #         if target is MISSING:
+    #             continue
+    #
+    #         self._add_distant_relocation_moves(cell, target)
+    #         if self._moves_to_make:
+    #             return
+
+    def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> None:
+        cells = self._session.cells
+        path = (GreedyPathSearcher(self._board,
+                                   cells.with_figure(fig.Land) &
+                                   cells.with_owner(self._player) +
+                                   Cells({cell, target}),
+                                   target)
+                .search_from(cell))
+        if len(path) < 2:
+            return
+
+        if Relocation(path[0], path[1]).validate(self._session) is INVALID:
+            return
+
+        for previous, new in zip(path[:-1], path[1:]):
+            self._moves_to_make.append(ValidMove(Relocation(previous, new)))
+
+
+    def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
+        assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
+
+        cells = self._session.cells
+        front = cells.at_front & cells.with_owner(self._player)
+
+        if cell in front:
+            return MISSING
+
+        empty_front = front & cells.with_figure(fig.Land)
+        if not empty_front:
+            return MISSING
+
+        target_front = min(empty_front.all(),
+                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
+                                                               self._board.coordinates_of(front_cell)))
+
+        return target_front
+
+    def _get_pull_tank_cell(self, cell: proto.Cell) -> proto.Cell | Status:
+        if not isinstance(cell.figure, fig.Tank):
+            assert False
+
+        cells = self._session.cells
+        front = cells.at_front & cells.with_owner(self._player)
+        if not front:
+            return MISSING
+
+        is_safe = bool(self._session.board
+                       .get_neighbors(cell)
+                       .with_owner(self._player)
+                       .with_figure(fig.Infantry | fig.Motorization))
+        if cell in front and is_safe:
+            return MISSING
+
+        front = Cells({cell for cell in front & cells.with_figure(fig.Land)
+                       if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
+                      .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
+        if not front:
+            return MISSING
+
+        target_front = min(front.all(),
+                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
+                                                               self._board.coordinates_of(front_cell)))
+        return target_front
 
     def _try_convert_infantry_to_motorization(self) -> Iterator[None]:
         infantries = (self._session.cells.with_owner(self._player) &

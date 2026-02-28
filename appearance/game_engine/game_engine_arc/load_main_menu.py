@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, Callable
 
 from attrs import frozen
 
@@ -14,16 +14,21 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
+from core.protocols import GameSession
+from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
 from statuses import Status
 
+GameLoadingSceneGetter = Callable[[Callable[[], GameSession]], LoadingScene]
+
 
 def load_main_menu(screen_shape: Vector2Int,
+                   ups: int,
                    window: Window,
-                   game_loading_scene: LoadingScene) -> Iterator[proto.Scene | Status]:
+                   get_game_loading_scene: GameLoadingSceneGetter) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_intermediate_preparing_message()
@@ -31,13 +36,13 @@ def load_main_menu(screen_shape: Vector2Int,
 
     null_layer = WholeScreenLayer()
 
-    play_was_pressed = Event[None]()
+    map_was_selected = Event[str, None]()
     exit_was_pressed = Event[None]()
 
     yield language.get_ui_making_message()
     ui_layer = (MainMenuUiLayerMaker(UiDrawer(),
                                      screen_shape)
-                .make(play_was_pressed.invoke,
+                .make(map_was_selected.invoke,
                       exit_was_pressed.invoke))
 
     yield language.get_sprite_loading_message()
@@ -48,7 +53,10 @@ def load_main_menu(screen_shape: Vector2Int,
     ]
 
     scene = MainMenuScene.make(screenshot_saver, InputState.make(window), layers)
-    play_was_pressed.subscribe(lambda: scene.on_play_was_pressed(game_loading_scene))
+    map_was_selected.subscribe(
+        lambda map_name: scene.on_map_was_selected(get_game_loading_scene(lambda: GameSessionLoader
+                                                                          .make(f"{map_name}.json", ups)
+                                                                          .load())))
     exit_was_pressed.subscribe(scene.on_exit_was_pressed)
     yield scene
 

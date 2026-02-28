@@ -8,17 +8,17 @@
   },
   "figures": {
     "Town": {
-      "file": "figures/town.png",
+      "file": "figures/town2.png",
       "pivot": [
-        170,
-        160
+        300,
+        420
       ]
     },
     "Bunker": {
-      "file": "figures/bunk.png",
+      "file": "figures/bunk2.png",
       "pivot": [
-        183,
-        183
+        900,
+        600
       ]
     },
     "MissileSilo": {

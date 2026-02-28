@@ -3,15 +3,18 @@ from typing import Callable
 from attrs import frozen, Factory
 
 import appearance.protocols as proto
+from appearance.UI.box import BoxUi
 from appearance.UI.button import ButtonUi, get_image_rectangle
-from appearance.UI.layouts import VerticalLayoutUi
+from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
 from appearance.UI.text import TextData, TextUi
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
 from files import read_build_info
+from game_session_saver import get_saved_maps
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
+from observer import Event
 
 
 @frozen
@@ -23,8 +26,88 @@ class MainMenuUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self,
-             on_play_was_pressed: Callable[[], None],
+             on_map_was_selected: Callable[[str], None],
              on_exit_was_pressed: Callable[[], None]) -> Layer:
+        play_was_pressed = Event[None]()
+        to_main_menu_was_pressed = Event[None]()
+
+        label = self._make_label(play_was_pressed.invoke, on_exit_was_pressed)
+        map_selection = self._make_map_selection(on_map_was_selected, to_main_menu_was_pressed.invoke)
+
+        map_selection.set_activity(False)
+        play_was_pressed.subscribe(lambda: label.set_activity(False))
+        play_was_pressed.subscribe(lambda: map_selection.set_activity(True))
+        to_main_menu_was_pressed.subscribe(lambda: label.set_activity(True))
+        to_main_menu_was_pressed.subscribe(lambda: map_selection.set_activity(False))
+
+        return Layer.as_multiple([label, map_selection])
+
+    def _make_map_selection(self,
+                            on_map_was_selected: Callable[[str], None],
+                            on_to_main_menu_was_pressed: Callable[[], None]) -> Layer:
+        layers = [
+            self._make_map_selection_buttons(on_map_was_selected),
+            self._make_back_button(on_to_main_menu_was_pressed),
+        ]
+        return Layer.as_multiple(layers)
+
+    def _make_map_selection_buttons(self, on_map_was_selected: Callable[[str], None]) -> VerticalLayoutUi:
+        buttons_shape = Vector2Int(5, 5)
+
+        buttons = list[ButtonUi]()
+        for map_name in get_saved_maps():
+            buttons.append(self._make_map_selection_button(map_name, on_map_was_selected))
+
+        assert len(buttons) <= buttons_shape.x * buttons_shape.y
+
+        layout = VerticalLayoutUi(self._get_maps_buttons_rectangle(), margin_ratio=.2)
+        for index in range(0, len(buttons), buttons_shape.x):
+            row = buttons[index:index + buttons_shape.x]
+            horizontal = HorizontalLayoutUi(Rectangle.zero())
+            layout.append(horizontal)
+            horizontal.extend(row)
+            while len(horizontal) < buttons_shape.x:
+                horizontal.append(BoxUi(Rectangle.zero()))
+
+        while len(layout) < buttons_shape.y:
+            layout.append(BoxUi(Rectangle.zero()))
+
+        return layout
+
+    def _make_map_selection_button(self, map_name: str, on_map_was_selected: Callable[[str], None]) -> ButtonUi:
+        return self._make_null_button(map_name, lambda: on_map_was_selected(map_name))
+
+    def _get_maps_buttons_rectangle(self) -> Rectangle:
+        margin = 20
+        width = self._screen_shape.x - margin * 2
+        height = self._screen_shape.y * 5 / 6 - margin * 2
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_up()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(margin, margin))
+                .adjust_for_shape()
+                .build())
+
+    def _make_back_button(self, on_to_main_menu_was_pressed: Callable[[], None]) -> ButtonUi:
+        button = self._make_null_button(self._language.get_back_message(), on_to_main_menu_was_pressed)
+        button.set_rectangle(self._get_back_button_rectangle())
+        return button
+
+    def _get_back_button_rectangle(self) -> Rectangle:
+        width = self._screen_shape.x / 15
+        height = self._screen_shape.y / 20
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_bottom()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(20, 20))
+                .adjust_for_shape()
+                .build())
+
+    def _make_label(self,
+                    on_play_was_pressed: Callable[[], None],
+                    on_exit_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
             self._make_buttons(on_play_was_pressed, on_exit_was_pressed),

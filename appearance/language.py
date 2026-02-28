@@ -71,8 +71,10 @@ _LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
+
 _PLAY = "PLAY"
 _EXIT = "EXIT"
+_BACK = "BACK"
 
 _PAUSE = "PAUSE"
 _CONTINUE = "CONTINUE"
@@ -148,6 +150,9 @@ class Language:
 
     def get_exit_message(self) -> str:
         return self._ui[_EXIT]
+
+    def get_back_message(self) -> str:
+        return self._ui[_BACK]
 
     def get_pause_message(self) -> str:
         return self._ui[_PAUSE]
