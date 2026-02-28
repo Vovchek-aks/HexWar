@@ -28,7 +28,7 @@ from statuses import MISSING
 
 SAVE_FOLDER = Path("data") / "saves"
 
-SAVE_FILE = "last_save.json"
+SAVE_FILE = Path("last_save.json")
 
 PLAYER_DICT = dict[str, str | list[str] | dict[str, int]]
 BUDGET_DICT = dict[str, int]
@@ -253,4 +253,9 @@ def get_saved_maps() -> list[str]:
         if file.suffix != ".json":
             continue
         maps.append(file.stem)
+
+    if SAVE_FILE.stem in maps:
+        maps.remove(SAVE_FILE.stem)
+        maps.insert(0, SAVE_FILE.stem)
+
     return maps

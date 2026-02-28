@@ -67,7 +67,8 @@ class GameUiLayerMaker:
         def on_resources_had_changed(resources: ResourcesStockpile) -> None:
             dollars.set_text(self._language.get_message_from_resource(resources.get(Dollars)))
 
-        self._session.master.current_player.resources.has_changed.subscribe(on_resources_had_changed)
+        for player in self._session.master.players:
+            player.resources.has_changed.subscribe(on_resources_had_changed)
 
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
@@ -75,6 +76,7 @@ class GameUiLayerMaker:
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
             players_turn.set_text(self._language.get_players_turn_message(name))
+            on_resources_had_changed(player.resources)
 
         self._session.master.turn_had_started.subscribe(on_turn_passed)
 
@@ -116,6 +118,7 @@ class GameUiLayerMaker:
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
             players_turn.set_text(self._language.get_players_turn_message(name))
+            on_resources_had_changed(player.resources)
 
         self._session.master.turn_had_started.subscribe(on_turn_passed)
 
