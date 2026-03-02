@@ -19,6 +19,7 @@ from core.figures.figures_relocation_budget import FiguresRelocationBudget
 from core.master import Master
 from core.player import PlayerData, Player
 import core.figures.figure as fig
+from statuses import MISSING
 
 
 @frozen
@@ -58,32 +59,25 @@ class GameSession(proto.GameSession):
         move.move.execute(self)
 
 
-# def test_map(*, board_size: int, initial_town_ratio: float) -> GameSession:
-#     assert 0 <= initial_town_ratio <= 1
-#
-#     players = [
-#         Player(PlayerData(colors.PLAYER_RED, "Red"), BotPlayerInputer(BotIgor())),
-#         Player(PlayerData(colors.PLAYER_YELLOW, "Yellow"), BotPlayerInputer(BotIgor())),
-#         Player(PlayerData(colors.PLAYER_GREEN, "Green"), BotPlayerInputer(BotIgor())),
-#         Player(PlayerData(colors.PLAYER_BLUE, "Blue"), BotPlayerInputer(BotIgor())),
-#     ]
-#     board = Board.from_maker(Vector2Int.ones() * board_size,
-#                              lambda coord: Cell((players[3] if coord.y < board_size * .5 else players[2])
-#                                                 if coord.x > board_size * .4 else
-#                                                 (players[0] if coord.y < board_size * .5 else players[1]),
-#                                                 fig.Empty()))
-#
-#     for player in players:
-#         while (len(board.cells.with_owner(player).with_figure(fig.Town).all()) <
-#                len(board.cells.with_owner(player).all()) * initial_town_ratio):
-#             random.choice(list(board.cells.with_owner(player).with_figure(fig.Empty).all())).insert(fig.Town())
-#
-#     players[0].resources.add(Dollars(2_000_000))
-#     players[1].resources.add(Dollars(2_000_000))
-#     players[2].resources.add(Dollars(2_000_000))
-#     players[3].resources.add(Dollars(2_000_000))
+def empty_map(*, board_size: int) -> GameSession:
+    players = [
+        Player(PlayerData(colors.PLAYERS[0], "Red"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYERS[1], "Blue"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYERS[2], "Green"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYERS[3], "Yellow"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYERS[4], "Abobus1"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYERS[5], "Abobus2"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYERS[6], "Abobus3"), BotPlayerInputer(BotIgor())),
+        Player(PlayerData(colors.PLAYERS[7], "Abobus4"), BotPlayerInputer(BotIgor())),
+    ]
+    board = Board.from_maker(Vector2Int.ones() * board_size, lambda coord: Cell(MISSING, fig.Water()))
+    figures = Figures(board)
+    pulling_connections = PullingConnections.make(figures)
+    cells = CellsCache(board)
+    for cell in board.cells:
+        cells.update(cell)
 
-#     return GameSession(Master(players), board, FiguresRelocationBudget())
+    return GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)
 
 
 def test_map(*, ups: float, board_size: int, initial_town_ratio: float, is_multibot: bool = False) -> GameSession:
@@ -114,7 +108,7 @@ def test_map(*, ups: float, board_size: int, initial_town_ratio: float, is_multi
                                                  if coord.x + coord.y <= diagonal * .7 else
                                                  (players[6] if coord.x - coord.y >= 0 else players[7])),
                                                 _get_empty_figure(coord, board_size)))
-    random.shuffle(players)
+
     if not is_multibot:
         players[0].change_inputer(WantsToBeEventPlayerInputer())
 

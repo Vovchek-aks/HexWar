@@ -295,6 +295,14 @@ class Cell(ABC):
     def take_from(self, other: "Cell") -> None:
         ...
 
+    @abstractmethod
+    def turn_into_water(self) -> None:
+        ...
+
+    @abstractmethod
+    def turn_into_land(self, owner: Player) -> None:
+        ...
+
 
 class Cells(ABC):
     @abstractmethod

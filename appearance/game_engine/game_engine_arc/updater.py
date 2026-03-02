@@ -37,7 +37,7 @@ class Updater(proto.Updater):
     _camera_mover: CameraMover
     _camera_orientation: proto.CameraOrientation
     _screenshot_saver: ScreenshotSaver
-    _pause_manu_opener: PauseMenuOpener
+    _pause_menu_opener: PauseMenuOpener
     _mouse_movement_observer: proto.MouseMovementObserver
     _clicks_catcher: ClicksCatcher
     _player_turner: Iterator[None]
@@ -49,7 +49,7 @@ class Updater(proto.Updater):
                                   input_state.dt)
         self._camera_orientation.update()
         self._screenshot_saver.update(input_state.pressed_keys)
-        self._pause_manu_opener.update(input_state.pressed_keys)
+        self._pause_menu_opener.update(input_state.pressed_keys)
         self._mouse_movement_observer.update(input_state.mouse_position)
         self._clicks_catcher.update(input_state.last_frame_clicks)
         self._in_game_time.update(input_state.dt)

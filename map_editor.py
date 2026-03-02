@@ -1,0 +1,108 @@
+from typing import Callable
+
+from attrs import define
+
+import core.protocols as proto
+from appearance.input.moves_inputer.input_actions import CellClickAction
+from appearance.protocols import InputAction, MouseButtons, InputActionsReader
+from mathematics.vector import Vector2Int
+from statuses import MISSING, Status
+import core.figures.figure as fig
+
+Transform = tuple[str, Callable[[Vector2Int], None]]
+
+
+@define
+class MapEditor:
+    @classmethod
+    def make(cls,
+             session: proto.GameSession,
+             actions_reader: InputActionsReader,
+             on_changed_cell_owner: Callable[[Vector2Int], None]) -> "MapEditor":
+        transforms = list[Transform]()
+        self = cls(session, on_changed_cell_owner, transforms, "water")
+        actions_reader.action_was_read.subscribe(self._on_action_was_read)
+
+        transforms.append(("water", lambda coord: self._change_owner_to(coord, MISSING)))
+        transforms.append(("empty land", lambda coord: self._change_figure(coord, fig.Land)))
+        transforms.append(("town", lambda coord: self._change_figure(coord, fig.Town)))
+        transforms.append(("bunker", lambda coord: self._change_figure(coord, fig.Bunker)))
+
+        for player in session.master.players:
+            transforms.append(self._make_set_player_transform(player))
+
+        return self
+
+    _session: proto.GameSession
+    _on_changed_cell_owner: Callable[[Vector2Int], None]
+
+    _transforms: list[Transform]
+    _transform: str
+
+    @property
+    def transforms(self) -> list[str]:
+        return list(map(lambda pair: pair[0], self._transforms))
+
+    def set(self, transform: str) -> None:
+        assert transform in dict(self._transforms).keys()
+
+        self._transform = transform
+
+    def _make_set_player_transform(self, player: proto.Player) -> Transform:
+        return player.data.name, lambda coord: self._change_owner_to(coord, player)
+
+    def _on_action_was_read(self, action: InputAction, _: bool) -> None:
+        match action:
+            case CellClickAction(coord=click_coord, buttons=MouseButtons(is_left=True)):
+                ...
+            case _:
+                return
+
+        self._make_transform(click_coord)
+
+    def _make_transform(self, coord: Vector2Int) -> None:
+        dict(self._transforms)[self._transform](coord)
+
+    def _change_owner_to(self, coord: Vector2Int, player: proto.Player | Status) -> None:
+        cell = self._session.board[coord]
+        if cell.owner == player:
+            return
+
+        if self._handle_surface_type_change(player, cell):
+            return
+
+        cell.change_owner(player)
+        self._on_changed_cell_owner(coord)
+
+    def _handle_surface_type_change(self, player: proto.Player | Status, cell: proto.Cell) -> bool:
+        coord = self._session.board.coordinates_of(cell)
+
+        if player is MISSING and not cell.figure.is_on_land():
+            return True
+
+        if player is MISSING and cell.figure.is_on_land():
+            if not cell.is_empty:
+                self._session.figures.remove(cell.figure)
+            cell.turn_into_water()
+            self._on_changed_cell_owner(coord)
+            return True
+
+        if player is not MISSING and not cell.figure.is_on_land():
+            if not cell.is_empty:
+                self._session.figures.remove(cell.figure)
+            cell.turn_into_land(player)
+            self._on_changed_cell_owner(coord)
+            return True
+
+        return False
+
+    def _change_figure(self, coord: Vector2Int, target: type[proto.Figure]) -> None:
+        cell = self._session.board[coord]
+        if target.is_on_land() != cell.figure.is_on_land():
+            return
+
+        if not cell.is_empty:
+            self._session.figures.remove(cell.figure)
+
+        if proto.Empty not in target.FLAGS:
+            self._session.figures.add(target, coord)

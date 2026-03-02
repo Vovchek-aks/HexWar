@@ -13,7 +13,8 @@ class Cell(proto.Cell):
 
     def __attrs_post_init__(self) -> None:
         self._id = id(self)
-        self._set_figure(self._figure)
+        if proto.DontHaveOwner in self.figure.FLAGS:
+            self._owner = MISSING
 
     @property
     def owner(self) -> proto.Player | Status:
@@ -55,7 +56,7 @@ class Cell(proto.Cell):
         assert self.is_empty
         assert self.figure.is_on_land() == figure.is_on_land()
 
-        self._set_figure(figure)
+        self._figure = figure
 
     def change_owner(self, player: proto.Player) -> None:
         assert self._owner != player
@@ -67,13 +68,19 @@ class Cell(proto.Cell):
 
         if self.owner != other.owner:
             self.change_owner(other.owner)
-        self._set_figure(other.pop())
+        self._figure = other.pop()
 
-    def _set_figure(self, figure: proto.Figure) -> None:
-        if proto.DontHaveOwner in self.figure.FLAGS:
-            self._owner = MISSING
+    def turn_into_water(self) -> None:
+        assert self.is_empty
 
-        self._figure = figure
+        self._figure = fig.Water()
+        self._owner = MISSING
+
+    def turn_into_land(self, owner: proto.Player) -> None:
+        assert self.is_empty
+
+        self._figure = fig.Land()
+        self._owner = owner
 
     def __str__(self) -> str:
         if self.owner is not MISSING:
