@@ -27,6 +27,7 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer import MovesInputer
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
+from appearance.input.moves_inputer.multiple_relocations_reader import MultipleRelocationsReader
 from appearance.input.pause_menu_opener import PauseMenuOpener
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
@@ -76,7 +77,9 @@ def load_game(screen_shape: Vector2Int,
     null_layer = WholeScreenLayer()
 
     button_press_action_happened = Event[ButtonPressAction, None]()
-    actions_reader = InputActionsReader.make(board_layer, null_layer, button_press_action_happened.subscriber)
+    actions_reader = InputActionsReader.make(board_layer,
+                                             null_layer,
+                                             button_press_action_happened.subscriber)
 
     moves_maker = MovesMaker(session)
 
@@ -92,8 +95,11 @@ def load_game(screen_shape: Vector2Int,
     cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
     cells_change_observer.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
 
+    input_state = InputState.make(window)
+
     cell_selector = CellSelector.make(actions_reader, moves_maker, session.master)
-    moves_inputer = MovesInputer.make(actions_reader, session, cell_selector)
+    multiple_relocations_reader = MultipleRelocationsReader(session, cell_selector, input_state)
+    moves_inputer = MovesInputer.make(actions_reader, multiple_relocations_reader, session, cell_selector)
 
     pause_menu_open_requested = Event[None]()
     pause_menu_opener = PauseMenuOpener(pause_menu_open_requested.invoke)
@@ -160,7 +166,7 @@ def load_game(screen_shape: Vector2Int,
 
         session.master.turn_has_passed.subscribe(on_player_turn_ended)
     else:
-        pause_menu = PauseMenu.make(screenshot_saver, InputState.make(window), pause_menu_layers, pause_menu_opener)
+        pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)
         scene = GameWithPauseScene(game, pause_menu)
 
         user_inputer_builder = EventPlayerInputerBuilder()

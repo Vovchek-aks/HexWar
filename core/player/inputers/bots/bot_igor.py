@@ -212,9 +212,9 @@ class BotIgor(proto.Bot):
 
         if self._state == _PULLING:
             yield from self._try_pull_forces_to_front()
-            print(f"_try_pull_forces_to_front {_is_inner}")
+            # print(f"_try_pull_forces_to_front {_is_inner}")
             if self._moves_to_make:
-                print(self._moves_to_make)
+                # print(self._moves_to_make)
                 return
 
             if not _is_inner:

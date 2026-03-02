@@ -12,9 +12,9 @@ def players_moves_maker(session: proto.GameSession,
     while True:
         with session.master.current_player.inputer as player:
             while not player.wants_to_end_turn():
+                yield
                 move = player.get_move(session)
                 if not isinstance(move, proto.ValidMove):
-                    yield
                     continue
 
                 process = get_move_preparation_process(move.move)
@@ -22,7 +22,6 @@ def players_moves_maker(session: proto.GameSession,
                     yield from process
 
                 moves_maker.make(move)
-                yield
 
         session.master.pass_turn_to_next_player()
         session.figures_budget.clear()

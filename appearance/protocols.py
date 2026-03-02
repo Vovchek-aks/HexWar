@@ -404,7 +404,13 @@ class InputActionsReader(ABC):
         ...
 
     @abstractmethod
-    def pop(self) -> None:
+    def pop(self) -> InputAction:
+        ...
+
+
+class MultipleRelocationsReader:
+    @abstractmethod
+    def process(self, last_action: InputAction) -> list[proto.ValidMove]:
         ...
 
 

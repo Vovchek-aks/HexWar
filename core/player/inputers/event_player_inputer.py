@@ -4,7 +4,7 @@ from attrs import define, field
 
 import core.protocols as proto
 from observer import OnEventSubscriber
-from statuses import Status, MISSING
+from statuses import Status, MISSING, INVALID
 
 
 @define
@@ -16,9 +16,13 @@ class EventPlayerInputer(proto.PlayerInputer):
     _moves: list[proto.ValidMove] = field(init=False, factory=list)
 
     def get_move(self, session: proto.GameSession) -> proto.ValidMove | Status:
-        if not self._moves:
-            return MISSING
-        return self._moves.pop(0)
+        while self._moves:
+            move = self._moves.pop(0)
+            if move.move.validate(session) is INVALID:
+                continue
+            return move
+
+        return MISSING
 
     def wants_to_end_turn(self) -> bool:
         return self._wants_to_end_turn

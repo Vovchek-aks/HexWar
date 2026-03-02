@@ -44,8 +44,10 @@ class InputActionsReader(proto.InputActionsReader):
         while self._actions:
             self.pop()
 
-    def pop(self) -> None:
-        self._on_action_removed(self._actions.pop(0))
+    def pop(self) -> InputAction:
+        action = self._actions.pop(0)
+        self._on_action_removed(action)
+        return action
 
     def _add_action(self, action: InputAction) -> None:
         is_first = not any(isinstance(action, type(read)) for read in self.actions)
