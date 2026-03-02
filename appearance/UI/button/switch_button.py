@@ -7,13 +7,13 @@ from .button import ButtonUi
 
 
 @define
-class SwitchButtonUI(proto.ElementUi):
+class SwitchButtonUi(proto.ElementUi):
     @classmethod
-    def make(cls, rectangle: Rectangle, *buttons: ButtonUi) -> "SwitchButtonUI":
+    def make(cls, rectangle: Rectangle, *buttons: ButtonUi) -> "SwitchButtonUi":
         box = BoxUi(rectangle)
         box.extend(buttons)
 
-        self = SwitchButtonUI(box, list(buttons))
+        self = SwitchButtonUi(box, list(buttons))
         for button in buttons:
             button.layer.set_activity(False)
 
@@ -44,7 +44,13 @@ class SwitchButtonUI(proto.ElementUi):
         self._box.set_rectangle(rectangle)
 
     def next(self) -> None:
+        self._move(1)
+
+    def back(self) -> None:
+        self._move(-1)
+
+    def _move(self, delta: int) -> None:
         self.button.layer.set_activity(False)
-        self._index += 1
+        self._index += delta
         self._index %= len(self._buttons)
         self.button.layer.set_activity(True)

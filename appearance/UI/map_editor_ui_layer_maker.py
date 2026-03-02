@@ -3,7 +3,8 @@ from typing import Callable
 from attrs import frozen, Factory
 
 import appearance.protocols as proto
-from appearance.UI.button import ButtonUi, get_image_rectangle, SwitchButtonUI
+from appearance.UI.button import ButtonUi, get_image_rectangle, SwitchButtonUi
+from appearance.UI.layouts import HorizontalLayoutUi
 from appearance.UI.text import TextData
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
@@ -23,10 +24,11 @@ class MapEditorUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self, on_exit_was_pressed: Callable[[], None]) -> Layer:
-
+        make_switch_transform_button = self._make_switch_transform_button()
         layers = [
             self._make_back_button(on_exit_was_pressed),
-            self._make_switch_transform_button()
+            make_switch_transform_button,
+            self._make_switch_transform_back_button(make_switch_transform_button),
         ]
 
         return Layer.as_multiple(layers)
@@ -47,13 +49,13 @@ class MapEditorUiLayerMaker:
                 .adjust_for_shape()
                 .build())
 
-    def _make_switch_transform_button(self) -> SwitchButtonUI:
+    def _make_switch_transform_button(self) -> SwitchButtonUi:
         transforms = self._map_editor.transforms
         buttons = list[ButtonUi]()
         for name, transform in zip(transforms, transforms[1:] + [transforms[0]]):
             buttons.append(self._make_transform_button(name, transform))
 
-        switch_button = SwitchButtonUI.make(self._get_switch_transform_button_rectangle(), *buttons)
+        switch_button = SwitchButtonUi.make(self._get_switch_transform_button_rectangle(), *buttons)
 
         for button in buttons:
             button.was_clicked.subscribe(switch_button.next)
@@ -71,6 +73,27 @@ class MapEditorUiLayerMaker:
                 .from_right_bottom()
                 .set_shape(Vector2(width, height))
                 .move(Vector2(30, 30))
+                .adjust_for_shape()
+                .build())
+
+    def _make_switch_transform_back_button(self, switch_button: SwitchButtonUi) -> ButtonUi:
+        def on_back_pressed() -> None:
+            switch_button.back()
+            # switch_button.buttons.index(switch_button.button)
+
+        back = self._make_null_button("<", on_back_pressed)
+        back.set_rectangle(self._get_switch_transform_back_button_rectangle())
+
+        return back
+
+    def _get_switch_transform_back_button_rectangle(self) -> Rectangle:
+        width = self._screen_shape.x / 20
+        height = self._screen_shape.y / 15
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_right_bottom()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(40 + self._screen_shape.x / 10, 30))
                 .adjust_for_shape()
                 .build())
 

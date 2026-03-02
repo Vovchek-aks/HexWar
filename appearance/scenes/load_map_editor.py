@@ -85,8 +85,11 @@ def load_map_editor(screen_shape: Vector2Int,
     input_state = InputState.make(window)
     scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, layers)
 
-    exit_was_pressed.subscribe(scene.on_to_main_menu_was_pressed)
-    exit_was_pressed.subscribe(lambda: on_turn_start(session))
-    exit_was_pressed.subscribe(lambda: GameSessionSaver(session).save(EDIT_MAP_FILE))
+    def on_exit_was_pressed() -> None:
+        on_turn_start(session)
+        GameSessionSaver(session).save(EDIT_MAP_FILE)
+        scene.on_to_main_menu_was_pressed()
+
+    exit_was_pressed.subscribe(on_exit_was_pressed)
 
     yield scene

@@ -23,7 +23,7 @@ def main() -> None:
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=100)).save(EDIT_MAP_FILE)
-    # make_first_scene = make_map_editor_loading_scene
+    make_first_scene = make_map_editor_loading_scene
     with GameEngine.make(CAPTION, UPS, IS_FULLSCREEN, SCREEN_SHAPE, make_first_scene) as engine:
         engine.run()
 

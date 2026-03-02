@@ -3,7 +3,7 @@ from typing import Callable
 from attrs import frozen, Factory
 
 from appearance.UI.box import BoxUi
-from appearance.UI.button import ButtonUi, SwitchButtonUI, get_image_rectangle
+from appearance.UI.button import ButtonUi, SwitchButtonUi, get_image_rectangle
 from appearance.UI.image import ImageUi
 from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
@@ -280,7 +280,7 @@ class GameUiLayerMaker:
         detach.was_clicked.subscribe(lambda: self._button_press_action_happened
                                      .invoke(PullingTerminationButtonPressAction(self._cell_selector.get_coord())))
 
-        attach_detach = SwitchButtonUI.make(Rectangle(Vector2.zero(), Vector2.ones()), attach, detach)
+        attach_detach = SwitchButtonUi.make(Rectangle(Vector2.zero(), Vector2.ones()), attach, detach)
 
         def switch_if_needed() -> None:
             coord = self._cell_selector.get_coord()
@@ -306,7 +306,7 @@ class GameUiLayerMaker:
 
     def _make_figure_menu(self,
                           figure: type[fig.Figure],
-                          buttons: list[ButtonUi | SwitchButtonUI],
+                          buttons: list[ButtonUi | SwitchButtonUi],
                           button_tags: list[str | tuple[str, ...]]) -> Layer:
         assert len(buttons) == len(button_tags)
 
@@ -316,7 +316,7 @@ class GameUiLayerMaker:
                                    Vector2(menu_height, menu_height)))
 
         for button, tag in zip(buttons, button_tags):
-            if not isinstance(button, SwitchButtonUI):
+            if not isinstance(button, SwitchButtonUi):
                 hint_box.append(self._make_figure_menu_button_hint(button, tag))
                 continue
             for button_, tag_ in zip(button.buttons, tag):
@@ -332,7 +332,7 @@ class GameUiLayerMaker:
 
     def _make_figure_menu_without_hints(self,
                                         figure_type: type[fig.Figure],
-                                        buttons: list[ButtonUi | SwitchButtonUI]) -> StretcherUi:
+                                        buttons: list[ButtonUi | SwitchButtonUi]) -> StretcherUi:
         background_margin = Vector2(20, 20)
         background = ImageUi.make(self._drawer,
                                   RectangleBuilder(self._screen_shape)
