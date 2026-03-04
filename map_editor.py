@@ -1,13 +1,17 @@
-from typing import Callable
+from typing import Callable, Iterator
 
 from attrs import define
+import arcade as arc
 
 import core.protocols as proto
 from appearance.input.moves_inputer.input_actions import CellClickAction
-from appearance.protocols import InputAction, MouseButtons, InputActionsReader
+from appearance.protocols import InputAction, MouseButtons, InputActionsReader, InputState
+from core.cells import Cells
 from mathematics.vector import Vector2Int
 from statuses import MISSING, Status
 import core.figures.figure as fig
+
+FILL_KEY = arc.key.LSHIFT
 
 Transform = tuple[str, Callable[[Vector2Int], None]]
 
@@ -16,11 +20,12 @@ Transform = tuple[str, Callable[[Vector2Int], None]]
 class MapEditor:
     @classmethod
     def make(cls,
+             input_state: InputState,
              session: proto.GameSession,
              actions_reader: InputActionsReader,
              on_changed_cell_owner: Callable[[Vector2Int], None]) -> "MapEditor":
         transforms = list[Transform]()
-        self = cls(session, on_changed_cell_owner, transforms, "water")
+        self = cls(input_state, session, on_changed_cell_owner, transforms, "water")
         actions_reader.action_was_read.subscribe(self._on_action_was_read)
 
         transforms.append(("water", lambda coord: self._change_owner_to(coord, MISSING)))
@@ -33,11 +38,14 @@ class MapEditor:
 
         return self
 
+    _input_state: InputState
     _session: proto.GameSession
     _on_changed_cell_owner: Callable[[Vector2Int], None]
 
     _transforms: list[Transform]
     _transform: str
+
+    _process: Iterator[None] | Status = MISSING
 
     @property
     def transforms(self) -> list[str]:
@@ -47,6 +55,10 @@ class MapEditor:
         assert transform in dict(self._transforms).keys()
 
         self._transform = transform
+
+    def update(self) -> None:
+        if self._process is not MISSING:
+            next(self._process)
 
     def _make_set_player_transform(self, player: proto.Player) -> Transform:
         return player.data.name, lambda coord: self._change_owner_to(coord, player)
@@ -58,10 +70,35 @@ class MapEditor:
             case _:
                 return
 
-        self._make_transform(click_coord)
+        cells_to_transform = (self._get_same_owner(click_coord, self._session.board[click_coord].owner, set())
+                              if FILL_KEY in self._input_state.pressed_keys else
+                              Cells({self._session.board[click_coord]}))
+
+        self._process = self._get_transform_process(cells_to_transform)
+
+    def _get_transform_process(self, cells: Cells) -> Iterator[None]:
+        for cell in cells:
+            self._make_transform(self._session.board.coordinates_of(cell))
+            yield
+
+        self._process = MISSING
+        yield
 
     def _make_transform(self, coord: Vector2Int) -> None:
         dict(self._transforms)[self._transform](coord)
+
+    def _get_same_owner(self, coord: Vector2Int, owner: proto.Player, seen: "set[proto.Cell]") -> Cells:
+        board = self._session.board
+        cell = board[coord]
+        if cell.owner is not owner or cell in seen:
+            return Cells.empty()
+
+        seen.add(cell)
+
+        for neighbor in board.get_neighbors(cell) - Cells(seen):
+            self._get_same_owner(board.coordinates_of(neighbor), owner, seen)
+
+        return Cells(seen)
 
     def _change_owner_to(self, coord: Vector2Int, player: proto.Player | Status) -> None:
         cell = self._session.board[coord]

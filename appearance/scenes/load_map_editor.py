@@ -55,8 +55,9 @@ def load_map_editor(screen_shape: Vector2Int,
                                              null_layer,
                                              button_press_action_happened.subscriber)
 
+    input_state = InputState.make(window)
     cell_changed_owner = Event[Vector2Int, None]()
-    map_editor = MapEditor.make(session, actions_reader, cell_changed_owner.invoke)
+    map_editor = MapEditor.make(input_state, session, actions_reader, cell_changed_owner.invoke)
 
     cell_changed_figure = Event[Vector2Int, None]()
     session.figures.figure_was_added_at.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
@@ -81,9 +82,7 @@ def load_map_editor(screen_shape: Vector2Int,
         Layer(MapEditorBoardDrawableLayer(draw, hovered_cell_getter, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
-
-    input_state = InputState.make(window)
-    scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, layers)
+    scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, map_editor, layers)
 
     def on_exit_was_pressed() -> None:
         on_turn_start(session)
