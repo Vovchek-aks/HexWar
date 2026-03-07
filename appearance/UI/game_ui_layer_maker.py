@@ -50,7 +50,7 @@ class GameUiLayerMaker:
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
                                     .move(Vector2(10, 10))
-                                    .set_shape(Vector2(110, 30))
+                                    .set_shape(Vector2(150, 30))
                                     .adjust_for_shape()
                                     .build()),
                                    TextData.debug('...'))
@@ -58,8 +58,8 @@ class GameUiLayerMaker:
         dollars = TextUi.make(self._drawer,
                               (RectangleBuilder(self._screen_shape)
                                .from_left_up()
-                               .move(Vector2(12, 60))
-                               .set_shape(Vector2(100, 20))
+                               .move(Vector2(10, 60))
+                               .set_shape(Vector2(150, 30))
                                .adjust_for_shape()
                                .build()),
                               TextData.debug('...'))

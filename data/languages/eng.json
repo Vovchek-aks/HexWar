@@ -31,7 +31,9 @@
       "COST": [
         "Cost:",
         "    {cost}"
-      ]
+      ],
+      "SELECTED_PLAYERS": "Selected players",
+      "NO_PLAYERS_SELECTED": "No players selected!"
     },
     "hints": {
       "creation": {

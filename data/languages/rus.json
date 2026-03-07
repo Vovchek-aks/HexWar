@@ -31,7 +31,9 @@
       "COST": [
         "Стоимость:",
         "    {cost}"
-      ]
+      ],
+      "SELECTED_PLAYERS": "Выбранные игроки",
+      "NO_PLAYERS_SELECTED": "Не выбрано игроков!"
     },
     "hints": {
       "creation": {

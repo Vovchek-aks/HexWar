@@ -59,6 +59,7 @@ class TextUi(proto.ElementUi):
 
     def set_text(self, text: str) -> None:
         self._text.text = text
+        self.set_rectangle(self.rectangle)
 
     def set_color(self, color: Color) -> None:
         self._text.color = color

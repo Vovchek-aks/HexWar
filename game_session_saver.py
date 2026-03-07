@@ -29,7 +29,7 @@ from statuses import MISSING
 SAVE_FOLDER = Path("data") / "saves"
 
 SAVE_FILE = Path("last_save.json")
-EDIT_MAP_FILE = Path("edit_map.json")
+EDIT_MAP_FILE = Path("_edit_map.json")
 
 PLAYER_DICT = dict[str, str | list[str] | dict[str, int]]
 BUDGET_DICT = dict[str, int]
@@ -195,7 +195,7 @@ class GameSessionLoader:
             case WantsToBeEventPlayerInputer.__name__:
                 return WantsToBeEventPlayerInputer()
 
-        raise NotImplemented(inputer_info[0])
+        raise NotImplementedError(inputer_info[0])
 
     @staticmethod
     def _load_resources(resources: dict[str, int]) -> ResourcesStockpile:
@@ -253,6 +253,10 @@ def get_saved_maps() -> list[str]:
     for file in map(Path, os.listdir(SAVE_FOLDER)):
         if file.suffix != ".json":
             continue
+
+        if file.stem.startswith('_'):
+            continue
+
         maps.append(file.stem)
 
     if SAVE_FILE.stem in maps:

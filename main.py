@@ -1,12 +1,11 @@
 from appearance.game_engine import GameEngine
 from appearance.game_engine.game_engine_arc.window import Window
 from appearance.protocols import Scene
-from appearance.scenes.loading_scenes_makers import make_main_menu_loading_scene, make_multibot_loading_scene, \
-    make_map_editor_loading_scene
+from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
 from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
 
-IS_MULTIBOT = True
+IS_MULTIBOT = False
 
 IS_FULLSCREEN = False
 SCREEN_SHAPE = (Vector2Int(1920, 1080)
@@ -29,16 +28,16 @@ def main() -> None:
 
 
 def _make_map_editor_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
-    return make_map_editor_loading_scene(screen_shape, window)
+    return LoadingScenesMaker(screen_shape, window, UPS).make_map_editor_loading_scene()
 
 
 def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
-    return make_main_menu_loading_scene(screen_shape, UPS, window)
+    return LoadingScenesMaker(screen_shape, window, UPS).make_main_menu_loading_scene()
 
 
 def _make_multibot_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
-    return make_multibot_loading_scene(screen_shape, window,
-                                       lambda: GameSessionLoader.make("multibot.json", UPS).load())
+    return LoadingScenesMaker(screen_shape, window, UPS).make_multibot_loading_scene(
+        lambda: GameSessionLoader.make("_multibot.json", UPS).load())
 
 
 if __name__ == '__main__':

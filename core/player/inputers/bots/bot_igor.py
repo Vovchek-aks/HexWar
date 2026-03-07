@@ -1,7 +1,8 @@
 import math
 import random
-from itertools import islice, chain
-from typing import Iterator, Callable
+from itertools import islice
+from typing import Iterator
+from time import time
 
 from attrs import define, field
 
@@ -29,6 +30,8 @@ _BUILDING = 1
 _PULLING = 2
 _INITIAL_STATE = _BUILDING
 
+_MAX_TOWNS = 50.
+
 
 @define
 class BotIgor(proto.Bot):
@@ -54,6 +57,8 @@ class BotIgor(proto.Bot):
     def get_move(self, session: proto.GameSession) -> proto.ValidMove | Status:
         self._session = session
         self._player = session.master.current_player
+
+        random.seed(time())
 
         if self._moves_generator is not MISSING:
             if next(self._moves_generator, ABORT_NEEDED) is not ABORT_NEEDED:
@@ -98,7 +103,7 @@ class BotIgor(proto.Bot):
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _BUILDING:
-            has_developed = town_count > cells_count * .08
+            has_developed = town_count > min(_MAX_TOWNS, cells_count * .05)
             is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
 
             bunker_ratio = .1 if has_developed and not is_rich else 0.75
@@ -165,7 +170,7 @@ class BotIgor(proto.Bot):
                     return
 
             figure_to_create = (fig.Town
-                                if town_count < cells_count * .15 else
+                                if town_count < min(_MAX_TOWNS, cells_count * .15) else
                                 (fig.Tank if random.random() > .85 else fig.Infantry))
 
             if figure_to_create is not MISSING:
@@ -558,8 +563,8 @@ class BotIgor(proto.Bot):
         return target_front
 
     def _try_convert_infantry_to_motorization(self) -> Iterator[None]:
-        infantries = (self._session.cells.with_owner(self._player) &
-                      self._session.cells.with_figure(fig.Infantry))
+        cells = self._session.cells
+        infantries = cells.with_owner(self._player) & cells.with_figure(fig.Infantry)
         if not infantries:
             return
         yield

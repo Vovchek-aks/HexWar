@@ -72,6 +72,9 @@ _COMBAT_ABILITY = "COMBAT_ABILITY"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
 
+_SELECTED_PLAYERS = "SELECTED_PLAYERS"
+_NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
+
 _PLAY = "PLAY"
 _EXIT = "EXIT"
 _BACK = "BACK"
@@ -228,6 +231,12 @@ class Language:
 
     def get_players_turn_message(self, player: str) -> str:
         return self._ui[_PLAYERS_TURN_TEXT].format(player=player)
+
+    def get_selected_players_message(self, selected_players: list[str]) -> str:
+        if not selected_players:
+            return self._ui[_NO_PLAYERS_SELECTED]
+
+        return f"{self._ui[_SELECTED_PLAYERS]}: {', '.join(selected_players)}."
 
     def has_figure(self, figure: type[Figure]) -> bool:
         return figure.__name__ in self._figures

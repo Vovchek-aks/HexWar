@@ -21,7 +21,7 @@ class LoadingScene(proto.Scene):
     def make(cls, screen_shape: Vector2Int, process: PROCESS) -> "LoadingScene":
         text = TextUi.make(UiDrawer(),
                            Rectangle.with_center_at(screen_shape.as_vector2 * .5 - Vector2(0, screen_shape.y / 4),
-                                                    Vector2(screen_shape.x / 3, 30)),
+                                                    Vector2(screen_shape.x / 2, 30)),
                            TextData.debug(" "),
                            is_center=True)
         self = cls(_loading_screen(screen_shape), text, process)

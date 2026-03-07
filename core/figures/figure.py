@@ -166,7 +166,7 @@ class Infantry(_Figure):
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(25_000))
                        .build()))
-    MOVES_BUDGET = 4
+    MOVES_BUDGET = 6
 
     SELF_HARDNESS = 2
     _NEAR_BUNKER_HARDNESS = 6
@@ -211,7 +211,7 @@ class Motorization(_Figure):
                       (UpdatableOnTurnStartBuilder()
                        .try_take_else_die(Dollars(75_000))
                        .build()))
-    MOVES_BUDGET = 100
+    MOVES_BUDGET = 200
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -245,7 +245,7 @@ class Tank(_Figure):
                        .try_take_else_die(Dollars(100_000))
                        .build()),
                       CanAttack(1))
-    MOVES_BUDGET = 100
+    MOVES_BUDGET = 200
 
     SELF_STRENGTH = 3
     _SELF_HARDNESS = 2

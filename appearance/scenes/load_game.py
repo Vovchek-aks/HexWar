@@ -160,8 +160,12 @@ def load_game(screen_shape: Vector2Int,
 
         def on_player_turn_ended(player: Player) -> None:
             towns = session.cells.with_figure(Town)
-            player_towns = session.cells.with_owner(player) & towns
-            if len(player_towns.all()) > len(towns.all()) * .9:
+            player_cells = session.cells.with_owner(player)
+            player_towns = player_cells & towns
+            is_territory_win = len(player_cells.all()) > sum(len(session.cells.with_owner(other).all())
+                                                             for other in session.master.players) * .5
+            is_economically_win = len(player_towns.all()) > len(towns.all()) * .5
+            if is_territory_win or is_economically_win:
                 scene.on_reload(make_next_scene_loading())
 
         session.master.turn_has_passed.subscribe(on_player_turn_ended)

@@ -15,20 +15,22 @@ from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
 from core.protocols import GameSession
-from game_session_saver import GameSessionLoader
+from game_session_saver import GameSessionLoader, SAVE_FILE
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
 from statuses import Status
 
-GameLoadingSceneGetter = Callable[[Callable[[], GameSession]], LoadingScene]
+FromSessionMakerLoadingSceneGetter = Callable[[Callable[[], GameSession]], LoadingScene]
 
 
 def load_main_menu(screen_shape: Vector2Int,
                    ups: int,
                    window: Window,
-                   get_game_loading_scene: GameLoadingSceneGetter) -> Iterator[proto.Scene | Status]:
+                   get_player_selection_loading_scene: FromSessionMakerLoadingSceneGetter,
+                   get_game_loading_scene: FromSessionMakerLoadingSceneGetter
+                   ) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_intermediate_preparing_message()
@@ -40,10 +42,8 @@ def load_main_menu(screen_shape: Vector2Int,
     exit_was_pressed = Event[None]()
 
     yield language.get_ui_making_message()
-    ui_layer = (MainMenuUiLayerMaker(UiDrawer(),
-                                     screen_shape)
-                .make(map_was_selected.invoke,
-                      exit_was_pressed.invoke))
+    ui_layer = (MainMenuUiLayerMaker(UiDrawer(), screen_shape)
+                .make(map_was_selected.invoke, exit_was_pressed.invoke))
 
     yield language.get_sprite_loading_message()
 
@@ -53,11 +53,21 @@ def load_main_menu(screen_shape: Vector2Int,
     ]
 
     scene = MainMenuScene.make(screenshot_saver, InputState.make(window), layers)
-    map_was_selected.subscribe(
-        lambda map_name: scene.on_map_was_selected(get_game_loading_scene(lambda: GameSessionLoader
-                                                                          .make(f"{map_name}.json", ups)
-                                                                          .load())))
+
+    def on_map_was_selected(map_name: str) -> None:
+        scene_loader = scene_loader_from(map_name)
+        scene.on_map_was_selected(scene_loader(lambda: GameSessionLoader
+                                               .make(f"{map_name}.json", ups)
+                                               .load()))
+
+    def scene_loader_from(map_name: str) -> FromSessionMakerLoadingSceneGetter:
+        if map_name == SAVE_FILE.stem:
+            return get_game_loading_scene
+        return get_player_selection_loading_scene
+
+    map_was_selected.subscribe(on_map_was_selected)
     exit_was_pressed.subscribe(scene.on_exit_was_pressed)
+
     yield scene
 
 

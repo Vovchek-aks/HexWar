@@ -1,7 +1,7 @@
-from typing import Iterator
+from typing import Iterator, Callable
 
 from appearance.UI.drawer import UiDrawer
-from appearance.UI.map_editor_ui_layer_maker import MapEditorUiLayerMaker
+from appearance.UI.player_selection_ui_layer_maker import PlayersSelectionUiLayerMaker
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
@@ -15,15 +15,15 @@ from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
 from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
+from appearance.input.players_selector import PlayersSelector
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
 from appearance.layer import Layer
-from appearance.scenes.map_editor_scene import MapEditorScene
+from appearance.scenes.players_selection import PlayersSelectionScene
 from core.cells_changes_observer import CellsChangesObserver
+from core.game_session import GameSession
 from core.player.players_moves_maker import on_turn_start
-from game_session_saver import GameSessionSaver, GameSessionLoader, EDIT_MAP_FILE
-from map_editor import MapEditor
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -31,12 +31,15 @@ import appearance.protocols as proto
 from statuses import Status
 
 
-def load_map_editor(screen_shape: Vector2Int,
-                    window: Window) -> Iterator[proto.Scene | Status]:
+def load_players_selection(screen_shape: Vector2Int,
+                           make_game_scene_loading: Callable[[GameSession], proto.Scene],
+                           make_main_menu_scene_loading: Callable[[], proto.Scene],
+                           make_game_session: Callable[[], GameSession],
+                           window: Window) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
-    session = GameSessionLoader.make(EDIT_MAP_FILE, 60).load()
+    session = make_game_session()
 
     yield language.get_intermediate_preparing_message()
     screenshot_saver = ScreenshotSaver()
@@ -56,21 +59,16 @@ def load_map_editor(screen_shape: Vector2Int,
                                              button_press_action_happened.subscriber)
 
     input_state = InputState.make(window)
-    cell_changed_owner = Event[Vector2Int, None]()
-    map_editor = MapEditor.make(input_state, session, actions_reader, cell_changed_owner.invoke)
-
-    cell_changed_figure = Event[Vector2Int, None]()
-    session.figures.figure_was_added_at.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
-    session.figures.figure_was_removed.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
-    cells_change_observer = CellsChangesObserver.make([cell_changed_owner.subscriber],
-                                                      [cell_changed_figure.subscriber])
-    cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
-    cells_change_observer.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
+    cells_change_observer = CellsChangesObserver.make([], [])
+    players_selector = PlayersSelector.make(session, actions_reader)
 
     yield language.get_ui_making_message()
     exit_was_pressed = Event[None]()
-    ui_layer_maker = MapEditorUiLayerMaker(UiDrawer(), screen_shape, map_editor)
-    ui_layer = ui_layer_maker.make(exit_was_pressed.invoke)
+    play_was_pressed = Event[None]()
+    ui_layer_maker = PlayersSelectionUiLayerMaker(UiDrawer(), screen_shape)
+    ui_layer = ui_layer_maker.make(exit_was_pressed.invoke,
+                                   play_was_pressed.invoke,
+                                   players_selector.selected_players_were_changed)
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
@@ -82,12 +80,22 @@ def load_map_editor(screen_shape: Vector2Int,
         Layer(MapEditorBoardDrawableLayer(draw, hovered_cell_getter, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
-    scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, map_editor, layers)
+    scene = PlayersSelectionScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, layers)
 
-    def on_exit_was_pressed() -> None:
-        GameSessionSaver(session).save(EDIT_MAP_FILE)
-        scene.on_exit_was_pressed()
+    def on_play_was_pressed() -> None:
+        if not players_selector.has_selected:
+            return
 
-    exit_was_pressed.subscribe(on_exit_was_pressed)
+        new_session = GameSession(players_selector.make_master(),
+                                  session.board,
+                                  session.figures_budget,
+                                  session.pulling_connections,
+                                  session.cells,
+                                  session.figures)
+        on_turn_start(new_session)
+        scene.switch_to(make_game_scene_loading(new_session))
+
+    play_was_pressed.subscribe(on_play_was_pressed)
+    exit_was_pressed.subscribe(lambda: scene.switch_to(make_main_menu_scene_loading()))
 
     yield scene
