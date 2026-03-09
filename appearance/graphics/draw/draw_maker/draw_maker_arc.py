@@ -21,15 +21,14 @@ class DrawMaker:
              screen_shape: Vector2Int,
              on_board_sprites_drawer: proto.OnBoardSpritesDrawer,
              board: Board,
-             cells_change_observer: CellsChangesObserver) -> tuple[Draw, FiguresDrawer]:
+             cells_change_observer: CellsChangesObserver) -> tuple[Draw, FiguresDrawer, BordDrawer]:
         sprites_loader = SpritesLoader.from_meta()
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
         figures_sprites = figures_sprites_loader.load(get_figures(), self._on_no_figure_sprite)
         figures_drawer = FiguresDrawer.make(board, figures_sprites, on_board_sprites_drawer)
         cells_change_observer.cell_changed_figure.subscribe(figures_drawer.update_cell)
 
-        board_drawer = BordDrawer.make(board)
-        cells_change_observer.cell_changed_owner.subscribe(board_drawer.update_cell)
+        board_drawer = BordDrawer.make(board, cells_change_observer.cell_changed_owner)
 
         return (Draw(board_drawer, on_board_sprites_drawer, BackgroundDrawer(screen_shape, BACKGROUND)),
-                figures_drawer)
+                figures_drawer, board_drawer)

@@ -162,9 +162,9 @@ def load_game(screen_shape: Vector2Int,
             towns = session.cells.with_figure(Town)
             player_cells = session.cells.with_owner(player)
             player_towns = player_cells & towns
-            is_territory_win = len(player_cells.all()) > sum(len(session.cells.with_owner(other).all())
-                                                             for other in session.master.players) * .5
-            is_economically_win = len(player_towns.all()) > len(towns.all()) * .5
+            is_territory_win = len(player_cells.as_set()) > sum(len(session.cells.with_owner(other).as_set())
+                                                                for other in session.master.players) * .5
+            is_economically_win = len(player_towns.as_set()) > len(towns.as_set()) * .5
             if is_territory_win or is_economically_win:
                 scene.on_reload(make_next_scene_loading())
 

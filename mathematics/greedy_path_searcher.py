@@ -48,7 +48,7 @@ class GreedyPathSearcher:
         if cell is self._target:
             return path
 
-        for next_cell in sorted(neighbors.all(), key=self._distance_to_target):
+        for next_cell in sorted(neighbors.as_set(), key=self._distance_to_target):
             try:
                 full_path = self._search_from(next_cell, path=path, seen=seen)
             except RecursionError:

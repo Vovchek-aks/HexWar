@@ -57,7 +57,6 @@ def load_map_editor(screen_shape: Vector2Int,
 
     input_state = InputState.make(window)
     cell_changed_owner = Event[Vector2Int, None]()
-    map_editor = MapEditor.make(input_state, session, actions_reader, cell_changed_owner.invoke)
 
     cell_changed_figure = Event[Vector2Int, None]()
     session.figures.figure_was_added_at.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
@@ -67,14 +66,23 @@ def load_map_editor(screen_shape: Vector2Int,
     cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
     cells_change_observer.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
 
+    yield language.get_sprite_loading_message()
+    on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
+    draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
+                                                          on_board_sprites_drawer,
+                                                          session.board,
+                                                          cells_change_observer)
+
+    map_editor = MapEditor.make(input_state,
+                                session,
+                                actions_reader,
+                                cell_changed_owner.invoke,
+                                board_drawer.not_updating_cells)
+
     yield language.get_ui_making_message()
     exit_was_pressed = Event[None]()
     ui_layer_maker = MapEditorUiLayerMaker(UiDrawer(), screen_shape, map_editor)
     ui_layer = ui_layer_maker.make(exit_was_pressed.invoke)
-
-    yield language.get_sprite_loading_message()
-    on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
-    draw, figures_drawer = DrawMaker().make(screen_shape, on_board_sprites_drawer, session.board, cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [

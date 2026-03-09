@@ -1,5 +1,7 @@
 import random
 from collections import defaultdict
+from contextlib import contextmanager
+from typing import Iterator
 
 from attrs import define, field
 import arcade as arc
@@ -9,10 +11,11 @@ from appearance.graphics.colors import WATER, SHORE
 from appearance import protocols as proto
 from color import Color
 from core.distant_neighbors_getter import DistantNeighborsGetter
-from core.protocols import Board, OnLand
+from core.protocols import Board, Cells
 from mathematics.hex_geometry import Neighbor, neighbors_vertexes, NEIGHBORS, neighbor_square_deltas, \
     OPPOSITE_NEIGHBOR, get_world_position
 from mathematics.vector import Vector2Int
+from observer import OnEventSubscriber
 
 ShapeList = arc.shape_list.ShapeElementList
 Shape = arc.shape_list.Shape
@@ -28,8 +31,9 @@ MAJOR_COLOR_VARIATION_FREQUENCY = 0.05
 @define
 class BordDrawer(proto.BordDrawer):
     @classmethod
-    def make(cls, board: Board) -> "BordDrawer":
-        self = cls(board)
+    def make(cls, board: Board, cell_changed_owner: OnEventSubscriber[Vector2Int, None]) -> "BordDrawer":
+        self = cls(board, cell_changed_owner)
+        cell_changed_owner.subscribe(self.update_cell)
 
         for cell_coord in board.cell_coords:
             self.append_hex_background(cell_coord)
@@ -39,6 +43,7 @@ class BordDrawer(proto.BordDrawer):
         return self
 
     _board: Board
+    _cell_changed_owner: OnEventSubscriber[Vector2Int, None]
 
     _shape_list: ShapeList = field(init=False, factory=ShapeList)
     _backgrounds: dict[Vector2Int, Shape] = field(init=False, factory=dict)
@@ -89,9 +94,27 @@ class BordDrawer(proto.BordDrawer):
         self._backgrounds[cell_coord] = hexagon
         self._shape_list.append(hexagon)
 
+    @contextmanager
+    def not_updating_cells(self, cells: Cells) -> Iterator[None]:
+        self._cell_changed_owner.unsubscribe(self.update_cell)
+        yield
+        self._cell_changed_owner.subscribe(self.update_cell)
+        self.update_cells(cells)
+
     def update_cell(self, cell_coord: Vector2Int) -> None:
         for cell in self._board.get_neighbors(self._board[cell_coord], include_cell=True):
             self._update_cell_color(self._board.coordinates_of(cell))
+        self._shape_list.update()
+
+    def update_cells(self, cells: Cells) -> None:
+        # assert cells.is_region_with_same_owner(self._board)
+
+        front = cells.at_inner_boundry(self._board)
+        for cell in cells - front:
+            self._update_cell_color(self._board.coordinates_of(cell))
+        self._shape_list.update()
+        for cell in front:
+            self.update_cell(self._board.coordinates_of(cell))
 
     def _update_cell_color(self, cell_coord: Vector2Int) -> None:
         assert cell_coord in self._backgrounds

@@ -65,7 +65,7 @@ class BotIgor(proto.Bot):
                 return IN_PROGRESS
             self._moves_generator = MISSING
 
-        cells_count = len(session.cells.with_owner(self._player).all())
+        cells_count = len(session.cells.with_owner(self._player).as_set())
         if cells_count <= 0:
             return MISSING
 
@@ -95,10 +95,10 @@ class BotIgor(proto.Bot):
         motorization_count = self._count_of(fig.Motorization)
         bunkers_count = len((cells.with_owner(self._player) &
                              cells.with_figure(fig.Bunker) &
-                             cells.at_front).all())
+                             cells.at_front).as_set())
         empty_front_length = len((cells.with_owner(self._player) &
                                   cells.at_front &
-                                  cells.with_figure(fig.Land)).all())
+                                  cells.with_figure(fig.Land)).as_set())
         tanks_count = self._count_of(fig.Tank)
         silos_count = self._count_of(fig.MissileSilo)
 
@@ -144,7 +144,7 @@ class BotIgor(proto.Bot):
                 return
 
             initial_army_size = max(5., len((cells.with_owner(self._player) &
-                                             cells.at_front).all()) *
+                                             cells.at_front).as_set()) *
                                     (.1 if has_developed else .0))
 
             if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
@@ -253,9 +253,9 @@ class BotIgor(proto.Bot):
                 return self._get_cell_for_bunker(front, production)
             case fig.Town | fig.MissileSilo:
                 candidates = back or empties
-                return random.choice(list(candidates.all()))
+                return random.choice(list(candidates.as_set()))
             case _:
-                return random.choice(list(empties.all()))
+                return random.choice(list(empties.as_set()))
 
         assert False
 
@@ -282,7 +282,7 @@ class BotIgor(proto.Bot):
         if not front:
             return MISSING
         if not production:
-            return random.choice(list(front.all()))
+            return random.choice(list(front.as_set()))
 
         unsafe_front = self._get_unsafe_front(front)
         if unsafe_front:
@@ -342,7 +342,7 @@ class BotIgor(proto.Bot):
             targets.append((silos,
                             cells.with_owner(player) & cells.with_figure(fig.Town)))
 
-        target = max(targets, key=lambda t: (len(t[1].all()), -len(t[0].all())))
+        target = max(targets, key=lambda t: (len(t[1].as_set()), -len(t[0].as_set())))
 
         for cell in target[0]:
             yield
@@ -369,7 +369,7 @@ class BotIgor(proto.Bot):
             return
 
         most_profitable = max(valid_moves, key=lambda move: len((move.get_target_cells(self._session) -
-                                                                 cells.with_figure(fig.Land | fig.Water)).all()))
+                                                                 cells.with_figure(fig.Land | fig.Water)).as_set()))
         self._moves_to_make.append(ValidMove(most_profitable))
 
     def _try_spawn_and_connect_artillery(self, amount: int) -> Iterator[None]:
@@ -396,7 +396,7 @@ class BotIgor(proto.Bot):
                 yield
                 continue
 
-            place = random.choice(list(places.all()))
+            place = random.choice(list(places.as_set()))
             make = Creation(fig.Artillery, self._board.coordinates_of(place))
             connect = PullingInitiation(self._board.coordinates_of(place), self._board.coordinates_of(cell))
             if (valid_move := make.validate(self._session)) is not INVALID:
@@ -427,7 +427,7 @@ class BotIgor(proto.Bot):
                 yield
                 continue
 
-            place = random.choice(list(places.all()))
+            place = random.choice(list(places.as_set()))
             make = Creation(fig.Infantry, self._board.coordinates_of(place))
             connect = PullingInitiation(self._board.coordinates_of(cell), self._board.coordinates_of(place))
             if (valid_move := make.validate(self._session)) is not INVALID:
@@ -453,7 +453,7 @@ class BotIgor(proto.Bot):
         not_empty_targets = targets - empty_targets
         targets = not_empty_targets or empty_targets
 
-        return random.choice(list(targets.all()))
+        return random.choice(list(targets.as_set()))
 
     def _try_pull_forces_to_front(self) -> Iterator[None]:
         cells = self._session.cells
@@ -529,7 +529,7 @@ class BotIgor(proto.Bot):
         if not empty_front:
             return MISSING
 
-        target_front = min(empty_front.all(),
+        target_front = min(empty_front.as_set(),
                            key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
                                                                self._board.coordinates_of(front_cell)))
 
@@ -557,7 +557,7 @@ class BotIgor(proto.Bot):
         if not front:
             return MISSING
 
-        target_front = min(front.all(),
+        target_front = min(front.as_set(),
                            key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
                                                                self._board.coordinates_of(front_cell)))
         return target_front
@@ -569,12 +569,12 @@ class BotIgor(proto.Bot):
             return
         yield
 
-        infantry_count = len(infantries.all())
+        infantry_count = len(infantries.as_set())
         motorization_count = self._count_of(fig.Motorization)
         to_convert = max(0, math.floor((infantry_count + motorization_count) * .5 - motorization_count))
         yield
 
-        for infantry in islice(infantries.all(), 0, to_convert):
+        for infantry in islice(infantries.as_set(), 0, to_convert):
             move = Conversion(self._board.coordinates_of(infantry),
                               fig.Motorization)
             if (valid_move := move.validate(self._session)) is not INVALID:
@@ -626,7 +626,7 @@ class BotIgor(proto.Bot):
             if not supports:
                 continue
 
-            support = min((sup.figure for sup in supports.all()),
+            support = min((sup.figure for sup in supports.as_set()),
                           key=lambda figure: self._session.figures_budget.of(figure) /
                                              figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
             if not self._session.figures_budget.can_spend(support, support.get_cost_of(Relocation(Vector2Int.zero(),
@@ -659,7 +659,7 @@ class BotIgor(proto.Bot):
                 yield
                 continue
 
-            target: proto.Cell = random.choice(list(neighbors.all()))
+            target: proto.Cell = random.choice(list(neighbors.as_set()))
             move = Attack(self._board.coordinates_of(tank),
                           self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
@@ -690,7 +690,7 @@ class BotIgor(proto.Bot):
             if not targets:
                 targets = neighbors
 
-            target = max(targets.all(), key=lambda cell: cell.hardness(self._board))
+            target = max(targets.as_set(), key=lambda cell: cell.hardness(self._board))
             move = Attack(self._board.coordinates_of(artillery),
                           self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
@@ -713,7 +713,7 @@ class BotIgor(proto.Bot):
                 yield
                 continue
 
-            target: proto.Cell = random.choice(list(neighbors.all()))
+            target: proto.Cell = random.choice(list(neighbors.as_set()))
             move = Capture(self._board.coordinates_of(infantry),
                            self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
@@ -748,7 +748,7 @@ class BotIgor(proto.Bot):
     def _count_of(self, figure: type[fig.Figure]) -> int:
         cells = self._session.cells
         res = len((cells.with_owner(self._player) &
-                   cells.with_figure(figure)).all())
+                   cells.with_figure(figure)).as_set())
         return res
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:

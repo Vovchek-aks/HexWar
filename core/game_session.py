@@ -120,8 +120,8 @@ def test_map(*, ups: float, board_size: int, initial_town_ratio: float, is_multi
         if not (player_cells := board.cells.with_owner(player).with_figure(fig.Land)):
             continue
 
-        per_player_towns = round(len(player_cells.at_front(board).all()) * initial_town_ratio)
-        for cell in random.sample(list(player_cells.all()), per_player_towns):
+        per_player_towns = round(len(player_cells.at_front(board).as_set()) * initial_town_ratio)
+        for cell in random.sample(list(player_cells.as_set()), per_player_towns):
             coord = board.coordinates_of(cell)
             figures.add(fig.Town, coord)
 

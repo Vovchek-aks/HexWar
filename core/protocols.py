@@ -180,11 +180,19 @@ class Board(ABC):
         ...
 
     @abstractmethod
+    def is_on_boundry(self, cell: "Cell") -> bool:
+        ...
+
+    @abstractmethod
     def coordinates_of(self, cell: "Cell") -> Vector2Int:
         ...
 
     @abstractmethod
     def get_neighbors(self, cell: "Cell", *, include_cell: bool = False) -> "Cells":
+        ...
+
+    @abstractmethod
+    def get_region_with_same_owner(self, cell: "Cell") -> "Cells":
         ...
 
     @abstractmethod
@@ -306,7 +314,7 @@ class Cell(ABC):
 
 class Cells(ABC):
     @abstractmethod
-    def all(self) -> set[Cell]:
+    def as_set(self) -> set[Cell]:
         ...
 
     @abstractmethod
@@ -322,7 +330,19 @@ class Cells(ABC):
         ...
 
     @abstractmethod
+    def is_region_with_same_owner(self, board: Board) -> bool:
+        ...
+
+    @abstractmethod
     def at_front(self, board: Board) -> "Cells":
+        ...
+
+    @abstractmethod
+    def at_outer_boundry(self, board: Board) -> "Cells":
+        ...
+
+    @abstractmethod
+    def at_inner_boundry(self, board: Board) -> "Cells":
         ...
 
     @abstractmethod
@@ -335,6 +355,14 @@ class Cells(ABC):
 
     @abstractmethod
     def __and__(self, other_cells: "Cells") -> "Cells":
+        ...
+
+    @abstractmethod
+    def __gt__(self, other_cells: "Cells") -> bool:
+        ...
+
+    @abstractmethod
+    def __ge__(self, other: "Cells") -> bool:
         ...
 
     @abstractmethod

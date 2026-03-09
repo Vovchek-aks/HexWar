@@ -1,4 +1,4 @@
-from types import TracebackType
+from my_types import TracebackType
 from typing import Callable
 
 from attrs import frozen

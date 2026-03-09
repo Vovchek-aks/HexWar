@@ -1,4 +1,4 @@
-from types import TracebackType
+from my_types import TracebackType
 from time import time
 
 from attrs import define, field

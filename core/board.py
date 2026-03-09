@@ -51,6 +51,15 @@ class Board(proto.Board):
     def has(self, cell: proto.Cell) -> bool:
         return cell in self._cells_set
 
+    def is_on_boundry(self, cell: proto.Cell) -> bool:
+        coord = self.coordinates_of(cell)
+        return any((
+            coord.x == 0,
+            coord.x == self.shape.x - 1,
+            coord.y == 0,
+            coord.y == self.shape.y - 1
+        ))
+
     def coordinates_of(self, cell: proto.Cell) -> Vector2Int:
         assert self.has(cell)
 
@@ -70,6 +79,22 @@ class Board(proto.Board):
                 neighbors.add(self[coord])
 
         return Cells(neighbors)
+
+    def get_region_with_same_owner(self, cell: proto.Cell) -> Cells:
+        owner = cell.owner
+
+        def _get_region_with_same_owner(cell: proto.Cell, seen: "set[proto.Cell]") -> Cells:
+            if cell.owner is not owner or cell in seen:
+                return Cells.empty()
+
+            seen.add(cell)
+
+            for neighbor in self.get_neighbors(cell) - Cells(seen):
+                _get_region_with_same_owner(neighbor, seen)
+
+            return Cells(seen)
+
+        return _get_region_with_same_owner(cell, set())
 
     def __getitem__(self, coord: Vector2Int) -> proto.Cell:
         assert coord in self

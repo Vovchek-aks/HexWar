@@ -282,7 +282,7 @@ class Tank(_Figure):
                            .with_flag(proto.OnLand)
                            .with_owner(cell.owner)
                            .with_figure(Infantry | Motorization)
-                           .all())))
+                           .as_set())))
 
 
 class Artillery(_Figure):

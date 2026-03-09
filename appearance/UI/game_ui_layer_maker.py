@@ -50,7 +50,7 @@ class GameUiLayerMaker:
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
                                     .move(Vector2(10, 10))
-                                    .set_shape(Vector2(150, 30))
+                                    .set_shape(Vector2(self._screen_shape.x / 4, 30))
                                     .adjust_for_shape()
                                     .build()),
                                    TextData.debug('...'))

@@ -8,6 +8,7 @@ from appearance.input.moves_inputer.input_actions import CellClickAction
 from appearance.protocols import InputAction, MouseButtons, InputActionsReader, InputState
 from core.cells import Cells
 from mathematics.vector import Vector2Int
+from my_types import ContextManager
 from statuses import MISSING, Status
 import core.figures.figure as fig
 
@@ -23,9 +24,10 @@ class MapEditor:
              input_state: InputState,
              session: proto.GameSession,
              actions_reader: InputActionsReader,
-             on_changed_cell_owner: Callable[[Vector2Int], None]) -> "MapEditor":
+             on_changed_cell_owner: Callable[[Vector2Int], None],
+             multiple_cells_change: Callable[[Cells], ContextManager[None]]) -> "MapEditor":
         transforms = list[Transform]()
-        self = cls(input_state, session, on_changed_cell_owner, transforms, "water")
+        self = cls(input_state, session, on_changed_cell_owner, multiple_cells_change, transforms, "water")
         actions_reader.action_was_read.subscribe(self._on_action_was_read)
 
         transforms.append(("water", lambda coord: self._change_owner_to(coord, MISSING)))
@@ -41,6 +43,7 @@ class MapEditor:
     _input_state: InputState
     _session: proto.GameSession
     _on_changed_cell_owner: Callable[[Vector2Int], None]
+    _multiple_cells_change: Callable[[Cells], ContextManager[None]]
 
     _transforms: list[Transform]
     _transform: str
@@ -70,35 +73,22 @@ class MapEditor:
             case _:
                 return
 
-        cells_to_transform = (self._get_same_owner(click_coord, self._session.board[click_coord].owner, set())
+        cells_to_transform = (self._session.board.get_region_with_same_owner(self._session.board[click_coord])
                               if FILL_KEY in self._input_state.pressed_keys else
                               Cells({self._session.board[click_coord]}))
 
         self._process = self._get_transform_process(cells_to_transform)
 
     def _get_transform_process(self, cells: Cells) -> Iterator[None]:
-        for cell in cells:
-            self._make_transform(self._session.board.coordinates_of(cell))
-            yield
+        with self._multiple_cells_change(cells):
+            for cell in cells:
+                self._make_transform(self._session.board.coordinates_of(cell))
 
         self._process = MISSING
         yield
 
     def _make_transform(self, coord: Vector2Int) -> None:
         dict(self._transforms)[self._transform](coord)
-
-    def _get_same_owner(self, coord: Vector2Int, owner: proto.Player, seen: "set[proto.Cell]") -> Cells:
-        board = self._session.board
-        cell = board[coord]
-        if cell.owner is not owner or cell in seen:
-            return Cells.empty()
-
-        seen.add(cell)
-
-        for neighbor in board.get_neighbors(cell) - Cells(seen):
-            self._get_same_owner(board.coordinates_of(neighbor), owner, seen)
-
-        return Cells(seen)
 
     def _change_owner_to(self, coord: Vector2Int, player: proto.Player | Status) -> None:
         cell = self._session.board[coord]

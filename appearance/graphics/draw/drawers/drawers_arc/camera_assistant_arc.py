@@ -1,4 +1,4 @@
-from types import TracebackType
+from my_types import TracebackType
 
 from attrs import define, field
 import arcade as arc

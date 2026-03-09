@@ -1,4 +1,4 @@
-from types import TracebackType
+from my_types import TracebackType
 from typing import Iterator
 
 from attrs import frozen

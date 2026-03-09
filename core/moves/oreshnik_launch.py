@@ -24,7 +24,7 @@ class OreshnikLaunch(proto.Move):
         targets = {board[self.to_coord]}
         for distance in range(1, launcher.spread_radius):
             layer = DistantNeighborsGetter(board[self.to_coord], board).get_as_far_as(distance)
-            targets.update(random.sample(list(layer.all()), min(len(layer.all()), launcher.targets_per_layer)))
+            targets.update(random.sample(list(layer.as_set()), min(len(layer.as_set()), launcher.targets_per_layer)))
 
         random.setstate(random_state)
         return Cells(targets)

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod, ABCMeta
-from types import TracebackType
+from my_types import TracebackType
 from typing import Callable, Iterator
 
 import arcade as arc
