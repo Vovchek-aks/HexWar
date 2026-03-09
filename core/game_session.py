@@ -8,7 +8,6 @@ from core.figures.figures import Figures
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
-from core.player.players_moves_maker import on_turn_start
 from core.pulling_connections import PullingConnections
 from core.resources import Dollars
 from mathematics.vector import Vector2Int
@@ -132,7 +131,6 @@ def test_map(*, ups: float, board_size: int, initial_town_ratio: float, is_multi
         player.resources.add(Dollars(5_000_000))
 
     session = GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)
-    on_turn_start(session)
     return session
 
 

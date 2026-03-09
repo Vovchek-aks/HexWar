@@ -23,7 +23,7 @@ from appearance.layer import Layer
 from appearance.scenes.players_selection import PlayersSelectionScene
 from core.cells_changes_observer import CellsChangesObserver
 from core.game_session import GameSession
-from core.player.players_moves_maker import on_turn_start
+from core.player.players_moves_maker import ByGameRulesSessionChanger
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -72,7 +72,10 @@ def load_players_selection(screen_shape: Vector2Int,
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
-    draw, figures_drawer = DrawMaker().make(screen_shape, on_board_sprites_drawer, session.board, cells_change_observer)
+    draw, _, board_drawer = DrawMaker().make(screen_shape,
+                                             on_board_sprites_drawer,
+                                             session.board,
+                                             cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
@@ -92,7 +95,8 @@ def load_players_selection(screen_shape: Vector2Int,
                                   session.pulling_connections,
                                   session.cells,
                                   session.figures)
-        on_turn_start(new_session)
+
+        ByGameRulesSessionChanger(new_session, board_drawer.not_updating_cells).on_turn_start()
         scene.switch_to(make_game_scene_loading(new_session))
 
     play_was_pressed.subscribe(on_play_was_pressed)

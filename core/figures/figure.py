@@ -101,7 +101,8 @@ class Town(_Figure):
 
 class Capital(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      Static())
+                      Static(),
+                      Creatable(Dollars(5_000_000)))
     MOVES_BUDGET = 0
 
     @classmethod

@@ -140,6 +140,7 @@ class GameUiLayerMaker:
             self._make_tank_menu(),
             self._make_artillery_menu(),
             self._make_town_menu(),
+            self._make_capital_menu(),
             self._make_bunker_menu(),
             self._make_missile_silo_menu(),
             dollars,
@@ -170,7 +171,7 @@ class GameUiLayerMaker:
         layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
                                     .from_left_bottom()
                                     .move(Vector2(20, 20))
-                                    .set_shape(Vector2(410, buttons.rectangle.shape.y))
+                                    .set_shape(Vector2(500, buttons.rectangle.shape.y))
                                     .adjust_for_shape()
                                     .build())
         layout.append(buttons)
@@ -189,7 +190,12 @@ class GameUiLayerMaker:
                                   .build(),
                                   margin_ratio=.2)
         layout.append(self._make_figure_creation_button(fig.Town, hint_box))
-        layout.append(self._make_figure_creation_button(fig.Bunker, hint_box))
+
+        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.07)
+        layout.append(horizontal_layout)
+        horizontal_layout.append(self._make_figure_creation_button(fig.Bunker, hint_box))
+        horizontal_layout.append(self._make_figure_creation_button(fig.Artillery, hint_box))
+
         layout.append(self._make_figure_creation_button(fig.MissileSilo, hint_box))
 
         horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.07)
@@ -197,7 +203,7 @@ class GameUiLayerMaker:
         horizontal_layout.append(self._make_figure_creation_button(fig.Tank, hint_box))
         horizontal_layout.append(self._make_figure_creation_button(fig.Infantry, hint_box))
 
-        layout.append(self._make_figure_creation_button(fig.Artillery, hint_box))
+        layout.append(self._make_figure_creation_button(fig.Capital, hint_box))
 
         return layout
 
@@ -251,6 +257,9 @@ class GameUiLayerMaker:
 
     def _make_town_menu(self) -> Layer:
         return self._make_figure_menu(fig.Town, [], [])
+
+    def _make_capital_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Capital, [], [])
 
     def _make_bunker_menu(self) -> Layer:
         return self._make_figure_menu(fig.Bunker, [], [])

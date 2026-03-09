@@ -130,7 +130,8 @@
       "Motorization": "Motorization",
       "Bunker": "Bunker",
       "MissileSilo": "Missile silo",
-      "Town": "Town"
+      "Town": "Town",
+      "Capital": "Capital"
     },
     "resources": {
       "Dollars": "Dollars"

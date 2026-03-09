@@ -21,7 +21,6 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.map_editor_scene import MapEditorScene
 from core.cells_changes_observer import CellsChangesObserver
-from core.player.players_moves_maker import on_turn_start
 from game_session_saver import GameSessionSaver, GameSessionLoader, EDIT_MAP_FILE
 from map_editor import MapEditor
 from mathematics.vector import Vector2Int

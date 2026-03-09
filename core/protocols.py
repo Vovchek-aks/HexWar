@@ -313,8 +313,17 @@ class Cell(ABC):
 
 
 class Cells(ABC):
+    @property
+    @abstractmethod
+    def any(self) -> Cell:
+        ...
+
     @abstractmethod
     def as_set(self) -> set[Cell]:
+        ...
+
+    @abstractmethod
+    def without(self, cell: Cell) -> "Cells":
         ...
 
     @abstractmethod

@@ -2,8 +2,11 @@ import sys
 
 from appearance.game_engine import GameEngine
 from appearance.game_engine.game_engine_arc.window import Window
+from appearance.input.players_selector import PlayersSelector
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
+from core.game_session import GameSession
+from core.resources import Dollars
 from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
 
@@ -26,9 +29,26 @@ def main() -> None:
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=100)).save(EDIT_MAP_FILE)
-    make_first_scene = _make_map_editor_loading_scene
+    # make_first_scene = _make_map_editor_loading_scene
+    # make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, IS_FULLSCREEN, SCREEN_SHAPE, make_first_scene) as engine:
         engine.run()
+
+
+def _make_test_game_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
+    def make_game_session() -> GameSession:
+        session = GameSessionLoader.make("_edit_map.json", UPS).load()
+        players_selector = PlayersSelector(session)
+        players_selector.toggle(session.master.current_player)
+        session.master.current_player.resources.add(Dollars(100_000_000))
+        return GameSession(players_selector.make_master(),
+                           session.board,
+                           session.figures_budget,
+                           session.pulling_connections,
+                           session.cells,
+                           session.figures)
+
+    return LoadingScenesMaker(screen_shape, window, UPS).make_game_loading_scene(make_game_session)
 
 
 def _make_map_editor_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:

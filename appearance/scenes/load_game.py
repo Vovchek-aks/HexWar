@@ -43,7 +43,7 @@ from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEvent
 from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
-from core.player.players_moves_maker import players_moves_maker
+from core.player.players_moves_maker import players_moves_maker, ByGameRulesSessionChanger
 from core.protocols import GameSession, Player
 from mathematics.vector import Vector2Int
 from observer import Event
@@ -122,7 +122,10 @@ def load_game(screen_shape: Vector2Int,
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
-    draw, figures_drawer = DrawMaker().make(screen_shape, on_board_sprites_drawer, session.board, cells_change_observer)
+    draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
+                                                          on_board_sprites_drawer,
+                                                          session.board,
+                                                          cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
@@ -139,9 +142,10 @@ def load_game(screen_shape: Vector2Int,
     # speed_multiplier=float('inf'))
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
+    by_game_rules_session_changer = ByGameRulesSessionChanger(session, board_drawer.not_updating_cells)
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
-                           players_moves_maker(session, moves_maker,
+                           players_moves_maker(session, moves_maker, by_game_rules_session_changer,
                                                lambda move: animators_switcher.get().get_animation(move)),
                            in_game_time)
     drawer = FrameDrawer.make(layers)

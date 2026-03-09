@@ -14,12 +14,15 @@ class Cells(proto.Cells):
 
     _cells: set[proto.Cell] = field(factory=set)
 
-    def as_set(self) -> set[proto.Cell]:
-        return set(self._cells)
-
     @property
     def any(self) -> proto.Cell:
         return next(iter(self._cells))
+
+    def as_set(self) -> set[proto.Cell]:
+        return set(self._cells)
+
+    def without(self, cell: proto.Cell) -> "Cells":
+        return Cells(self._cells - {cell})
 
     def with_owner(self, target: proto.Player) -> "Cells":
         return Cells({cell for cell in self._cells if cell.owner is target})

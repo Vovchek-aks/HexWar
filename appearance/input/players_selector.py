@@ -47,6 +47,14 @@ class PlayersSelector:
 
         return Master(players + bots)
 
+    def toggle(self, player: proto.Player) -> None:
+        if player in self._selected_players:
+            self._selected_players.remove(player)
+        else:
+            self._selected_players.append(player)
+
+        self._selected_players_were_changed.invoke(self._selected_players)
+
     def _on_action_was_read(self, action: InputAction, _: bool) -> None:
         match action:
             case CellClickAction(coord=click_coord, buttons=MouseButtons(is_left=True)):
@@ -58,12 +66,4 @@ class PlayersSelector:
         if owner is MISSING:
             return
 
-        self._toggle(owner)
-
-    def _toggle(self, player: proto.Player) -> None:
-        if player in self._selected_players:
-            self._selected_players.remove(player)
-        else:
-            self._selected_players.append(player)
-
-        self._selected_players_were_changed.invoke(self._selected_players)
+        self.toggle(owner)
