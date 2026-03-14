@@ -43,7 +43,8 @@ from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEvent
 from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
-from core.player.players_moves_maker import players_moves_maker, ByGameRulesSessionChanger
+from core.player.players_moves_maker import players_moves_maker
+from core.by_game_rules_session_changer import ByGameRulesSessionChanger
 from core.protocols import GameSession, Player
 from mathematics.vector import Vector2Int
 from observer import Event
@@ -84,12 +85,13 @@ def load_game(screen_shape: Vector2Int,
     moves_maker = MovesMaker(session)
 
     cell_changed_figure = Event[Vector2Int, None]()
+    cell_changed_owner = Event[Vector2Int, None]()
     session.figures.figure_was_added_at.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
     session.figures.figure_was_removed.subscribe(lambda _, coord: cell_changed_figure.invoke(coord))
     session.figures.figure_was_converted.subscribe(lambda _, __, coord: cell_changed_figure.invoke(coord))
     session.figures.figure_was_moved.subscribe(lambda _, coord, __: cell_changed_figure.invoke(coord))
     session.figures.figure_was_moved.subscribe(lambda _, __, coord: cell_changed_figure.invoke(coord))
-    cells_change_observer = CellsChangesObserver.make([moves_maker.cell_changed_owner],
+    cells_change_observer = CellsChangesObserver.make([moves_maker.cell_changed_owner, cell_changed_owner.subscriber],
                                                       [cell_changed_figure.subscriber])
 
     cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
@@ -142,7 +144,9 @@ def load_game(screen_shape: Vector2Int,
     # speed_multiplier=float('inf'))
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
-    by_game_rules_session_changer = ByGameRulesSessionChanger(session, board_drawer.not_updating_cells)
+    by_game_rules_session_changer = ByGameRulesSessionChanger(session,
+                                                              board_drawer.not_updating_cells,
+                                                              cell_changed_owner.invoke)
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,
@@ -173,6 +177,7 @@ def load_game(screen_shape: Vector2Int,
                 scene.on_reload(make_next_scene_loading())
 
         session.master.turn_has_passed.subscribe(on_player_turn_ended)
+        by_game_rules_session_changer.on_turn_start()
     else:
         pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)
         scene = GameWithPauseScene(game, pause_menu)

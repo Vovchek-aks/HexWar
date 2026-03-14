@@ -263,6 +263,16 @@ class GameSession(ABC):
         ...
 
 
+class ByGameRulesSessionChanger(ABC):
+    @abstractmethod
+    def on_turn_start(self) -> None:
+        ...
+
+    @abstractmethod
+    def on_turn_end(self) -> None:
+        ...
+
+
 class Cell(ABC):
     @property
     @abstractmethod
@@ -320,6 +330,10 @@ class Cells(ABC):
 
     @abstractmethod
     def as_set(self) -> set[Cell]:
+        ...
+
+    @abstractmethod
+    def as_list(self) -> list[Cell]:
         ...
 
     @abstractmethod

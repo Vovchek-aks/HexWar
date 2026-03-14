@@ -23,7 +23,7 @@ from appearance.layer import Layer
 from appearance.scenes.players_selection import PlayersSelectionScene
 from core.cells_changes_observer import CellsChangesObserver
 from core.game_session import GameSession
-from core.player.players_moves_maker import ByGameRulesSessionChanger
+from core.by_game_rules_session_changer import ByGameRulesSessionChanger
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window

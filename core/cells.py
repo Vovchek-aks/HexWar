@@ -21,6 +21,9 @@ class Cells(proto.Cells):
     def as_set(self) -> set[proto.Cell]:
         return set(self._cells)
 
+    def as_list(self) -> list[proto.Cell]:
+        return list(self._cells)
+
     def without(self, cell: proto.Cell) -> "Cells":
         return Cells(self._cells - {cell})
 

@@ -106,6 +106,9 @@ class BotIgor(proto.Bot):
             has_developed = town_count > min(_MAX_TOWNS, cells_count * .05)
             is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
 
+            if self._count_of(fig.Capital) == 0:
+                self._try_create(fig.Capital)
+
             bunker_ratio = .1 if has_developed and not is_rich else 0.75
             if bunkers_count < empty_front_length * bunker_ratio:
                 self._try_create(fig.Bunker)
@@ -251,7 +254,7 @@ class BotIgor(proto.Bot):
                 return self._get_cell_for_armed_figure(front, production)
             case fig.Bunker:
                 return self._get_cell_for_bunker(front, production)
-            case fig.Town | fig.MissileSilo:
+            case fig.Town | fig.MissileSilo | fig.Capital:
                 candidates = back or empties
                 return random.choice(list(candidates.as_set()))
             case _:

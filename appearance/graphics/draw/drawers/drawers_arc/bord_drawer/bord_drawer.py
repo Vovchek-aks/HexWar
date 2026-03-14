@@ -107,8 +107,6 @@ class BordDrawer(proto.BordDrawer):
         self._shape_list.update()
 
     def update_cells(self, cells: Cells) -> None:
-        # assert cells.is_region_with_same_owner(self._board)
-
         front = cells.at_inner_boundry(self._board)
         for cell in cells - front:
             self._update_cell_color(self._board.coordinates_of(cell))
