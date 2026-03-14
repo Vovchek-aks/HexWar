@@ -36,6 +36,12 @@ class UpdatableOnTurnStartBuilder:
     def add_resources(self, resource: proto.Resource) -> "UpdatableOnTurnStartBuilder":
         return self.set_update(lambda _, session: session.master.current_player.resources.add(resource))
 
+    def add_resources_conditionally(self,
+                                    get_resource: Callable[[Vector2Int, proto.Board], proto.Resource]
+                                    ) -> "UpdatableOnTurnStartBuilder":
+        return self.set_update(lambda coord, session:
+                               session.master.current_player.resources.add(get_resource(coord, session.board)))
+
     def try_take_else_die(self, resource: proto.Resource) -> "UpdatableOnTurnStartBuilder":
         def update(coord: Vector2Int, session: proto.GameSession) -> None:
             resources = session.master.current_player.resources

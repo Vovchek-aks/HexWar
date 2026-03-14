@@ -84,5 +84,8 @@ class Cells(proto.Cells):
     def __iter__(self) -> Iterable[proto.Cell]:
         return iter(self._cells)
 
+    def __len__(self) -> int:
+        return len(self._cells)
+
     def __contains__(self, cell: proto.Cell) -> bool:
         return cell in self._cells

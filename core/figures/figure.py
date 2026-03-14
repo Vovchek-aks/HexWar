@@ -86,9 +86,10 @@ class Town(_Figure):
                       Creatable(Dollars(1_000_000)),
                       Capturable(),
                       (UpdatableOnTurnStartBuilder()
-                       .add_resources(Dollars(200_000))
+                       .add_resources_conditionally(lambda coord, board: Town.get_resources_to_add(coord, board))
                        .build()))
     MOVES_BUDGET = 0
+    BASE_RESOURCES_TO_ADD = Dollars(200_000)
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -98,13 +99,19 @@ class Town(_Figure):
     def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
+    @classmethod
+    def get_resources_to_add(cls, coord: Vector2Int, board: proto.Board) -> proto.Resource:
+        cell = board[coord]
+        capitals = board.get_neighbors(cell).with_owner(cell.owner).with_figure(Capital)
+        return cls.BASE_RESOURCES_TO_ADD * (1 + len(capitals))
+
 
 class Capital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Creatable(Dollars(5_000_000)),
                       (UpdatableOnTurnStartBuilder()
-                       .add_resources(Dollars(1_500_000))
+                       .try_take_else_die(Dollars(800_000))
                        .build()))
     MOVES_BUDGET = 0
 

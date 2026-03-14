@@ -397,6 +397,10 @@ class Cells(ABC):
         ...
 
     @abstractmethod
+    def __len__(self) -> int:
+        ...
+
+    @abstractmethod
     def __contains__(self, cell: Cell) -> bool:
         ...
 
@@ -674,6 +678,10 @@ class Resource(ABC):
 
     @abstractmethod
     def __sub__(self, other: "Resource") -> "Resource":
+        ...
+
+    @abstractmethod
+    def __mul__(self, multiplier: int) -> "Resource":
         ...
 
 
