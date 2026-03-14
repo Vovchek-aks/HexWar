@@ -1,6 +1,6 @@
 from collections import defaultdict
 from types import UnionType
-from typing import get_args
+from typing import get_args, Union
 
 from attrs import frozen, field
 
@@ -28,6 +28,12 @@ class CellsCache(proto.CellsCache):
     @property
     def at_front(self) -> Cells:
         return Cells(self._front)
+
+    def not_empty(self) -> Cells:
+        result = set()
+        for cells in self._cells_with.values():
+            result |= cells
+        return Cells(result)
 
     def with_owner(self, player: proto.Player) -> Cells:
         return Cells(self._cells_of[player])

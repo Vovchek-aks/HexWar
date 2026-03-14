@@ -7,6 +7,7 @@ from appearance.UI.button import ButtonUi, SwitchButtonUi, get_image_rectangle
 from appearance.UI.image import ImageUi
 from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
+from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.stretcher import StretcherUi
 from appearance.UI.text import TextUi, TextData
 from appearance.UI.text.text_data_pg import TextDataBuilder
@@ -22,7 +23,8 @@ from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZ
     INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
-from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile, Creatable
+from core.figures.resources_flow_flags import get_resource_flow
+from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile, Creatable, Resource
 from core.resources import Dollars
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
@@ -46,51 +48,29 @@ class GameUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
-        players_turn = TextUi.make(self._drawer,
-                                   (RectangleBuilder(self._screen_shape)
-                                    .from_left_up()
-                                    .move(Vector2(10, 10))
-                                    .set_shape(Vector2(self._screen_shape.x / 4, 30))
-                                    .adjust_for_shape()
-                                    .build()),
-                                   TextData.debug('...'))
-
-        dollars = TextUi.make(self._drawer,
-                              (RectangleBuilder(self._screen_shape)
-                               .from_left_up()
-                               .move(Vector2(10, 60))
-                               .set_shape(Vector2(150, 30))
-                               .adjust_for_shape()
-                               .build()),
-                              TextData.debug('...'))
-
-        def on_resources_had_changed(resources: ResourcesStockpile) -> None:
-            dollars.set_text(self._language.get_message_from_resource(resources.get(Dollars)))
-
-        for player in self._session.master.players:
-            player.resources.has_changed.subscribe(on_resources_had_changed)
+        dollars, players_turn = self._make_dollars_and_player_turn()
 
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
-
-        def on_turn_passed(player: Player) -> None:
-            name = player.data.name
-            players_turn.set_text(self._language.get_players_turn_message(name))
-            on_resources_had_changed(player.resources)
-
-        self._session.master.turn_had_started.subscribe(on_turn_passed)
 
         layers = [
             players_turn,
             self._make_current_turn_ui(dollars, end_turn_button)
         ]
 
-        on_turn_passed(self._session.master.current_player)
-        on_resources_had_changed(self._session.master.current_player.resources)
-
         return Layer.as_multiple(layers)
 
     def make_multibot(self) -> Layer:
+        dollars, players_turn = self._make_dollars_and_player_turn()
+
+        layers = [
+            players_turn,
+            dollars
+        ]
+
+        return Layer.as_multiple(layers)
+
+    def _make_dollars_and_player_turn(self) -> tuple[TextUi, TextUi]:
         players_turn = TextUi.make(self._drawer,
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
@@ -99,38 +79,42 @@ class GameUiLayerMaker:
                                     .adjust_for_shape()
                                     .build()),
                                    TextData.debug('...'))
-
         dollars = TextUi.make(self._drawer,
                               (RectangleBuilder(self._screen_shape)
                                .from_left_up()
                                .move(Vector2(10, 60))
-                               .set_shape(Vector2(150, 30))
+                               .set_shape(Vector2(self._screen_shape.x / 4, 20))
                                .adjust_for_shape()
                                .build()),
                               TextData.debug('...'))
 
-        def on_resources_had_changed(resources: ResourcesStockpile) -> None:
-            dollars.set_text(self._language.get_message_from_resource(resources.get(Dollars)))
+        def update_dollars_text() -> None:
+            player = self._session.master.current_player
+            resource = player.resources.get(Dollars)
 
+            # current = self._language.get_message_from_resource(resource)
+            # flow = get_resource_flow(player, Dollars, self._session)
+            # sign = '+' if flow >= 0 else ''
+            # dollars.set_text(f"{current} ({sign}{NumberShortener().shorten(flow)})")
+
+            current = self._language.get_message_from_resource(resource)
+            dollars.set_text(f"{current}")
+
+        self._moves_maker.resources_flow_could_have_changed.subscribe(lambda: update_dollars_text())
         for player in self._session.master.players:
-            player.resources.has_changed.subscribe(on_resources_had_changed)
+            player.resources.has_changed.subscribe(lambda _: update_dollars_text())
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
             players_turn.set_text(self._language.get_players_turn_message(name))
-            on_resources_had_changed(player.resources)
+            update_dollars_text()
 
         self._session.master.turn_had_started.subscribe(on_turn_passed)
 
-        layers = [
-            players_turn,
-            dollars
-        ]
-
         on_turn_passed(self._session.master.current_player)
-        on_resources_had_changed(self._session.master.current_player.resources)
+        update_dollars_text()
 
-        return Layer.as_multiple(layers)
+        return dollars, players_turn
 
     def _make_current_turn_ui(self, dollars: TextUi, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([

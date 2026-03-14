@@ -6,6 +6,8 @@ from core import protocols as proto
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend
 from core.figures.movable_flag import MovableBuilder
+from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
+    BuffsNeighborResourceAdders
 from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
 from core.moves.attack import Attack
 from core.moves.capture import Capture
@@ -85,11 +87,8 @@ class Town(_Figure):
                       Static(),
                       Creatable(Dollars(1_000_000)),
                       Capturable(),
-                      (UpdatableOnTurnStartBuilder()
-                       .add_resources_conditionally(lambda coord, board: Town.get_resources_to_add(coord, board))
-                       .build()))
+                      AddsResourcesIndefinably(Dollars(200_000)))
     MOVES_BUDGET = 0
-    BASE_RESOURCES_TO_ADD = Dollars(200_000)
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -99,20 +98,13 @@ class Town(_Figure):
     def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
-    @classmethod
-    def get_resources_to_add(cls, coord: Vector2Int, board: proto.Board) -> proto.Resource:
-        cell = board[coord]
-        capitals = board.get_neighbors(cell).with_owner(cell.owner).with_figure(Capital)
-        return cls.BASE_RESOURCES_TO_ADD * (1 + len(capitals))
-
 
 class Capital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Creatable(Dollars(5_000_000)),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(800_000))
-                       .build()))
+                      TriesTakeResourcesElseDies(Dollars(800_000)),
+                      BuffsNeighborResourceAdders(ratio=1))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -174,9 +166,7 @@ class Infantry(_Figure):
                       Creatable(Dollars(100_000)),
                       CanCapture(),
                       PreventCaptures(),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(25_000))
-                       .build()))
+                      TriesTakeResourcesElseDies(Dollars(25_000)))
     MOVES_BUDGET = 6
 
     SELF_HARDNESS = 2
@@ -219,9 +209,7 @@ class Motorization(_Figure):
                        .build()),
                       CanPull(),
                       PreventCaptures(),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(75_000))
-                       .build()))
+                      TriesTakeResourcesElseDies(Dollars(75_000)))
     MOVES_BUDGET = 200
 
     @classmethod
@@ -252,9 +240,7 @@ class Tank(_Figure):
                        .build()),
                       Creatable(Dollars(500_000)),
                       Capturable(),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(100_000))
-                       .build()),
+                      TriesTakeResourcesElseDies(Dollars(150_000)),
                       CanAttack(1))
     MOVES_BUDGET = 200
 
@@ -305,9 +291,7 @@ class Artillery(_Figure):
                       Pullable(),
                       Creatable(Dollars(250_000)),
                       Capturable(),
-                      (UpdatableOnTurnStartBuilder()
-                       .try_take_else_die(Dollars(150_000))
-                       .build()),
+                      TriesTakeResourcesElseDies(Dollars(125_000)),
                       CanAttack(3))
     MOVES_BUDGET = 7
 
@@ -336,6 +320,20 @@ def get_figures() -> list[type[_Figure]]:
     return [
         Land,
         Water,
+        Settlement,
+        Town,
+        Capital,
+        Bunker,
+        MissileSilo,
+        Infantry,
+        Motorization,
+        Tank,
+        Artillery
+    ]
+
+
+def not_empty() -> list[type[_Figure]]:
+    return [
         Settlement,
         Town,
         Capital,

@@ -132,6 +132,11 @@ class MovesMaker(ABC):
     def cell_changed_owner(self) -> OnEventSubscriber[Vector2Int, None]:
         ...
 
+    @property
+    @abstractmethod
+    def resources_flow_could_have_changed(self) -> OnEventSubscriber[None]:
+        ...
+
     @abstractmethod
     def make(self, move: ValidMove) -> None:
         ...
@@ -212,6 +217,10 @@ class CellsCache(ABC):
     @property
     @abstractmethod
     def at_front(self) -> "Cells":
+        ...
+
+    @abstractmethod
+    def not_empty(self) -> "Cells":
         ...
 
     @abstractmethod
@@ -528,6 +537,44 @@ class UpdatableOnTurnStart(Flag, metaclass=ABCMeta):
         ...
 
 
+class TriesTakeResourcesElseDies(UpdatableOnTurnStart, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def resource(self) -> "Resource":
+        ...
+
+
+class ResourceAdder(UpdatableOnTurnStart, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def base_resource(self) -> "Resource":
+        ...
+
+    @abstractmethod
+    def get_resource_with_buffs(self, coord: Vector2Int, session: GameSession) -> "Resource":
+        ...
+
+
+class AddsResourcesIndefinably(ResourceAdder, metaclass=ABCMeta):
+    ...
+
+
+class BuffsResourceAdders(Flag, metaclass=ABCMeta):
+    @abstractmethod
+    def get_buff(self,
+                 resource_adder_coord: Vector2Int,
+                 coord: Vector2Int,
+                 session: GameSession) -> float:
+        ...
+
+
+class BuffsNeighborResourceAdders(BuffsResourceAdders, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def ratio(self) -> float:
+        ...
+
+
 class Figure(ABC):
     FLAGS: ClassVar[Flags]
     MOVES_BUDGET: ClassVar[int]
@@ -681,7 +728,7 @@ class Resource(ABC):
         ...
 
     @abstractmethod
-    def __mul__(self, multiplier: int) -> "Resource":
+    def __mul__(self, multiplier: float) -> "Resource":
         ...
 
 

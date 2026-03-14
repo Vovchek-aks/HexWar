@@ -21,6 +21,7 @@ class MovesMaker(proto.MovesMaker):
     _move_was_made: Event[proto.ValidMove, None] = field(init=False, factory=Event)
     _board_move_was_made: Event[proto.ValidMove, None] = field(init=False, factory=Event)
     _cell_changed_owner: Event[Vector2Int, None] = field(init=False, factory=Event)
+    _resources_flow_could_have_changed: Event[None] = field(init=False, factory=Event)
 
     @property
     def move_was_made(self) -> OnEventSubscriber[proto.ValidMove, None]:
@@ -33,6 +34,10 @@ class MovesMaker(proto.MovesMaker):
     @property
     def cell_changed_owner(self) -> OnEventSubscriber[Vector2Int, None]:
         return self._cell_changed_owner.subscriber
+
+    @property
+    def resources_flow_could_have_changed(self) -> OnEventSubscriber[None]:
+        return self._resources_flow_could_have_changed.subscriber
 
     def make(self, move: proto.ValidMove) -> None:
         assert move.move.validate(self._session) is not INVALID
@@ -51,26 +56,28 @@ class MovesMaker(proto.MovesMaker):
                 self._cell_changed_owner.invoke(to_coord)
 
                 self._board_move_was_made.invoke(move)
-                # print(move.move, self._session.board[from_coord], self._session.board[to_coord])
+                # print(move.move, self._session._board[from_coord], self._session._board[to_coord])
             case Relocation(to_coord=to_coord, from_coord=from_coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
                     
                 self._board_move_was_made.invoke(move)
-                # print(move.move, self._session.board[from_coord], self._session.board[to_coord])
+                # print(move.move, self._session._board[from_coord], self._session._board[to_coord])
             case Capture(to_coord=to_coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
 
                 self._cell_changed_owner.invoke(to_coord)
                 self._board_move_was_made.invoke(move)
-                # print(move.move, self._session.board[move.move.from_coord], self._session.board[to_coord])
+                self._resources_flow_could_have_changed.invoke()
+                # print(move.move, self._session._board[move.move.from_coord], self._session._board[to_coord])
             case Creation(to_coord=coord) | Conversion(coord=coord) | Attack(to_coord=coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
 
                 self._board_move_was_made.invoke(move)
-                # print(move.move, self._session.board[coord])
+                self._resources_flow_could_have_changed.invoke()
+                # print(move.move, self._session._board[coord])
             case PullingInitiation() | PullingTermination():
                 self._session.make(move)
                 self._move_was_made.invoke(move)
