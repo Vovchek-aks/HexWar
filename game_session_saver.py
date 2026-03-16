@@ -23,7 +23,7 @@ from files import write_json, read_json
 from mathematics.vector import Vector2Int
 import core.figures.figure as fig
 from core.player.inputers.bots import bots
-from core.resources import get_resources_types, ResourcesStockpile
+from core.resources import get_resources_types, ResourcesStockpile, ResourcesGroup
 from statuses import MISSING
 
 SAVE_FOLDER = Path("data") / "saves"
@@ -201,7 +201,7 @@ class GameSessionLoader:
     def _load_resources(resources: dict[str, int]) -> ResourcesStockpile:
         stockpile = ResourcesStockpile()
         for name, amount in resources.items():
-            stockpile.add(RESOURCES[name](amount))
+            stockpile.add(ResourcesGroup.make(RESOURCES[name](amount)))
         return stockpile
 
     def _load_board(self, master: Master) -> Board:

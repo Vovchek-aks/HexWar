@@ -8,13 +8,12 @@ from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Cap
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNeighborResourceAdders
-from core.figures.updatable_on_turn_start_flag import UpdatableOnTurnStartBuilder
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
-from core.resources import Dollars
+from core.resources import ResourcesGroup, Dollars
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 from core.protocols import Figure
@@ -85,9 +84,9 @@ class Settlement(_Figure):
 class Town(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable(Dollars(1_000_000)),
+                      Creatable.make(Dollars(1_000_000)),
                       Capturable(),
-                      AddsResourcesIndefinably(Dollars(200_000)))
+                      AddsResourcesIndefinably.make(Dollars(200_000)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -102,8 +101,8 @@ class Town(_Figure):
 class Capital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable(Dollars(5_000_000)),
-                      TriesTakeResourcesElseDies(Dollars(800_000)),
+                      Creatable.make(Dollars(5_000_000)),
+                      TriesTakeResourcesElseDies.make(Dollars(800_000)),
                       BuffsNeighborResourceAdders(ratio=1))
     MOVES_BUDGET = 0
 
@@ -119,7 +118,7 @@ class Capital(_Figure):
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable(Dollars(150_000)))
+                      Creatable.make(Dollars(150_000)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -134,11 +133,11 @@ class Bunker(_Figure):
 class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable(Dollars(3_000_000)),
+                      Creatable.make(Dollars(3_000_000)),
                       Capturable(),
                       StartsWithBudgetSpend(1),
                       CanLaunchOreshnik(min_distance=10,
-                                        cost=Dollars(750_000),
+                                        cost=ResourcesGroup.make(Dollars(750_000)),
                                         spread_radius=3,
                                         targets_per_layer=3))
     MOVES_BUDGET = 1
@@ -163,10 +162,10 @@ class Infantry(_Figure):
                        .constant_strength(3)
                        .build()),
                       CanPull(),
-                      Creatable(Dollars(100_000)),
+                      Creatable.make(Dollars(100_000)),
                       CanCapture(),
                       PreventCaptures(),
-                      TriesTakeResourcesElseDies(Dollars(25_000)))
+                      TriesTakeResourcesElseDies.make(Dollars(25_000)))
     MOVES_BUDGET = 6
 
     SELF_HARDNESS = 2
@@ -209,7 +208,7 @@ class Motorization(_Figure):
                        .build()),
                       CanPull(),
                       PreventCaptures(),
-                      TriesTakeResourcesElseDies(Dollars(75_000)))
+                      TriesTakeResourcesElseDies.make(Dollars(75_000)))
     MOVES_BUDGET = 200
 
     @classmethod
@@ -238,9 +237,9 @@ class Tank(_Figure):
                        .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                  Tank.get_projected_strength(coord, board))
                        .build()),
-                      Creatable(Dollars(500_000)),
+                      Creatable.make(Dollars(500_000)),
                       Capturable(),
-                      TriesTakeResourcesElseDies(Dollars(150_000)),
+                      TriesTakeResourcesElseDies.make(Dollars(150_000)),
                       CanAttack(1))
     MOVES_BUDGET = 200
 
@@ -289,9 +288,9 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
                       Pullable(),
-                      Creatable(Dollars(250_000)),
+                      Creatable.make(Dollars(250_000)),
                       Capturable(),
-                      TriesTakeResourcesElseDies(Dollars(125_000)),
+                      TriesTakeResourcesElseDies.make(Dollars(125_000)),
                       CanAttack(3))
     MOVES_BUDGET = 7
 
@@ -320,20 +319,6 @@ def get_figures() -> list[type[_Figure]]:
     return [
         Land,
         Water,
-        Settlement,
-        Town,
-        Capital,
-        Bunker,
-        MissileSilo,
-        Infantry,
-        Motorization,
-        Tank,
-        Artillery
-    ]
-
-
-def not_empty() -> list[type[_Figure]]:
-    return [
         Settlement,
         Town,
         Capital,

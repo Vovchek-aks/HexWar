@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod, ABCMeta
 from types import UnionType, TracebackType
-from typing import ClassVar, Iterable
+from typing import ClassVar, Iterable, Iterator
 
 from observer import OnEventSubscriber
 from statuses import Status
@@ -402,7 +402,7 @@ class Cells(ABC):
         ...
 
     @abstractmethod
-    def __iter__(self) -> Iterable[Cell]:
+    def __iter__(self) -> Iterator[Cell]:
         ...
 
     @abstractmethod
@@ -484,7 +484,7 @@ class CanLaunchOreshnik(Flag, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def cost(self) -> "Resource":
+    def cost(self) -> "ResourcesGroup":
         ...
 
     @property
@@ -527,7 +527,7 @@ class CanPull(Flag, metaclass=ABCMeta):
 class Creatable(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def cost(self) -> "Resource":
+    def cost(self) -> "ResourcesGroup":
         ...
 
 
@@ -540,29 +540,29 @@ class UpdatableOnTurnStart(Flag, metaclass=ABCMeta):
 class TriesTakeResourcesElseDies(UpdatableOnTurnStart, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def resource(self) -> "Resource":
+    def resources(self) -> "ResourcesGroup":
         ...
 
 
-class ResourceAdder(UpdatableOnTurnStart, metaclass=ABCMeta):
+class ResourcesAdder(UpdatableOnTurnStart, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def base_resource(self) -> "Resource":
+    def base_resources(self) -> "ResourcesGroup":
         ...
 
     @abstractmethod
-    def get_resource_with_buffs(self, coord: Vector2Int, session: GameSession) -> "Resource":
+    def get_resources_with_buffs(self, coord: Vector2Int, session: GameSession) -> "ResourcesGroup":
         ...
 
 
-class AddsResourcesIndefinably(ResourceAdder, metaclass=ABCMeta):
+class AddsResourcesIndefinably(ResourcesAdder, metaclass=ABCMeta):
     ...
 
 
 class BuffsResourceAdders(Flag, metaclass=ABCMeta):
     @abstractmethod
     def get_buff(self,
-                 resource_adder_coord: Vector2Int,
+                 resources_adder_coord: Vector2Int,
                  coord: Vector2Int,
                  session: GameSession) -> float:
         ...
@@ -732,6 +732,32 @@ class Resource(ABC):
         ...
 
 
+class ResourcesGroup(ABC):
+    @abstractmethod
+    def get(self, target: type[Resource]) -> Resource:
+        ...
+
+    @abstractmethod
+    def __add__(self, other: "ResourcesGroup") -> "ResourcesGroup":
+        ...
+
+    @abstractmethod
+    def __sub__(self, other: "ResourcesGroup") -> "ResourcesGroup":
+        ...
+
+    @abstractmethod
+    def __mul__(self, multiplier: float) -> "ResourcesGroup":
+        ...
+
+    @abstractmethod
+    def __ge__(self, other: "ResourcesGroup") -> bool:
+        ...
+
+    @abstractmethod
+    def __iter__(self) -> Iterator[Resource]:
+        ...
+
+
 class ResourcesStockpile(ABC):
     @property
     @abstractmethod
@@ -743,13 +769,13 @@ class ResourcesStockpile(ABC):
         ...
 
     @abstractmethod
-    def can_take(self, taken_resource: Resource) -> bool:
+    def can_take(self, resources_to_take: ResourcesGroup) -> bool:
         ...
 
     @abstractmethod
-    def add(self, additional_resource: Resource) -> None:
+    def add(self, additional_resources: ResourcesGroup) -> None:
         ...
 
     @abstractmethod
-    def take(self, taken_resource: Resource) -> None:
+    def take(self, resources_to_take: ResourcesGroup) -> None:
         ...

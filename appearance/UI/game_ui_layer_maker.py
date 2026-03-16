@@ -24,7 +24,7 @@ from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZ
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
-from core.protocols import GameSession, Player, MovesMaker, ValidMove, ResourcesStockpile, Creatable, Resource
+from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable
 from core.resources import Dollars
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
@@ -92,10 +92,11 @@ class GameUiLayerMaker:
             player = self._session.master.current_player
             resource = player.resources.get(Dollars)
 
-            # current = self._language.get_message_from_resource(resource)
-            # flow = get_resource_flow(player, Dollars, self._session)
-            # sign = '+' if flow >= 0 else ''
-            # dollars.set_text(f"{current} ({sign}{NumberShortener().shorten(flow)})")
+            current = self._language.get_message_from_resource(resource)
+            flow = get_resource_flow(player, Dollars, self._session)
+            sign = '+' if flow >= 0 else ''
+            dollars.set_text(f"{current} ({sign}{NumberShortener().shorten(flow)})")
+            return
 
             current = self._language.get_message_from_resource(resource)
             dollars.set_text(f"{current}")
@@ -213,7 +214,7 @@ class GameUiLayerMaker:
         title = self._language.get_figure_name(figure)
         content = [
             *self._language.get_creation_hint(figure),
-            *self._language.get_cost(figure.FLAGS.get(Creatable).cost)
+            *self._language.get_cost(figure.FLAGS.get(Creatable).cost.get(Dollars))
         ]
         hint = self._make_button_hint(title, content, button)
 

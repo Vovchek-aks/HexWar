@@ -1,5 +1,5 @@
 from types import UnionType
-from typing import Iterable
+from typing import Iterator
 
 from attrs import frozen, field
 
@@ -81,7 +81,7 @@ class Cells(proto.Cells):
     def __bool__(self) -> bool:
         return bool(self._cells)
 
-    def __iter__(self) -> Iterable[proto.Cell]:
+    def __iter__(self) -> Iterator[proto.Cell]:
         return iter(self._cells)
 
     def __len__(self) -> int:

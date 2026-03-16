@@ -24,7 +24,7 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         player = self._session.master.current_player
         cells = self._session.cells.with_owner(player)
 
-        adders = cells.with_flag(proto.ResourceAdder)
+        adders = cells.with_flag(proto.ResourcesAdder)
         takers = cells.with_flag(proto.TriesTakeResourcesElseDies)
 
         self._update(adders)
@@ -83,6 +83,9 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
             with self._multiple_cells_change(region):
                 while region:
                     region -= self._annex_boundry(region)
+
+            for cell in region:
+                self._session.cells.update(cell)
 
     def _annex_boundry(self, region: Cells) -> Cells:
         to_annex = list[tuple[proto.Cell, proto.Player]]()

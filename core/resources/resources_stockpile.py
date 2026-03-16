@@ -1,15 +1,14 @@
-from attrs import frozen, field
+from attrs import define, field
 
-from core.resources import get_resources_types, Resource
+from core.resources import Resource
 import core.protocols as proto
+from core.resources.resources_group import ResourcesGroup
 from observer import Event, OnEventSubscriber
 
 
-@frozen
+@define
 class ResourcesStockpile(proto.ResourcesStockpile):
-    _resources: list[Resource] = field(factory=lambda: [
-        resource() for resource in get_resources_types()
-    ])
+    _resources: ResourcesGroup = field(factory=ResourcesGroup)
 
     _has_changed: Event["ResourcesStockpile", None] = field(init=False, factory=Event)
 
@@ -18,26 +17,19 @@ class ResourcesStockpile(proto.ResourcesStockpile):
         return self._has_changed.subscriber
 
     def get(self, target: type[Resource]) -> Resource:
-        for resource in self._resources:
-            if isinstance(resource, target):
-                return resource
+        return self._resources.get(target)
 
-        assert False
+    def can_take(self, resources_to_take: ResourcesGroup) -> bool:
+        print(self._resources)
+        print(resources_to_take)
+        return self._resources >= resources_to_take
 
-    def can_take(self, taken_resource: Resource) -> bool:
-        resource = self.get(type(taken_resource))
-        return resource.amount >= taken_resource.amount
-
-    def add(self, additional_resource: Resource) -> None:
-        resource = self.get(type(additional_resource))
-        index = self._resources.index(resource)
-        self._resources[index] += additional_resource
+    def add(self, additional_resources: ResourcesGroup) -> None:
+        self._resources += additional_resources
         self._has_changed.invoke(self)
 
-    def take(self, taken_resource: Resource) -> None:
-        assert self.can_take(taken_resource)
+    def take(self, resources_to_take: ResourcesGroup) -> None:
+        assert self.can_take(resources_to_take)
 
-        resource = self.get(type(taken_resource))
-        index = self._resources.index(resource)
-        self._resources[index] -= taken_resource
+        self._resources -= resources_to_take
         self._has_changed.invoke(self)

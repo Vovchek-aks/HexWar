@@ -6,18 +6,18 @@ from attrs import frozen
 import core.protocols as proto
 import core.figures.figure as fig
 from core.moves.valid_move import ValidMove
-from core.resources import Dollars, Resource
+from core.resources import Dollars, Resource, ResourcesGroup
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID
 
-CONVERSIONS = dict[tuple[type[fig.Figure], type[fig.Figure]], tuple[Resource, int]]
+CONVERSIONS = dict[tuple[type[fig.Figure], type[fig.Figure]], tuple[ResourcesGroup, int]]
 
 
 @frozen
 class Conversion(proto.Move):
     _conversions: ClassVar[CONVERSIONS] = {
-        (fig.Infantry, fig.Motorization): (Dollars(100_000), round(fig.Infantry.MOVES_BUDGET / 3)),
-        (fig.Motorization, fig.Infantry): (Dollars(0), round(fig.Motorization.MOVES_BUDGET / 3)),
+        (fig.Infantry, fig.Motorization): (ResourcesGroup.make(Dollars(100_000)), round(fig.Infantry.MOVES_BUDGET / 3)),
+        (fig.Motorization, fig.Infantry): (ResourcesGroup.make(Dollars(0)), round(fig.Motorization.MOVES_BUDGET / 3)),
     }
 
     @classmethod

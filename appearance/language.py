@@ -9,6 +9,7 @@ from core.moves.conversion import Conversion
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.protocols import Figure, Resource
+from core.resources import Dollars
 from files import read_meta, read_json
 import core.figures.figure as fig
 from mathematics.vector import Vector2Int
@@ -212,7 +213,7 @@ class Language:
         if tag == INFANTRY_TO_MOTORIZATION:
             cost, move_cost = Conversion.conversions()[fig.Infantry, fig.Motorization]
             budget = fig.Infantry.MOVES_BUDGET
-            message = [line.format(cost=self.get_message_from_resource(cost)) for line in message]
+            message = [line.format(cost=self.get_message_from_resource(cost.get(Dollars))) for line in message]
         elif tag == MOTORIZATION_TO_INFANTRY:
             _, move_cost = Conversion.conversions()[fig.Motorization, fig.Infantry]
             budget = fig.Motorization.MOVES_BUDGET

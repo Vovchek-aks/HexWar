@@ -3,6 +3,7 @@ from itertools import product
 from attrs import field, frozen
 
 from core import protocols as proto
+from core.resources import ResourcesGroup
 from statuses import Status, MISSING
 
 Flag = proto.Flag
@@ -90,7 +91,11 @@ class CanPull(proto.CanPull):
 class Creatable(proto.Creatable):
     EXCLUDES = set[type[Flag]]()
 
-    cost: proto.Resource
+    @classmethod
+    def make(cls, *resources: proto.Resource) -> proto.Creatable:
+        return cls(ResourcesGroup.make(*resources))
+
+    cost: proto.ResourcesGroup
 
 
 @frozen
@@ -127,6 +132,6 @@ class CanLaunchOreshnik(proto.CanLaunchOreshnik):
     EXCLUDES = set[type[Flag]]()
 
     min_distance: int
-    cost: proto.Resource
+    cost: proto.ResourcesGroup
     spread_radius: int
     targets_per_layer: int
