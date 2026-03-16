@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Iterable
 
 from attrs import frozen, Factory
 
@@ -24,8 +24,9 @@ from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZ
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
-from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable
-from core.resources import Dollars
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
+from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource
+from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figure as fig
@@ -48,14 +49,14 @@ class GameUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
-        dollars, players_turn = self._make_dollars_and_player_turn()
+        resources, players_turn = self._make_dollars_and_player_turn()
 
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
 
         layers = [
             players_turn,
-            self._make_current_turn_ui(dollars, end_turn_button)
+            self._make_current_turn_ui(resources, end_turn_button)
         ]
 
         return Layer.as_multiple(layers)
@@ -70,7 +71,7 @@ class GameUiLayerMaker:
 
         return Layer.as_multiple(layers)
 
-    def _make_dollars_and_player_turn(self) -> tuple[TextUi, TextUi]:
+    def _make_dollars_and_player_turn(self) -> tuple[VerticalLayoutUi, TextUi]:
         players_turn = TextUi.make(self._drawer,
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
@@ -79,45 +80,60 @@ class GameUiLayerMaker:
                                     .adjust_for_shape()
                                     .build()),
                                    TextData.debug('...'))
-        dollars = TextUi.make(self._drawer,
-                              (RectangleBuilder(self._screen_shape)
-                               .from_left_up()
-                               .move(Vector2(10, 60))
-                               .set_shape(Vector2(self._screen_shape.x / 4, 20))
-                               .adjust_for_shape()
-                               .build()),
-                              TextData.debug('...'))
 
-        def update_dollars_text() -> None:
-            player = self._session.master.current_player
-            resource = player.resources.get(Dollars)
+        resources, update_resources = self._make_resources([
+            Dollars,
+            LightIndustryProducts,
+            HeavyIndustryProducts,
+        ])
 
-            current = self._language.get_message_from_resource(resource)
-            flow = get_resource_flow(player, Dollars, self._session)
-            sign = '+' if flow >= 0 else ''
-            dollars.set_text(f"{current} ({sign}{NumberShortener().shorten(flow)})")
-            return
-
-            current = self._language.get_message_from_resource(resource)
-            dollars.set_text(f"{current}")
-
-        self._moves_maker.resources_flow_could_have_changed.subscribe(lambda: update_dollars_text())
+        self._moves_maker.resources_flow_could_have_changed.subscribe(lambda: update_resources())
         for player in self._session.master.players:
-            player.resources.has_changed.subscribe(lambda _: update_dollars_text())
+            player.resources.has_changed.subscribe(lambda _: update_resources())
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
             players_turn.set_text(self._language.get_players_turn_message(name))
-            update_dollars_text()
+            update_resources()
 
         self._session.master.turn_had_started.subscribe(on_turn_passed)
 
         on_turn_passed(self._session.master.current_player)
-        update_dollars_text()
+        update_resources()
 
-        return dollars, players_turn
+        return resources, players_turn
 
-    def _make_current_turn_ui(self, dollars: TextUi, end_turn_button: ButtonUi) -> Layer:
+    def _make_resources(self, resources: Iterable[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
+        layout = VerticalLayoutUi((RectangleBuilder(self._screen_shape)
+                                   .from_left_up()
+                                   .move(Vector2(10, 60))
+                                   .set_shape(Vector2(self._screen_shape.x / 4, 80))
+                                   .adjust_for_shape()
+                                   .build()),
+                                  margin_ratio=.2)
+        texts = list[TextUi]()
+        for _ in resources:
+            texts.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug('...')))
+            layout.append(texts[-1])
+
+        def update() -> None:
+            player = self._session.master.current_player
+
+            for index, resource_type in enumerate(resources):
+                resource = player.resources.get(resource_type)
+                current = self._language.get_message_from_resource(resource)
+
+                if isinstance(player.inputer, BotPlayerInputer):
+                    texts[index].set_text(f"{current}")
+                    return
+
+                flow = get_resource_flow(player, resource_type, self._session)
+                sign = '+' if flow >= 0 else ''
+                texts[index].set_text(f"{current} ({sign}{NumberShortener().shorten(flow)})")
+
+        return layout, update
+
+    def _make_current_turn_ui(self, dollars: VerticalLayoutUi, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
             self._make_figures_creation_menu(),
             self._make_infantry_menu(),
@@ -125,6 +141,8 @@ class GameUiLayerMaker:
             self._make_tank_menu(),
             self._make_artillery_menu(),
             self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_heavy_factory_menu(),
             self._make_capital_menu(),
             self._make_bunker_menu(),
             self._make_missile_silo_menu(),
@@ -170,27 +188,29 @@ class GameUiLayerMaker:
         layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
                                   .from_left_bottom()
                                   .move(Vector2(20, 20))
-                                  .set_shape(Vector2(200, 250))
+                                  .set_shape(Vector2(200, 300))
                                   .adjust_for_shape()
                                   .build(),
                                   margin_ratio=.2)
+
+        self._add_two_horizontal_creation_buttons_to(layout, fig.LightFactory, fig.HeavyFactory, hint_box)
         layout.append(self._make_figure_creation_button(fig.Town, hint_box))
-
-        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.07)
-        layout.append(horizontal_layout)
-        horizontal_layout.append(self._make_figure_creation_button(fig.Bunker, hint_box))
-        horizontal_layout.append(self._make_figure_creation_button(fig.Artillery, hint_box))
-
+        self._add_two_horizontal_creation_buttons_to(layout, fig.Bunker, fig.Artillery, hint_box)
         layout.append(self._make_figure_creation_button(fig.MissileSilo, hint_box))
-
-        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.07)
-        layout.append(horizontal_layout)
-        horizontal_layout.append(self._make_figure_creation_button(fig.Tank, hint_box))
-        horizontal_layout.append(self._make_figure_creation_button(fig.Infantry, hint_box))
-
+        self._add_two_horizontal_creation_buttons_to(layout, fig.Tank, fig.Infantry, hint_box)
         layout.append(self._make_figure_creation_button(fig.Capital, hint_box))
 
         return layout
+
+    def _add_two_horizontal_creation_buttons_to(self,
+                                                layout: VerticalLayoutUi,
+                                                left: type[fig.Figure],
+                                                right: type[fig.Figure],
+                                                hint_box: BoxUi) -> None:
+        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.07)
+        layout.append(horizontal_layout)
+        horizontal_layout.append(self._make_figure_creation_button(left, hint_box))
+        horizontal_layout.append(self._make_figure_creation_button(right, hint_box))
 
     def _make_figure_creation_button(self, figure: type[fig.Figure], hint_box: BoxUi) -> ButtonUi:
         background = self._sprites_loader.load_button_3_to_2()
@@ -242,6 +262,12 @@ class GameUiLayerMaker:
 
     def _make_town_menu(self) -> Layer:
         return self._make_figure_menu(fig.Town, [], [])
+
+    def _make_light_factory_menu(self) -> Layer:
+        return self._make_figure_menu(fig.LightFactory, [], [])
+
+    def _make_heavy_factory_menu(self) -> Layer:
+        return self._make_figure_menu(fig.HeavyFactory, [], [])
 
     def _make_capital_menu(self) -> Layer:
         return self._make_figure_menu(fig.Capital, [], [])

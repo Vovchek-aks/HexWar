@@ -532,16 +532,25 @@ class Creatable(Flag, metaclass=ABCMeta):
 
 
 class UpdatableOnTurnStart(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def priority(self) -> int:
+        ...
+
     @abstractmethod
     def update(self, coord: Vector2Int, session: GameSession) -> None:
         ...
 
 
-class TriesTakeResourcesElseDies(UpdatableOnTurnStart, metaclass=ABCMeta):
+class ResourcesTaker(UpdatableOnTurnStart, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def resources(self) -> "ResourcesGroup":
+    def resources_to_take(self) -> "ResourcesGroup":
         ...
+
+
+class TriesTakeResourcesElseDies(ResourcesTaker, metaclass=ABCMeta):
+    ...
 
 
 class ResourcesAdder(UpdatableOnTurnStart, metaclass=ABCMeta):
@@ -557,6 +566,13 @@ class ResourcesAdder(UpdatableOnTurnStart, metaclass=ABCMeta):
 
 class AddsResourcesIndefinably(ResourcesAdder, metaclass=ABCMeta):
     ...
+
+
+class TransformsResourcesIndefinably(ResourcesAdder, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def input_resources(self) -> "ResourcesGroup":
+        ...
 
 
 class BuffsResourceAdders(Flag, metaclass=ABCMeta):

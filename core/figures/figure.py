@@ -7,16 +7,21 @@ from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Cap
     PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
-    BuffsNeighborResourceAdders
+    BuffsNeighborResourceAdders, TransformsResourcesIndefinably
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
-from core.resources import ResourcesGroup, Dollars
+from core.resources import ResourcesGroup, Dollars, LightIndustryProducts, HeavyIndustryProducts
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 from core.protocols import Figure
+
+
+# it's here because of python stupidity
+def _get_transformer_of(figure: type[Figure]) -> TransformsResourcesIndefinably:
+    return figure.FLAGS.get(TransformsResourcesIndefinably)
 
 
 @define(hash=True, eq=True)
@@ -87,6 +92,44 @@ class Town(_Figure):
                       Creatable.make(Dollars(1_000_000)),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(200_000)))
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class LightFactory(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Creatable.make(Dollars(1_000_000)),
+                      Capturable(),
+                      TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(100_000)),
+                                                     ResourcesGroup.make(LightIndustryProducts(1_000))))
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class HeavyFactory(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Creatable.make(Dollars(2_000_000)),
+                      Capturable(),
+                      TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(200_000),
+                                                                         LightIndustryProducts(3_000)),
+                                                     ResourcesGroup.make(HeavyIndustryProducts(1_000)),
+                                                     priority=_get_transformer_of(LightFactory).priority + 1))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -321,6 +364,8 @@ def get_figures() -> list[type[_Figure]]:
         Water,
         Settlement,
         Town,
+        LightFactory,
+        HeavyFactory,
         Capital,
         Bunker,
         MissileSilo,

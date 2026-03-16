@@ -20,8 +20,6 @@ class ResourcesStockpile(proto.ResourcesStockpile):
         return self._resources.get(target)
 
     def can_take(self, resources_to_take: ResourcesGroup) -> bool:
-        print(self._resources)
-        print(resources_to_take)
         return self._resources >= resources_to_take
 
     def add(self, additional_resources: ResourcesGroup) -> None:

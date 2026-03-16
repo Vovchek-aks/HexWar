@@ -21,14 +21,15 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         return self._session.board
 
     def on_turn_start(self) -> None:
+        board = self._session.board
         player = self._session.master.current_player
         cells = self._session.cells.with_owner(player)
 
-        adders = cells.with_flag(proto.ResourcesAdder)
-        takers = cells.with_flag(proto.TriesTakeResourcesElseDies)
+        to_update = cells.with_flag(proto.UpdatableOnTurnStart)
+        priority_order = sorted(to_update, key=lambda cell: cell.figure.FLAGS.get(proto.UpdatableOnTurnStart).priority)
 
-        self._update(adders)
-        self._update(takers)
+        for cell in priority_order:
+            cell.figure.FLAGS.get(proto.UpdatableOnTurnStart).update(board.coordinates_of(cell), self._session)
 
     def on_turn_end(self) -> None:
         player = self._session.master.current_player
@@ -38,13 +39,6 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         cells = self._discard_regions_without(capitals, cells)
         regions = self._get_regions_to_be_annexed(cells)
         self._annex(regions)
-
-    def _update(self, cells: Cells) -> None:
-        for cell in cells:
-            coord = self._board.coordinates_of(cell)
-            (cell.figure.FLAGS
-             .get(proto.UpdatableOnTurnStart)
-             .update(coord, self._session))
 
     def _discard_regions_without(self, targets: Cells, cells: Cells) -> Cells:
         while targets:

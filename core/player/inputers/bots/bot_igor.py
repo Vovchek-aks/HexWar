@@ -318,7 +318,8 @@ class BotIgor(proto.Bot):
         silo = self._board[silo_coord]
         assert isinstance(silo.figure, fig.MissileSilo)
 
-        if self._player.resources.get(Dollars).amount < silo.figure.FLAGS.get(proto.CanLaunchOreshnik).cost.amount:
+        if (self._player.resources.get(Dollars).amount <
+                silo.figure.FLAGS.get(proto.CanLaunchOreshnik).cost.get(Dollars).amount):
             return
 
         if not self._session.figures_budget.can_spend(silo.figure,
