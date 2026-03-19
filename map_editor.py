@@ -33,8 +33,13 @@ class MapEditor:
         transforms.append(("water", lambda coord: self._change_owner_to(coord, MISSING)))
         transforms.append(("empty land", lambda coord: self._change_figure(coord, fig.Land)))
         transforms.append(("town", lambda coord: self._change_figure(coord, fig.Town)))
+        transforms.append(("light factory", lambda coord: self._change_figure(coord, fig.LightFactory)))
+        transforms.append(("heavy factory", lambda coord: self._change_figure(coord, fig.HeavyFactory)))
         transforms.append(("capital", lambda coord: self._change_figure(coord, fig.Capital)))
         transforms.append(("bunker", lambda coord: self._change_figure(coord, fig.Bunker)))
+        transforms.append(("infantry", lambda coord: self._change_figure(coord, fig.Infantry)))
+        transforms.append(("motorization", lambda coord: self._change_figure(coord, fig.Motorization)))
+        transforms.append(("tank", lambda coord: self._change_figure(coord, fig.Tank)))
 
         for player in session.master.players:
             transforms.append(self._make_set_player_transform(player))
