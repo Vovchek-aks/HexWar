@@ -144,6 +144,7 @@ class HeavyFactory(_Figure):
 class Capital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
+                      Capturable(),
                       Creatable.make(Dollars(5_000_000), LightIndustryProducts(10_000)),
                       TriesTakeResourcesElseDies.make(Dollars(800_000)),
                       BuffsNeighborResourceAdders(ratio=1))

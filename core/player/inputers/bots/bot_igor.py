@@ -10,6 +10,7 @@ from core import protocols as proto
 from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures import figure as fig
+from core.figures.resources_flow_flags import getting_resources_flow_process
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
@@ -19,7 +20,7 @@ from core.moves.pulling import PullingInitiation
 from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
 from core.protocols import Capturable, CanCapture
-from core.resources import Dollars
+from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, Resource, ResourcesGroup
 from mathematics.greedy_path_searcher import GreedyPathSearcher
 from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
@@ -28,9 +29,23 @@ from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 _ATTACKING = 0
 _BUILDING = 1
 _PULLING = 2
-_INITIAL_STATE = _BUILDING
+_BUILDING_PRODUCTION = 3
+_CATASTROPHY_PREVENTION = 4
+_INITIAL_STATE = _CATASTROPHY_PREVENTION
 
-_MAX_TOWNS = 50.
+_TARGET_FLOW_PER_CELL_OF = ResourcesGroup.make(
+    Dollars(20_000),
+    LightIndustryProducts(100),
+    HeavyIndustryProducts(50),
+)
+
+_PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
+    Dollars: fig.Town,
+    LightIndustryProducts: fig.LightFactory,
+    HeavyIndustryProducts: fig.HeavyFactory,
+}
+
+PRODUCTION = fig.Town | fig.Capital | fig.LightFactory | fig.HeavyFactory
 
 
 @define
@@ -65,7 +80,7 @@ class BotIgor(proto.Bot):
                 return IN_PROGRESS
             self._moves_generator = MISSING
 
-        cells_count = len(session.cells.with_owner(self._player).as_set())
+        cells_count = len(session.cells.with_owner(self._player))
         if cells_count <= 0:
             return MISSING
 
@@ -102,12 +117,52 @@ class BotIgor(proto.Bot):
         tanks_count = self._count_of(fig.Tank)
         silos_count = self._count_of(fig.MissileSilo)
 
-        if self._state == _BUILDING:
-            has_developed = town_count > min(_MAX_TOWNS, cells_count * .05)
-            is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
+        if self._state == _CATASTROPHY_PREVENTION:
+            for figure in fig.Capital, fig.Town, fig.LightFactory:
+                if self._count_of(figure) == 0:
+                    self._try_create(figure)
+                    # print(f"_try_create({figure})")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
 
-            if self._count_of(fig.Capital) == 0:
+            if self._count_of(fig.Capital) < cells_count / 200:
                 self._try_create(fig.Capital)
+                # print("_try_create(fig.Capital)")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
+            initial_army_size = max(5., .1 * len((cells.with_owner(self._player) & cells.at_front).as_set()))
+
+            if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
+                self._try_create(fig.Tank)
+                # print("_try_create(fig.Tank)")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
+            if infantry_count + motorization_count < initial_army_size:
+                self._try_create(fig.Infantry)
+                # print("_try_create(fig.Infantry)")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
+            self._state = _BUILDING_PRODUCTION
+
+        if self._state == _BUILDING_PRODUCTION:
+            yield from self._try_align_resources_flow(cells_count)
+            # print("_try_align_resources_flow")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
+            self._state = _BUILDING
+
+        if self._state == _BUILDING:
+            has_developed = town_count > cells_count * .05
+            is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
 
             bunker_ratio = .1 if has_developed and not is_rich else 0.75
             if bunkers_count < empty_front_length * bunker_ratio:
@@ -146,24 +201,6 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            initial_army_size = max(5., len((cells.with_owner(self._player) &
-                                             cells.at_front).as_set()) *
-                                    (.1 if has_developed else .0))
-
-            if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
-                self._try_create(fig.Tank)
-                # print("_try_create(fig.Tank)")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
-            if infantry_count + motorization_count < initial_army_size:
-                self._try_create(fig.Infantry)
-                # print("_try_create(fig.Infantry)")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
             if has_developed:
                 yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .3) -
                                                                  artillery_count)
@@ -172,10 +209,7 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            figure_to_create = (fig.Town
-                                if town_count < min(_MAX_TOWNS, cells_count * .15) else
-                                (fig.Tank if random.random() > .85 else fig.Infantry))
-
+            figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
             if figure_to_create is not MISSING:
                 self._try_create(figure_to_create)
                 # print(f"_try_create({figure_to_create})")
@@ -240,7 +274,8 @@ class BotIgor(proto.Bot):
 
         front = empties & cells.at_front
         back = empties - front
-        production = own_cells & cells.with_figure(fig.Town)
+        production = own_cells & cells.with_figure(PRODUCTION)
+        capitals = cells.with_figure(fig.Capital) & cells.with_owner(self._player)
 
         match figure:
             case fig.Tank:
@@ -250,15 +285,49 @@ class BotIgor(proto.Bot):
                 if not front:
                     return MISSING
                 return self._get_cell_for_armed_figure(front, production)
+
             case fig.Infantry:
                 return self._get_cell_for_armed_figure(front, production)
+
             case fig.Bunker:
                 return self._get_cell_for_bunker(front, production)
-            case fig.Town | fig.MissileSilo | fig.Capital:
+
+            case fig.Capital:
                 candidates = back or empties
-                return random.choice(list(candidates.as_set()))
+                max_points = -float("inf")
+                target: proto.Cell | Status = MISSING
+                for candidate in candidates:
+                    min_distance_to_other_capital = min(get_distance(self._board.coordinates_of(candidate),
+                                                                     self._board.coordinates_of(capital))
+                                                        for capital in capitals) if capitals else float('inf')
+                    if min_distance_to_other_capital < 10:
+                        continue
+
+                    neighbors = self._board.get_neighbors(candidate).with_owner(self._player)
+                    points = len(neighbors.with_figure(fig.Land))
+                    points += len(neighbors.with_flag(proto.ResourcesAdder)) * 100
+
+                    if points > max_points:
+                        max_points = points
+                        target = candidate
+
+                return target
+
+            case fig.Town | fig.LightFactory | fig.HeavyFactory:
+                for capital in capitals:
+                    neighbors = self._board.get_neighbors(capital).with_owner(self._player).with_figure(fig.Land)
+                    if neighbors:
+                        return random.choice(neighbors.as_list())
+
+                candidates = back or empties
+                return random.choice(candidates.as_list())
+
+            case fig.MissileSilo:
+                candidates = back or empties
+                return random.choice(candidates.as_list())
+
             case _:
-                return random.choice(list(empties.as_set()))
+                return random.choice(empties.as_list())
 
         assert False
 
@@ -314,12 +383,59 @@ class BotIgor(proto.Bot):
                 near_armed.add(cell)
         return Cells(near_armed)
 
+    def _try_align_resources_flow(self, cells_count: int) -> Iterator[None]:
+        figures_to_build = list[type[fig.Figure]]()
+        yield from self._fill_figures_to_build(figures_to_build, cells_count, max_iterations=100)
+        for figure in figures_to_build:
+            yield
+            self._try_create(figure)
+
+    def _fill_figures_to_build(self,
+                               figures_to_build: list[type[fig.Figure]],
+                               cells_count: int,
+                               *,
+                               max_iterations: int | float = float('inf')) -> Iterator[None]:
+        resources = list(map(type[Resource], _TARGET_FLOW_PER_CELL_OF))
+
+        target_flow = _TARGET_FLOW_PER_CELL_OF * cells_count
+        flow = ResourcesGroup()
+        for resource in resources:
+            for result in self._getting_flow_process(resource):
+                yield
+                if result is not MISSING:
+                    flow += ResourcesGroup.make(resource(result))
+
+        iterations = 0
+        while (pair := self._get_resource_with_max_unfilled_demand(resources, flow, target_flow))[-1] > 0:
+            iterations += 1
+            if iterations > max_iterations:
+                return
+            yield
+
+            resource, _ = pair
+            figure = _PRODUCER_OF[resource]
+            figures_to_build.append(figure)
+
+            if (adder := figure.FLAGS.get(proto.ResourcesAdder)) is not MISSING:
+                flow += adder.base_resources
+            if (taker := figure.FLAGS.get(proto.ResourcesTaker)) is not MISSING:
+                flow -= taker.resources_to_take
+
+    @staticmethod
+    def _get_resource_with_max_unfilled_demand(resources: list[type[Resource]],
+                                               flow: ResourcesGroup,
+                                               target_flow: ResourcesGroup) -> tuple[type[Resource], int]:
+        return max(map(lambda resource: (resource, (target_flow.get(resource) - flow.get(resource)).amount), resources),
+                   key=lambda pair: pair[-1])
+
+    def _getting_flow_process(self, resource: type[Resource]) -> Iterator[Status | int]:
+        return getting_resources_flow_process(self._player, resource, self._session)
+
     def _try_launch_oreshnik(self, silo_coord: Vector2Int) -> Iterator[None]:
         silo = self._board[silo_coord]
         assert isinstance(silo.figure, fig.MissileSilo)
 
-        if (self._player.resources.get(Dollars).amount <
-                silo.figure.FLAGS.get(proto.CanLaunchOreshnik).cost.get(Dollars).amount):
+        if not self._player.resources.can_take(silo.figure.FLAGS.get(proto.CanLaunchOreshnik).cost):
             return
 
         if not self._session.figures_budget.can_spend(silo.figure,
@@ -344,7 +460,7 @@ class BotIgor(proto.Bot):
             silos = cells.with_owner(player) & cells.with_figure(fig.MissileSilo)
 
             targets.append((silos,
-                            cells.with_owner(player) & cells.with_figure(fig.Town)))
+                            cells.with_owner(player) & cells.with_figure(PRODUCTION)))
 
         target = max(targets, key=lambda t: (len(t[1].as_set()), -len(t[0].as_set())))
 
@@ -518,7 +634,6 @@ class BotIgor(proto.Bot):
 
         for previous, new in zip(path[:-1], path[1:]):
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
-
 
     def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
         assert isinstance(cell.figure, fig.Infantry | fig.Motorization)

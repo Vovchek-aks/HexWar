@@ -1,10 +1,12 @@
 from abc import ABCMeta
+from typing import Iterator
 
 from attrs import frozen
 
 import core.protocols as proto
 from core.resources import ResourcesGroup
 from mathematics.vector import Vector2Int
+from statuses import Status, MISSING
 
 
 @frozen
@@ -130,19 +132,32 @@ class BuffsNeighborResourceAdders(proto.BuffsNeighborResourceAdders):
 
 
 def get_resource_flow(player: proto.Player, target: type[proto.Resource], session: proto.GameSession) -> int:
+    for result in getting_resources_flow_process(player, target, session):
+        if result is not MISSING:
+            return result
+
+
+def getting_resources_flow_process(player: proto.Player,
+                                   target: type[proto.Resource],
+                                   session: proto.GameSession) -> Iterator[Status | int]:
     cells = session.cells.with_owner(player)
+    yield MISSING
     cells &= session.cells.not_empty()
+    yield MISSING
     adders = cells.with_flag(proto.ResourcesAdder)
+    yield MISSING
     takers = cells.with_flag(proto.ResourcesTaker)
 
     total = 0
     for adder in adders:
+        yield MISSING
         flag = adder.figure.FLAGS.get(proto.ResourcesAdder)
         resources = flag.get_resources_with_buffs(session.board.coordinates_of(adder), session)
         total += resources.get(target).amount
     for taker in takers:
+        yield MISSING
         flag = taker.figure.FLAGS.get(proto.ResourcesTaker)
         resources = flag.resources_to_take
         total -= resources.get(target).amount
 
-    return total
+    yield total

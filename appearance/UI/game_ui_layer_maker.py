@@ -125,7 +125,7 @@ class GameUiLayerMaker:
 
                 if isinstance(player.inputer, BotPlayerInputer):
                     texts[index].set_text(f"{current}")
-                    return
+                    continue
 
                 flow = get_resource_flow(player, resource_type, self._session)
                 sign = '+' if flow >= 0 else ''
