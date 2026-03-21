@@ -89,7 +89,7 @@ class Settlement(_Figure):
 class Town(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(1_000_000)),
+                      Creatable.make(Dollars(1_000_000), LightIndustryProducts(300)),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(200_000)))
     MOVES_BUDGET = 0
@@ -124,7 +124,7 @@ class LightFactory(_Figure):
 class HeavyFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(2_000_000)),
+                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(5_000)),
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(200_000),
                                                                          LightIndustryProducts(3_000)),
@@ -144,7 +144,7 @@ class HeavyFactory(_Figure):
 class Capital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(5_000_000)),
+                      Creatable.make(Dollars(5_000_000), LightIndustryProducts(10_000)),
                       TriesTakeResourcesElseDies.make(Dollars(800_000)),
                       BuffsNeighborResourceAdders(ratio=1))
     MOVES_BUDGET = 0
@@ -161,7 +161,7 @@ class Capital(_Figure):
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(150_000)))
+                      Creatable.make(Dollars(150_000), LightIndustryProducts(100)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -176,11 +176,16 @@ class Bunker(_Figure):
 class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(3_000_000)),
+                      Creatable.make(Dollars(1_000_000), LightIndustryProducts(5_000), HeavyIndustryProducts(5_000)),
                       Capturable(),
                       StartsWithBudgetSpend(1),
+                      TriesTakeResourcesElseDies.make(Dollars(25_000),
+                                                      LightIndustryProducts(100),
+                                                      HeavyIndustryProducts(10)),
                       CanLaunchOreshnik(min_distance=10,
-                                        cost=ResourcesGroup.make(Dollars(750_000)),
+                                        cost=ResourcesGroup.make(Dollars(500_000),
+                                                                 LightIndustryProducts(500),
+                                                                 HeavyIndustryProducts(500)),
                                         spread_radius=3,
                                         targets_per_layer=3))
     MOVES_BUDGET = 1
@@ -251,7 +256,7 @@ class Motorization(_Figure):
                        .build()),
                       CanPull(),
                       PreventCaptures(),
-                      TriesTakeResourcesElseDies.make(Dollars(75_000)))
+                      TriesTakeResourcesElseDies.make(Dollars(75_000), LightIndustryProducts(50)))
     MOVES_BUDGET = 200
 
     @classmethod
@@ -280,10 +285,12 @@ class Tank(_Figure):
                        .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
                                                                  Tank.get_projected_strength(coord, board))
                        .build()),
-                      Creatable.make(Dollars(500_000)),
+                      Creatable.make(Dollars(300_000), LightIndustryProducts(300), HeavyIndustryProducts(100)),
                       Capturable(),
-                      TriesTakeResourcesElseDies.make(Dollars(150_000)),
-                      CanAttack(1))
+                      TriesTakeResourcesElseDies.make(Dollars(150_000),
+                                                      LightIndustryProducts(100),
+                                                      HeavyIndustryProducts(10)),
+                      CanAttack(max_distance=1))
     MOVES_BUDGET = 200
 
     SELF_STRENGTH = 3
@@ -331,10 +338,12 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
                       Pullable(),
-                      Creatable.make(Dollars(250_000)),
+                      Creatable.make(Dollars(200_000), LightIndustryProducts(100), HeavyIndustryProducts(50)),
                       Capturable(),
-                      TriesTakeResourcesElseDies.make(Dollars(125_000)),
-                      CanAttack(3))
+                      TriesTakeResourcesElseDies.make(Dollars(125_000),
+                                                      LightIndustryProducts(100),
+                                                      HeavyIndustryProducts(6)),
+                      CanAttack(max_distance=3))
     MOVES_BUDGET = 7
 
     @classmethod
