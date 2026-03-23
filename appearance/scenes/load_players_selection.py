@@ -96,7 +96,7 @@ def load_players_selection(screen_shape: Vector2Int,
                                   session.cells,
                                   session.figures)
 
-        ByGameRulesSessionChanger(new_session, board_drawer.not_updating_cells).on_turn_start()
+        ByGameRulesSessionChanger(new_session, board_drawer.not_updating_cells, lambda _: None).on_turn_start()
         scene.switch_to(make_game_scene_loading(new_session))
 
     play_was_pressed.subscribe(on_play_was_pressed)

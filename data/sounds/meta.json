@@ -1,0 +1,21 @@
+{
+  "empty_sound": "empty.wav",
+  "figures": {
+    "Infantry": {
+      "type": "variants",
+      "elements": "figures/infantry_variants"
+    },
+    "Capital": {
+      "type": "loop",
+      "elements": "figures/capital_loop"
+    },
+    "Town": {
+      "type": "variants",
+      "elements": "figures/town_variants"
+    },
+    "MissileSilo": {
+      "type": "loop",
+      "elements": "figures/silo_loop"
+    }
+  }
+}

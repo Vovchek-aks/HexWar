@@ -533,3 +533,22 @@ class FrameDrawer(ABC):
     @abstractmethod
     def draw_frame(self, mouse_position: Vector2) -> None:
         ...
+
+
+class SoundPlayer(ABC):
+    @property
+    @abstractmethod
+    def is_complete(self) -> bool:
+        ...
+
+    @abstractmethod
+    def play(self, speed: float = 1) -> None:
+        ...
+
+    @abstractmethod
+    def stop(self) -> None:
+        ...
+
+    @abstractmethod
+    def copy(self) -> "SoundPlayer":
+        ...

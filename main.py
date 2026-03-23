@@ -6,11 +6,11 @@ from appearance.input.players_selector import PlayersSelector
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
 from core.game_session import GameSession
-from core.resources import Dollars, ResourcesGroup
+from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, HeavyIndustryProducts
 from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
 
-IS_MULTIBOT = True
+IS_MULTIBOT = False
 
 IS_FULLSCREEN = False
 SCREEN_SHAPE = (Vector2Int(1920, 1080)
@@ -30,7 +30,7 @@ def main() -> None:
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Ukraine", "Moldova", "Romania"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
-    # make_first_scene = _make_test_game_loading_scene
+    make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, IS_FULLSCREEN, SCREEN_SHAPE, make_first_scene) as engine:
         engine.run()
 
@@ -40,7 +40,9 @@ def _make_test_game_loading_scene(screen_shape: Vector2Int, window: Window) -> S
         session = GameSessionLoader.make("Middle East.json", UPS).load()
         players_selector = PlayersSelector(session)
         players_selector.toggle(session.master.current_player)
-        session.master.current_player.resources.add(ResourcesGroup.make(Dollars(100_000_000)))
+        session.master.current_player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
+                                                                        LightIndustryProducts(1_000_000),
+                                                                        HeavyIndustryProducts(1_000_000)))
         return GameSession(players_selector.make_master(),
                            session.board,
                            session.figures_budget,
@@ -61,7 +63,7 @@ def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> S
 
 def _make_multibot_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return LoadingScenesMaker(screen_shape, window, UPS).make_multibot_loading_scene(
-        lambda: GameSessionLoader.make("Middle East.json", UPS).load())
+        lambda: GameSessionLoader.make("SVO.json", UPS).load())
 
 
 if __name__ == '__main__':

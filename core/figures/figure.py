@@ -89,9 +89,9 @@ class Settlement(_Figure):
 class Town(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(1_000_000), LightIndustryProducts(300)),
+                      Creatable.make(Dollars(700_000), LightIndustryProducts(700)),
                       Capturable(),
-                      AddsResourcesIndefinably.make(Dollars(200_000)))
+                      AddsResourcesIndefinably.make(Dollars(250_000)))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -177,16 +177,16 @@ class Bunker(_Figure):
 class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(1_000_000), LightIndustryProducts(5_000), HeavyIndustryProducts(5_000)),
+                      Creatable.make(Dollars(1_000_000), LightIndustryProducts(5_000), HeavyIndustryProducts(10_000)),
                       Capturable(),
                       StartsWithBudgetSpend(1),
                       TriesTakeResourcesElseDies.make(Dollars(25_000),
                                                       LightIndustryProducts(100),
                                                       HeavyIndustryProducts(10)),
                       CanLaunchOreshnik(min_distance=10,
-                                        cost=ResourcesGroup.make(Dollars(500_000),
+                                        cost=ResourcesGroup.make(Dollars(100_000),
                                                                  LightIndustryProducts(500),
-                                                                 HeavyIndustryProducts(500)),
+                                                                 HeavyIndustryProducts(5_000)),
                                         spread_radius=3,
                                         targets_per_layer=3))
     MOVES_BUDGET = 1

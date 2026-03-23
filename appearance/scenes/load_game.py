@@ -5,6 +5,8 @@ from attrs import frozen
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
+from appearance.audio.sound.figure_selection.figures_sounds import FiguresSounds
+from appearance.audio.sound.figure_selection.on_figure_was_clicked_sound_player import OnFigureWasClickedSoundPlayer
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
@@ -97,6 +99,9 @@ def load_game(screen_shape: Vector2Int,
     cells_change_observer.cell_changed_figure.subscribe(lambda coord: session.cells.update(session.board[coord]))
     cells_change_observer.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
 
+    figures_sounds = FiguresSounds.load()
+    OnFigureWasClickedSoundPlayer.make(session, figures_sounds, actions_reader)
+
     input_state = InputState.make(window)
 
     cell_selector = CellSelector.make(actions_reader, moves_maker, session.master)
@@ -170,9 +175,10 @@ def load_game(screen_shape: Vector2Int,
             towns = session.cells.with_figure(Town)
             player_cells = session.cells.with_owner(player)
             player_towns = player_cells & towns
-            is_territory_win = len(player_cells.as_set()) > sum(len(session.cells.with_owner(other).as_set())
-                                                                for other in session.master.players) * .5
-            is_economically_win = len(player_towns.as_set()) > len(towns.as_set()) * .5
+            ratio_to_win = .7
+            is_territory_win = len(player_cells.as_set()) / sum(len(session.cells.with_owner(other).as_set())
+                                                                for other in session.master.players) >= ratio_to_win
+            is_economically_win = len(player_towns.as_set()) > len(towns.as_set()) * ratio_to_win
             if is_territory_win or is_economically_win:
                 scene.on_reload(make_next_scene_loading())
 

@@ -33,15 +33,6 @@ _ROCKET = "rocket"
 
 @frozen
 class SpritesLoader:
-    @staticmethod
-    def _load_sprite(sprite_info: SPRITE_DICT) -> Sprite:
-        file: str = sprite_info[_FILE]
-        pivot: list[int] = sprite_info[_PIVOT]
-        assert len(pivot) == 2
-
-        path = SPRITES_FOLDER / file
-        return Sprite.load_raw_image(path, Vector2Int(*pivot))
-
     @classmethod
     def from_meta(cls) -> "SpritesLoader":
         meta: SPRITES_META_DICT = read_meta(SPRITES_FOLDER)
@@ -66,8 +57,13 @@ class SpritesLoader:
         return self._load_sprite(sprite_info)
 
     def load_figure_sprite(self, figure: type[Figure]) -> Sprite:
+        assert self.has_figure(figure)
+
         sprite_info = self._figures[figure.__name__]
         return self._load_sprite(sprite_info)
+
+    def has_figure(self, figure: type[Figure]) -> bool:
+        return figure.__name__ in self._figures
 
     def load_button_3_to_2(self) -> Sprite:
         sprite_info = self._ui[_BUTTON_3_TO_2]
@@ -97,5 +93,11 @@ class SpritesLoader:
         sprite_info = self._effects[_ROCKET]
         return self._load_sprite(sprite_info)
 
-    def has_figure(self, figure: type[Figure]) -> bool:
-        return figure.__name__ in self._figures
+    @staticmethod
+    def _load_sprite(sprite_info: SPRITE_DICT) -> Sprite:
+        file: str = sprite_info[_FILE]
+        pivot: list[int] = sprite_info[_PIVOT]
+        assert len(pivot) == 2
+
+        path = SPRITES_FOLDER / file
+        return Sprite.load_raw_image(path, Vector2Int(*pivot))

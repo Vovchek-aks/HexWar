@@ -6,6 +6,7 @@ from attrs import frozen, field
 
 import core.protocols as proto
 from core.cells import Cells
+from statuses import MISSING
 
 
 @frozen
@@ -31,8 +32,9 @@ class CellsCache(proto.CellsCache):
 
     def not_empty(self) -> Cells:
         result = set()
-        for cells in self._cells_with.values():
-            result |= cells
+        for figure, cells in self._cells_with.items():
+            if figure.FLAGS.get(proto.Empty) is MISSING:
+                result |= cells
         return Cells(result)
 
     def with_owner(self, player: proto.Player) -> Cells:

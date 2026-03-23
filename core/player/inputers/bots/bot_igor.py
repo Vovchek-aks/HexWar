@@ -29,14 +29,13 @@ from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 _ATTACKING = 0
 _BUILDING = 1
 _PULLING = 2
-_BUILDING_PRODUCTION = 3
-_CATASTROPHY_PREVENTION = 4
+_CATASTROPHY_PREVENTION = 3
 _INITIAL_STATE = _CATASTROPHY_PREVENTION
 
 _TARGET_FLOW_PER_CELL_OF = ResourcesGroup.make(
-    Dollars(20_000),
-    LightIndustryProducts(100),
-    HeavyIndustryProducts(50),
+    Dollars(75_000),
+    LightIndustryProducts(50),
+    HeavyIndustryProducts(10),
 )
 
 _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
@@ -149,19 +148,10 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            self._state = _BUILDING_PRODUCTION
-
-        if self._state == _BUILDING_PRODUCTION:
-            yield from self._try_align_resources_flow(cells_count)
-            # print("_try_align_resources_flow")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
-
             self._state = _BUILDING
 
         if self._state == _BUILDING:
-            has_developed = town_count > cells_count * .05
+            has_developed = town_count > cells_count * .01
             is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
 
             bunker_ratio = .1 if has_developed and not is_rich else 0.75
@@ -208,6 +198,12 @@ class BotIgor(proto.Bot):
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
+
+            yield from self._try_align_resources_flow(cells_count)
+            # print("_try_align_resources_flow")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
 
             figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
             if figure_to_create is not MISSING:
@@ -424,7 +420,7 @@ class BotIgor(proto.Bot):
     @staticmethod
     def _get_resource_with_max_unfilled_demand(resources: list[type[Resource]],
                                                flow: ResourcesGroup,
-                                               target_flow: ResourcesGroup) -> tuple[type[Resource], int]:
+                                               target_flow: ResourcesGroup) -> tuple[type[Resource], float]:
         return max(map(lambda resource: (resource, (target_flow.get(resource) - flow.get(resource)).amount), resources),
                    key=lambda pair: pair[-1])
 
