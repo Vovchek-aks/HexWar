@@ -538,7 +538,7 @@ class FrameDrawer(ABC):
 class SoundPlayer(ABC):
     @property
     @abstractmethod
-    def is_complete(self) -> bool:
+    def is_completed(self) -> bool:
         ...
 
     @abstractmethod

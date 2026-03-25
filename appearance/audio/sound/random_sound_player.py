@@ -14,8 +14,8 @@ class RandomSoundPlayer(proto.SoundPlayer):
     _currently_playing: list[proto.SoundPlayer] = field(init=False, factory=list)
 
     @property
-    def is_complete(self) -> bool:
-        return all(sound_player.is_complete for sound_player in self._currently_playing)
+    def is_completed(self) -> bool:
+        return all(sound_player.is_completed for sound_player in self._currently_playing)
 
     def play(self, speed: float = 1) -> None:
         sound_player = self._get_next_sound_player()
@@ -49,7 +49,7 @@ class RandomSoundPlayer(proto.SoundPlayer):
     def _remove_completed_from_currently_playing(self) -> None:
         to_keep = list[proto.SoundPlayer]()
         for sound_player in self._currently_playing:
-            if sound_player.is_complete:
+            if sound_player.is_completed:
                 sound_player.stop()
                 continue
             to_keep.append(sound_player)

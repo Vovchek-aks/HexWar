@@ -8,8 +8,8 @@ class SwitcherSoundPlayer(proto.SoundPlayer):
     _sound_players: list[proto.SoundPlayer]
 
     @property
-    def is_complete(self) -> bool:
-        return self._sound_players[-1].is_complete
+    def is_completed(self) -> bool:
+        return self._sound_players[-1].is_completed
 
     def play(self, speed: float = 1) -> None:
         self.stop()

@@ -5,6 +5,7 @@ from attrs import frozen
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
+from appearance.audio.music.music_player import MusicPlayer
 from appearance.audio.sound.figure_selection.figures_sounds import FiguresSounds
 from appearance.audio.sound.figure_selection.on_figure_was_clicked_sound_player import OnFigureWasClickedSoundPlayer
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
@@ -101,6 +102,7 @@ def load_game(screen_shape: Vector2Int,
 
     figures_sounds = FiguresSounds.load()
     OnFigureWasClickedSoundPlayer.make(session, figures_sounds, actions_reader)
+    music_player = MusicPlayer.load() if not is_multibot else MusicPlayer.empty()
 
     input_state = InputState.make(window)
 
@@ -156,7 +158,7 @@ def load_game(screen_shape: Vector2Int,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,
                                                lambda move: animators_switcher.get().get_animation(move)),
-                           in_game_time)
+                           music_player, in_game_time)
     drawer = FrameDrawer.make(layers)
 
     continue_was_pressed = Event[None]()
@@ -203,6 +205,7 @@ def load_game(screen_shape: Vector2Int,
         continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
         to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
         to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save(SAVE_FILE))
+        to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
 
     yield scene
 

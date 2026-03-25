@@ -29,8 +29,12 @@ class Sound(proto.SoundPlayer):
         return self._sound.source.duration
 
     @property
-    def is_complete(self) -> bool:  # SHIT
-        return self._was_stopped or time() - self._time > self.duration
+    def progress(self) -> float:
+        return (time() - self._time) / self.duration
+
+    @property
+    def is_completed(self) -> bool:  # SHIT
+        return self._was_stopped or self.progress >= 1
 
     @property
     def _was_stopped(self) -> bool:
