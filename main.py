@@ -10,7 +10,7 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
 
-IS_MULTIBOT = False
+IS_MULTIBOT = True
 
 IS_FULLSCREEN = False
 SCREEN_SHAPE = (Vector2Int(1920, 1080)

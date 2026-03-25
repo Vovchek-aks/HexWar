@@ -33,9 +33,9 @@ _CATASTROPHY_PREVENTION = 3
 _INITIAL_STATE = _CATASTROPHY_PREVENTION
 
 _TARGET_FLOW_PER_CELL_OF = ResourcesGroup.make(
-    Dollars(75_000),
-    LightIndustryProducts(50),
-    HeavyIndustryProducts(10),
+    Dollars(5_000),
+    LightIndustryProducts(5),
+    HeavyIndustryProducts(5),
 )
 
 _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
@@ -43,6 +43,8 @@ _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
     LightIndustryProducts: fig.LightFactory,
     HeavyIndustryProducts: fig.HeavyFactory,
 }
+
+_MAX_ARMY = 150.
 
 PRODUCTION = fig.Town | fig.Capital | fig.LightFactory | fig.HeavyFactory
 
@@ -132,7 +134,7 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            initial_army_size = max(5., .1 * len((cells.with_owner(self._player) & cells.at_front).as_set()))
+            initial_army_size = min(_MAX_ARMY, .1 * len(cells.with_owner(self._player) & cells.at_front))
 
             if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
                 self._try_create(fig.Tank)
@@ -205,13 +207,14 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
-            if figure_to_create is not MISSING:
-                self._try_create(figure_to_create)
-                # print(f"_try_create({figure_to_create})")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
+            if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
+                figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
+                if figure_to_create is not MISSING:
+                    self._try_create(figure_to_create)
+                    # print(f"_try_create({figure_to_create})")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
 
             self._state = _ATTACKING
 
@@ -402,7 +405,7 @@ class BotIgor(proto.Bot):
                     flow += ResourcesGroup.make(resource(result))
 
         iterations = 0
-        while (pair := self._get_resource_with_max_unfilled_demand(resources, flow, target_flow))[-1] > 0:
+        while (pair := self._get_resource_with_max_unfilled_demand(resources, flow, target_flow))[-1] > 1:
             iterations += 1
             if iterations > max_iterations:
                 return
@@ -417,12 +420,18 @@ class BotIgor(proto.Bot):
             if (taker := figure.FLAGS.get(proto.ResourcesTaker)) is not MISSING:
                 flow -= taker.resources_to_take
 
-    @staticmethod
-    def _get_resource_with_max_unfilled_demand(resources: list[type[Resource]],
+    def _get_resource_with_max_unfilled_demand(self,
+                                               resources: list[type[Resource]],
                                                flow: ResourcesGroup,
                                                target_flow: ResourcesGroup) -> tuple[type[Resource], float]:
-        return max(map(lambda resource: (resource, (target_flow.get(resource) - flow.get(resource)).amount), resources),
+        return max(map(lambda resource: (resource, self._get_lack_for(resource, flow, target_flow)), resources),
                    key=lambda pair: pair[-1])
+
+    @staticmethod
+    def _get_lack_for(resource: type[Resource], flow: ResourcesGroup, target_flow: ResourcesGroup) -> float:
+        current_flow = flow.get(resource).amount
+        lack = target_flow.get(resource).amount / max(1, abs(current_flow))
+        return lack if current_flow > 0 else lack ** 2
 
     def _getting_flow_process(self, resource: type[Resource]) -> Iterator[Status | int]:
         return getting_resources_flow_process(self._player, resource, self._session)

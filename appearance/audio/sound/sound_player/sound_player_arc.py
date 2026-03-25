@@ -1,4 +1,5 @@
 from pathlib import Path
+from time import time
 
 from attrs import define, field
 
@@ -21,10 +22,15 @@ class Sound(proto.SoundPlayer):
     _volume: float = field(eq=False, hash=False)
     _is_looped: bool = field(eq=False, hash=False)
     _player: ArcSoundPlayer | Status = field(init=False, default=MISSING, eq=False, hash=False)
+    _time: float = field(init=False, default=0)
+
+    @property
+    def duration(self) -> float:
+        return self._sound.source.duration
 
     @property
     def is_complete(self) -> bool:  # SHIT
-        return self._was_stopped or self._sound.is_complete(self._player)
+        return self._was_stopped or time() - self._time > self.duration
 
     @property
     def _was_stopped(self) -> bool:
@@ -32,6 +38,7 @@ class Sound(proto.SoundPlayer):
 
     def play(self, speed: float = 1) -> None:
         self.stop()
+        self._time = time()
         self._player = self._sound.play(self._volume, 0, self._is_looped, speed)
 
     def stop(self) -> None:

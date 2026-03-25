@@ -40,7 +40,7 @@ from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
 from core.cells_changes_observer import CellsChangesObserver
-from core.figures.figure import Town
+import core.figures.figure as fig
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
@@ -172,13 +172,13 @@ def load_game(screen_shape: Vector2Int,
         scene = MultibotScene(game)
 
         def on_player_turn_ended(player: Player) -> None:
-            towns = session.cells.with_figure(Town)
+            production = session.cells.with_figure(fig.Town | fig.LightFactory | fig.HeavyFactory)
             player_cells = session.cells.with_owner(player)
-            player_towns = player_cells & towns
-            ratio_to_win = .7
-            is_territory_win = len(player_cells.as_set()) / sum(len(session.cells.with_owner(other).as_set())
-                                                                for other in session.master.players) >= ratio_to_win
-            is_economically_win = len(player_towns.as_set()) > len(towns.as_set()) * ratio_to_win
+            player_production = player_cells & production
+            ratio_to_win = .8
+            is_territory_win = len(player_cells) / sum(len(session.cells.with_owner(other))
+                                                       for other in session.master.players) >= ratio_to_win
+            is_economically_win = len(player_production) > len(production) * ratio_to_win
             if is_territory_win or is_economically_win:
                 scene.on_reload(make_next_scene_loading())
 
