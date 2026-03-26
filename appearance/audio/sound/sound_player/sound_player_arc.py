@@ -22,7 +22,7 @@ class Sound(proto.SoundPlayer):
     _volume: float = field(eq=False, hash=False)
     _is_looped: bool = field(eq=False, hash=False)
     _player: ArcSoundPlayer | Status = field(init=False, default=MISSING, eq=False, hash=False)
-    _time: float = field(init=False, default=0)
+    _time: float = field(init=False, default=0, eq=False, hash=False)
 
     @property
     def duration(self) -> float:
@@ -33,7 +33,7 @@ class Sound(proto.SoundPlayer):
         return (time() - self._time) / self.duration
 
     @property
-    def is_completed(self) -> bool:  # SHIT
+    def is_completed(self) -> bool: 
         return self._was_stopped or self.progress >= 1
 
     @property

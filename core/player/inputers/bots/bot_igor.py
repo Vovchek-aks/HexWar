@@ -32,10 +32,11 @@ _PULLING = 2
 _CATASTROPHY_PREVENTION = 3
 _INITIAL_STATE = _CATASTROPHY_PREVENTION
 
+# https://www.desmos.com/calculator/zkc3ewscyj
 _TARGET_FLOW_PER_CELL_OF = ResourcesGroup.make(
-    Dollars(5_000),
-    LightIndustryProducts(5),
-    HeavyIndustryProducts(5),
+    Dollars(1_340_000),
+    LightIndustryProducts(1330),
+    HeavyIndustryProducts(537),
 )
 
 _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
@@ -396,7 +397,7 @@ class BotIgor(proto.Bot):
                                max_iterations: int | float = float('inf')) -> Iterator[None]:
         resources = list(map(type[Resource], _TARGET_FLOW_PER_CELL_OF))
 
-        target_flow = _TARGET_FLOW_PER_CELL_OF * cells_count
+        target_flow = _TARGET_FLOW_PER_CELL_OF * cells_count ** .25
         flow = ResourcesGroup()
         for resource in resources:
             for result in self._getting_flow_process(resource):

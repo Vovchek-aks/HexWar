@@ -10,9 +10,8 @@ from observer import Event, OnEventSubscriber
 class CameraOrientation(proto.CameraOrientation):
     @classmethod
     def starter(cls) -> "CameraOrientation":
-        return cls(Vector2(57, -34), Angle(-60), 6.5)
-        # return cls(Vector2(715, 400), Angle(60), 4.6)
-        # return cls(Vector2(715, 400), Angle(60), 4.6)
+        return cls(Vector2(75.5, -45.5), Angle(-60), 4.5)
+        # return cls(Vector2(57, -34), Angle(-60), 6.5)
 
     _has_changed: Event[None] = field(init=False, factory=Event)
 

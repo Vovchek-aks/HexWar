@@ -30,7 +30,7 @@ def main() -> None:
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Ukraine", "Moldova", "Romania"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
-    make_first_scene = _make_test_game_loading_scene
+    # make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, IS_FULLSCREEN, SCREEN_SHAPE, make_first_scene) as engine:
         engine.run()
 
@@ -63,7 +63,7 @@ def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> S
 
 def _make_multibot_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return LoadingScenesMaker(screen_shape, window, UPS).make_multibot_loading_scene(
-        lambda: GameSessionLoader.make("SVO.json", UPS).load())
+        lambda: GameSessionLoader.make("Middle East.json", UPS).load())
 
 
 if __name__ == '__main__':

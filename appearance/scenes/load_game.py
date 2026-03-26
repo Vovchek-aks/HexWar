@@ -177,7 +177,7 @@ def load_game(screen_shape: Vector2Int,
             production = session.cells.with_figure(fig.Town | fig.LightFactory | fig.HeavyFactory)
             player_cells = session.cells.with_owner(player)
             player_production = player_cells & production
-            ratio_to_win = .8
+            ratio_to_win = .5
             is_territory_win = len(player_cells) / sum(len(session.cells.with_owner(other))
                                                        for other in session.master.players) >= ratio_to_win
             is_economically_win = len(player_production) > len(production) * ratio_to_win

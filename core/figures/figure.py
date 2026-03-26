@@ -177,7 +177,7 @@ class Bunker(_Figure):
 class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(1_000_000), LightIndustryProducts(5_000), HeavyIndustryProducts(10_000)),
+                      Creatable.make(Dollars(1_000_000), LightIndustryProducts(5_000), HeavyIndustryProducts(5_000)),
                       Capturable(),
                       StartsWithBudgetSpend(1),
                       TriesTakeResourcesElseDies.make(Dollars(25_000),
@@ -186,7 +186,7 @@ class MissileSilo(_Figure):
                       CanLaunchOreshnik(min_distance=10,
                                         cost=ResourcesGroup.make(Dollars(100_000),
                                                                  LightIndustryProducts(500),
-                                                                 HeavyIndustryProducts(5_000)),
+                                                                 HeavyIndustryProducts(3_000)),
                                         spread_radius=3,
                                         targets_per_layer=3))
     MOVES_BUDGET = 1
