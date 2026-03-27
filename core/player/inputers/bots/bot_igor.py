@@ -33,10 +33,10 @@ _CATASTROPHY_PREVENTION = 3
 _INITIAL_STATE = _CATASTROPHY_PREVENTION
 
 # https://www.desmos.com/calculator/zkc3ewscyj
-_TARGET_FLOW_PER_CELL_OF = ResourcesGroup.make(
+_TARGET_RESERVE_RATIO_OF = ResourcesGroup.make(
     Dollars(1_340_000),
-    LightIndustryProducts(1330),
-    HeavyIndustryProducts(537),
+    LightIndustryProducts(5_300),
+    HeavyIndustryProducts(2_660),
 )
 
 _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
@@ -395,15 +395,17 @@ class BotIgor(proto.Bot):
                                cells_count: int,
                                *,
                                max_iterations: int | float = float('inf')) -> Iterator[None]:
-        resources = list(map(type[Resource], _TARGET_FLOW_PER_CELL_OF))
-
-        target_flow = _TARGET_FLOW_PER_CELL_OF * cells_count ** .25
+        resources = list(map(type[Resource], _TARGET_RESERVE_RATIO_OF))
         flow = ResourcesGroup()
         for resource in resources:
             for result in self._getting_flow_process(resource):
                 yield
                 if result is not MISSING:
                     flow += ResourcesGroup.make(resource(result))
+
+        target_reserve = _TARGET_RESERVE_RATIO_OF * cells_count ** .25
+        current_reserv = self._player.resources.as_group
+        target_flow = (target_reserve - current_reserv) + flow
 
         iterations = 0
         while (pair := self._get_resource_with_max_unfilled_demand(resources, flow, target_flow))[-1] > 1:

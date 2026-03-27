@@ -16,6 +16,10 @@ class ResourcesStockpile(proto.ResourcesStockpile):
     def has_changed(self) -> OnEventSubscriber["ResourcesStockpile", None]:
         return self._has_changed.subscriber
 
+    @property
+    def as_group(self) -> ResourcesGroup:
+        return self._resources
+
     def get(self, target: type[Resource]) -> Resource:
         return self._resources.get(target)
 

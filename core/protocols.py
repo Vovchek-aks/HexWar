@@ -780,6 +780,11 @@ class ResourcesStockpile(ABC):
     def has_changed(self) -> OnEventSubscriber["ResourcesStockpile", None]:
         ...
 
+    @property
+    @abstractmethod
+    def as_group(self) -> ResourcesGroup:
+        ...
+
     @abstractmethod
     def get(self, target: type[Resource]) -> Resource:
         ...
