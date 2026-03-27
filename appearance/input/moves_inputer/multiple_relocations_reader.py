@@ -1,15 +1,12 @@
-from attrs import frozen, field
+from attrs import frozen
 import arcade as arc
 
 import appearance.protocols as proto
-from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.input_actions import CellClickAction
 from core.moves.relocations import Relocation
 from core.moves.valid_move import ValidMove
 from core.protocols import GameSession
-from mathematics.greedy_path_searcher import GreedyPathSearcher
-from mathematics.vector import Vector2Int
-from observer import Event, OnEventSubscriber
+from mathematics.a_star_path_searcher import AStarPathSearcher as PathSearcher
 import core.figures.figure as fig
 from statuses import MISSING
 
@@ -39,7 +36,7 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
         player = self._session.master.current_player
         board = self._session.board
         allowed = cells.with_owner(player) & cells.with_figure(fig.Land)
-        path = GreedyPathSearcher(self._session.board, allowed, board[click_coord]).search_from(board[selected_coord])
+        path = PathSearcher(self._session.board, allowed, board[click_coord]).search_from(board[selected_coord])
         if not path:
             return []
 

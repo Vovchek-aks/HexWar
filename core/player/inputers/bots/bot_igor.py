@@ -21,7 +21,7 @@ from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
 from core.protocols import Capturable, CanCapture
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, Resource, ResourcesGroup
-from mathematics.greedy_path_searcher import GreedyPathSearcher
+from mathematics.a_star_path_searcher import AStarPathSearcher as PathSearcher
 from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
@@ -599,7 +599,7 @@ class BotIgor(proto.Bot):
             if target is MISSING:
                 continue
 
-            self._add_distant_relocation_moves(cell, target)
+            yield from self._add_distant_relocation_moves(cell, target)
             if self._moves_to_make:
                 return
 
@@ -609,31 +609,24 @@ class BotIgor(proto.Bot):
             if target is MISSING:
                 continue
 
-            self._add_distant_relocation_moves(cell, target)
+            yield from self._add_distant_relocation_moves(cell, target)
             if self._moves_to_make:
                 return
 
-    # def _get_pull_cell_and_pull(self,
-    #                             to_pull: Cells,
-    #                             pull_cell_getter: Callable[[proto.Cell], proto.Cell]) -> Iterator[None]:
-    #     for cell in to_pull:
-    #         yield
-    #         target = pull_cell_getter(cell)
-    #         if target is MISSING:
-    #             continue
-    #
-    #         self._add_distant_relocation_moves(cell, target)
-    #         if self._moves_to_make:
-    #             return
-
-    def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> None:
+    def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> Iterator[None]:
         cells = self._session.cells
-        path = (GreedyPathSearcher(self._board,
-                                   cells.with_figure(fig.Land) &
-                                   cells.with_owner(self._player) +
-                                   Cells({cell, target}),
-                                   target)
-                .search_from(cell))
+        path_searcher = PathSearcher(self._board,
+                                     cells.with_figure(fig.Land) &
+                                     cells.with_owner(self._player) +
+                                     Cells({cell, target}),
+                                     target)
+
+        path = list[Vector2Int]()
+        for path in path_searcher.search_process_from(cell):
+            if path is not None:
+                break
+            yield
+
         if len(path) < 2:
             return
 
