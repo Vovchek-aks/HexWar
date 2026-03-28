@@ -10,7 +10,7 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
 
-IS_MULTIBOT = True
+IS_MULTIBOT = False
 
 IS_FULLSCREEN = False
 SCREEN_SHAPE = (Vector2Int(1920, 1080)
@@ -28,7 +28,7 @@ def main() -> None:
     # from game_session_saver import GameSessionSaver
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
-    # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Ukraine", "Moldova", "Romania"])).save(EDIT_MAP_FILE)
+    # GameSessionSaver(empty_map(board_size=30, player_names=["Red", "Divan0_0"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
     # make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, IS_FULLSCREEN, SCREEN_SHAPE, make_first_scene) as engine:

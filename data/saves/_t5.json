@@ -8,10 +8,10 @@
         "BotIgor"
       ],
       "RESOURCES": {
-        "Dollars": 0,
-        "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
+        "Dollars": 10000000000000000000,
+        "Oil": 10000000000000000000,
+        "LightIndustryProducts": 10000000000000000000,
+        "HeavyIndustryProducts": 10000000000000000000
       }
     },
     {
@@ -22,10 +22,10 @@
         "BotIgor"
       ],
       "RESOURCES": {
-        "Dollars": 0,
-        "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
+        "Dollars": 10000000000000000000,
+        "Oil": 10000000000000000000,
+        "LightIndustryProducts": 10000000000000000000,
+        "HeavyIndustryProducts": 10000000000000000000
       }
     }
   ],
