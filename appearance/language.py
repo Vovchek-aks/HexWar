@@ -77,6 +77,7 @@ _SELECTED_PLAYERS = "SELECTED_PLAYERS"
 _NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
 
 _PLAY = "PLAY"
+_TUTORIAL = "TUTORIAL"
 _EXIT = "EXIT"
 _BACK = "BACK"
 
@@ -151,6 +152,9 @@ class Language:
 
     def get_play_message(self) -> str:
         return self._ui[_PLAY]
+
+    def get_tutorial_message(self) -> str:
+        return self._ui[_TUTORIAL]
 
     def get_exit_message(self) -> str:
         return self._ui[_EXIT]

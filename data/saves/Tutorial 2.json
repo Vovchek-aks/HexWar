@@ -4,28 +4,27 @@
       "NAME": "Red",
       "COLOR": "#ad5240",
       "INPUTER": [
-        "BotPlayerInputer",
-        "BotIgor"
+        "WantsToBeEventPlayerInputer"
       ],
       "RESOURCES": {
-        "Dollars": 10000000000000000000,
-        "Oil": 10000000000000000000,
-        "LightIndustryProducts": 10000000000000000000,
-        "HeavyIndustryProducts": 10000000000000000000
+        "Dollars": 10000000000000,
+        "Oil": 10000000000000,
+        "LightIndustryProducts": 10000000000000,
+        "HeavyIndustryProducts": 10000000000000
       }
     },
     {
       "NAME": "aaaplayer",
       "COLOR": "#406aad",
       "INPUTER": [
-        "BotPlayerInputer",
-        "BotIgor"
+        "PassPlayerInputer",
+        1
       ],
       "RESOURCES": {
-        "Dollars": 10000000000000000000,
-        "Oil": 10000000000000000000,
-        "LightIndustryProducts": 10000000000000000000,
-        "HeavyIndustryProducts": 10000000000000000000
+        "Dollars": 10000000000000,
+        "Oil": 10000000000000,
+        "LightIndustryProducts": 10000000000000,
+        "HeavyIndustryProducts": 10000000000000
       }
     }
   ],

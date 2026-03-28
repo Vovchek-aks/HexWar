@@ -15,7 +15,7 @@ from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
 from core.protocols import GameSession
-from game_session_saver import GameSessionLoader, SAVE_FILE
+from game_session_saver import GameSessionLoader, SAVE_FILE, is_tutorial
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -61,7 +61,7 @@ def load_main_menu(screen_shape: Vector2Int,
                                                .load()))
 
     def scene_loader_from(map_name: str) -> FromSessionMakerLoadingSceneGetter:
-        if map_name == SAVE_FILE.stem:
+        if map_name == SAVE_FILE.stem or is_tutorial(map_name):
             return get_game_loading_scene
         return get_player_selection_loading_scene
 

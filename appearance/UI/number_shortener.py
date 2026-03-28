@@ -3,7 +3,9 @@ class NumberShortener:
         '',
         'K',
         'M',
-        'B'
+        'B',
+        "T",
+        "Q"
     ]
 
     @classmethod

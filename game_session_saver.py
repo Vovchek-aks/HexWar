@@ -58,6 +58,8 @@ _BOARD_SHAPE = "BOARD_SHAPE"
 
 _CELLS = "CELLS"
 
+_TUTORIAL_MAP_PREFIX = "Tutorial"
+
 
 @frozen
 class GameSessionSaver:
@@ -248,7 +250,7 @@ class GameSessionLoader:
         return Vector2Int(*map(int, key.split()))
 
 
-def get_saved_maps() -> list[str]:
+def _get_all_maps() -> list[str]:
     maps = list[str]()
     for file in map(Path, os.listdir(SAVE_FOLDER)):
         if file.suffix != ".json":
@@ -264,3 +266,15 @@ def get_saved_maps() -> list[str]:
         maps.insert(0, SAVE_FILE.stem)
 
     return maps
+
+
+def get_saved_maps() -> list[str]:
+    return [map_name for map_name in _get_all_maps() if not is_tutorial(map_name)]
+
+
+def get_tutorials() -> list[str]:
+    return [map_name for map_name in _get_all_maps() if is_tutorial(map_name)]
+
+
+def is_tutorial(map_name: str) -> bool:
+    return map_name.startswith(_TUTORIAL_MAP_PREFIX)

@@ -11,7 +11,7 @@ from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
 from files import read_build_info
-from game_session_saver import get_saved_maps
+from game_session_saver import get_saved_maps, get_tutorials
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 from observer import Event
@@ -29,33 +29,44 @@ class MainMenuUiLayerMaker:
              on_map_was_selected: Callable[[str], None],
              on_exit_was_pressed: Callable[[], None]) -> Layer:
         play_was_pressed = Event[None]()
+        tutorial_was_pressed = Event[None]()
         to_main_menu_was_pressed = Event[None]()
 
-        label = self._make_label(play_was_pressed.invoke, on_exit_was_pressed)
-        map_selection = self._make_map_selection(on_map_was_selected, to_main_menu_was_pressed.invoke)
+        label = self._make_label(play_was_pressed.invoke, tutorial_was_pressed.invoke, on_exit_was_pressed)
+        map_selection = self._make_map_selection(get_saved_maps(), on_map_was_selected,
+                                                 to_main_menu_was_pressed.invoke)
+        tutorial_selection = self._make_map_selection(get_tutorials(), on_map_was_selected,
+                                                      to_main_menu_was_pressed.invoke)
 
         map_selection.set_activity(False)
+        tutorial_selection.set_activity(False)
         play_was_pressed.subscribe(lambda: label.set_activity(False))
         play_was_pressed.subscribe(lambda: map_selection.set_activity(True))
+        tutorial_was_pressed.subscribe(lambda: label.set_activity(False))
+        tutorial_was_pressed.subscribe(lambda: tutorial_selection.set_activity(True))
         to_main_menu_was_pressed.subscribe(lambda: label.set_activity(True))
         to_main_menu_was_pressed.subscribe(lambda: map_selection.set_activity(False))
+        to_main_menu_was_pressed.subscribe(lambda: tutorial_selection.set_activity(False))
 
-        return Layer.as_multiple([label, map_selection])
+        return Layer.as_multiple([label, map_selection, tutorial_selection])
 
     def _make_map_selection(self,
+                            map_names: list[str],
                             on_map_was_selected: Callable[[str], None],
                             on_to_main_menu_was_pressed: Callable[[], None]) -> Layer:
         layers = [
-            self._make_map_selection_buttons(on_map_was_selected),
+            self._make_map_selection_buttons(map_names, on_map_was_selected),
             self._make_back_button(on_to_main_menu_was_pressed),
         ]
         return Layer.as_multiple(layers)
 
-    def _make_map_selection_buttons(self, on_map_was_selected: Callable[[str], None]) -> VerticalLayoutUi:
+    def _make_map_selection_buttons(self,
+                                    map_names: list[str],
+                                    on_map_was_selected: Callable[[str], None]) -> VerticalLayoutUi:
         buttons_shape = Vector2Int(5, 5)
 
         buttons = list[ButtonUi]()
-        for map_name in get_saved_maps():
+        for map_name in map_names:
             buttons.append(self._make_map_selection_button(map_name, on_map_was_selected))
 
         assert len(buttons) <= buttons_shape.x * buttons_shape.y
@@ -107,10 +118,11 @@ class MainMenuUiLayerMaker:
 
     def _make_label(self,
                     on_play_was_pressed: Callable[[], None],
+                    on_tutorial_was_pressed: Callable[[], None],
                     on_exit_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
-            self._make_buttons(on_play_was_pressed, on_exit_was_pressed),
+            self._make_buttons(on_play_was_pressed, on_tutorial_was_pressed, on_exit_was_pressed),
             self._make_build_info(),
         ]
 
@@ -118,9 +130,11 @@ class MainMenuUiLayerMaker:
 
     def _make_buttons(self,
                       on_play_was_pressed: Callable[[], None],
+                      on_tutorial_was_pressed: Callable[[], None],
                       on_exit_was_pressed: Callable[[], None]) -> Layer:
         buttons = [
             self._make_null_button(self._language.get_play_message(), on_play_was_pressed),
+            self._make_null_button(self._language.get_tutorial_message(), on_tutorial_was_pressed),
             self._make_null_button(self._language.get_exit_message(), on_exit_was_pressed),
         ]
         layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.1)
