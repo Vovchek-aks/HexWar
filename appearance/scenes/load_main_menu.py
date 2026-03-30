@@ -29,7 +29,8 @@ def load_main_menu(screen_shape: Vector2Int,
                    ups: int,
                    window: Window,
                    get_player_selection_loading_scene: FromSessionMakerLoadingSceneGetter,
-                   get_game_loading_scene: FromSessionMakerLoadingSceneGetter
+                   get_game_loading_scene: FromSessionMakerLoadingSceneGetter,
+                   get_tutorial_game_loading_scene_getter: Callable[[str], FromSessionMakerLoadingSceneGetter]
                    ) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
@@ -61,8 +62,12 @@ def load_main_menu(screen_shape: Vector2Int,
                                                .load()))
 
     def scene_loader_from(map_name: str) -> FromSessionMakerLoadingSceneGetter:
-        if map_name == SAVE_FILE.stem or is_tutorial(map_name):
+        if is_tutorial(map_name):
+            return get_tutorial_game_loading_scene_getter(map_name)
+
+        if map_name == SAVE_FILE.stem:
             return get_game_loading_scene
+
         return get_player_selection_loading_scene
 
     map_was_selected.subscribe(on_map_was_selected)

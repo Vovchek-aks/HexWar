@@ -61,15 +61,73 @@ class GameUiLayerMaker:
 
         return Layer.as_multiple(layers)
 
-    def make_multibot(self) -> Layer:
-        dollars, players_turn = self._make_dollars_and_player_turn()
+    def make_for_multibot(self) -> Layer:
+        resources, players_turn = self._make_dollars_and_player_turn()
 
         layers = [
             players_turn,
-            dollars
+            resources
         ]
 
         return Layer.as_multiple(layers)
+
+    def make_for_tutorial(self, tutorial_index: int, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
+        if tutorial_index == 1:
+            return self._make_for_tutorial(on_end_turn_button_was_clicked, self._make_current_turn_ui_tutorial_1)
+        if tutorial_index == 2:
+            return self._make_for_tutorial(on_end_turn_button_was_clicked, self._make_current_turn_ui_tutorial_2)
+        if tutorial_index == 6:
+            return self.make(on_end_turn_button_was_clicked)
+
+        return self._make_for_tutorial(on_end_turn_button_was_clicked, self._make_current_turn_ui_tutorial_3)
+
+    def _make_for_tutorial(self,
+                           on_end_turn_button_was_clicked: Callable[[], None],
+                           current_turn_ui_maker: Callable[[ButtonUi], Layer]) -> Layer:
+        resources, players_turn = self._make_dollars_and_player_turn()
+        end_turn_button = self._make_end_turn_button()
+        end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
+
+        layers = [
+            players_turn,
+            current_turn_ui_maker(end_turn_button)
+        ]
+
+        return Layer.as_multiple(layers)
+
+    def _make_current_turn_ui_tutorial_1(self, end_turn_button: ButtonUi) -> Layer:
+        layer = Layer.as_multiple([
+            self._make_infantry_menu_tutorial_1(),
+            end_turn_button,
+        ])
+        self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
+        return layer
+
+    def _make_current_turn_ui_tutorial_2(self, end_turn_button: ButtonUi) -> Layer:
+        layer = Layer.as_multiple([
+            self._make_infantry_menu_tutorial_2(),
+            self._make_artillery_menu(),
+            end_turn_button,
+        ])
+        self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
+        return layer
+
+    def _make_current_turn_ui_tutorial_3(self, end_turn_button: ButtonUi) -> Layer:
+        layer = Layer.as_multiple([
+            self._make_infantry_menu(),
+            self._make_motorization_menu(),
+            self._make_tank_menu(),
+            self._make_artillery_menu(),
+            self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_heavy_factory_menu(),
+            self._make_capital_menu(),
+            self._make_bunker_menu(),
+            self._make_missile_silo_menu(),
+            end_turn_button,
+        ])
+        self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
+        return layer
 
     def _make_dollars_and_player_turn(self) -> tuple[VerticalLayoutUi, TextUi]:
         players_turn = TextUi.make(self._drawer,
@@ -133,7 +191,7 @@ class GameUiLayerMaker:
 
         return layout, update
 
-    def _make_current_turn_ui(self, dollars: VerticalLayoutUi, end_turn_button: ButtonUi) -> Layer:
+    def _make_current_turn_ui(self, resources: VerticalLayoutUi, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
             self._make_figures_creation_menu(),
             self._make_infantry_menu(),
@@ -146,7 +204,7 @@ class GameUiLayerMaker:
             self._make_capital_menu(),
             self._make_bunker_menu(),
             self._make_missile_silo_menu(),
-            dollars,
+            resources,
             end_turn_button,
         ])
         self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
@@ -251,6 +309,15 @@ class GameUiLayerMaker:
 
         return self._make_figure_menu(fig.Infantry, [to_motorize, capture],
                                       [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE])
+
+    def _make_infantry_menu_tutorial_1(self) -> Layer:
+        return self._make_figure_menu(fig.Infantry, [], [])
+
+    def _make_infantry_menu_tutorial_2(self) -> Layer:
+        capture = self._make_activatable_button(self._language.get_capture_message(),
+                                                lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
+
+        return self._make_figure_menu(fig.Infantry, [capture], [INFANTRY_CAPTURE])
 
     def _make_motorization_menu(self) -> Layer:
         to_infantry = self._make_null_button(Language.from_meta().get_to_infantry_message())

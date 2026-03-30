@@ -76,7 +76,10 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
 
             with self._multiple_cells_change(region):
                 while region:
-                    region -= self._annex_boundry(region)
+                    annexed = self._annex_boundry(region)
+                    if not annexed:
+                        break
+                    region -= annexed
 
             for cell in region:
                 self._session.cells.update(cell)

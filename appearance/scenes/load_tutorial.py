@@ -13,7 +13,6 @@ from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.game_engine.game_engine_arc.updater import Updater
 from appearance.graphics.animations.moves_animator import MovesAnimator
-from appearance.graphics.animations.moves_animators_switcher import MovesAnimatorsSwitcher
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
@@ -38,17 +37,15 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
-from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
 from core.cells_changes_observer import CellsChangesObserver
-import core.figures.figure as fig
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
 from core.by_game_rules_session_changer import ByGameRulesSessionChanger
-from core.protocols import GameSession, Player
+from core.protocols import GameSession
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -57,12 +54,11 @@ from statuses import Status
 from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 
-def load_game(screen_shape: Vector2Int,
-              window: Window,
-              make_session: Callable[[], GameSession],
-              make_next_scene_loading: Callable[[], proto.Scene],
-              *,
-              is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
+def load_tutorial(screen_shape: Vector2Int,
+                  window: Window,
+                  make_session: Callable[[], GameSession],
+                  make_next_scene_loading: Callable[[], proto.Scene],
+                  tutorial_index: int) -> Iterator[proto.Scene | Status]:
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
@@ -102,7 +98,7 @@ def load_game(screen_shape: Vector2Int,
 
     figures_sounds = FiguresSounds.load()
     OnFigureWasClickedSoundPlayer.make(session, figures_sounds, actions_reader)
-    music_player = MusicPlayer.load() if not is_multibot else MusicPlayer.empty()
+    music_player = MusicPlayer.load()
 
     input_state = InputState.make(window)
 
@@ -125,9 +121,7 @@ def load_game(screen_shape: Vector2Int,
                                            button_press_action_happened,
                                            moves_maker,
                                            actions_reader)
-    ui_layer = (game_ui_layer_maker.make_for_multibot()
-                if is_multibot else
-                game_ui_layer_maker.make(end_turn_button_was_clicked.invoke))
+    ui_layer = game_ui_layer_maker.make_for_tutorial(tutorial_index, end_turn_button_was_clicked.invoke)
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
@@ -146,10 +140,6 @@ def load_game(screen_shape: Vector2Int,
     in_game_time = InGameTime()
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
-    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
-                                               in_game_time, speed_multiplier=3)
-    # speed_multiplier=float('inf'))
-    animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     by_game_rules_session_changer = ByGameRulesSessionChanger(session,
                                                               board_drawer.not_updating_cells,
@@ -157,7 +147,7 @@ def load_game(screen_shape: Vector2Int,
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,
-                                               lambda move: animators_switcher.get().get_animation(move)),
+                                               lambda move: players_moves_animations.get_animation(move)),
                            music_player, in_game_time)
     drawer = FrameDrawer.make(layers)
 
@@ -170,42 +160,23 @@ def load_game(screen_shape: Vector2Int,
     ]
 
     game = GameScene(drawer, updater, InputState.make(window))
-    if is_multibot:
-        scene = MultibotScene(game)
+    pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)
+    scene = GameWithPauseScene(game, pause_menu)
 
-        def on_player_turn_ended(player: Player) -> None:
-            production = session.cells.with_figure(fig.Town | fig.LightFactory | fig.HeavyFactory)
-            player_cells = session.cells.with_owner(player)
-            player_production = player_cells & production
-            ratio_to_win = .5
-            is_territory_win = len(player_cells) / sum(len(session.cells.with_owner(other))
-                                                       for other in session.master.players) >= ratio_to_win
-            is_economically_win = len(player_production) > len(production) * ratio_to_win
-            if is_territory_win or is_economically_win:
-                scene.on_reload(make_next_scene_loading())
+    user_inputer_builder = EventPlayerInputerBuilder()
+    user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
+    user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
 
-        session.master.turn_has_passed.subscribe(on_player_turn_ended)
-        by_game_rules_session_changer.on_turn_start()
-    else:
-        pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)
-        scene = GameWithPauseScene(game, pause_menu)
+    for player in session.master.players:
+        if not isinstance(player.inputer, WantsToBeEventPlayerInputer):
+            continue
+        player.change_inputer(user_inputer_builder.build())
 
-        user_inputer_builder = EventPlayerInputerBuilder()
-        user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
-        user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
-
-        for player in session.master.players:
-            if not isinstance(player.inputer, WantsToBeEventPlayerInputer):
-                continue
-            player.change_inputer(user_inputer_builder.build())
-
-        animators_switcher.switch(session.master.current_player)
-
-        pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
-        continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
-        to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
-        to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save(SAVE_FILE))
-        to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
+    pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
+    continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
+    to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
+    to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save(SAVE_FILE))
+    to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
 
     yield scene
 
