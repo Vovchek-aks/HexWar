@@ -72,16 +72,19 @@ class GameUiLayerMaker:
         return Layer.as_multiple(layers)
 
     def make_for_tutorial(self, tutorial_index: int, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
-        if tutorial_index == 1:
-            return self._make_for_tutorial(on_end_turn_button_was_clicked, self._make_current_turn_ui_tutorial_1)
-        if tutorial_index == 2:
-            return self._make_for_tutorial(on_end_turn_button_was_clicked, self._make_current_turn_ui_tutorial_2)
-        if tutorial_index == 6:
-            return self.make(on_end_turn_button_was_clicked)
+        if tutorial_index == 5:
+            return Layer.as_multiple([self.make(on_end_turn_button_was_clicked),
+                                      self._make_tutorial_hints(tutorial_index)])
 
-        return self._make_for_tutorial(on_end_turn_button_was_clicked, self._make_current_turn_ui_tutorial_3)
+        make_current_turn_ui = {
+            0: self._make_current_turn_ui_tutorial_0,
+            1: self._make_current_turn_ui_tutorial_1
+        }.get(tutorial_index, self._make_current_turn_ui_tutorial_2)
+
+        return self._make_for_tutorial(tutorial_index, on_end_turn_button_was_clicked, make_current_turn_ui)
 
     def _make_for_tutorial(self,
+                           tutorial_index: int,
                            on_end_turn_button_was_clicked: Callable[[], None],
                            current_turn_ui_maker: Callable[[ButtonUi], Layer]) -> Layer:
         resources, players_turn = self._make_dollars_and_player_turn()
@@ -90,12 +93,13 @@ class GameUiLayerMaker:
 
         layers = [
             players_turn,
+            self._make_tutorial_hints(tutorial_index),
             current_turn_ui_maker(end_turn_button)
         ]
 
         return Layer.as_multiple(layers)
 
-    def _make_current_turn_ui_tutorial_1(self, end_turn_button: ButtonUi) -> Layer:
+    def _make_current_turn_ui_tutorial_0(self, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
             self._make_infantry_menu_tutorial_1(),
             end_turn_button,
@@ -103,7 +107,7 @@ class GameUiLayerMaker:
         self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
 
-    def _make_current_turn_ui_tutorial_2(self, end_turn_button: ButtonUi) -> Layer:
+    def _make_current_turn_ui_tutorial_1(self, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
             self._make_infantry_menu_tutorial_2(),
             self._make_artillery_menu(),
@@ -112,7 +116,7 @@ class GameUiLayerMaker:
         self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
 
-    def _make_current_turn_ui_tutorial_3(self, end_turn_button: ButtonUi) -> Layer:
+    def _make_current_turn_ui_tutorial_2(self, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
             self._make_infantry_menu(),
             self._make_motorization_menu(),
@@ -507,12 +511,49 @@ class GameUiLayerMaker:
             return button.layer.can_catch(fake_click)
 
         hint.layer.set_activity(False)
-        self._mouse_movement_observer.mouse_was_moved.subscribe(
-            lambda _: hint.layer.set_activity(get_hint_activity()))
-        button.was_clicked.subscribe(
-            lambda: hint.layer.set_activity(get_hint_activity()))
+        self._mouse_movement_observer.mouse_was_moved.subscribe(lambda _: hint.layer.set_activity(get_hint_activity()))
+        button.was_clicked.subscribe(lambda: hint.layer.set_activity(get_hint_activity()))
 
         return hint
+
+    def _make_tutorial_hints(self, tutorial_index: int) -> BoxUi:
+        margin = 20
+        box = BoxUi(RectangleBuilder(self._screen_shape)
+                    .from_right_up()
+                    .set_shape(Vector2(self._screen_shape.x / 4.7,
+                                       self._screen_shape.x / 4))
+                    .move(Vector2.ones() * margin)
+                    .adjust_for_shape()
+                    .build())
+        for index, content in enumerate(self._language.get_tutorial_hints(tutorial_index)):
+            box.append(self._make_tutorial_hint(index, content))
+
+        return box
+
+    def _make_tutorial_hint(self, content_index: int, content: list[str]) -> StretcherUi:
+        hint = self._make_null_hint(self._language.get_page_message(content_index), content)
+        rectangle = hint.rectangle
+        position = rectangle.position
+        shape = rectangle.shape
+
+        top_margin = 10
+        width = shape.x / 3
+        height = width * .7
+        skip = self._make_null_button(self._language.get_next_message())
+        skip.set_rectangle(Rectangle(
+            position.with_y(position.y - top_margin - height),
+            Vector2(width, height)
+        ))
+
+        stretcher = StretcherUi(Rectangle(
+            skip.rectangle.position, shape.with_y(shape.y + top_margin + height)
+        ))
+        stretcher.append(hint)
+        stretcher.append(skip)
+
+        skip.was_clicked.subscribe(lambda: stretcher.layer.set_activity(False))
+
+        return stretcher
 
     def _make_null_hint(self, title: str, content: list[str]) -> StretcherUi:
         MIN_LINES_COUNT = 8

@@ -1,3 +1,3 @@
 from .bot_igor import BotIgor
 
-bots = [BotIgor]
+bots = [BotIgor, ]

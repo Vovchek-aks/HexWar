@@ -14,7 +14,7 @@ from files import read_meta, read_json
 import core.figures.figure as fig
 from mathematics.vector import Vector2Int
 
-LANGUAGE_SECTION_DICT = dict[str, str | list[str]]
+LANGUAGE_SECTION_DICT = dict[str, str | list[str]] | list[list[list[str]]]
 LANGUAGE_DICT = dict[str, LANGUAGE_SECTION_DICT | dict[str, LANGUAGE_SECTION_DICT]]
 
 LANGUAGES_META_DICT = dict[str, str | list[str]]
@@ -58,6 +58,7 @@ _RESOURCES = "resources"
 _HINTS = "hints"
 _CREATION = "creation"
 _FIGURES_MENU = "figures_menu"
+_TUTORIALS = "tutorials"
 
 _UI = "ui"
 _END_TURN_BTN = "END_TURN_BTN"
@@ -72,6 +73,8 @@ _LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
+_PAGE = "PAGE"
+_NEXT = "NEXT"
 
 _SELECTED_PLAYERS = "SELECTED_PLAYERS"
 _NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
@@ -205,6 +208,12 @@ class Language:
 
         return message
 
+    def get_page_message(self, page_index: int) -> str:
+        return f"{self._ui[_PAGE]} {page_index + 1}"
+
+    def get_next_message(self) -> str:
+        return self._ui[_NEXT]
+
     def get_combat_ability_cost_message(self, combat_ability_ratio_cost: float) -> str:
         combat_ability_cost = f"{100 * combat_ability_ratio_cost:.0f}"
         return self._ui[_COMBAT_ABILITY_COST].format(combat_ability_cost=combat_ability_cost)
@@ -233,6 +242,9 @@ class Language:
     def get_combat_ability_message(self, combat_ability_ratio: float) -> str:
         combat_ability = f"{100 * combat_ability_ratio:.0f}"
         return self._ui[_COMBAT_ABILITY].format(combat_ability=combat_ability)
+
+    def get_tutorial_hints(self, tutorial_index: int) -> list[list[str]]:
+        return self._hints[_TUTORIALS][tutorial_index]
 
     def get_players_turn_message(self, player: str) -> str:
         return self._ui[_PLAYERS_TURN_TEXT].format(player=player)

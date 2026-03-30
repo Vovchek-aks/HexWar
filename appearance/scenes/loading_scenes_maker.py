@@ -46,7 +46,7 @@ class LoadingScenesMaker:
         def make_tutorial_loading_scene(make_game_session: GameSessionMaker):
             return LoadingScene.make(self._screen_shape,
                                      load_tutorial(self._screen_shape, self._window, make_game_session,
-                                                   self.make_main_menu_loading_scene, int(map_name.split()[-1])))
+                                                   self.make_main_menu_loading_scene, int(map_name.split()[-1]) - 1))
 
         return make_tutorial_loading_scene
 
