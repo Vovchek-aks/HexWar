@@ -1,6 +1,9 @@
 from attrs import define, frozen, field
 
+from appearance.graphics.camera.camera import Camera
+from core.protocols import Board
 from mathematics.angle import Angle
+from mathematics.hex_geometry import get_world_position
 from mathematics.vector import Vector2
 from appearance import protocols as proto
 from observer import Event, OnEventSubscriber
@@ -10,8 +13,18 @@ from observer import Event, OnEventSubscriber
 class CameraOrientation(proto.CameraOrientation):
     @classmethod
     def starter(cls) -> "CameraOrientation":
-        return cls(Vector2(75.5, -45.5), Angle(-60), 4.5)
+        return cls(Vector2(0, 0), Angle(-60), 4.5)
+        # return cls(Vector2(75.5, -45.5), Angle(-60), 4.5)
         # return cls(Vector2(57, -34), Angle(-60), 6.5)
+
+    @classmethod
+    def for_board(cls, board: Board) -> "CameraOrientation":
+        size = max(board.shape.tuple)
+        rotation = Angle(-60)
+        zoom = 450 / size
+        position = Vector2(1.7, -1) * size * 0.43
+
+        return cls(position, rotation, zoom)
 
     _has_changed: Event[None] = field(init=False, factory=Event)
 

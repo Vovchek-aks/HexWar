@@ -67,7 +67,7 @@ def load_tutorial(screen_shape: Vector2Int,
     yield language.get_intermediate_preparing_message()
     screenshot_saver = ScreenshotSaver()
 
-    camera_orientation = CameraOrientation.starter()
+    camera_orientation = CameraOrientation.for_board(session.board)
     camera_mover = CameraMover(camera_orientation)
     camera = CachedCamera.make(Camera(screen_shape.as_vector2, ReadonlyCameraOrientation(camera_orientation)))
 
