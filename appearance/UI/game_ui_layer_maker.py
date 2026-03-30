@@ -118,11 +118,6 @@ class GameUiLayerMaker:
             self._make_motorization_menu(),
             self._make_tank_menu(),
             self._make_artillery_menu(),
-            self._make_town_menu(),
-            self._make_light_factory_menu(),
-            self._make_heavy_factory_menu(),
-            self._make_capital_menu(),
-            self._make_bunker_menu(),
             self._make_missile_silo_menu(),
             end_turn_button,
         ])

@@ -14,7 +14,7 @@
       }
     },
     {
-      "NAME": "1",
+      "NAME": "Kaschtan1",
       "COLOR": "#406aad",
       "INPUTER": [
         "BotPlayerInputer",
@@ -28,7 +28,7 @@
       }
     },
     {
-      "NAME": "2",
+      "NAME": "BigPampersBoss",
       "COLOR": "#3b865d",
       "INPUTER": [
         "BotPlayerInputer",

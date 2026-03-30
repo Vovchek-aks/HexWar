@@ -4,28 +4,27 @@
       "NAME": "Red",
       "COLOR": "#ad5240",
       "INPUTER": [
-        "BotPlayerInputer",
-        "BotIgor"
+        "WantsToBeEventPlayerInputer"
       ],
       "RESOURCES": {
-        "Dollars": 0,
-        "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
+        "Dollars": 10000000000000,
+        "Oil": 10000000000000,
+        "LightIndustryProducts": 10000000000000,
+        "HeavyIndustryProducts": 10000000000000
       }
     },
     {
       "NAME": "Divan0_0",
       "COLOR": "#406aad",
       "INPUTER": [
-        "BotPlayerInputer",
-        "BotIgor"
+        "PassPlayerInputer",
+        1.0
       ],
       "RESOURCES": {
-        "Dollars": 0,
-        "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
+        "Dollars": 10000000000000,
+        "Oil": 10000000000000,
+        "LightIndustryProducts": 10000000000000,
+        "HeavyIndustryProducts": 10000000000000
       }
     }
   ],
@@ -33,11 +32,11 @@
   "PULLABLE_OF": {},
   "FIGURES": {
     "Town": [
+      "17 12",
       "15 7",
-      "16 13",
-      "17 13",
       "22 18",
-      "17 12"
+      "16 13",
+      "17 13"
     ],
     "LightFactory": [
       "15 11",
@@ -47,20 +46,21 @@
       "16 11"
     ],
     "Capital": [
+      "4 25",
       "16 12"
     ],
     "Bunker": [
       "12 4",
-      "13 8",
       "13 11",
-      "22 21",
+      "13 8",
       "16 14",
-      "19 18"
+      "19 18",
+      "22 21"
     ],
     "MissileSilo": [
+      "3 19",
       "13 27",
-      "3 11",
-      "3 19"
+      "3 11"
     ],
     "Infantry": [
       "20 19",

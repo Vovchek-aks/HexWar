@@ -18,21 +18,26 @@
       "COLOR": "#406aad",
       "INPUTER": [
         "PassPlayerInputer",
-        1
+        1.0
       ],
       "RESOURCES": {
-        "Dollars": 0,
-        "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
+        "Dollars": 10000000000000,
+        "Oil": 10000000000000,
+        "LightIndustryProducts": 10000000000000,
+        "HeavyIndustryProducts": 10000000000000
       }
     }
   ],
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {
+    "Capital": [
+      "15 8"
+    ],
     "Infantry": [
-      "5 12"
+      "5 12",
+      "9 13",
+      "6 9"
     ]
   },
   "BOARD_SHAPE": "20 20",
