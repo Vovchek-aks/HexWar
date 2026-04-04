@@ -10,7 +10,7 @@ from statuses import Status, MISSING
 import appearance.protocols as proto
 
 
-@define
+@define(hash=True)
 class Sound(proto.SoundPlayer):
     @classmethod
     def load(cls, path: Path, *, volume: float = 1, is_looped: bool = False, is_streaming: bool = False) -> "Sound":
@@ -29,8 +29,12 @@ class Sound(proto.SoundPlayer):
         return self._sound.source.duration
 
     @property
+    def time(self) -> float:
+        return time() - self._time
+
+    @property
     def progress(self) -> float:
-        return (time() - self._time) / self.duration
+        return self.time / self.duration
 
     @property
     def is_completed(self) -> bool: 

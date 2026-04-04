@@ -15,21 +15,21 @@
       ]
     },
     "LightFactory": {
-      "file": "figures/lf.png",
+      "file": "figures/lf2.png",
       "pivot": [
         183,
         183
       ]
     },
     "HeavyFactory": {
-      "file": "figures/hf.png",
+      "file": "figures/hf2.png",
       "pivot": [
         183,
         183
       ]
     },
     "Capital": {
-      "file": "figures/capital.png",
+      "file": "figures/capital2.png",
       "pivot": [
         183,
         183
@@ -43,7 +43,7 @@
       ]
     },
     "MissileSilo": {
-      "file": "figures/silo.png",
+      "file": "figures/silo2.png",
       "pivot": [
         183,
         183
@@ -124,7 +124,7 @@
       ]
     },
     "rocket": {
-      "file": "effects/rocket.png",
+      "file": "effects/rocket2.png",
       "pivot": [
         183,
         183

@@ -14,8 +14,6 @@ from files import read_meta
 SOUNDS_FOLDER = Path("data/sounds")
 MUSIC_FOLDER = Path("data/music")
 
-MUSIC_VOLUME = .05
-
 NESTED = dict[str, str | list[...]]  # recursive
 FIGURES = dict[str, NESTED]
 META = dict[str, str | FIGURES]
@@ -58,10 +56,10 @@ class SoundsLoader:
         return figure.__name__ in self._figures
 
     @staticmethod
-    def load_music() -> list[Sound]:
+    def load_music(volume: float) -> list[Sound]:
         sounds = list[Sound]()
         for file in os.listdir(MUSIC_FOLDER):
-            sounds.append(Sound.load(MUSIC_FOLDER / file, is_streaming=True, volume=MUSIC_VOLUME))
+            sounds.append(Sound.load(MUSIC_FOLDER / file, is_streaming=True, volume=volume))
         return sounds
 
     def _load_nested(self, nested: NESTED) -> proto.SoundPlayer:
