@@ -74,12 +74,20 @@ _COST = "COST"
 _PAGE = "PAGE"
 _NEXT = "NEXT"
 
+_MUSIC_VOLUME = "MUSIC_VOLUME"
+_VOICE_VOLUME = "VOICE_VOLUME"
+_EFFECTS_VOLUME = "EFFECTS_VOLUME"
+_SELECTED_LANGUAGE = "SELECTED_LANGUAGE"
+_AUDIO = "AUDIO"
+_OTHER = "OTHER"
+
 _SELECTED_PLAYERS = "SELECTED_PLAYERS"
 _NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
 
 _PLAY = "PLAY"
 _TUTORIAL = "TUTORIAL"
 _EXIT = "EXIT"
+_SETTINGS = "SETTINGS"
 _BACK = "BACK"
 
 _PAUSE = "PAUSE"
@@ -95,6 +103,11 @@ _SPRITE_LOADING = "SPRITE_LOADING"
 
 @frozen
 class Language:
+    @classmethod
+    def languages(cls) -> list[str]:
+        meta: LANGUAGES_META_DICT = read_meta(LANGUAGES_FOLDER)
+        return list(meta)
+
     @classmethod
     def from_meta(cls) -> "Language":
         meta: LANGUAGES_META_DICT = read_meta(LANGUAGES_FOLDER)
@@ -163,6 +176,9 @@ class Language:
     def get_exit_message(self) -> str:
         return self._ui[_EXIT]
 
+    def get_settings_message(self) -> str:
+        return self._ui[_SETTINGS]
+
     def get_back_message(self) -> str:
         return self._ui[_BACK]
 
@@ -214,6 +230,24 @@ class Language:
 
     def get_next_message(self) -> str:
         return self._ui[_NEXT]
+
+    def get_music_volume_message(self) -> str:
+        return self._ui[_MUSIC_VOLUME]
+
+    def get_voice_volume_message(self) -> str:
+        return self._ui[_VOICE_VOLUME]
+
+    def get_effects_volume_message(self) -> str:
+        return self._ui[_EFFECTS_VOLUME]
+
+    def get_selected_language_message(self) -> str:
+        return self._ui[_SELECTED_LANGUAGE]
+
+    def get_audio_message(self) -> str:
+        return self._ui[_AUDIO]
+
+    def get_other_message(self) -> str:
+        return self._ui[_OTHER]
 
     def get_combat_ability_cost_message(self, combat_ability_ratio_cost: float) -> str:
         combat_ability_cost = f"{100 * combat_ability_ratio_cost:.0f}"

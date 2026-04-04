@@ -9,6 +9,7 @@
     "PLAY": "Играть",
     "TUTORIAL": "Обучение",
     "EXIT": "Выйти из игры",
+    "SETTINGS": "Настройки",
     "PAUSE": "Пауза",
     "CONTINUE": "Продолжить",
     "TO_MAIN_MENU": "Сохраниться и выйти",
@@ -31,7 +32,13 @@
     "SELECTED_PLAYERS": "Выбранные игроки",
     "NO_PLAYERS_SELECTED": "Не выбрано игроков!",
     "PAGE": "Часть",
-    "NEXT": "Далее"
+    "NEXT": "Далее",
+    "MUSIC_VOLUME": "Громкость музыки",
+    "VOICE_VOLUME": "Громкость голосов",
+    "EFFECTS_VOLUME": "Громкость эффектов",
+    "SELECTED_LANGUAGE": "Выбранный язык",
+    "AUDIO": "Аудио",
+    "OTHER": "Прочее"
   },
   "hints": {
     "creation": {
