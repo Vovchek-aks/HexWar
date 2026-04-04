@@ -1,7 +1,4 @@
 {
-  "selected": "rus.json",
-  "languages": [
-    "eng.json",
-    "rus.json"
-  ]
+  "English": "eng.json",
+  "Русский": "rus.json"
 }

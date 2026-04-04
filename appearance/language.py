@@ -3,6 +3,7 @@ from pathlib import Path
 from attrs import frozen
 
 from appearance.UI.number_shortener import NumberShortener
+from appearance.settings import Settings
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.conversion import Conversion
@@ -14,10 +15,12 @@ from files import read_meta, read_json
 import core.figures.figure as fig
 from mathematics.vector import Vector2Int
 
+LANGUAGES_FOLDER = Path("data/languages")
+
 LANGUAGE_SECTION_DICT = dict[str, str | list[str]] | list[list[list[str]]]
 LANGUAGE_DICT = dict[str, LANGUAGE_SECTION_DICT | dict[str, LANGUAGE_SECTION_DICT]]
 
-LANGUAGES_META_DICT = dict[str, str | list[str]]
+LANGUAGES_META_DICT = dict[str, str]
 
 ARTILLERY_ATTACK = "ARTILLERY_ATTACK"
 TANK_ATTACK = "TANK_ATTACK"
@@ -45,11 +48,6 @@ _MOVE_OF_TAG = {
     ARTILLERY_TERMINATE_PULLING: lambda: PullingTermination(Vector2Int.zero()),
     LAUNCH_ORESHNIK: lambda: OreshnikLaunch(Vector2Int.zero(), Vector2Int.zero())
 }
-
-_SELECTED = "selected"
-
-_INFO = "info"
-_MESSAGES = "messages"
 
 _FIGURES = "figures"
 
@@ -94,23 +92,26 @@ _INTERMEDIATE_PREPARING = "INTERMEDIATE_PREPARING"
 _UI_MAKING = "UI_MAKING"
 _SPRITE_LOADING = "SPRITE_LOADING"
 
-LANGUAGES_FOLDER = Path("data/languages")
-
 
 @frozen
 class Language:
-    @staticmethod
-    def _get_message(section: LANGUAGE_SECTION_DICT, key: str) -> str:
-        if key not in section:
-            print(f"NO MESSAGE FOR {key}")
-
-        return section.get(key, key)
-
     @classmethod
     def from_meta(cls) -> "Language":
         meta: LANGUAGES_META_DICT = read_meta(LANGUAGES_FOLDER)
-        selected = LANGUAGES_FOLDER / meta[_SELECTED]
-        messages = read_json(selected)[_MESSAGES]
+        settings = Settings.open()
+        file = LANGUAGES_FOLDER / meta[settings.selected_language]
+        json = read_json(file)
+        messages = {
+            _UI: Section(json[_UI]),
+            _RESOURCES: Section(json[_RESOURCES]),
+            _FIGURES: Section(json[_FIGURES]),
+            _LOADING: Section(json[_LOADING]),
+            _HINTS: {
+                _CREATION: HintSection(json[_HINTS][_CREATION]),
+                _FIGURES_MENU: HintSection(json[_HINTS][_FIGURES_MENU]),
+                _TUTORIALS: json[_HINTS][_TUTORIALS]
+            }
+        }
         return cls(messages)
 
     _messages: LANGUAGE_DICT
@@ -257,3 +258,21 @@ class Language:
 
     def has_figure(self, figure: type[Figure]) -> bool:
         return figure.__name__ in self._figures
+
+
+class Section(dict[str, str]):
+    def __getitem__(self, key: str) -> str:
+        if key not in self:
+            print(f"NO MESSAGE FOR {key}")
+            return key
+
+        return super().__getitem__(key)
+
+
+class HintSection(dict[str, list[str]]):
+    def __getitem__(self, key: str) -> list[str]:
+        if key not in self:
+            print(f"NO MESSAGE FOR {key}")
+            return [key]
+
+        return super().__getitem__(key)

@@ -6,6 +6,7 @@ from attrs import frozen
 
 from appearance.audio.sound.random_sound_player import RandomSoundPlayer
 from appearance.audio.sound.switcher_sound_player import SwitcherSoundPlayer
+from appearance.settings import Settings
 from core.protocols import Figure
 import appearance.protocols as proto
 from appearance.audio.sound.sound_player import Sound
@@ -29,15 +30,19 @@ _FIGURES = "figures"
 _TYPE = "type"
 _ELEMENTS = "elements"
 
+_VOLUME_MULTIPLIER = .5
+
 
 @frozen
 class SoundsLoader:
     @classmethod
     def from_meta(cls) -> "SoundsLoader":
         meta: META = read_meta(SOUNDS_FOLDER)
-        return cls(meta)
+        settings = Settings.open()
+        return cls(meta, settings)
 
     _meta: META
+    _settings: Settings
 
     @property
     def _figures(self) -> FIGURES:
@@ -49,35 +54,36 @@ class SoundsLoader:
     def load_figure_sound_player(self, figure: type[Figure]) -> proto.SoundPlayer:
         assert self.has_figure(figure)
 
+        volume = self._settings.voice_volume
         nested = self._figures[figure.__name__]
-        return self._load_nested(nested)
+        return self._load_nested(nested, volume)
 
     def has_figure(self, figure: type[Figure]) -> bool:
         return figure.__name__ in self._figures
 
-    @staticmethod
-    def load_music(volume: float) -> list[Sound]:
+    def load_music(self) -> list[Sound]:
+        volume = self._settings.music_volume * _VOLUME_MULTIPLIER
         sounds = list[Sound]()
         for file in os.listdir(MUSIC_FOLDER):
             sounds.append(Sound.load(MUSIC_FOLDER / file, is_streaming=True, volume=volume))
         return sounds
 
-    def _load_nested(self, nested: NESTED) -> proto.SoundPlayer:
+    def _load_nested(self, nested: NESTED, volume: float = 1) -> proto.SoundPlayer:
         maker = _FIGURES_MAKER_OF[nested[_TYPE]]
         elements = nested[_ELEMENTS]
         if isinstance(elements, str):
-            return maker(self._load_sounds_from(elements))
+            return maker(self._load_sounds_from(elements, volume))
 
         return maker(list(map(self._load_nested, elements)))
 
     @staticmethod
-    def _load_sounds_from(folder: Path | str) -> list[Sound]:
+    def _load_sounds_from(folder: Path | str, volume: float = 1) -> list[Sound]:
         folder = SOUNDS_FOLDER / folder
         assert folder.is_dir()
 
         sounds = list[Sound]()
         for file in os.listdir(folder):
-            sounds.append(Sound.load(folder / file))
+            sounds.append(Sound.load(folder / file, volume=volume))
         return sounds
 
     @staticmethod

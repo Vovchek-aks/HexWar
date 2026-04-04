@@ -6,8 +6,6 @@ from appearance.audio.sound.sound_player import Sound
 from appearance.audio.sound.sounds_loader import SoundsLoader
 from statuses import Status, MISSING
 
-VOLUME = .1
-
 _SWITCHING_INSET = 5
 _TO_REPEAT_PASSES = 5
 
@@ -16,7 +14,7 @@ _TO_REPEAT_PASSES = 5
 class MusicPlayer:
     @classmethod
     def load(cls) -> "MusicPlayer":
-        return cls(SoundsLoader.load_music(VOLUME))
+        return cls(SoundsLoader.load_music())
 
     @classmethod
     def empty(cls) -> "MusicPlayer":

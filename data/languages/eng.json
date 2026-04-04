@@ -1,140 +1,135 @@
 {
-  "info": {
-    "name": "English"
+  "loading": {
+    "MAP_LOADING": "Map loading...",
+    "INTERMEDIATE_PREPARING": "Intermediate preparing...",
+    "UI_MAKING": "User interface making...",
+    "SPRITE_LOADING": "Sprite loading..."
   },
-  "messages": {
-    "loading": {
-      "MAP_LOADING": "Map loading...",
-      "INTERMEDIATE_PREPARING": "Intermediate preparing...",
-      "UI_MAKING": "User interface making...",
-      "SPRITE_LOADING": "Sprite loading..."
-    },
-    "ui": {
-      "PLAY": "Play",
-      "EXIT": "Exit game",
-      "PAUSE": "Pause",
-      "CONTINUE": "Continue",
-      "TO_MAIN_MENU": "Save and exit",
-      "BACK": "Back",
-
-      "END_TURN_BTN": "End turn",
-      "PLAYERS_TURN_TEXT": "{player}'s turn",
-      "TO_MOTORIZATION": "Motorize",
-      "CAPTURE": "Capture",
-      "TO_INFANTRY": "Unmotorize",
-      "ATTACK": "Attack",
-      "INITIATE_PULLING": "Attach",
-      "TERMINATE_PULLING": "Detach",
-      "LAUNCH_ORESHNIK": "Launch \"Oreshnik\"",
-      "COMBAT_ABILITY": "Combat ability: {combat_ability}%",
-      "COMBAT_ABILITY_COST": "Requires  {combat_ability_cost}% combat ability",
-      "COST": [
-        "Cost:",
-        "    {cost}"
+  "ui": {
+    "PLAY": "Play",
+    "EXIT": "Exit game",
+    "PAUSE": "Pause",
+    "CONTINUE": "Continue",
+    "TO_MAIN_MENU": "Save and exit",
+    "BACK": "Back",
+    "END_TURN_BTN": "End turn",
+    "PLAYERS_TURN_TEXT": "{player}'s turn",
+    "TO_MOTORIZATION": "Motorize",
+    "CAPTURE": "Capture",
+    "TO_INFANTRY": "Unmotorize",
+    "ATTACK": "Attack",
+    "INITIATE_PULLING": "Attach",
+    "TERMINATE_PULLING": "Detach",
+    "LAUNCH_ORESHNIK": "Launch \"Oreshnik\"",
+    "COMBAT_ABILITY": "Combat ability: {combat_ability}%",
+    "COMBAT_ABILITY_COST": "Requires  {combat_ability_cost}% combat ability",
+    "COST": [
+      "Cost:",
+      "    {cost}"
+    ],
+    "SELECTED_PLAYERS": "Selected players",
+    "NO_PLAYERS_SELECTED": "No players selected!"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Can capture adjacent",
+        "enemy vehicles.",
+        "Can transform into",
+        "motorization.",
+        ""
       ],
-      "SELECTED_PLAYERS": "Selected players",
-      "NO_PLAYERS_SELECTED": "No players selected!"
+      "Tank": [
+        "Receives an attack and",
+        "defense bonus from",
+        "adjacent infantry and",
+        "motorization.",
+        ""
+      ],
+      "Artillery": [
+        "Can only move near",
+        "infantry or",
+        "motorization.",
+        "Can attack enemy",
+        "positions two hexes away.",
+        ""
+      ],
+      "Bunker": [
+        "Increases the defense of",
+        "adjacent infantry units.",
+        ""
+      ],
+      "MissileSilo": [
+        "Can launch the",
+        "\"Oreshnik\" missile",
+        ""
+      ],
+      "Town": [
+        "Generates income.",
+        ""
+      ]
     },
-    "hints": {
-      "creation": {
-        "Infantry": [
-          "Can capture adjacent",
-          "enemy vehicles.",
-          "Can transform into",
-          "motorization.",
-          ""
-        ],
-        "Tank": [
-          "Receives an attack and",
-          "defense bonus from",
-          "adjacent infantry and",
-          "motorization.",
-          ""
-        ],
-        "Artillery": [
-          "Can only move near",
-          "infantry or",
-          "motorization.",
-          "Can attack enemy",
-          "positions two hexes away.",
-          ""
-        ],
-        "Bunker": [
-          "Increases the defense of",
-          "adjacent infantry units.",
-          ""
-        ],
-        "MissileSilo": [
-          "Can launch the",
-          "\"Oreshnik\" missile",
-          ""
-        ],
-        "Town": [
-          "Generates income.",
-          ""
-        ]
-      },
-      "figures_menu": {
-        "ARTILLERY_ATTACK": [
-          "Destroys any piece",
-          "within 3 hexes.",
-          ""
-        ],
-        "TANK_ATTACK": [
-          "Destroys a weaker",
-          "adjacent piece.",
-          ""
-        ],
-        "ARTILLERY_INITIATE_PULLING": [
-          "Attaches artillery to",
-          "selected infantry",
-          "or motorization.",
-          ""
-        ],
-        "ARTILLERY_TERMINATE_PULLING": [
-          "Detaches artillery",
-          "from attached infantry",
-          "or motorization.",
-          ""
-        ],
-        "LAUNCH_ORESHNIK": [
-          "Launch the \"Oreshnik\"",
-          "missile to selected cell",
-          "and it's surroundings.",
-          ""
-        ],
-        "MOTORIZATION_TO_INFANTRY": [
-          "Transforms this piece",
-          "into infantry.",
-          ""
-        ],
-        "INFANTRY_CAPTURE": [
-          "Captures a weaker",
-          "adjacent piece.",
-          ""
-        ],
-        "INFANTRY_TO_MOTORIZATION": [
-          "Transforms this piece",
-          "into motorization.",
-          "",
-          "Cost:",
-          "    {cost}",
-          ""
-        ]
-      }
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Destroys any piece",
+        "within 3 hexes.",
+        ""
+      ],
+      "TANK_ATTACK": [
+        "Destroys a weaker",
+        "adjacent piece.",
+        ""
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Attaches artillery to",
+        "selected infantry",
+        "or motorization.",
+        ""
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Detaches artillery",
+        "from attached infantry",
+        "or motorization.",
+        ""
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Launch the \"Oreshnik\"",
+        "missile to selected cell",
+        "and it's surroundings.",
+        ""
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Transforms this piece",
+        "into infantry.",
+        ""
+      ],
+      "INFANTRY_CAPTURE": [
+        "Captures a weaker",
+        "adjacent piece.",
+        ""
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Transforms this piece",
+        "into motorization.",
+        "",
+        "Cost:",
+        "    {cost}",
+        ""
+      ]
     },
-    "figures": {
-      "Infantry": "Infantry",
-      "Tank": "Tank",
-      "Artillery": "Artillery",
-      "Motorization": "Motorization",
-      "Bunker": "Bunker",
-      "MissileSilo": "Missile silo",
-      "Town": "Town",
-      "Capital": "Capital"
-    },
-    "resources": {
-      "Dollars": "Dollars"
-    }
+    "tutorials": []
+  },
+  "figures": {
+    "Infantry": "Infantry",
+    "Tank": "Tank",
+    "Artillery": "Artillery",
+    "Motorization": "Motorization",
+    "Bunker": "Bunker",
+    "MissileSilo": "Missile silo",
+    "Town": "Town",
+    "Capital": "Capital"
+  },
+  "resources": {
+    "Dollars": "Dollars"
   }
 }

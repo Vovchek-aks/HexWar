@@ -1,0 +1,16 @@
+{
+  "language": {
+    "SELECTED": "English"
+  },
+  "audio": {
+    "music": {
+      "VOLUME": 0.5
+    },
+    "voice": {
+      "VOLUME": 1.0
+    },
+    "effects": {
+      "VOLUME": 0.7
+    }
+  }
+}
