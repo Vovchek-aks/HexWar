@@ -2,7 +2,7 @@ from pathlib import Path
 
 from attrs import frozen
 
-from files import read_json
+from files import read_json, write_json
 
 SETTINGS_FILE = Path("data/settings.json")
 
@@ -16,7 +16,7 @@ AUDIO = "audio"
 MUSIC = "music"
 VOICE = "voice"
 EFFECTS = "effects"
-VOLUME = "volume"
+VOLUME = "VOLUME"
 
 
 @frozen
@@ -24,6 +24,26 @@ class Settings:
     @classmethod
     def open(cls) -> "Settings":
         settings = read_json(SETTINGS_FILE)
+        return cls(settings)
+
+    @classmethod
+    def from_keys(cls, keys: dict[str, str | float]) -> "Settings":
+        settings = {
+            LANGUAGE: {
+                SELECTED: keys[LANGUAGE]
+            },
+            AUDIO: {
+                MUSIC: {
+                    VOLUME: keys[MUSIC]
+                },
+                VOICE: {
+                    VOLUME: keys[VOICE]
+                },
+                EFFECTS: {
+                    VOLUME: keys[EFFECTS]
+                }
+            }
+        }
         return cls(settings)
 
     _settings: SETTINGS
@@ -47,3 +67,6 @@ class Settings:
     @property
     def _audio(self) -> dict[str, SECTION]:
         return self._settings[AUDIO]
+
+    def save(self) -> None:
+        write_json(self._settings, SETTINGS_FILE)

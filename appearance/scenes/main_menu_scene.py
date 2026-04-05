@@ -34,7 +34,7 @@ class MainMenuScene(proto.Scene):
     def draw(self) -> None:
         self._layers.draw(self._input_state.mouse_position)
 
-    def on_map_was_selected(self, scene: proto.Scene) -> None:
+    def switch_to(self, scene: proto.Scene) -> None:
         self._next_scene = scene
 
     def on_exit_was_pressed(self) -> None:

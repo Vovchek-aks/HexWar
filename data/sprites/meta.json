@@ -113,6 +113,13 @@
         0,
         0
       ]
+    },
+    "menu_background": {
+      "file": "ui/menu_background.png",
+      "pivot": [
+        0,
+        0
+      ]
     }
   },
   "effects": {

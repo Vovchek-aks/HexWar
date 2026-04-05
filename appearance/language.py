@@ -80,6 +80,7 @@ _EFFECTS_VOLUME = "EFFECTS_VOLUME"
 _SELECTED_LANGUAGE = "SELECTED_LANGUAGE"
 _AUDIO = "AUDIO"
 _OTHER = "OTHER"
+_APPLY = "APPLY"
 
 _SELECTED_PLAYERS = "SELECTED_PLAYERS"
 _NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
@@ -249,6 +250,9 @@ class Language:
     def get_other_message(self) -> str:
         return self._ui[_OTHER]
 
+    def get_apply_message(self) -> str:
+        return self._ui[_APPLY]
+
     def get_combat_ability_cost_message(self, combat_ability_ratio_cost: float) -> str:
         combat_ability_cost = f"{100 * combat_ability_ratio_cost:.0f}"
         return self._ui[_COMBAT_ABILITY_COST].format(combat_ability_cost=combat_ability_cost)
@@ -297,7 +301,7 @@ class Language:
 class Section(dict[str, str]):
     def __getitem__(self, key: str) -> str:
         if key not in self:
-            print(f"NO MESSAGE FOR {key}")
+            print(f"NO MESSAGE FOR [{key}] key")
             return key
 
         return super().__getitem__(key)
@@ -306,7 +310,7 @@ class Section(dict[str, str]):
 class HintSection(dict[str, list[str]]):
     def __getitem__(self, key: str) -> list[str]:
         if key not in self:
-            print(f"NO MESSAGE FOR {key}")
+            print(f"NO MESSAGE FOR [{key}] key")
             return [key]
 
         return super().__getitem__(key)

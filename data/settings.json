@@ -1,13 +1,13 @@
 {
   "language": {
-    "SELECTED": "Русский"
+    "SELECTED": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439"
   },
   "audio": {
     "music": {
       "VOLUME": 0.5
     },
     "voice": {
-      "VOLUME": 1.0
+      "VOLUME": 0.7
     },
     "effects": {
       "VOLUME": 0.7

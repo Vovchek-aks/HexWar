@@ -20,6 +20,8 @@ from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 from observer import Event
 
+_AUDIO_SETTER_STEPS = 10
+
 
 @frozen
 class MainMenuUiLayerMaker:
@@ -35,7 +37,8 @@ class MainMenuUiLayerMaker:
 
     def make(self,
              on_map_was_selected: Callable[[str], None],
-             on_exit_was_pressed: Callable[[], None]) -> Layer:
+             on_exit_was_pressed: Callable[[], None],
+             reload: Callable[[], None]) -> Layer:
         play_was_pressed = Event[None]()
         tutorial_was_pressed = Event[None]()
         settings_was_pressed = Event[None]()
@@ -53,7 +56,7 @@ class MainMenuUiLayerMaker:
                                              to_main_menu_was_pressed))
         tabs.append(self._make_map_selection(turn_tabs_off, get_tutorials(), on_map_was_selected, tutorial_was_pressed,
                                              to_main_menu_was_pressed))
-        tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed))
+        tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
 
         return Layer.as_multiple(tabs)
 
@@ -115,33 +118,56 @@ class MainMenuUiLayerMaker:
     def _make_settings_tab(self,
                            turn_tabs_off: Callable[[], None],
                            tab_was_selected: Event[None],
-                           to_main_menu_was_pressed: Event[None]) -> Layer:
-
+                           to_main_menu_was_pressed: Event[None],
+                           reload: Callable[[], None]) -> Layer:
+        value_changers = dict[str, TwoButtonsValueChanger[str | int]]()
         layers = [
-            self._make_settings_changers(to_main_menu_was_pressed),
+            self._make_settings_changers(to_main_menu_was_pressed, value_changers),
             self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
-            self._make_apply_button(),
+            self._make_apply_button(value_changers, reload),
         ]
         layer = Layer.as_multiple(layers)
         layer.set_activity(False)
         tab_was_selected.subscribe(lambda: layer.set_activity(True))
         return layer
 
-    def _make_apply_button(self) -> Layer:
-        return Layer.as_multiple([])
+    def _make_apply_button(self,
+                           value_changers: dict[str, TwoButtonsValueChanger[str | int]],
+                           reload: Callable[[], None]) -> Layer:
+        def apply() -> None:
+            settings: dict[str, str | float] = {
+                key: value_changers[key].value / _AUDIO_SETTER_STEPS
+                for key in (MUSIC, VOICE, EFFECTS)
+            }
+            settings[LANGUAGE] = value_changers[LANGUAGE].value
+
+            Settings.from_keys(settings).save()
+            reload()
+
+        button = self._make_null_button(self._language.get_apply_message(), apply)
+        button.set_rectangle(self._get_apply_button_rectangle())
+        return button.layer
+
+    def _get_apply_button_rectangle(self) -> Rectangle:
+        width = self._screen_shape.x / 10
+        height = self._screen_shape.y / 15
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_right_bottom()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(20, 20))
+                .adjust_for_shape()
+                .build())
 
     def _make_settings_changers(self,
-                                to_main_menu_was_pressed: Event[None]
-                                ) -> Layer:
-        value_changers = dict[str, TwoButtonsValueChanger[str | int]]()
-
-        def on_to_main_menu_was_pressed() -> None:
-            print(123)
+                                to_main_menu_was_pressed: Event[None],
+                                value_changers: dict[str, TwoButtonsValueChanger[str | int]]) -> Layer:
+        def reset() -> None:
             old_changers = self._get_changers()
             for key, changer in value_changers.items():
                 changer.set(old_changers[key].value)
 
-        to_main_menu_was_pressed.subscribe(on_to_main_menu_was_pressed)
+        to_main_menu_was_pressed.subscribe(reset)
 
         count = 10
         margin_ratio = .3
@@ -214,9 +240,9 @@ class MainMenuUiLayerMaker:
         languages.remove(settings.selected_language)
         languages.insert(0, settings.selected_language)
         return {
-            MUSIC: IntChanger(5, 0, 10),
-            VOICE: IntChanger(5, 0, 10),
-            EFFECTS: IntChanger(5, 0, 10),
+            MUSIC: IntChanger(round(_AUDIO_SETTER_STEPS * settings.music_volume), 0, _AUDIO_SETTER_STEPS),
+            VOICE: IntChanger(round(_AUDIO_SETTER_STEPS * settings.voice_volume), 0, _AUDIO_SETTER_STEPS),
+            EFFECTS: IntChanger(round(_AUDIO_SETTER_STEPS * settings.effects_volume), 0, _AUDIO_SETTER_STEPS),
             LANGUAGE: ListChanger(languages)
         }
 

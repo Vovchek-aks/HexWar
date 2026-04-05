@@ -36,9 +36,10 @@
     "MUSIC_VOLUME": "Громкость музыки",
     "VOICE_VOLUME": "Громкость голосов",
     "EFFECTS_VOLUME": "Громкость эффектов",
-    "SELECTED_LANGUAGE": "Выбранный язык",
+    "SELECTED_LANGUAGE": "Язык интерфейса",
     "AUDIO": "Аудио",
-    "OTHER": "Прочее"
+    "OTHER": "Прочее",
+    "APPLY": "Применить"
   },
   "hints": {
     "creation": {

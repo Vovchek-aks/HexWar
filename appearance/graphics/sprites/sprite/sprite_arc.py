@@ -10,6 +10,7 @@ from mathematics.vector import Vector2Int, Vector2
 class Sprite:
     @classmethod
     def load_raw_image(cls, path: Path | str, pivot: Vector2Int = Vector2Int.zero()) -> "Sprite":
+        path = Path(path)
         assert path.exists()
 
         image = arc.load_texture(path)
