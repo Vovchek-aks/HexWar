@@ -51,5 +51,8 @@ class ResourcesGroup(proto.ResourcesGroup):
     def __ge__(self, other: "ResourcesGroup") -> bool:
         return all(our >= others for our, others in zip(self, other))
 
+    def __bool__(self) -> bool:
+        return any(self._resources)
+
     def __iter__(self) -> Iterator[Resource]:
         return iter(self._resources)

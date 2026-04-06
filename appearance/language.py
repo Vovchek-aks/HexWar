@@ -11,11 +11,11 @@ from core.moves.conversion import Conversion
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.relocations import Relocation, Assault
-from core.protocols import Figure, Resource, Movable
-from core.resources import Dollars
+from core.protocols import Figure, Resource, Movable, CanLaunchOreshnik
 from files import read_meta, read_json
 import core.figures.figure as fig
 from mathematics.vector import Vector2Int
+from core.resources import ResourcesGroup
 
 LANGUAGES_FOLDER = Path("data/languages")
 
@@ -224,9 +224,13 @@ class Language:
         amount = NumberShortener.shorten(resource.amount)
         return f"{self.get_resource_name(type(resource))}: {amount}"
 
-    def get_cost(self, resource: Resource) -> list[str]:
-        cost = self.get_message_from_resource(resource)
-        message = [line.format(cost=cost) for line in self._ui[_COST]]
+    def get_cost(self, resources: ResourcesGroup) -> list[str]:
+        assert resources
+
+        message = [f"{self._ui[_COST]}:"]
+        message.extend([f"    {self.get_message_from_resource(resource)}"
+                        for resource in resources
+                        if resource.amount != 0])
 
         return message
 
@@ -266,19 +270,30 @@ class Language:
 
     def get_figure_menu_hint_for(self, tag: str) -> list[str]:
         message = self._hints[_FIGURES_MENU][tag]
+        message.append("")
+        combat_ability_index = len(message)
+
         if tag == INFANTRY_TO_MOTORIZATION:
-            cost, move_cost = Conversion.conversions()[fig.Infantry, fig.Motorization]
+            resources, move_cost = Conversion.conversions()[fig.Infantry, fig.Motorization]
             budget = fig.Infantry.MOVES_BUDGET
-            message = [line.format(cost=self.get_message_from_resource(cost.get(Dollars))) for line in message]
         elif tag == MOTORIZATION_TO_INFANTRY:
-            _, move_cost = Conversion.conversions()[fig.Motorization, fig.Infantry]
+            resources, move_cost = Conversion.conversions()[fig.Motorization, fig.Infantry]
             budget = fig.Motorization.MOVES_BUDGET
+        elif tag == LAUNCH_ORESHNIK:
+            resources = _FIGURE_OF_TAG[tag].FLAGS.get(CanLaunchOreshnik).cost
+            move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())
+            budget = _FIGURE_OF_TAG[tag].MOVES_BUDGET
         else:
+            resources = ResourcesGroup()
             move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())
             budget = _FIGURE_OF_TAG[tag].MOVES_BUDGET
 
+        if resources:
+            message.append("")
+            message.extend(self.get_cost(resources))
+
         combat_ability_cost_ratio = move_cost / budget
-        message.append(self.get_combat_ability_cost_message(combat_ability_cost_ratio))
+        message.insert(combat_ability_index, self.get_combat_ability_cost_message(combat_ability_cost_ratio))
 
         return message
 

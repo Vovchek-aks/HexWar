@@ -762,6 +762,10 @@ class Resource(ABC):
     def __mul__(self, multiplier: float) -> "Resource":
         ...
 
+    @abstractmethod
+    def __bool__(self) -> bool:
+        ...
+
 
 class ResourcesGroup(ABC):
     @abstractmethod
@@ -782,6 +786,10 @@ class ResourcesGroup(ABC):
 
     @abstractmethod
     def __ge__(self, other: "ResourcesGroup") -> bool:
+        ...
+
+    @abstractmethod
+    def __bool__(self) -> bool:
         ...
 
     @abstractmethod

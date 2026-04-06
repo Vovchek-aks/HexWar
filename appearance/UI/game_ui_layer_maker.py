@@ -291,7 +291,8 @@ class GameUiLayerMaker:
         title = self._language.get_figure_name(figure)
         content = [
             *self._language.get_creation_hint(figure),
-            *self._language.get_cost(figure.FLAGS.get(Creatable).cost.get(Dollars))
+            "",
+            *self._language.get_cost(figure.FLAGS.get(Creatable).cost)
         ]
         hint = self._make_button_hint(title, content, button)
 
@@ -547,10 +548,15 @@ class GameUiLayerMaker:
         return menu
 
     def _make_figure_menu_button_hint(self, button: ButtonUi, tag: str) -> StretcherUi:
-        return self._make_button_hint(button.text.text, self._language.get_figure_menu_hint_for(tag), button)
+        return self._make_button_hint(button.text.text, self._language.get_figure_menu_hint_for(tag),
+                                      button, Vector2(200, 220))
 
-    def _make_button_hint(self, title: str, content: list[str], button: ButtonUi) -> StretcherUi:
-        hint = self._make_null_hint(title, content)
+    def _make_button_hint(self,
+                          title: str,
+                          content: list[str],
+                          button: ButtonUi,
+                          shape: Vector2 = Vector2(200, 300)) -> StretcherUi:
+        hint = self._make_null_hint(title, content, shape)
 
         def get_hint_activity() -> bool:
             if not button.layer.is_active:
@@ -604,19 +610,22 @@ class GameUiLayerMaker:
 
         return stretcher
 
-    def _make_null_hint(self, title: str, content: list[str]) -> StretcherUi:
+    def _make_null_hint(self, title: str, content: list[str], shape: Vector2 = Vector2(200, 300)) -> StretcherUi:
         MIN_LINES_COUNT = 8
         MAX_LINE_LENGTH = 25
 
         background = ImageUi.make(self._drawer,
-                                  Rectangle(Vector2.zero(), Vector2(200, 300)),
+                                  Rectangle(Vector2.zero(), shape),
                                   self._sprites_loader.load_background_2_to_3())
 
+        title_margin = Vector2(15, 10)
+        title_height = shape.y / 10
         title_ui = TextUi.make(self._drawer,
                                RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
                                .from_left_up()
-                               .set_shape(Vector2(180, 30))
-                               .move(Vector2(10, 20))
+                               .move(title_margin)
+                               .set_shape(Vector2(shape.x - title_margin.x * 2,
+                                                  title_height))
                                .adjust_for_shape()
                                .build(),
                                TextDataBuilder()
@@ -627,10 +636,13 @@ class GameUiLayerMaker:
 
         white_spaces = [" "] * (MIN_LINES_COUNT - len(content))
         content = white_spaces[:len(white_spaces) // 2] + content + white_spaces[len(white_spaces) // 2:]
+        content_margin = Vector2(title_margin.x, 10 + title_margin.y + title_height)
+        bottom_margin = 30
         content_ui = VerticalLayoutUi(RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
                                       .from_left_up()
-                                      .set_shape(Vector2(180, 235))
-                                      .move(Vector2(10, 55))
+                                      .move(content_margin)
+                                      .set_shape(Vector2(title_ui.rectangle.shape.x,
+                                                         shape.y - content_margin.y - bottom_margin))
                                       .adjust_for_shape()
                                       .build())
         for line in content:
