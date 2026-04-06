@@ -23,7 +23,9 @@
     "INITIATE_PULLING": "Прицепиться",
     "TERMINATE_PULLING": "Отцепиться",
     "LAUNCH_ORESHNIK": "Запустить \"Орешник\"",
-    "COMBAT_ABILITY": "Боеспособность: {combat_ability}%",
+    "COMBAT_ABILITY": "БС:  {combat_ability}",
+    "STRENGTH": "Атака:  {base}",
+    "HARDNESS": "Защита:  {base}",
     "COMBAT_ABILITY_COST": "Затрачивает {combat_ability_cost}% боеспособности",
     "COST": [
       "Стоимость:",

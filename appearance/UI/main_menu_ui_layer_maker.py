@@ -20,7 +20,8 @@ from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 from observer import Event
 
-_AUDIO_SETTER_STEPS = 10
+_AUDIO_SETTER_STEPS = 100
+_AUDIO_SETTER_STEP = 5
 
 
 @frozen
@@ -239,10 +240,11 @@ class MainMenuUiLayerMaker:
         languages = self._language.languages()
         languages.remove(settings.selected_language)
         languages.insert(0, settings.selected_language)
+        int_changer_range = 0, _AUDIO_SETTER_STEPS, _AUDIO_SETTER_STEP
         return {
-            MUSIC: IntChanger(round(_AUDIO_SETTER_STEPS * settings.music_volume), 0, _AUDIO_SETTER_STEPS),
-            VOICE: IntChanger(round(_AUDIO_SETTER_STEPS * settings.voice_volume), 0, _AUDIO_SETTER_STEPS),
-            EFFECTS: IntChanger(round(_AUDIO_SETTER_STEPS * settings.effects_volume), 0, _AUDIO_SETTER_STEPS),
+            MUSIC: IntChanger(round(_AUDIO_SETTER_STEPS * settings.music_volume), *int_changer_range),
+            VOICE: IntChanger(round(_AUDIO_SETTER_STEPS * settings.voice_volume), *int_changer_range),
+            EFFECTS: IntChanger(round(_AUDIO_SETTER_STEPS * settings.effects_volume), *int_changer_range),
             LANGUAGE: ListChanger(languages)
         }
 

@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 
 from attrs import frozen
@@ -9,7 +10,8 @@ from core.moves.capture import Capture
 from core.moves.conversion import Conversion
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.oreshnik_launch import OreshnikLaunch
-from core.protocols import Figure, Resource
+from core.moves.relocations import Relocation, Assault
+from core.protocols import Figure, Resource, Movable
 from core.resources import Dollars
 from files import read_meta, read_json
 import core.figures.figure as fig
@@ -69,6 +71,8 @@ _INITIATE_PULLING = "INITIATE_PULLING"
 _TERMINATE_PULLING = "TERMINATE_PULLING"
 _LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
+_STRENGTH = "STRENGTH"
+_HARDNESS = "HARDNESS"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
 _PAGE = "PAGE"
@@ -278,9 +282,32 @@ class Language:
 
         return message
 
-    def get_combat_ability_message(self, combat_ability_ratio: float) -> str:
-        combat_ability = f"{100 * combat_ability_ratio:.0f}"
-        return self._ui[_COMBAT_ABILITY].format(combat_ability=combat_ability)
+    def get_combat_ability_message(self, figure: fig.Figure, spent: int) -> str:
+        budget = figure.MOVES_BUDGET
+        rest = budget - spent
+
+        combat_ability_ratio = rest / budget
+        combat_ability = f"{combat_ability_ratio:.0%}"
+
+        form = self._ui[_COMBAT_ABILITY]
+        if Movable in figure.FLAGS:
+            relocations = math.floor(rest / figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
+            assaults = math.floor(rest / figure.get_cost_of(Assault(Vector2Int.zero(), Vector2Int.zero())))
+            if relocations + assaults > 0:
+                form = f"{form} ({relocations}/{assaults})"
+                return form.format(combat_ability=combat_ability,
+                                   relocations=str(relocations),
+                                   assaults=str(assaults))
+
+        return form.format(combat_ability=combat_ability)
+
+    def get_strength_message(self, base: int, additional: int) -> str:
+        return (self._ui[_STRENGTH].format(base=base) +
+                (f" + {additional}" if additional > 0 else ""))
+
+    def get_hardness_message(self, base: int, additional: int) -> str:
+        return (self._ui[_HARDNESS].format(base=base) +
+                (f" + {additional}" if additional > 0 else ""))
 
     def get_tutorial_hints(self, tutorial_index: int) -> list[list[str]]:
         return self._hints[_TUTORIALS][tutorial_index]

@@ -507,6 +507,11 @@ class DontHaveOwner(Flag, metaclass=ABCMeta):
 
 
 class Movable(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def base_strength(self) -> int:
+        ...
+
     @abstractmethod
     def strength(self, coord: Vector2Int, board: Board) -> int:
         ...
@@ -598,6 +603,16 @@ class Figure(ABC):
     @classmethod
     @abstractmethod
     def is_on_land(cls) -> bool:
+        ...
+
+    @classmethod
+    @abstractmethod
+    def base_hardness(cls) -> int:
+        ...
+
+    @classmethod
+    @abstractmethod
+    def additional_hardness(cls, coord: Vector2Int, board: Board) -> int:
         ...
 
     @classmethod

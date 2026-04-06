@@ -16,7 +16,7 @@ from core.moves.relocations import Relocation, Assault
 from core.resources import ResourcesGroup, Dollars, LightIndustryProducts, HeavyIndustryProducts
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
-from core.protocols import Figure
+from core.protocols import Figure, Board
 
 
 # it's here because of python stupidity
@@ -36,6 +36,14 @@ class _Figure(Figure, metaclass=ABCMeta):
         assert AtWater in cls.FLAGS
         return False
 
+    @classmethod
+    def hardness(cls, coord: Vector2Int, board: Board) -> int:
+        return cls.base_hardness() + cls.additional_hardness(coord, board)
+
+    @classmethod
+    def additional_hardness(cls, coord: Vector2Int, board: Board) -> int:
+        return 0
+
     def __attrs_post_init__(self) -> None:
         self._id = id(self)
 
@@ -48,7 +56,7 @@ class Land(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -64,7 +72,7 @@ class Water(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -78,7 +86,7 @@ class Settlement(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -95,7 +103,7 @@ class Town(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -113,7 +121,7 @@ class LightFactory(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -133,7 +141,7 @@ class HeavyFactory(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -151,7 +159,7 @@ class Capital(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -166,7 +174,7 @@ class Bunker(_Figure):
     MOVES_BUDGET = 0
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 4
 
     @classmethod
@@ -192,7 +200,7 @@ class MissileSilo(_Figure):
     MOVES_BUDGET = 1
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 0
 
     @classmethod
@@ -208,7 +216,7 @@ class Infantry(_Figure):
     FLAGS = Flags.new(OnLand(),
                       (MovableBuilder()
                        .can_move_to_neighbor()
-                       .constant_strength(3)
+                       .set_base_strength(3)
                        .build()),
                       CanPull(),
                       Creatable.make(Dollars(100_000)),
@@ -217,20 +225,23 @@ class Infantry(_Figure):
                       TriesTakeResourcesElseDies.make(Dollars(25_000)))
     MOVES_BUDGET = 6
 
-    SELF_HARDNESS = 2
-    _NEAR_BUNKER_HARDNESS = 6
+    _NEAR_BUNKER_HARDNESS_INCREASE = 4
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
+        return 2
+
+    @classmethod
+    def additional_hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
         cell = board[coord]
         has_bunker = bool(board.get_neighbors(cell, include_cell=False)
                           .with_flag(proto.OnLand)
                           .with_owner(cell.owner)
                           .with_figure(Bunker))
         if has_bunker:
-            return cls._NEAR_BUNKER_HARDNESS
+            return cls._NEAR_BUNKER_HARDNESS_INCREASE
 
-        return cls.SELF_HARDNESS
+        return 0
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
@@ -253,7 +264,7 @@ class Motorization(_Figure):
     FLAGS = Flags.new(OnLand(),
                       (MovableBuilder()
                        .can_move_to_neighbor()
-                       .constant_strength(3)
+                       .set_base_strength(3)
                        .build()),
                       CanPull(),
                       PreventCaptures(),
@@ -261,7 +272,7 @@ class Motorization(_Figure):
     MOVES_BUDGET = 200
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+    def base_hardness(cls) -> int:
         return 1
 
     @classmethod
@@ -283,8 +294,8 @@ class Tank(_Figure):
     FLAGS = Flags.new(OnLand(),
                       (MovableBuilder()
                        .can_move_to_neighbor()
-                       .set_strength_getter(lambda coord, board: Tank.SELF_STRENGTH +
-                                                                 Tank.get_projected_strength(coord, board))
+                       .set_base_strength(3)
+                       .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
                        .build()),
                       Creatable.make(Dollars(300_000), LightIndustryProducts(300), HeavyIndustryProducts(100)),
                       Capturable(),
@@ -294,14 +305,16 @@ class Tank(_Figure):
                       CanAttack(max_distance=1))
     MOVES_BUDGET = 200
 
-    SELF_STRENGTH = 3
-    _SELF_HARDNESS = 2
     _PER_INFANTRY_STRENGTH_RATIO = .5
     _PER_INFANTRY_HARDNESS_RATIO = .5
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return cls._SELF_HARDNESS + cls._get_projected(coord, board, cls._PER_INFANTRY_HARDNESS_RATIO)
+    def base_hardness(cls) -> int:
+        return 2
+
+    @classmethod
+    def additional_hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
+        return cls._get_projected(coord, board, cls._PER_INFANTRY_HARDNESS_RATIO)
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
@@ -335,7 +348,7 @@ class Tank(_Figure):
 class Artillery(_Figure):
     FLAGS = Flags.new(OnLand(),
                       MovableBuilder()
-                      .constant_strength(1_000_000)
+                      .set_base_strength(25)
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
                       Pullable(),
@@ -348,8 +361,8 @@ class Artillery(_Figure):
     MOVES_BUDGET = 7
 
     @classmethod
-    def hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
-        return 0
+    def base_hardness(cls) -> int:
+        return 1
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:

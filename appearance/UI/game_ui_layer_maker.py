@@ -25,7 +25,7 @@ from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
-from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource
+from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
@@ -429,12 +429,13 @@ class GameUiLayerMaker:
                                   .build(),
                                   self._sprites_loader.load_background_3_to_2())
 
-        title_margin = Vector2(15, background.rectangle.shape.y - 60)
+        title_height = background.rectangle.shape.y / 6
+        title_margin = Vector2(15, background.rectangle.shape.y - 10 - title_height)
         title = TextUi.make(self._drawer,
                             RectangleBuilder(self._screen_shape)
                             .move(background.rectangle.position + title_margin)
                             .set_shape(Vector2(background.rectangle.shape.x - title_margin.x * 2,
-                                               background.rectangle.shape.y / 4))
+                                               title_height))
                             .build(),
                             TextDataBuilder()
                             .set_text(self._language.get_figure_name(figure_type))
@@ -442,20 +443,57 @@ class GameUiLayerMaker:
                             .black_colored()
                             .build())
         title_bottom = title.rectangle.position.y
-        combat_ability_position = Vector2(title.rectangle.position.x, title_bottom - 40)
+
+        layout_margin = Vector2(15, 15)
+        buttons_position = background_margin + layout_margin
+        buttons_width = background.rectangle.shape.x - layout_margin.x * 2
+        buttons_height = background.rectangle.shape.y / 4
+        buttons_layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
+                                            .from_left_bottom()
+                                            .move(buttons_position)
+                                            .set_shape(Vector2(buttons_width, buttons_height))
+                                            .adjust_for_shape()
+                                            .build())
+        buttons_layout.extend(buttons)
+
+        stats_margin = 20
+        stats_height = title_bottom - buttons_position.y - buttons_height - stats_margin * 2
+        stats_position = Vector2(title.rectangle.position.x, title_bottom - stats_margin - stats_height)
+        stats = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
+                                 .move(stats_position)
+                                 .set_shape(Vector2(background.rectangle.shape.x / 2 - title_margin.x,
+                                                    stats_height))
+                                 .build(),
+                                 margin_ratio=.2)
+
         combat_ability = TextUi.make(self._drawer,
-                                     RectangleBuilder(self._screen_shape)
-                                     .move(combat_ability_position)
-                                     .set_shape(Vector2(background.rectangle.shape.x / 2 - title_margin.x,
-                                                        background.rectangle.shape.y / 4))
-                                     .build(),
+                                     Rectangle.zero(),
                                      TextDataBuilder()
-                                     .set_text(self._language.get_combat_ability_message(0))
+                                     .set_text("...")
                                      .debug_font()
                                      .black_colored()
                                      .build())
 
-        def update_combat_ability(coord: Vector2Int | Status) -> None:
+        strength = TextUi.make(self._drawer,
+                               Rectangle.zero(),
+                               TextDataBuilder()
+                               .set_text("...")
+                               .debug_font()
+                               .black_colored()
+                               .build())
+
+        hardness = TextUi.make(self._drawer,
+                               Rectangle.zero(),
+                               TextDataBuilder()
+                               .set_text("...")
+                               .debug_font()
+                               .black_colored()
+                               .build())
+        stats.append(combat_ability)
+        stats.append(hardness)
+        stats.append(strength)
+
+        def update_stats(coord: Vector2Int | Status) -> None:
             if coord is MISSING:
                 return
 
@@ -463,35 +501,46 @@ class GameUiLayerMaker:
             if not isinstance(figure, figure_type):
                 return
 
-            if (budget := figure.MOVES_BUDGET) == 0:
+            update_combat_ability(figure)
+            update_strength(figure, coord)
+            update_hardness(figure, coord)
+
+        def update_combat_ability(figure: fig.Figure) -> None:
+            if figure.MOVES_BUDGET == 0:
                 combat_ability.set_text('')
                 return
 
             spent = self._session.figures_budget.of(figure)
-            combat_ability_ratio = (budget - spent) / budget
-            combat_ability.set_text(self._language.get_combat_ability_message(combat_ability_ratio))
+            combat_ability.set_text(self._language.get_combat_ability_message(figure, spent))
 
-        self._cell_selector.cell_was_selected.subscribe(update_combat_ability)
+        def update_strength(figure: fig.Figure, coord: Vector2Int) -> None:
+            if (movable := figure.FLAGS.get(Movable)) is MISSING:
+                strength.set_text('')
+                return
+
+            base = movable.base_strength
+            additional = movable.strength(coord, self._session.board) - base
+
+            strength.set_text(self._language.get_strength_message(base, additional))
+
+        def update_hardness(figure: fig.Figure, coord: Vector2Int) -> None:
+            board = self._session.board
+            base = figure.base_hardness()
+            additional = board[coord].hardness(board) - base
+
+            hardness.set_text(self._language.get_hardness_message(base, additional))
+
+        self._cell_selector.cell_was_selected.subscribe(update_stats)
         self._moves_maker.board_move_was_made.subscribe(
-            lambda _: update_combat_ability(self._cell_selector.get_coord()))
+            lambda _: update_stats(self._cell_selector.get_coord()))
         self._session.master.turn_had_started.subscribe(
-            lambda _: update_combat_ability(self._cell_selector.get_coord()))
-
-        layout_margin = Vector2(15, 15)
-        buttons_width = background.rectangle.shape.x - layout_margin.x * 2
-        layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
-                                    .from_left_bottom()
-                                    .move(background_margin + layout_margin)
-                                    .set_shape(Vector2(buttons_width, background.rectangle.shape.y / 4))
-                                    .adjust_for_shape()
-                                    .build())
-        layout.extend(buttons)
+            lambda _: update_stats(self._cell_selector.get_coord()))
 
         menu = StretcherUi(background.rectangle)
         menu.extend([
             title,
-            combat_ability,
-            layout,
+            stats,
+            buttons_layout,
             background,
         ])
 

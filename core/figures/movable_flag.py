@@ -12,11 +12,16 @@ from statuses import Status, MISSING
 class Movable(proto.Movable):
     EXCLUDES = {proto.Static}
 
-    _get_strength: Callable[[Vector2Int, proto.Board], int]
+    _base_strength: int
+    _get_additional_strength: Callable[[Vector2Int, proto.Board], int]
     _can_relocate: Callable[[Vector2Int, Vector2Int, proto.Board], bool]
 
+    @property
+    def base_strength(self) -> int:
+        return self._base_strength
+
     def strength(self, coord: Vector2Int, board: proto.Board) -> int:
-        return self._get_strength(coord, board)
+        return self._base_strength + self._get_additional_strength(coord, board)
 
     def can_relocate(self, from_coord: Vector2Int, to_coord: Vector2Int, board: Board) -> bool:
         return self._can_relocate(from_coord, to_coord, board)
@@ -24,26 +29,30 @@ class Movable(proto.Movable):
 
 @define
 class MovableBuilder:
-    _get_strength: Callable[[Vector2Int, proto.Board], int] | Status = field(init=False, default=MISSING)
+    _base_strength: int = field(init=False, default=0)
+    _get_additional_strength: Callable[[Vector2Int, proto.Board], int] = field(init=False, default=lambda _, __: 0)
     _can_relocate: Callable[[Vector2Int, Vector2Int, proto.Board], bool] | Status = field(init=False, default=MISSING)
 
     def is_valid(self) -> bool:
-        return MISSING not in (self._get_strength, self._can_relocate)
+        return MISSING not in (self._get_additional_strength, self._can_relocate)
 
     def build(self) -> Movable:
         assert self.is_valid()
-        return Movable(self._get_strength, self._can_relocate)
+        return Movable(self._base_strength, self._get_additional_strength, self._can_relocate)
 
-    def set_strength_getter(self, get_strength: Callable[[Vector2Int, proto.Board], int]) -> "MovableBuilder":
-        self._get_strength = get_strength
+    def set_base_strength(self, strength: int) -> "MovableBuilder":
+        self._base_strength = strength
+        return self
+
+    def set_additional_strength_getter(self,
+                                       get_additional_strength: Callable[[Vector2Int, proto.Board], int]
+                                       ) -> "MovableBuilder":
+        self._get_additional_strength = get_additional_strength
         return self
 
     def set_can_relocate(self, can_relocate: Callable[[Vector2Int, Vector2Int, proto.Board], bool]) -> "MovableBuilder":
         self._can_relocate = can_relocate
         return self
-
-    def constant_strength(self, strength: int) -> "MovableBuilder":
-        return self.set_strength_getter(lambda coord, board: strength)
 
     def always_can_move(self) -> "MovableBuilder":
         return self.set_can_relocate(lambda from_coord, to_coord, board: True)
