@@ -25,8 +25,9 @@ from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
-from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable
-from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts
+from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable, ResourcesChanger, \
+    ResourcesTaker, ResourcesAdder
+from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, ResourcesGroup
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figure as fig
@@ -443,7 +444,6 @@ class GameUiLayerMaker:
                             .debug_font()
                             .black_colored()
                             .build())
-        title_bottom = title.rectangle.position.y
 
         layout_margin = Vector2(15, 15)
         buttons_position = background_margin + layout_margin
@@ -457,39 +457,55 @@ class GameUiLayerMaker:
                                             .build())
         buttons_layout.extend(buttons)
 
-        stats_margin = 20
+        title_bottom = title.rectangle.position.y
+        stats_margin = 15
         stats_height = title_bottom - buttons_position.y - buttons_height - stats_margin * 2
         stats_position = Vector2(title.rectangle.position.x, title_bottom - stats_margin - stats_height)
-        stats = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
-                                 .move(stats_position)
-                                 .set_shape(Vector2(background.rectangle.shape.x / 2 - title_margin.x,
-                                                    stats_height))
-                                 .build(),
-                                 margin_ratio=.2)
+        stats_and_flow_rectangle = (RectangleBuilder(self._screen_shape)
+                                    .move(stats_position)
+                                    .set_shape(Vector2(background.rectangle.shape.x - title_margin.x * 2,
+                                                       stats_height))
+                                    .adjust_for_shape()
+                                    .build())
 
-        combat_ability = TextUi.make(self._drawer,
-                                     Rectangle.zero(),
-                                     TextDataBuilder()
-                                     .set_text("...")
-                                     .debug_font()
-                                     .black_colored()
-                                     .build())
+        stats = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2)
+        flow = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2)
+        stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle)
+        stats_and_flow.extend([stats, flow])
 
-        strength = TextUi.make(self._drawer,
-                               Rectangle.zero(),
-                               TextDataBuilder()
-                               .set_text("...")
-                               .debug_font()
-                               .black_colored()
-                               .build())
+        text_data = TextDataBuilder().set_text("...").debug_font().black_colored()
 
-        hardness = TextUi.make(self._drawer,
-                               Rectangle.zero(),
-                               TextDataBuilder()
-                               .set_text("...")
-                               .debug_font()
-                               .black_colored()
-                               .build())
+        update_stats = self._fill_figure_menu_stats(stats, text_data, figure_type)
+        update_flow = self._fill_figure_menu_flow(flow, text_data, figure_type)
+
+        def update(coord: Vector2Int | Status) -> None:
+            update_stats(coord)
+            update_flow(coord)
+
+        self._cell_selector.cell_was_selected.subscribe(update)
+        self._moves_maker.board_move_was_made.subscribe(
+            lambda _: update(self._cell_selector.get_coord()))
+        self._session.master.turn_had_started.subscribe(
+            lambda _: update(self._cell_selector.get_coord()))
+
+        menu = StretcherUi(background.rectangle)
+        menu.extend([
+            title,
+            stats_and_flow,
+            buttons_layout,
+            background,
+        ])
+
+        return menu
+
+    def _fill_figure_menu_stats(self,
+                                stats: VerticalLayoutUi,
+                                text_data: TextDataBuilder,
+                                figure_type: type[fig.Figure]) -> Callable[[Vector2Int | Status], None]:
+        combat_ability = TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
+        strength = TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
+        hardness = TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
+
         stats.append(combat_ability)
         stats.append(hardness)
         stats.append(strength)
@@ -531,21 +547,48 @@ class GameUiLayerMaker:
 
             hardness.set_text(self._language.get_hardness_message(base, additional))
 
-        self._cell_selector.cell_was_selected.subscribe(update_stats)
-        self._moves_maker.board_move_was_made.subscribe(
-            lambda _: update_stats(self._cell_selector.get_coord()))
-        self._session.master.turn_had_started.subscribe(
-            lambda _: update_stats(self._cell_selector.get_coord()))
+        return update_stats
 
-        menu = StretcherUi(background.rectangle)
-        menu.extend([
-            title,
-            stats,
-            buttons_layout,
-            background,
-        ])
+    def _fill_figure_menu_flow(self,
+                               flow: VerticalLayoutUi,
+                               text_data: TextDataBuilder,
+                               figure_type: type[fig.Figure]) -> Callable[[Vector2Int | Status], None]:
+        if (changer := figure_type.FLAGS.get(ResourcesChanger)) is MISSING:
+            return lambda _: None
 
-        return menu
+        text_of = {resource: TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
+                   for resource in changer.changeable_resources}
+
+        if len(text_of) < 2:
+            flow.append(BoxUi(Rectangle.zero()))
+
+        flow.extend(text_of.values())
+
+        if len(text_of) < 3:
+            flow.append(BoxUi(Rectangle.zero()))
+
+        def update(coord: Vector2Int | Status) -> None:
+            if coord is MISSING:
+                return
+
+            figure = self._session.board[coord].figure
+            if not isinstance(figure, figure_type):
+                return
+
+            resources = ResourcesGroup()
+            if isinstance(changer, ResourcesAdder):
+                resources += changer.get_resources_with_buffs(coord, self._session)
+            if isinstance(changer, ResourcesTaker):
+                resources -= changer.resources_to_take
+
+            if not resources:
+                return
+
+            for resource in resources.not_zero:
+                text_of[type(resource)].set_text(self._language.get_message_from_resource(resource))
+
+        return update
+
 
     def _make_figure_menu_button_hint(self, button: ButtonUi, tag: str) -> StretcherUi:
         return self._make_button_hint(button.text.text, self._language.get_figure_menu_hint_for(tag),

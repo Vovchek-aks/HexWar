@@ -75,6 +75,7 @@ _STRENGTH = "STRENGTH"
 _HARDNESS = "HARDNESS"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
+_FLOW = "FLOW"
 _PAGE = "PAGE"
 _NEXT = "NEXT"
 
@@ -233,6 +234,9 @@ class Language:
                         if resource.amount != 0])
 
         return message
+
+    def get_flow_message(self) -> str:
+        return self._ui[_FLOW]
 
     def get_page_message(self, page_index: int) -> str:
         return f"{self._ui[_PAGE]} {page_index + 1}"

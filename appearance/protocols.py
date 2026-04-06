@@ -243,7 +243,7 @@ class CellSelector(ABC):
 
     @property
     @abstractmethod
-    def cell_was_unselected(self) -> OnEventSubscriber[None, None]:
+    def cell_was_unselected(self) -> OnEventSubscriber[None]:
         ...
 
     @abstractmethod

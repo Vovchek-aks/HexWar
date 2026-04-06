@@ -32,6 +32,10 @@ class ResourcesGroup(proto.ResourcesGroup):
     def _validate_resources(self, _, resources: list[Resource]) -> None:
         assert list(map(type, resources)) == get_resources_types()
 
+    @property
+    def not_zero(self) -> list[Resource]:
+        return [resource for resource in self if resource]
+
     def get(self, target: type[Resource]) -> Resource:
         for resource in self._resources:
             if isinstance(resource, target):

@@ -547,7 +547,14 @@ class UpdatableOnTurnStart(Flag, metaclass=ABCMeta):
         ...
 
 
-class ResourcesTaker(UpdatableOnTurnStart, metaclass=ABCMeta):
+class ResourcesChanger(UpdatableOnTurnStart, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def changeable_resources(self) -> "set[type[Resource]]":
+        ...
+
+
+class ResourcesTaker(ResourcesChanger, metaclass=ABCMeta):
     @property
     @abstractmethod
     def resources_to_take(self) -> "ResourcesGroup":
@@ -558,7 +565,7 @@ class TriesTakeResourcesElseDies(ResourcesTaker, metaclass=ABCMeta):
     ...
 
 
-class ResourcesAdder(UpdatableOnTurnStart, metaclass=ABCMeta):
+class ResourcesAdder(ResourcesChanger, metaclass=ABCMeta):
     @property
     @abstractmethod
     def base_resources(self) -> "ResourcesGroup":
@@ -768,6 +775,11 @@ class Resource(ABC):
 
 
 class ResourcesGroup(ABC):
+    @property
+    @abstractmethod
+    def not_zero(self) -> list[Resource]:
+        ...
+
     @abstractmethod
     def get(self, target: type[Resource]) -> Resource:
         ...

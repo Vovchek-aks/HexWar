@@ -28,6 +28,10 @@ class TriesTakeResourcesElseDies(proto.TriesTakeResourcesElseDies):
     def resources_to_take(self) -> proto.ResourcesGroup:
         return self._resources
 
+    @property
+    def changeable_resources(self) -> set[type[proto.Resource]]:
+        return set(map(type[proto.Resource], self.resources_to_take.not_zero))
+
     def update(self, coord: Vector2Int, session: proto.GameSession) -> None:
         resources = session.master.current_player.resources
         if resources.can_take(self._resources):
@@ -37,6 +41,10 @@ class TriesTakeResourcesElseDies(proto.TriesTakeResourcesElseDies):
 
 
 class ResourcesAdder(proto.ResourcesAdder, metaclass=ABCMeta):
+    @property
+    def changeable_resources(self) -> set[type[proto.Resource]]:
+        return set(map(type[proto.Resource], self.base_resources.not_zero))
+
     def get_resources_with_buffs(self, coord: Vector2Int, session: proto.GameSession) -> proto.ResourcesGroup:
         player = session.board[coord].owner
         cells = session.cells.with_owner(player)
@@ -98,6 +106,10 @@ class TransformsResourcesIndefinably(ResourcesAdder, proto.TransformsResourcesIn
     @property
     def resources_to_take(self) -> "ResourcesGroup":
         return self.input_resources
+
+    @property
+    def changeable_resources(self) -> set[type[proto.Resource]]:
+        return set(map(type[proto.Resource], (self.resources_to_take + self.base_resources).not_zero))
 
     def update(self, coord: Vector2Int, session: proto.GameSession) -> None:
         player_resources = session.master.current_player.resources
