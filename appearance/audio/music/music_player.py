@@ -14,11 +14,7 @@ _TO_REPEAT_PASSES = 5
 class MusicPlayer:
     @classmethod
     def load(cls) -> "MusicPlayer":
-        return cls(SoundsLoader.from_meta().load_music())
-
-    @classmethod
-    def empty(cls) -> "MusicPlayer":
-        return cls([SoundsLoader.from_meta().load_empty()] * (_TO_REPEAT_PASSES + 1))
+        return cls(SoundsLoader.from_meta().load_game_music())
 
     _playlist: list[Sound]
     _current: Sound = field(factory=lambda: SoundsLoader.from_meta().load_empty())
@@ -50,3 +46,11 @@ class MusicPlayer:
         candidates = list(set(self._playlist) - set(self._history))
         self._current = random.choice(candidates)
         self._current.play()
+
+
+@define
+class NoMusicPlayer(MusicPlayer):
+    _playlist: list[Sound] = field(factory=list)
+
+    def update(self) -> None:
+        ...

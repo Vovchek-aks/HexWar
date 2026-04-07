@@ -14,6 +14,8 @@ from files import read_meta
 
 SOUNDS_FOLDER = Path("data/sounds")
 MUSIC_FOLDER = Path("data/music")
+GAME_MUSIC_FOLDER = MUSIC_FOLDER / "game"
+MENU_MUSIC_FILE = MUSIC_FOLDER / "menu.mp3"
 
 NESTED = dict[str, str | list[...]]  # recursive
 FIGURES = dict[str, NESTED]
@@ -30,7 +32,7 @@ _FIGURES = "figures"
 _TYPE = "type"
 _ELEMENTS = "elements"
 
-_VOLUME_MULTIPLIER = .5
+_MUSIC_VOLUME_MULTIPLIER = .5
 
 
 @frozen
@@ -61,12 +63,16 @@ class SoundsLoader:
     def has_figure(self, figure: type[Figure]) -> bool:
         return figure.__name__ in self._figures
 
-    def load_music(self) -> list[Sound]:
-        volume = self._settings.music_volume * _VOLUME_MULTIPLIER
+    def load_game_music(self) -> list[Sound]:
+        volume = self._settings.music_volume * _MUSIC_VOLUME_MULTIPLIER
         sounds = list[Sound]()
-        for file in os.listdir(MUSIC_FOLDER):
-            sounds.append(Sound.load(MUSIC_FOLDER / file, is_streaming=True, volume=volume))
+        for file in os.listdir(GAME_MUSIC_FOLDER):
+            sounds.append(Sound.load(GAME_MUSIC_FOLDER / file, is_streaming=True, volume=volume))
         return sounds
+
+    def load_menu_music(self) -> Sound:
+        volume = self._settings.music_volume * _MUSIC_VOLUME_MULTIPLIER
+        return Sound.load(MENU_MUSIC_FILE, volume=volume, is_looped=True, is_streaming=True)
 
     def _load_nested(self, nested: NESTED, volume: float = 1) -> proto.SoundPlayer:
         maker = _FIGURES_MAKER_OF[nested[_TYPE]]

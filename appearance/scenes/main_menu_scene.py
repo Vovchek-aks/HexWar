@@ -1,3 +1,4 @@
+from appearance.audio.sound.sounds_loader import SoundsLoader
 from my_types import TracebackType
 
 from attrs import define, field
@@ -22,6 +23,7 @@ class MainMenuScene(proto.Scene):
     _clicks_catcher: ClicksCatcher
     _input_state: proto.InputState
     _layers: LayersDrawer
+    _music: proto.SoundPlayer = field(factory=lambda: SoundsLoader.from_meta().load_menu_music())
     _next_scene: proto.Scene | Status = field(init=False, default=MISSING)
 
     def next(self) -> proto.Scene | Status:
@@ -41,7 +43,9 @@ class MainMenuScene(proto.Scene):
         self._next_scene = ABORT_NEEDED
 
     def __enter__(self) -> proto.Scene:
+        self._music.play()
         return self
 
     def __exit__(self, exc_type: type[BaseException], exc_val: BaseException, exc_tb: TracebackType) -> bool | None:
+        self._music.stop()
         return None

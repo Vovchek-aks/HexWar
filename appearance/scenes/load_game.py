@@ -5,7 +5,7 @@ from attrs import frozen
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
-from appearance.audio.music.music_player import MusicPlayer
+from appearance.audio.music.music_player import MusicPlayer, NoMusicPlayer
 from appearance.audio.sound.figure_selection.figures_sounds import FiguresSounds
 from appearance.audio.sound.figure_selection.on_figure_was_clicked_sound_player import OnFigureWasClickedSoundPlayer
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
@@ -102,7 +102,7 @@ def load_game(screen_shape: Vector2Int,
 
     figures_sounds = FiguresSounds.load()
     OnFigureWasClickedSoundPlayer.make(session, figures_sounds, actions_reader)
-    music_player = MusicPlayer.load() if not is_multibot else MusicPlayer.empty()
+    music_player = MusicPlayer.load() if not is_multibot else NoMusicPlayer()
 
     input_state = InputState.make(window)
 

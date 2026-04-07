@@ -32,10 +32,13 @@ class SceneSwitcher(proto.SceneSwitcher):
     def _scene_switcher(self) -> Iterator[None]:
         while True:
             with self.scene:
-                if (next_scene := self.scene.next()) is ABORT_NEEDED:
-                    return
+                while (next_scene := self.scene.next()) is MISSING:
+                    yield
 
-                if next_scene is not MISSING:
-                    self._scene = next_scene
+            if next_scene is ABORT_NEEDED:
+                return
+
+            if next_scene is not MISSING:
+                self._scene = next_scene
 
                 yield
