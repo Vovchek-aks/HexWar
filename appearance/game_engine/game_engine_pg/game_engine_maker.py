@@ -65,7 +65,7 @@ def make_game_engine(caption: str,
     mouse_movement_observer = MouseMovementObserver()
 
     user_inputer_builder = EventPlayerInputerBuilder()
-    user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
+    user_inputer_builder.set_move_was_read(moves_inputer.move_was_read)
     ui_layer = (GameUiLayerMaker(UiDrawer(screen),
                                  screen_shape,
                                  session,

@@ -139,7 +139,8 @@ def load_game(screen_shape: Vector2Int,
     camera_assistant = CameraAssistant.make(camera)
     layers = [
         ui_layer,
-        Layer(BoardDrawableLayer(draw, hovered_cell_getter, cell_selector, camera_assistant), board_layer),
+        Layer(BoardDrawableLayer(session, draw, hovered_cell_getter, cell_selector, camera_assistant,
+                                 multiple_relocations_reader, actions_reader), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
@@ -191,7 +192,7 @@ def load_game(screen_shape: Vector2Int,
         scene = GameWithPauseScene(game, pause_menu)
 
         user_inputer_builder = EventPlayerInputerBuilder()
-        user_inputer_builder.set_move_was_read(moves_inputer.move_was_raed)
+        user_inputer_builder.set_move_was_read(moves_inputer.move_was_read)
         user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
 
         for player in session.master.players:

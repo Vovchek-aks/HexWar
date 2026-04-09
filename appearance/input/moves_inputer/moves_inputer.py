@@ -22,14 +22,14 @@ class MovesInputer(proto.MovesInputer):
         return inputer
 
     _actions_reader: InputActionsReader
-    multiple_relocations_reader: proto.MultipleRelocationsReader
+    _multiple_relocations_reader: proto.MultipleRelocationsReader
     _move_reader: MoveReaders
 
-    _move_was_raed: Event[ValidMove, None] = field(init=False, factory=Event)
+    _move_was_read: Event[ValidMove, None] = field(init=False, factory=Event)
 
     @property
-    def move_was_raed(self) -> OnEventSubscriber[ValidMove, None]:
-        return self._move_was_raed.subscriber
+    def move_was_read(self) -> OnEventSubscriber[ValidMove, None]:
+        return self._move_was_read.subscriber
 
     def _on_action_was_read(self, *_: InputAction | bool) -> None:
         last_action: InputAction | Status = MISSING
@@ -47,7 +47,7 @@ class MovesInputer(proto.MovesInputer):
 
             if moves:
                 move = moves[0]
-                self._move_was_raed.invoke(move)
+                self._move_was_read.invoke(move)
                 self._actions_reader.clear()
                 return
 
@@ -59,5 +59,5 @@ class MovesInputer(proto.MovesInputer):
         if last_action is MISSING:
             return
 
-        for move in self.multiple_relocations_reader.process(last_action):
-            self._move_was_raed.invoke(move)
+        for move in self._multiple_relocations_reader.process(last_action):
+            self._move_was_read.invoke(move)

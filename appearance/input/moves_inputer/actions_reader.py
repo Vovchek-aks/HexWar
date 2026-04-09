@@ -6,6 +6,7 @@ from observer import Event, OnEventSubscriber
 from appearance.input.moves_inputer.input_actions import InputAction, CellClickAction, NullClickAction, \
     ButtonPressAction
 import appearance.protocols as proto
+from statuses import Status, MISSING
 
 
 @frozen
@@ -39,6 +40,12 @@ class InputActionsReader(proto.InputActionsReader):
     @property
     def actions(self) -> list[InputAction]:
         return list(self._actions)
+
+    @property
+    def last_action(self) -> InputAction | Status:
+        if not self._actions:
+            return MISSING
+        return self._actions[-1]
 
     def clear(self) -> None:
         while self._actions:

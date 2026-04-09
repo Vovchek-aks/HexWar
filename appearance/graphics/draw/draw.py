@@ -4,6 +4,7 @@ import appearance.protocols as proto
 from mathematics.vector import Vector2Int
 from .drawers import BordDrawer, OnBoardSpritesDrawer, BackgroundDrawer
 
+INTEREST_HIGHLIGHT_RATIO = .10
 HOVER_HIGHLIGHT_RATIO = .15
 SELECT_HIGHLIGHT_RATIO = .25
 
@@ -25,6 +26,9 @@ class Draw(proto.Draw):
 
     def selected_cell(self, cell_coord: Vector2Int) -> None:
         self._bord_drawer.draw_highlighted(cell_coord, SELECT_HIGHLIGHT_RATIO)
+
+    def interest_cell(self, cell_coord: Vector2Int) -> None:
+        self._bord_drawer.draw_highlighted(cell_coord, INTEREST_HIGHLIGHT_RATIO)
 
     def board_sprites(self) -> None:
         self._on_board_sprites_drawer.draw()

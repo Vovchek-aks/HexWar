@@ -126,6 +126,10 @@ class Draw(ABC):
         ...
 
     @abstractmethod
+    def interest_cell(self, cell_coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
     def board_sprites(self) -> None:
         ...
 
@@ -375,7 +379,7 @@ class LayersContainerLayer(ClicksCatchingLayer, metaclass=ABCMeta):
 class MovesInputer(ABC):
     @property
     @abstractmethod
-    def move_was_raed(self) -> OnEventSubscriber[proto.ValidMove, None]:
+    def move_was_read(self) -> OnEventSubscriber[proto.ValidMove, None]:
         ...
 
 
@@ -399,6 +403,11 @@ class InputActionsReader(ABC):
     def actions(self) -> list[InputAction]:
         ...
 
+    @property
+    @abstractmethod
+    def last_action(self) -> InputAction | Status:
+        ...
+
     @abstractmethod
     def clear(self) -> None:
         ...
@@ -411,6 +420,14 @@ class InputActionsReader(ABC):
 class MultipleRelocationsReader:
     @abstractmethod
     def process(self, last_action: InputAction) -> list[proto.ValidMove]:
+        ...
+
+    @abstractmethod
+    def is_requested(self) -> bool:
+        ...
+
+    @abstractmethod
+    def get_path(self, from_coord: Vector2Int, to_coord: Vector2Int) -> list[Vector2Int]:
         ...
 
 

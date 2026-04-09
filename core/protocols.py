@@ -731,6 +731,10 @@ class PullingConnections(ABC):
         ...
 
     @abstractmethod
+    def get_connected(self, figure: Figure) -> Figure | Status:
+        ...
+
+    @abstractmethod
     def is_puller(self, figure: Figure) -> bool:
         ...
 

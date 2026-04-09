@@ -12,6 +12,10 @@ from statuses import Status, INVALID, MISSING
 
 @frozen
 class FiguresRelocation(proto.Move, metaclass=ABCMeta):
+    @classmethod
+    def make(cls, from_coord: Vector2Int, to_coord: Vector2Int) -> "FiguresRelocation":
+        return cls(from_coord, to_coord)
+
     from_coord: Vector2Int
     to_coord: Vector2Int
 

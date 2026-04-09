@@ -3,11 +3,12 @@ import arcade as arc
 
 import appearance.protocols as proto
 from appearance.input.moves_inputer.input_actions import CellClickAction
-from core.moves.relocations import Relocation
+from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
 from core.protocols import GameSession
 from mathematics.a_star_path_searcher import AStarPathSearcher as PathSearcher
 import core.figures.figure as fig
+from mathematics.vector import Vector2Int
 from statuses import MISSING
 
 MULTIPLE_RELOCATIONS_KEY = arc.key.LSHIFT
@@ -26,22 +27,34 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
             case _:
                 return []
 
-        if MULTIPLE_RELOCATIONS_KEY not in self._input_state.pressed_keys:
+        if not self.is_requested():
             return []
 
-        if (selected_coord := self._cell_selector.get_coord()) is MISSING:
-            return []
-
-        cells = self._session.cells
-        player = self._session.master.current_player
-        board = self._session.board
-        allowed = cells.with_owner(player) & cells.with_figure(fig.Land)
-        path = PathSearcher(self._session.board, allowed, board[click_coord]).search_from(board[selected_coord])
+        path = self.get_path(self._cell_selector.get_coord(), click_coord)
         if not path:
             return []
 
+        player = self._session.master.current_player
+        board = self._session.board
         moves = list[ValidMove]()
         for from_coord, to_coord in zip(path[:-1], path[1:]):
-            moves.append(ValidMove(Relocation(from_coord, to_coord)))
+            move_type = Relocation if board[to_coord].owner is player else Assault
+            moves.append(ValidMove(move_type.make(from_coord, to_coord)))
 
         return moves
+
+    def is_requested(self) -> bool:
+        if MULTIPLE_RELOCATIONS_KEY not in self._input_state.pressed_keys:
+            return False
+
+        return self._cell_selector.get_coord() is not MISSING
+
+    def get_path(self, from_coord: Vector2Int, to_coord: Vector2Int) -> list[Vector2Int]:
+        player = self._session.master.current_player
+        board = self._session.board
+        cells = self._session.cells
+        allowed = ((cells.with_owner(player) +
+                    cells.with_owner(board[to_coord].owner)) &
+                   cells.with_figure(fig.Land))
+        path = PathSearcher(self._session.board, allowed, board[to_coord]).search_from(board[from_coord])
+        return path

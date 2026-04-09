@@ -3,6 +3,7 @@ from attrs import frozen, field
 import core.protocols as proto
 from core.protocols import Figure
 from observer import Event, OnEventSubscriber
+from statuses import Status, MISSING
 
 
 @frozen
@@ -51,6 +52,17 @@ class PullingConnections(proto.PullingConnections):
         self._pullable_of.pop(puller)
         self._puller_of.pop(pullable)
         self._pair_removed.invoke(puller, pullable)
+
+    def get_connected(self, figure: Figure) -> Figure | Status:
+        assert (proto.CanPull in figure.FLAGS or
+                proto.Pullable in figure.FLAGS)
+
+        if proto.CanPull in figure.FLAGS and self.is_puller(figure):
+            return self.get_pullable(figure)
+        if proto.Pullable in figure.FLAGS and self.is_pullable(figure):
+            return self.get_puller(figure)
+
+        return MISSING
 
     def is_puller(self, figure: Figure) -> bool:
         assert proto.CanPull in figure.FLAGS
