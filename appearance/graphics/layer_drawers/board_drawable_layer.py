@@ -28,16 +28,19 @@ class BoardDrawableLayer(proto.DrawableLayer):
         self._draw.board()
         hovered_coord = self._hovered_cell_getter.get_coord(mouse_position)
         selected_coord = self._cell_selector.get_coord()
+        is_empty = True if selected_coord is MISSING else self._session.board[selected_coord].is_empty
 
         if hovered_coord is not MISSING:
-            self._draw_path_if_needed(hovered_coord, selected_coord)
-            self._draw_oreshnik_targets_if_needed(hovered_coord, selected_coord)
-            self._draw_attack_targets_if_needed(hovered_coord, selected_coord)
+            if not is_empty:
+                self._draw_path_if_needed(hovered_coord, selected_coord)
+                self._draw_oreshnik_targets_if_needed(hovered_coord, selected_coord)
+                self._draw_attack_targets_if_needed(hovered_coord, selected_coord)
             self._draw.under_cursor_cell(hovered_coord)
 
         if selected_coord is not MISSING:
             self._draw.selected_cell(selected_coord)
-            self._draw_connected_if_needed(selected_coord)
+            if not is_empty:
+                self._draw_connected_if_needed(selected_coord)
 
         self._draw.board_sprites()
 

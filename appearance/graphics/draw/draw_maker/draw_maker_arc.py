@@ -28,6 +28,10 @@ class DrawMaker:
         figures_drawer = FiguresDrawer.make(board, figures_sprites, on_board_sprites_drawer)
         cells_change_observer.cell_changed_figure.subscribe(figures_drawer.update_cell)
 
+        for figure in get_figures():
+            index = on_board_sprites_drawer.add_sprite(figures_sprites.get(figure), Vector2Int.zero())
+            on_board_sprites_drawer.remove_sprite(index)
+
         board_drawer = BordDrawer.make(board, cells_change_observer.cell_changed_owner)
 
         return (Draw(board_drawer, on_board_sprites_drawer, BackgroundDrawer(screen_shape, BACKGROUND)),
