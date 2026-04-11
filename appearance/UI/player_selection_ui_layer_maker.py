@@ -89,11 +89,4 @@ class PlayersSelectionUiLayerMaker:
                 .build())
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        button_background = self._sprites_loader.load_button_3_to_2()
-        button_text = TextData.debug(text)
-        button = ButtonUi.make(self._drawer,
-                               get_image_rectangle(Rectangle(Vector2.zero(), button_background.shape.as_vector2)),
-                               button_background,
-                               button_text)
-        button.was_clicked.subscribe(on_button_pressed)
-        return button
+        return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer)

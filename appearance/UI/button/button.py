@@ -24,7 +24,7 @@ class ButtonUi(proto.ElementUi):
                   sprites_loader: SpritesLoader,
                   drawer: proto.UiDrawer) -> "ButtonUi":
         background = sprites_loader.load_button_3_to_2()
-        button_text = TextData.debug(text)
+        button_text = TextData.for_button(text)
         self = ButtonUi.make(drawer,
                              get_image_rectangle(Rectangle(Vector2.zero(), background.shape.as_vector2)),
                              background,

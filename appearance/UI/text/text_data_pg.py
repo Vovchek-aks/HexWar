@@ -101,6 +101,6 @@ class TextDataBuilder:
             scale_y = rect_height / text_rect.height
             scale = min(scale_x, scale_y) * 1.45
             new_size = max(1, int(font.get_height() * scale))
-            font = Font(font.file_path, new_size)
+            font = Font(font.name, new_size)
 
         return self.set_font(font)

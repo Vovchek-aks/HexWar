@@ -4,9 +4,10 @@ import appearance.protocols as proto
 from appearance.input.moves_inputer.input_actions import OreshnikLaunchButtonPressAction, AttackButtonPressAction
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.moves.oreshnik_launch import OreshnikLaunch
-from core.protocols import GameSession, CanPull, Pullable, CanAttack
+from core.protocols import GameSession, CanPull, Pullable, CanAttack, CanLaunchOreshnik
+from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2, Vector2Int
-from statuses import MISSING, Status
+from statuses import MISSING, Status, INVALID
 
 
 @frozen
@@ -53,7 +54,11 @@ class BoardDrawableLayer(proto.DrawableLayer):
             return
 
         board = self._session.board
-        for cell in OreshnikLaunch(selected_coord, hovered_coord).get_target_cells(self._session):
+        move = OreshnikLaunch(selected_coord, hovered_coord)
+        if move.validate(self._session) is INVALID:
+            return
+
+        for cell in move.get_target_cells(self._session):
             self._draw.interest_cell(board.coordinates_of(cell))
 
     def _draw_attack_targets_if_needed(self, hovered_coord: Vector2Int, selected_coord: Vector2Int | Status) -> None:

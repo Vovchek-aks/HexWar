@@ -14,7 +14,8 @@ HEIGHT_TO_WIDTH_RATIO = 1.45
 class TextUi(proto.ElementUi):
     @classmethod
     def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, data: proto.TextData, *, is_center=False) -> "TextUi":
-        text = arc.Text(data.text, *rectangle.position, color=data.color, font_size=data.font.font_size)
+        text = arc.Text(data.text, *rectangle.position, color=data.color, font_size=data.font.size,
+                        font_name=data.font.name, bold=data.font.is_bold, italic=data.font.is_italic)
         if is_center:
             text.anchor_x = 'center'
             text.anchor_y = 'center'

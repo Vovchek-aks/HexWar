@@ -9,8 +9,7 @@ from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
 from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.stretcher import StretcherUi
-from appearance.UI.text import TextUi, TextData
-from appearance.UI.text.text_data_pg import TextDataBuilder
+from appearance.UI.text import TextUi, TextData, TextDataBuilder
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
 from appearance.input.clicks_catcher.click import Click, MouseButtons
@@ -212,7 +211,7 @@ class GameUiLayerMaker:
 
     def _make_end_turn_button(self) -> ButtonUi:
         button_background = self._sprites_loader.load_button_3_to_2()
-        button_text = TextData.debug(self._language.get_end_turn_message())
+        button_text = TextData.for_button(self._language.get_end_turn_message())
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(RectangleBuilder(self._screen_shape)
                                                    .from_right_bottom()
@@ -273,7 +272,7 @@ class GameUiLayerMaker:
     def _make_figure_creation_button(self, figure: type[fig.Figure], hint_box: BoxUi) -> ButtonUi:
         background = self._sprites_loader.load_button_3_to_2()
 
-        text = TextData.debug(self._language.get_figure_name(figure))
+        text = TextData.for_button(self._language.get_figure_name(figure))
         position = Vector2.zero()
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(Rectangle.with_center_at(position, text.shape)),
@@ -441,7 +440,7 @@ class GameUiLayerMaker:
                             .build(),
                             TextDataBuilder()
                             .set_text(self._language.get_figure_name(figure_type))
-                            .debug_font()
+                            .hints_font()
                             .black_colored()
                             .build())
 
@@ -473,7 +472,7 @@ class GameUiLayerMaker:
         stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle)
         stats_and_flow.extend([stats, flow])
 
-        text_data = TextDataBuilder().set_text("...").debug_font().black_colored()
+        text_data = TextDataBuilder().set_text("...").hints_font().black_colored()
 
         update_stats = self._fill_figure_menu_stats(stats, text_data, figure_type)
         update_flow = self._fill_figure_menu_flow(flow, text_data, figure_type)
@@ -673,7 +672,7 @@ class GameUiLayerMaker:
                                .build(),
                                TextDataBuilder()
                                .set_text(title)
-                               .debug_font()
+                               .hints_font()
                                .black_colored()
                                .build())
 
@@ -693,7 +692,7 @@ class GameUiLayerMaker:
                                   Rectangle.zero(),
                                   TextDataBuilder()
                                   .set_text(line.ljust(MAX_LINE_LENGTH, " "))
-                                  .debug_font()
+                                  .hints_font()
                                   .black_colored()
                                   .build())
             content_ui.append(line_ui)
@@ -747,7 +746,7 @@ class GameUiLayerMaker:
 
     def _make_null_button(self, text: str) -> ButtonUi:
         background = self._sprites_loader.load_button_3_to_2()
-        text_data = TextData.debug(text)
+        text_data = TextData.for_button(text)
         button = ButtonUi.make(self._drawer,
                                Rectangle(Vector2.zero(), text_data.shape),
                                background,

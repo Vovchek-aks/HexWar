@@ -37,7 +37,7 @@ def main() -> None:
 
 def _make_test_game_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("Middle East.json", UPS).load()
+        session = GameSessionLoader.make("Balkans.json", UPS).load()
         players_selector = PlayersSelector(session)
         players_selector.toggle(session.master.current_player)
         session.master.current_player.resources.add(ResourcesGroup.make(Dollars(100_000_000),

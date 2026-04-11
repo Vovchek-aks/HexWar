@@ -8,8 +8,9 @@ from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
 from statuses import Status, MISSING
 
-WHITE_COLOR = Color(255, 255, 255)
-BLACK_COLOR = Color(53, 53, 49)
+WHITE_COLOR = Color.from_hex_string("#FFFFFF")
+BUTTON_COLOR = Color.from_hex_string("#EDD0B7")
+BLACK_COLOR = Color.from_hex_string("#272315")
 
 
 @frozen
@@ -20,6 +21,14 @@ class TextData(proto.TextData):
                 .set_text(text)
                 .debug_font()
                 .white_colored()
+                .build())
+
+    @classmethod
+    def for_button(cls, text: str) -> "TextData":
+        return (TextDataBuilder()
+                .set_text(text)
+                .button_font()
+                .set_color(BUTTON_COLOR)
                 .build())
 
     text: str
@@ -74,7 +83,13 @@ class TextDataBuilder:
         return self
 
     def debug_font(self, size: int = 30) -> "TextDataBuilder":
-        return self.set_font(Font(None, size))
+        return self.set_font(Font.make(None, size))
+
+    def button_font(self, size: int = 30) -> "TextDataBuilder":
+        return self.set_font(Font.make(None, size, is_bold=True, is_italic=True))
+
+    def hints_font(self, size: int = 30) -> "TextDataBuilder":
+        return self.set_font(Font.make("PT_Serif-Web-Regular", size))
 
     def white_colored(self) -> "TextDataBuilder":
         return self.set_color(WHITE_COLOR)
@@ -99,7 +114,7 @@ class TextDataBuilder:
             scale_x = rect_width / text_shape.x
             scale_y = rect_height / text_shape.y
             scale = min(scale_x, scale_y) * 1.45
-            new_size = max(1, int(font.font_size * scale))
-            font = Font(font.file_path, new_size)
+            new_size = max(1, int(font.size * scale))
+            font = Font.make(font.name, new_size)
 
         return self.set_font(font)

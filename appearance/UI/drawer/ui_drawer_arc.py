@@ -12,7 +12,7 @@ class UiDrawer(proto.UiDrawer):
     def draw_text(self, text_data: proto.TextData, rectangle: Rectangle) -> None:
         text, font, color = text_data.tuple
         position = rectangle.position
-        arc.draw_text(text, *position, color, font.font_size)
+        arc.draw_text(text, *position, color, font.size)
 
     def draw_image(self, sprite: Sprite, position: Vector2) -> None:
         sprite.blit_at(position)
