@@ -10,6 +10,7 @@ from appearance.UI.layouts.layout import LayoutUi
 from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.stretcher import StretcherUi
 from appearance.UI.text import TextUi, TextData, TextDataBuilder
+from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.graphics.sprites import SpritesLoader
 from appearance.UI.drawer import UiDrawer
 from appearance.input.clicks_catcher.click import Click, MouseButtons
@@ -226,50 +227,54 @@ class GameUiLayerMaker:
 
     def _make_figures_creation_menu(self) -> Layer:
         hint_box = BoxUi(Rectangle(Vector2.zero(), Vector2(200, 200)))
-        buttons = self._make_figures_creation_buttons(hint_box)
+
+        rectangle = self._get_figures_creation_buttons_rectangle()
+        buttons = BoxUi(Rectangle.zero())
 
         layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
                                     .from_left_bottom()
                                     .move(Vector2(20, 20))
-                                    .set_shape(Vector2(500, buttons.rectangle.shape.y))
+                                    .set_shape(Vector2(500, rectangle.shape.y))
                                     .adjust_for_shape()
                                     .build())
         layout.append(buttons)
         layout.append(hint_box)
 
+        synchroniser = TextSizeSynchroniser()
+        buttons.append(self._make_figures_creation_buttons(synchroniser, hint_box))
+        synchroniser.synchronise()
+
         self._bind_layer_to_cell_with_figure_selection(layout.layer, fig.Land)
 
         return layout.layer
 
-    def _make_figures_creation_buttons(self, hint_box: BoxUi) -> LayoutUi:
-        layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
-                                  .from_left_bottom()
-                                  .move(Vector2(20, 20))
-                                  .set_shape(Vector2(200, 300))
-                                  .adjust_for_shape()
-                                  .build(),
-                                  margin_ratio=.2)
+    def _make_figures_creation_buttons(self, synchroniser: TextSizeSynchroniser, hint_box: BoxUi) -> LayoutUi:
+        layout = VerticalLayoutUi(self._get_figures_creation_buttons_rectangle(), margin_ratio=.2)
 
-        self._add_two_horizontal_creation_buttons_to(layout, fig.LightFactory, fig.HeavyFactory, hint_box)
-        layout.append(self._make_figure_creation_button(fig.Town, hint_box))
-        self._add_two_horizontal_creation_buttons_to(layout, fig.Bunker, fig.Artillery, hint_box)
-        layout.append(self._make_figure_creation_button(fig.MissileSilo, hint_box))
-        self._add_two_horizontal_creation_buttons_to(layout, fig.Tank, fig.Infantry, hint_box)
-        layout.append(self._make_figure_creation_button(fig.Capital, hint_box))
+        self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.Bunker, fig.Artillery, hint_box)
+        layout.append(self._make_figure_creation_button(synchroniser, fig.MissileSilo, hint_box))
+        self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.Tank, fig.Infantry, hint_box)
+        layout.append(self._make_figure_creation_button(synchroniser, fig.Capital, hint_box))
+        self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.LightFactory, fig.HeavyFactory, hint_box)
+        layout.append(self._make_figure_creation_button(synchroniser, fig.Town, hint_box))
 
         return layout
 
     def _add_two_horizontal_creation_buttons_to(self,
+                                                synchroniser: TextSizeSynchroniser,
                                                 layout: VerticalLayoutUi,
                                                 left: type[fig.Figure],
                                                 right: type[fig.Figure],
                                                 hint_box: BoxUi) -> None:
-        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.07)
+        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.03)
         layout.append(horizontal_layout)
-        horizontal_layout.append(self._make_figure_creation_button(left, hint_box))
-        horizontal_layout.append(self._make_figure_creation_button(right, hint_box))
+        horizontal_layout.append(self._make_figure_creation_button(synchroniser, left, hint_box))
+        horizontal_layout.append(self._make_figure_creation_button(synchroniser, right, hint_box))
 
-    def _make_figure_creation_button(self, figure: type[fig.Figure], hint_box: BoxUi) -> ButtonUi:
+    def _make_figure_creation_button(self,
+                                     synchroniser: TextSizeSynchroniser,
+                                     figure: type[fig.Figure],
+                                     hint_box: BoxUi) -> ButtonUi:
         background = self._sprites_loader.load_button_3_to_2()
 
         text = TextData.for_button(self._language.get_figure_name(figure))
@@ -278,25 +283,39 @@ class GameUiLayerMaker:
                                get_image_rectangle(Rectangle.with_center_at(position, text.shape)),
                                background,
                                text)
+        synchroniser.append(button.text)
 
         button.was_clicked.subscribe(lambda:
                                      self._button_press_action_happened
                                      .invoke(CreationButtonPressAction(self._cell_selector.get_coord(), figure)))
 
-        hint_box.append(self._make_figure_creation_button_hint(figure, button))
+        hint_synchroniser = TextSizeSynchroniser()
+        hint_box.append(self._make_figure_creation_button_hint(hint_synchroniser, figure, button))
+        hint_synchroniser.synchronise()
 
         return button
 
-    def _make_figure_creation_button_hint(self, figure: type[fig.Figure], button: ButtonUi) -> StretcherUi:
+    def _make_figure_creation_button_hint(self,
+                                          synchroniser: TextSizeSynchroniser,
+                                          figure: type[fig.Figure],
+                                          button: ButtonUi) -> StretcherUi:
         title = self._language.get_figure_name(figure)
         content = [
             *self._language.get_creation_hint(figure),
             "",
             *self._language.get_cost(figure.FLAGS.get(Creatable).cost)
         ]
-        hint = self._make_button_hint(title, content, button)
+        hint = self._make_button_hint(synchroniser, title, content, button)
 
         return hint
+
+    def _get_figures_creation_buttons_rectangle(self) -> Rectangle:
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_bottom()
+                .move(Vector2(20, 20))
+                .set_shape(Vector2(200, 300))
+                .adjust_for_shape()
+                .build())
 
     def _make_infantry_menu(self) -> Layer:
         to_motorize = self._make_null_button(Language.from_meta().get_to_motorize_message())
@@ -404,10 +423,15 @@ class GameUiLayerMaker:
 
         for button, tag in zip(buttons, button_tags):
             if not isinstance(button, SwitchButtonUi):
-                hint_box.append(self._make_figure_menu_button_hint(button, tag))
+                synchroniser = TextSizeSynchroniser()
+                hint_box.append(self._make_figure_menu_button_hint(synchroniser, button, tag))
+                synchroniser.synchronise()
                 continue
             for button_, tag_ in zip(button.buttons, tag):
-                hint_box.append(self._make_figure_menu_button_hint(button_, tag_))
+                synchroniser = TextSizeSynchroniser()
+                hint_box.append(self._make_figure_menu_button_hint(synchroniser, button_, tag_))
+                synchroniser.synchronise()
+
 
         layer = Layer.as_multiple([
             menu,
@@ -425,7 +449,7 @@ class GameUiLayerMaker:
                                   RectangleBuilder(self._screen_shape)
                                   .from_left_bottom()
                                   .move(background_margin)
-                                  .set_shape(Vector2(3, 2) * 100)
+                                  .set_shape(Vector2(300, 200))
                                   .adjust_for_shape()
                                   .build(),
                                   self._sprites_loader.load_background_3_to_2())
@@ -474,8 +498,10 @@ class GameUiLayerMaker:
 
         text_data = TextDataBuilder().set_text("...").hints_font().black_colored()
 
-        update_stats = self._fill_figure_menu_stats(stats, text_data, figure_type)
-        update_flow = self._fill_figure_menu_flow(flow, text_data, figure_type)
+        synchroniser = TextSizeSynchroniser()
+        update_stats = self._fill_figure_menu_stats(synchroniser, stats, text_data, figure_type)
+        update_flow = self._fill_figure_menu_flow(synchroniser, flow, text_data, figure_type)
+        synchroniser.synchronise()
 
         def update(coord: Vector2Int | Status) -> None:
             update_stats(coord)
@@ -498,6 +524,7 @@ class GameUiLayerMaker:
         return menu
 
     def _fill_figure_menu_stats(self,
+                                synchroniser: TextSizeSynchroniser,
                                 stats: VerticalLayoutUi,
                                 text_data: TextDataBuilder,
                                 figure_type: type[fig.Figure]) -> Callable[[Vector2Int | Status], None]:
@@ -508,6 +535,9 @@ class GameUiLayerMaker:
         stats.append(combat_ability)
         stats.append(hardness)
         stats.append(strength)
+        synchroniser.append(combat_ability)
+        synchroniser.append(hardness)
+        synchroniser.append(strength)
 
         def update_stats(coord: Vector2Int | Status) -> None:
             if coord is MISSING:
@@ -549,6 +579,7 @@ class GameUiLayerMaker:
         return update_stats
 
     def _fill_figure_menu_flow(self,
+                               synchroniser: TextSizeSynchroniser,
                                flow: VerticalLayoutUi,
                                text_data: TextDataBuilder,
                                figure_type: type[fig.Figure]) -> Callable[[Vector2Int | Status], None]:
@@ -562,6 +593,7 @@ class GameUiLayerMaker:
             flow.append(BoxUi(Rectangle.zero()))
 
         flow.extend(text_of.values())
+        synchroniser.extend(*text_of.values())
 
         if len(text_of) < 3:
             flow.append(BoxUi(Rectangle.zero()))
@@ -588,17 +620,20 @@ class GameUiLayerMaker:
 
         return update
 
-
-    def _make_figure_menu_button_hint(self, button: ButtonUi, tag: str) -> StretcherUi:
-        return self._make_button_hint(button.text.text, self._language.get_figure_menu_hint_for(tag),
+    def _make_figure_menu_button_hint(self,
+                                      synchroniser: TextSizeSynchroniser,
+                                      button: ButtonUi,
+                                      tag: str) -> StretcherUi:
+        return self._make_button_hint(synchroniser, button.text.text, self._language.get_figure_menu_hint_for(tag),
                                       button, Vector2(200, 220))
 
     def _make_button_hint(self,
+                          synchroniser: TextSizeSynchroniser,
                           title: str,
                           content: list[str],
                           button: ButtonUi,
                           shape: Vector2 = Vector2(200, 300)) -> StretcherUi:
-        hint = self._make_null_hint(title, content, shape)
+        hint = self._make_null_hint(synchroniser, title, content, shape)
 
         def get_hint_activity() -> bool:
             if not button.layer.is_active:
@@ -623,12 +658,17 @@ class GameUiLayerMaker:
                     .adjust_for_shape()
                     .build())
         for index, content in enumerate(self._language.get_tutorial_hints(tutorial_index)):
-            box.append(self._make_tutorial_hint(index, content))
+            synchroniser = TextSizeSynchroniser()
+            box.append(self._make_tutorial_hint(synchroniser, index, content))
+            synchroniser.synchronise()
 
         return box
 
-    def _make_tutorial_hint(self, content_index: int, content: list[str]) -> StretcherUi:
-        hint = self._make_null_hint(self._language.get_page_message(content_index), content)
+    def _make_tutorial_hint(self,
+                            synchroniser: TextSizeSynchroniser,
+                            content_index: int,
+                            content: list[str]) -> StretcherUi:
+        hint = self._make_null_hint(synchroniser, self._language.get_page_message(content_index), content)
         rectangle = hint.rectangle
         position = rectangle.position
         shape = rectangle.shape
@@ -652,7 +692,11 @@ class GameUiLayerMaker:
 
         return stretcher
 
-    def _make_null_hint(self, title: str, content: list[str], shape: Vector2 = Vector2(200, 300)) -> StretcherUi:
+    def _make_null_hint(self,
+                        synchroniser: TextSizeSynchroniser,
+                        title: str,
+                        content: list[str],
+                        shape: Vector2 = Vector2(200, 300)) -> StretcherUi:
         MIN_LINES_COUNT = 8
         MAX_LINE_LENGTH = 25
 
@@ -687,6 +731,7 @@ class GameUiLayerMaker:
                                                          shape.y - content_margin.y - bottom_margin))
                                       .adjust_for_shape()
                                       .build())
+
         for line in content:
             line_ui = TextUi.make(self._drawer,
                                   Rectangle.zero(),
@@ -696,6 +741,7 @@ class GameUiLayerMaker:
                                   .black_colored()
                                   .build())
             content_ui.append(line_ui)
+            synchroniser.append(line_ui)
 
         stretcher = StretcherUi(background.rectangle)
         stretcher.append(title_ui)

@@ -22,7 +22,6 @@ class TextUi(proto.ElementUi):
             text.anchor_y = 'center'
 
         self = cls(drawer, text, is_center, rectangle)
-        self.set_rectangle(rectangle)
 
         layer = (LayerBuilder()
                  .not_catching()
@@ -30,6 +29,8 @@ class TextUi(proto.ElementUi):
                  .build())
 
         self._layer = layer
+        self._change_font_size_fitting(rectangle)
+        self._set_text_position(rectangle)
         return self
 
     _drawer: proto.UiDrawer
@@ -70,6 +71,9 @@ class TextUi(proto.ElementUi):
         self._set_text_position(rectangle)
 
     def set_text(self, text: str) -> None:
+        if self._text.text == text:
+            return
+
         self._text.text = text
         self.set_rectangle(self.rectangle)
 

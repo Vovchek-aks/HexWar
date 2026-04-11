@@ -4,7 +4,7 @@ from mathematics.vector import Vector2, Vector2Int
 from statuses import Status, MISSING
 
 
-@frozen
+@frozen(eq=False)
 class Rectangle:
     @classmethod
     def zero(cls) -> "Rectangle":
@@ -43,6 +43,9 @@ class Rectangle:
 
         return (left <= point.x <= right and
                 bottom <= point.y <= up)
+
+    def __eq__(self, other: "Rectangle") -> bool:
+        return (self._position, self._shape) == (other._position, other._shape)
 
 
 @define

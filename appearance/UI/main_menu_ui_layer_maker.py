@@ -103,6 +103,8 @@ class MainMenuUiLayerMaker:
         while len(layout) < buttons_shape.y:
             layout.append(BoxUi(Rectangle.zero()))
 
+        synchroniser.synchronise()
+
         return layout
 
     def _make_map_selection_button(self, map_name: str, on_map_was_selected: Callable[[str], None]) -> ButtonUi:
@@ -204,6 +206,9 @@ class MainMenuUiLayerMaker:
 
         titles_synchroniser = TextSizeSynchroniser()
         titles_synchroniser.extend(other, audio)
+
+        titles_synchroniser.synchronise()
+        synchroniser.synchronise()
 
         for _ in range(count - len(layout)):
             layout.append(BoxUi(Rectangle.zero()))
@@ -320,6 +325,7 @@ class MainMenuUiLayerMaker:
 
         synchroniser = TextSizeSynchroniser()
         synchroniser.extend(tutorial.text, settings.text, close.text)
+        synchroniser.synchronise()
 
         return layout.layer
 
