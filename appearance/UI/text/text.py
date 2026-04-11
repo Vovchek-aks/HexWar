@@ -6,6 +6,7 @@ from color import Color
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
 import appearance.protocols as proto
+from observer import Event, OnEventSubscriber
 
 HEIGHT_TO_WIDTH_RATIO = 1.45
 
@@ -37,6 +38,8 @@ class TextUi(proto.ElementUi):
     _rectangle: Rectangle
     _layer: proto.Layer = field(init=False)
 
+    _size_was_changed: Event["TextUi", None] = field(init=False, factory=Event)
+
     @property
     def layer(self) -> proto.Layer:
         return self._layer
@@ -53,6 +56,14 @@ class TextUi(proto.ElementUi):
     def text_shape(self) -> Vector2:
         return Vector2(*self._text.content_size)
 
+    @property
+    def font_size(self) -> float:
+        return self._text.font_size
+
+    @property
+    def size_was_changed(self) -> OnEventSubscriber["TextUi", None]:
+        return self._size_was_changed.subscriber
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
         self._change_font_size_fitting(rectangle)
@@ -64,6 +75,11 @@ class TextUi(proto.ElementUi):
 
     def set_color(self, color: Color) -> None:
         self._text.color = color
+
+    def set_font_size(self, size: float, *, need_event: bool = True) -> None:
+        self._text.font_size = size
+        if need_event:
+            self._size_was_changed.invoke(self)
 
     def _set_text_position(self, rectangle: Rectangle) -> None:
         if not self._is_center:
@@ -80,6 +96,7 @@ class TextUi(proto.ElementUi):
         if rectangle == Rectangle.zero():
             return
 
+        new_size = self._text.font_size
         for _ in range(3):
             rect_width, rect_height = rectangle.shape
 
@@ -87,4 +104,6 @@ class TextUi(proto.ElementUi):
             scale_y = rect_height / self.text_shape.y
             scale = min(scale_x, scale_y * HEIGHT_TO_WIDTH_RATIO)
             new_size = min(312, max(1, int(self._text.font_size * scale)))
-            self._text.font_size = new_size
+            self.set_font_size(new_size, need_event=False)
+
+        self.set_font_size(new_size)

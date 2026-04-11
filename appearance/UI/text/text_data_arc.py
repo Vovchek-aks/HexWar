@@ -86,7 +86,7 @@ class TextDataBuilder:
         return self.set_font(Font.make(None, size))
 
     def button_font(self, size: int = 30) -> "TextDataBuilder":
-        return self.set_font(Font.make(None, size, is_bold=True, is_italic=True))
+        return self.set_font(Font.make(None, size, is_bold=True))
 
     def hints_font(self, size: int = 30) -> "TextDataBuilder":
         return self.set_font(Font.make("PT_Serif-Web-Regular", size))

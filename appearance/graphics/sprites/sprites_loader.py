@@ -26,6 +26,7 @@ _BACKGROUND_3_TO_2 = "background_3_to_2"
 _BACKGROUND_2_TO_3 = "background_2_to_3"
 _LOADING_SCREEN = "loading_screen"
 _MENU_BACKGROUND = "menu_background"
+_LOGO = "logo"
 
 _EFFECTS = "effects"
 _EXPLOSION = "explosion"
@@ -86,8 +87,12 @@ class SpritesLoader:
         sprite_info = self._ui[_LOADING_SCREEN]
         return self._load_sprite(sprite_info)
 
-    def load_menu_background_screen(self) -> Sprite:
+    def load_menu_background(self) -> Sprite:
         sprite_info = self._ui[_MENU_BACKGROUND]
+        return self._load_sprite(sprite_info)
+
+    def load_logo(self) -> Sprite:
+        sprite_info = self._ui[_LOGO]
         return self._load_sprite(sprite_info)
 
     def load_explosion(self) -> Sprite:

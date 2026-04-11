@@ -5,9 +5,11 @@ from attrs import frozen, Factory
 import appearance.protocols as proto
 from appearance.UI.box import BoxUi
 from appearance.UI.button import ButtonUi
+from appearance.UI.image import ImageUi
 from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
 from appearance.UI.text import TextData, TextUi
+from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ValueChanger, ListChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
 from appearance.graphics.sprites import SpritesLoader
@@ -82,8 +84,10 @@ class MainMenuUiLayerMaker:
         buttons_shape = Vector2Int(5, 5)
 
         buttons = list[ButtonUi]()
+        synchroniser = TextSizeSynchroniser()
         for map_name in map_names:
-            buttons.append(self._make_map_selection_button(map_name, on_map_was_selected))
+            buttons.append(button := self._make_map_selection_button(map_name, on_map_was_selected))
+            synchroniser.append(button.text)
 
         assert len(buttons) <= buttons_shape.x * buttons_shape.y
 
@@ -178,18 +182,28 @@ class MainMenuUiLayerMaker:
                                       1 - margin_ratio) * 100)
 
         changers = self._get_changers()
-        layout.append(TextUi.make(self._drawer, Rectangle.zero(),
-                                  TextData.debug(self._language.get_audio_message()), is_center=True))
-        self._add_changer(layout, self._language.get_music_volume_message(), MUSIC, changers, value_changers, rectangle)
-        self._add_changer(layout, self._language.get_voice_volume_message(), VOICE, changers, value_changers, rectangle)
-        self._add_changer(layout, self._language.get_effects_volume_message(), EFFECTS, changers, value_changers,
+
+        layout.append(audio := TextUi.make(self._drawer, Rectangle.zero(),
+                                           TextData.debug(self._language.get_audio_message()), is_center=True))
+
+        synchroniser = TextSizeSynchroniser()
+        self._add_changer(synchroniser, layout, self._language.get_music_volume_message(), MUSIC, changers,
+                          value_changers,
                           rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_voice_volume_message(), VOICE, changers,
+                          value_changers,
+                          rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_effects_volume_message(), EFFECTS, changers,
+                          value_changers, rectangle)
         layout.append(BoxUi(Rectangle.zero()))
 
-        layout.append(TextUi.make(self._drawer, Rectangle.zero(),
-                                  TextData.debug(self._language.get_other_message()), is_center=True))
-        self._add_changer(layout, self._language.get_selected_language_message(), LANGUAGE, changers, value_changers,
-                          rectangle)
+        layout.append(other := TextUi.make(self._drawer, Rectangle.zero(),
+                                           TextData.debug(self._language.get_other_message()), is_center=True))
+        self._add_changer(synchroniser, layout, self._language.get_selected_language_message(), LANGUAGE, changers,
+                          value_changers, rectangle)
+
+        titles_synchroniser = TextSizeSynchroniser()
+        titles_synchroniser.extend(other, audio)
 
         for _ in range(count - len(layout)):
             layout.append(BoxUi(Rectangle.zero()))
@@ -197,6 +211,7 @@ class MainMenuUiLayerMaker:
         return layout.layer
 
     def _add_changer[T](self,
+                        synchroniser: TextSizeSynchroniser,
                         layout: LayoutUi,
                         text: str,
                         key: str,
@@ -205,6 +220,7 @@ class MainMenuUiLayerMaker:
                         rectangle: Rectangle) -> None:
         to_add, value_changer = self._make_changer(text, changers[key], rectangle)
         layout.append(to_add)
+        synchroniser.append(value_changer.text)
         value_changers[key] = value_changer
 
     def _make_changer[T](self,
@@ -214,7 +230,7 @@ class MainMenuUiLayerMaker:
         text = f"{text}:"
         margin_ratio = .13
         horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio)
-        horizontal.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
+        horizontal.append(text := TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
         horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
             self._sprites_loader, self._drawer))
@@ -295,20 +311,24 @@ class MainMenuUiLayerMaker:
 
         horizontal = HorizontalLayoutUi(Rectangle.zero())
         layout.append(horizontal)
-        horizontal.append(self._make_menu_button(self._language.get_tutorial_message(), tutorial_was_pressed.invoke,
-                                                 turn_tabs_off))
-        horizontal.append(self._make_menu_button(self._language.get_settings_message(), settings_was_pressed.invoke,
-                                                 turn_tabs_off))
+        horizontal.append(tutorial := self._make_menu_button(self._language.get_tutorial_message(),
+                                                             tutorial_was_pressed.invoke, turn_tabs_off))
+        horizontal.append(settings := self._make_menu_button(self._language.get_settings_message(),
+                                                             settings_was_pressed.invoke, turn_tabs_off))
 
-        layout.append(self._make_null_button(self._language.get_exit_message(), exit_was_pressed))
+        layout.append(close := self._make_null_button(self._language.get_exit_message(), exit_was_pressed))
+
+        synchroniser = TextSizeSynchroniser()
+        synchroniser.extend(tutorial.text, settings.text, close.text)
 
         return layout.layer
 
     def _get_buttons_rectangle(self) -> Rectangle:
-        center_x = self._screen_shape.x / 2
-        width = self._screen_shape.x / 4
-        x = center_x - width / 2
+        width_to_height_ratio = 1.3
         height = self._screen_shape.y / 3
+        center_x = self._screen_shape.x / 2
+        width = height * width_to_height_ratio
+        x = center_x - width / 2
         bottom_margin = self._screen_shape.y / 10
 
         return (RectangleBuilder(self._screen_shape)
@@ -332,18 +352,20 @@ class MainMenuUiLayerMaker:
         return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer)
 
     def _make_title(self) -> Layer:
-        title = TextUi.make(self._drawer,
-                            self._get_title_rectangle(),
-                            TextData.debug("HexWar"),
-                            is_center=True)
+        title = ImageUi.make(self._drawer, self._get_title_rectangle(), self._sprites_loader.load_logo())
         return title.layer
 
     def _get_title_rectangle(self) -> Rectangle:
+        buttons = self._get_buttons_rectangle()
+        _, _, buttons_top, buttons_bottom = buttons.left_right_up_bottom
+
+        width_to_height_ratio = 17 / 5
+        possible_height = self._screen_shape.y - buttons_bottom - buttons_top
+        height = possible_height * .7
         center_x = self._screen_shape.x / 2
-        width = self._screen_shape.x / 2
+        width = height * width_to_height_ratio
         x = center_x - width / 2
-        height = self._screen_shape.y / 3
-        top_margin = self._screen_shape.y / 10
+        top_margin = (possible_height - height) / 2
 
         return (RectangleBuilder(self._screen_shape)
                 .from_left_up()

@@ -51,7 +51,7 @@ def load_main_menu(screen_shape: Vector2Int,
                 .make(map_was_selected.invoke, exit_was_pressed.invoke, reload_was_pressed.invoke))
 
     yield language.get_sprite_loading_message()
-    background = SpritesLoader.from_meta().load_menu_background_screen()
+    background = SpritesLoader.from_meta().load_menu_background()
     rectangle = Rectangle(Vector2.zero(), screen_shape.as_vector2)
 
     layers = [

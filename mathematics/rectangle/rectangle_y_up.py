@@ -25,9 +25,9 @@ class Rectangle:
     @property
     def left_right_up_bottom(self) -> tuple[float, float, float, float]:
         left = self._position.x
-        up = self._position.y
+        bottom = self._position.y
         right = left + self._shape.x
-        bottom = up + self._shape.y
+        up = bottom + self._shape.y
         return left, right, up, bottom
 
     @property
@@ -42,7 +42,7 @@ class Rectangle:
         left, right, up, bottom = self.left_right_up_bottom
 
         return (left <= point.x <= right and
-                up <= point.y <= bottom)
+                bottom <= point.y <= up)
 
 
 @define

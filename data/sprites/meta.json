@@ -120,6 +120,13 @@
         0,
         0
       ]
+    },
+    "logo": {
+      "file": "ui/logo.png",
+      "pivot": [
+        0,
+        0
+      ]
     }
   },
   "effects": {

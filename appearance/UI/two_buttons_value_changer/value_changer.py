@@ -55,6 +55,10 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
     def layer(self) -> proto.Layer:
         return self._stretcher.layer
 
+    @property
+    def text(self) -> TextUi:
+        return self._text
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._stretcher.set_rectangle(rectangle)
 

@@ -9,7 +9,9 @@ DEFAULT = "Calibri"
 
 _NAME_OF = {
     "TypewriterRegular": "GNUTypewriter Standard",
-    "PT_Serif-Web-Regular": "PT Serif"
+    "PT_Serif-Web-Regular": "PT Serif",
+    "MonospaceRegular": "Monospace Regular",
+    "Roboto": "Roboto"
 }
 
 
