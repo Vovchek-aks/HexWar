@@ -35,7 +35,7 @@ class GameEngine:
     def update(self, dt: float) -> None:
         self._scene_switcher.update(self._window.close)
         self._scene_switcher.scene.update()
-        self._window.set_caption(f"{self._caption} {1 / dt:.0f}FPS")
+        # print(f"FPS: {1 / dt:.0f}")
 
     def draw(self) -> None:
         self._scene_switcher.scene.draw()

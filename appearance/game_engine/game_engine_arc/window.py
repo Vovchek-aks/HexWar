@@ -1,8 +1,13 @@
+from pathlib import Path
+
 import arcade as arc
+from pyglet.image import load
 
 from mathematics.vector import Vector2Int, Vector2
 from appearance.input.clicks_catcher.click import Click, MouseButtons
 from observer import Event, OnEventSubscriber
+
+ICON_FILE = Path("data") / "sprites" / "icon.png"
 
 
 class Window(arc.Window):
@@ -17,6 +22,7 @@ class Window(arc.Window):
                          fixed_rate=dt,
                          fullscreen=is_fullscreen)
         self.background_color = arc.color.BLACK
+        self.set_icon(load(str(ICON_FILE)))
 
         self._pressed_keys = set[int]()
 
