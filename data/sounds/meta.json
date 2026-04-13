@@ -17,5 +17,36 @@
       "type": "loop",
       "elements": "figures/silo_loop"
     }
+  },
+  "effects": {
+    "creation_landing": "effects/creation_landing.wav",
+    "pulling_initiation": "effects/pulling_initiation.wav",
+    "conversion": "effects/conversion.wav",
+    "capture": "effects/capture.wav",
+    "oreshnik_flight": "effects/oreshnik_flight.wav",
+    "explosions": [
+      "effects/explosion_1.wav",
+      "effects/explosion_2.wav",
+      "effects/explosion_3.wav",
+      "effects/explosion_4.wav"
+    ],
+    "attacks": [
+      "effects/attack1.wav",
+      "effects/attack2.wav"
+    ],
+    "inf_reloc": [
+      "effects/inf_reloc_1.wav",
+      "effects/inf_reloc_2.wav"
+    ],
+    "tank_reloc": [
+      "effects/tank_reloc_1.wav",
+      "effects/tank_reloc_2.wav",
+      "effects/tank_reloc_3.wav"
+    ],
+    "mt_reloc": [
+      "effects/mt_reloc_1.wav",
+      "effects/mt_reloc_2.wav",
+      "effects/mt_reloc_3.wav"
+    ]
   }
 }

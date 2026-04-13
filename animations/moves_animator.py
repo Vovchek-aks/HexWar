@@ -6,22 +6,25 @@ from attrs import frozen, define, field
 import arcade as arc
 
 import appearance.protocols as proto
+from appearance.audio.animation_sounds import AnimationSounds
+from appearance.audio.sound.sounds_loader import SoundsLoader
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.creation import Creation
 from core.moves.oreshnik_launch import OreshnikLaunch
+from core.moves.pulling import PullingInitiation
 from core.moves.relocations import Assault, Relocation
 from core.moves.conversion import Conversion
-from core.protocols import Move, GameSession, Figure, Cells, Empty, Creatable
+from core.protocols import Move, GameSession, Figure, Cells, Empty
 from mathematics.angle import Angle
 from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS, get_direction
 from mathematics.parabola import Parabola
 from mathematics.vector import Vector2Int, Vector2
 from statuses import Status, MISSING
 
-ATTACK_EXPLOSION_DURATION = .3
+ATTACK_EXPLOSION_DURATION = .6
 ATTACK_KICKBACK_DURATION = .1
 ATTACK_KICKBACK_RETURN_DURATION = .2
 ATTACK_KICKBACK_DELTA_POSITION = DISTANCE_BETWEEN_CENTERS / 4
@@ -38,7 +41,6 @@ CAPTURE_SCALE_RATIO = 1.5
 
 CONVERSION_DURATION = .5
 
-# CREATION_DURATION_RATIO = .3
 CREATION_DURATION = .5
 CREATION_FIRST_JUMP_DURATION_RATIO = .6
 CREATION_FIRST_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 3
@@ -50,9 +52,9 @@ ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION = 4
 ORESHNIK_LAUNCH_VISIBLE_FLIGHT_DURATION_RATIO = .95
 ORESHNIK_LAUNCH_FLIGHT_HEIGHT = DISTANCE_BETWEEN_CENTERS * 20
 ORESHNIK_LAUNCH_ROCKET_SCALE = 1
-ORESHNIK_LAUNCH_EXPLOSIONS_DURATION = .3
+ORESHNIK_LAUNCH_EXPLOSIONS_DURATION = .6
 ORESHNIK_LAUNCH_EXPLOSIONS_MIN_LAG = 0
-ORESHNIK_LAUNCH_EXPLOSIONS_MAX_LAG = .3
+ORESHNIK_LAUNCH_EXPLOSIONS_MAX_LAG = .5
 ORESHNIK_LAUNCH_EXPLOSIONS_MIN_SCALE_RATIO = 1
 ORESHNIK_LAUNCH_EXPLOSIONS_MAX_SCALE_RATIO = 1.5
 
@@ -69,11 +71,13 @@ class MovesAnimator(proto.MovesAnimator):
              session: GameSession,
              in_game_time: InGameTime,
              *,
-             speed_multiplier: float = 1) -> "MovesAnimator":
+             speed_multiplier: float = 1,
+             volume_multiplier: float = 1) -> "MovesAnimator":
         sprites_loader = SpritesLoader.from_meta()
         self = cls(
             speed_multiplier,
             in_game_time,
+            SoundsLoader.from_meta().load_animation_sounds(volume_multiplier),
             figures_drawer,
             camera,
             session,
@@ -85,6 +89,8 @@ class MovesAnimator(proto.MovesAnimator):
 
     _speed_multiplier: float
     _in_game_time: InGameTime
+
+    _sounds: AnimationSounds
 
     _figures_drawer: proto.FiguresDrawer
     _camera: proto.Camera
@@ -99,6 +105,8 @@ class MovesAnimator(proto.MovesAnimator):
             return MISSING
 
         match move:
+            case PullingInitiation():
+                return self._play_sound(self._sounds.pulling_initiation)
             case Attack(from_coord=coord, to_coord=target):
                 return self._get_attack_animation(coord, target)
             case (Relocation(from_coord=from_coord, to_coord=to_coord) |
@@ -122,8 +130,9 @@ class MovesAnimator(proto.MovesAnimator):
         assert False
 
     def _get_attack_animation(self, coord: Vector2Int, target: Vector2Int) -> Animation:
-        explosion = chain(self._show_sprite(self._explosion, target, ATTACK_EXPLOSION_DURATION,
-                                            scale_ratio=ATTACK_EXPLOSION_SCALE_RATIO),
+        explosion = chain(_group(self._play_sound(self._sounds.attack),
+                                 self._show_sprite(self._explosion, target, ATTACK_EXPLOSION_DURATION,
+                                                   scale_ratio=ATTACK_EXPLOSION_SCALE_RATIO)),
                           _cycle(_no_animation))
 
         def _set_sprite_position(sprite: arc.Sprite, position: Vector2) -> None:
@@ -141,8 +150,10 @@ class MovesAnimator(proto.MovesAnimator):
         return _group(explosion, kickback)
 
     def _get_relocation_animation(self, from_coord: Vector2Int, to_coord: Vector2Int) -> Animation:
-        return self._jump(self._get_sprite_at(from_coord), from_coord, to_coord,
-                          RELOCATION_JUMP_HEIGHT, RELOCATION_JUMP_DURATION)
+        figure = type(self._session.board[from_coord].figure)
+        return chain(self._play_sound_fully(self._sounds.relocation_for(figure)),
+                     self._jump(self._get_sprite_at(from_coord), from_coord, to_coord,
+                                RELOCATION_JUMP_HEIGHT, RELOCATION_JUMP_DURATION))
 
     def _get_conversion_animation(self, coord: Vector2Int, figure_type: type[Figure]) -> Animation:
         sprite_index = self._figures_drawer.get_figure_index(coord)
@@ -162,7 +173,8 @@ class MovesAnimator(proto.MovesAnimator):
             finally:
                 self._on_board_sprites_drawer.remove_sprite(target_index)
 
-        return chain(self._rotate_sprite(sprite, lambda t: Angle(rotation_speed * t), half_rotation_duration),
+        return chain(self._play_sound_fully(self._sounds.conversion),
+                     self._rotate_sprite(sprite, lambda t: Angle(rotation_speed * t), half_rotation_duration),
                      self._hide_figure(coord),
                      other_half())
 
@@ -184,12 +196,18 @@ class MovesAnimator(proto.MovesAnimator):
         return chain(_group(self._resize_sprite(sprite, lambda t: size_changing_speed * t, resizing_duration),
                             self._rotate_sprite(sprite, lambda t: angle_changing_speed * t, resizing_duration)),
                      _call(lambda: set_rotation(initial_rotation + CAPTURE_SHAKE_ANGLE)),
-                     self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * -t * 6, shaking_duration / 3),
-                     _call(lambda: set_rotation(initial_rotation + -CAPTURE_SHAKE_ANGLE)),
-                     self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * t * 6, shaking_duration / 3),
-                     _call(lambda: set_rotation(initial_rotation + CAPTURE_SHAKE_ANGLE)),
-                     self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * -t * 6, shaking_duration / 3),
-                     _call(lambda: set_rotation(initial_rotation + -CAPTURE_SHAKE_ANGLE)),
+                     _group(chain(self._play_sound_fully(self._sounds.capture), _cycle(_no_animation)),
+                            chain(self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * -t * 6,
+                                                      shaking_duration / 3),
+                                  _call(lambda: set_rotation(initial_rotation + -CAPTURE_SHAKE_ANGLE)))),
+                     _group(chain(self._play_sound_fully(self._sounds.capture), _cycle(_no_animation)),
+                            chain(self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * t * 6,
+                                                      shaking_duration / 3),
+                                  _call(lambda: set_rotation(initial_rotation + CAPTURE_SHAKE_ANGLE)))),
+                     _group(chain(self._play_sound_fully(self._sounds.capture), _cycle(_no_animation)),
+                            chain(self._rotate_sprite(sprite, lambda t: shaking_angle_changing_speed * -t * 6,
+                                                      shaking_duration / 3),
+                                  _call(lambda: set_rotation(initial_rotation + -CAPTURE_SHAKE_ANGLE)))),
                      _group(self._resize_sprite(sprite, lambda t: -size_changing_speed * t, resizing_duration),
                             self._rotate_sprite(sprite, lambda t: angle_changing_speed * t, resizing_duration)),
                      _call(lambda: self._figures_drawer.update_cell(coord)))
@@ -218,7 +236,8 @@ class MovesAnimator(proto.MovesAnimator):
                                     self._resize_sprite(sprite,
                                                         lambda t: first_resizing_speed * (t / first_jump_duration) ** 2,
                                                         first_jump_duration)),
-                             _group(self._jump(sprite, coord, coord, CREATION_SECOND_JUMP_HEIGHT, second_jump_duration),
+                             _group(self._play_sound(self._sounds.creation_landing),
+                                    self._jump(sprite, coord, coord, CREATION_SECOND_JUMP_HEIGHT, second_jump_duration),
                                     self._resize_sprite(sprite, lambda t: second_resizing_speed * t,
                                                         second_jump_duration)))
         finally:
@@ -227,12 +246,13 @@ class MovesAnimator(proto.MovesAnimator):
     def _get_oreshnik_launch_animation(self, coord: Vector2Int, target: Vector2Int, targets: Cells) -> Animation:
         explosions = _group(*[chain(self._sleep(random.uniform(ORESHNIK_LAUNCH_EXPLOSIONS_MIN_LAG,
                                                                ORESHNIK_LAUNCH_EXPLOSIONS_MAX_LAG)),
-                                    self._show_sprite(self._explosion,
-                                                      self._session.board.coordinates_of(explosion_cell),
-                                                      ORESHNIK_LAUNCH_EXPLOSIONS_DURATION,
-                                                      scale_ratio=random.uniform(
-                                                          ORESHNIK_LAUNCH_EXPLOSIONS_MIN_SCALE_RATIO,
-                                                          ORESHNIK_LAUNCH_EXPLOSIONS_MAX_SCALE_RATIO)),
+                                    _group(self._play_sound(self._sounds.explosion),
+                                           self._show_sprite(self._explosion,
+                                                             self._session.board.coordinates_of(explosion_cell),
+                                                             ORESHNIK_LAUNCH_EXPLOSIONS_DURATION,
+                                                             scale_ratio=random.uniform(
+                                                                 ORESHNIK_LAUNCH_EXPLOSIONS_MIN_SCALE_RATIO,
+                                                                 ORESHNIK_LAUNCH_EXPLOSIONS_MAX_SCALE_RATIO))),
                                     (self._hide_figure(self._session.board.coordinates_of(explosion_cell))
                                      if Empty not in explosion_cell.figure.FLAGS else
                                      _no_animation()),
@@ -266,7 +286,8 @@ class MovesAnimator(proto.MovesAnimator):
             up = self._camera.orientation.rotation.inverse.apply(-Vector2.right()).normalize()
             return -Angle(up.angle_to(direction))
 
-        flight = chain(_group(self._jump(rocket, *jump_arguments),
+        flight = chain(_group(chain(self._play_sound(self._sounds.oreshnik_flight), _cycle(_no_animation)),
+                              self._jump(rocket, *jump_arguments),
                               self._rotate_sprite(rocket, get_rocket_delta_angle, ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION),
                               self._sleep(ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION *
                                           ORESHNIK_LAUNCH_VISIBLE_FLIGHT_DURATION_RATIO)),
@@ -310,6 +331,18 @@ class MovesAnimator(proto.MovesAnimator):
             return delta_position
 
         return get_delta_position
+
+    def _play_sound(self, sound: proto.SoundPlayer) -> Animation:
+        try:
+            sound.play(self._speed_multiplier)
+            while not sound.is_completed:
+                yield
+        finally:
+            sound.stop()
+
+    def _play_sound_fully(self, sound: proto.SoundPlayer) -> Animation:
+        yield
+        sound.play(self._speed_multiplier)
 
     def _get_sprite_at(self, coord: Vector2Int) -> arc.Sprite:
         return self._on_board_sprites_drawer.get_sprite(self._figures_drawer.get_figure_index(coord))

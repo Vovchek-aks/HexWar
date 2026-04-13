@@ -12,8 +12,8 @@ from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.game_engine.game_engine_arc.updater import Updater
-from appearance.graphics.animations.moves_animator import MovesAnimator
-from appearance.graphics.animations.moves_animators_switcher import MovesAnimatorsSwitcher
+from animations.moves_animator import MovesAnimator
+from animations.moves_animators_switcher import MovesAnimatorsSwitcher
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
@@ -148,7 +148,7 @@ def load_game(screen_shape: Vector2Int,
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
     bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
-                                               in_game_time, speed_multiplier=3)
+                                               in_game_time, speed_multiplier=3, volume_multiplier=.2)
     # speed_multiplier=float('inf'))
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 

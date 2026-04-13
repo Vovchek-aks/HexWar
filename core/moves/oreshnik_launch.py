@@ -41,6 +41,9 @@ class OreshnikLaunch(proto.Move):
         if from_cell.owner is to_cell.owner:
             return INVALID
 
+        if not to_cell.figure.is_on_land():
+            return INVALID
+
         if (launcher := figure.FLAGS.get(proto.CanLaunchOreshnik)) is MISSING:
             return INVALID
 

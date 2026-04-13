@@ -12,7 +12,7 @@ from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.game_engine.game_engine_arc.updater import Updater
-from appearance.graphics.animations.moves_animator import MovesAnimator
+from animations.moves_animator import MovesAnimator
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
