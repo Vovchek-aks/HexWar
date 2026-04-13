@@ -93,6 +93,9 @@ _NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
 _PLAY = "PLAY"
 _TUTORIAL = "TUTORIAL"
 _EXIT = "EXIT"
+_AUTHORS = "AUTHORS"
+_CYBER_DILF_ROLES = "CYBER_DILF_ROLES"
+_DIVAN_ROLES = "DIVAN_ROLES"
 _SETTINGS = "SETTINGS"
 _BACK = "BACK"
 
@@ -181,6 +184,15 @@ class Language:
 
     def get_exit_message(self) -> str:
         return self._ui[_EXIT]
+
+    def get_authors_message(self) -> str:
+        return self._ui[_AUTHORS]
+
+    def get_cyber_dilf_roles(self) -> list[str]:
+        return self._ui[_CYBER_DILF_ROLES]
+
+    def get_divan_roles(self) -> list[str]:
+        return self._ui[_DIVAN_ROLES]
 
     def get_settings_message(self) -> str:
         return self._ui[_SETTINGS]

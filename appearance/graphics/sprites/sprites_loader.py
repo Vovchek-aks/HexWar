@@ -27,6 +27,12 @@ _BACKGROUND_2_TO_3 = "background_2_to_3"
 _LOADING_SCREEN = "loading_screen"
 _MENU_BACKGROUND = "menu_background"
 _LOGO = "logo"
+_CYBER_DILF = "_cyberDilf"
+_DIVAN = "divan"
+_GITHUB = "github"
+_TELEGRAM = "telegram"
+_TWITCH = "twitch"
+_ITCH = "itch"
 
 _EFFECTS = "effects"
 _EXPLOSION = "explosion"
@@ -93,6 +99,30 @@ class SpritesLoader:
 
     def load_logo(self) -> Sprite:
         sprite_info = self._ui[_LOGO]
+        return self._load_sprite(sprite_info)
+
+    def load_cyber_dilf(self) -> Sprite:
+        sprite_info = self._ui[_CYBER_DILF]
+        return self._load_sprite(sprite_info)
+
+    def load_divan(self) -> Sprite:
+        sprite_info = self._ui[_DIVAN]
+        return self._load_sprite(sprite_info)
+
+    def load_github(self) -> Sprite:
+        sprite_info = self._ui[_GITHUB]
+        return self._load_sprite(sprite_info)
+
+    def load_telegram(self) -> Sprite:
+        sprite_info = self._ui[_TELEGRAM]
+        return self._load_sprite(sprite_info)
+
+    def load_twitch(self) -> Sprite:
+        sprite_info = self._ui[_TWITCH]
+        return self._load_sprite(sprite_info)
+
+    def load_itch(self) -> Sprite:
+        sprite_info = self._ui[_ITCH]
         return self._load_sprite(sprite_info)
 
     def load_explosion(self) -> Sprite:

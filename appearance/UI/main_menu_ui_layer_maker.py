@@ -1,4 +1,5 @@
 from typing import Callable
+import webbrowser
 
 from attrs import frozen, Factory
 
@@ -8,7 +9,7 @@ from appearance.UI.button import ButtonUi
 from appearance.UI.image import ImageUi
 from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
-from appearance.UI.text import TextData, TextUi
+from appearance.UI.text import TextData, TextUi, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ValueChanger, ListChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
@@ -45,6 +46,7 @@ class MainMenuUiLayerMaker:
         play_was_pressed = Event[None]()
         tutorial_was_pressed = Event[None]()
         settings_was_pressed = Event[None]()
+        authors_was_pressed = Event[None]()
         to_main_menu_was_pressed = Event[None]()
 
         tabs = list[Layer]()
@@ -54,14 +56,107 @@ class MainMenuUiLayerMaker:
                 tab.set_activity(False)
 
         tabs.append(self._make_label(turn_tabs_off, to_main_menu_was_pressed, play_was_pressed, tutorial_was_pressed,
-                                     settings_was_pressed, on_exit_was_pressed))
+                                     settings_was_pressed, authors_was_pressed, on_exit_was_pressed))
         tabs.append(self._make_map_selection(turn_tabs_off, get_saved_maps(), on_map_was_selected, play_was_pressed,
                                              to_main_menu_was_pressed))
         tabs.append(self._make_map_selection(turn_tabs_off, get_tutorials(), on_map_was_selected, tutorial_was_pressed,
                                              to_main_menu_was_pressed))
         tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
+        tabs.append(self._make_authors_tab(turn_tabs_off, authors_was_pressed, to_main_menu_was_pressed))
 
         return Layer.as_multiple(tabs)
+
+    def _make_authors_tab(self,
+                          turn_tabs_off: Callable[[], None],
+                          tab_was_selected: Event[None],
+                          to_main_menu_was_pressed: Event[None]) -> Layer:
+        synchroniser = TextSizeSynchroniser()
+        cyber_dilf = self._make_author_card("_cyberDilf",
+                                            self._sprites_loader.load_cyber_dilf(),
+                                            self._language.get_cyber_dilf_roles(),
+                                            synchroniser,
+                                            [
+                                                self._make_link(self._sprites_loader.load_telegram(),
+                                                                "https://t.me/cyberdilf"),
+                                                self._make_link(self._sprites_loader.load_twitch(),
+                                                                "https://www.twitch.tv/cyberdilff"),
+                                                self._make_link(self._sprites_loader.load_itch(),
+                                                                "https://cyberdilf.itch.io/"),
+                                                self._make_link(self._sprites_loader.load_github(),
+                                                                "https://github.com/Vovchek-aks"),
+                                            ])
+        divan = self._make_author_card("Divan0_0",
+                                       self._sprites_loader.load_divan(),
+                                       self._language.get_divan_roles(),
+                                       synchroniser,
+                                       [
+                                           self._make_link(self._sprites_loader.load_github(),
+                                                           "https://github.com/Ktoto888550303"),
+                                       ])
+        layout = HorizontalLayoutUi(self._get_authors_cards_rectangle(), margin_ratio=.21)
+        layout.append(cyber_dilf)
+        layout.append(divan)
+        synchroniser.synchronise()
+        layers = [
+            layout,
+            self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
+        ]
+        layer = Layer.as_multiple(layers)
+        layer.set_activity(False)
+        tab_was_selected.subscribe(lambda: layer.set_activity(True))
+        return layer
+
+    def _get_authors_cards_rectangle(self) -> Rectangle:
+        width_to_height = 2.5 / 3
+        center = self._screen_shape.as_vector2 / 2
+        height = self._screen_shape.y
+        width = height * width_to_height
+        shape = Vector2(width, height)
+        return Rectangle(center - shape / 2, shape)
+
+    def _make_link(self, sprite: proto.Sprite, url: str) -> ButtonUi:
+        button = ButtonUi.make(self._drawer,
+                               Rectangle(Vector2.zero(), sprite.shape.as_vector2),
+                               sprite,
+                               TextData.debug(' '))
+        button.was_clicked.subscribe(lambda: webbrowser.open(url))
+        return button
+
+    def _make_author_card(self,
+                          name: str,
+                          sprite: proto.Sprite,
+                          roles: list[str],
+                          roles_synchroniser: TextSizeSynchroniser,
+                          links: list[ButtonUi]) -> VerticalLayoutUi:
+        max_links = 4
+        max_roles = 6
+        assert len(links) <= max_links
+        assert len(roles) <= max_links
+
+        card = VerticalLayoutUi(Rectangle(Vector2.zero(), Vector2(200, 600)))
+        roles_ui = VerticalLayoutUi(Rectangle.zero())
+        card.append(roles_ui)
+        while len(roles) < max_roles:
+            roles.insert(0, ' ')
+        for role in roles:
+            data = TextDataBuilder.like(TextData.debug(role)).button_font().build()
+            line = TextUi.make(self._drawer, Rectangle.zero(), data, is_center=True)
+            roles_ui.append(line)
+            roles_synchroniser.append(line)
+
+        card.append(ImageUi.make(self._drawer, Rectangle(Vector2.zero(), Vector2.ones()), sprite))
+
+        links_ui = HorizontalLayoutUi(Rectangle.zero())
+        links_halfer = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2)
+        card.append(links_halfer)
+        links_halfer.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(name), is_center=True))
+        links_halfer.append(links_ui)
+        links_halfer.append(BoxUi(Rectangle.zero()))
+        links_ui.extend(links)
+        while len(links_ui) < max_links:
+            links_ui.append(BoxUi(Rectangle.zero()))
+
+        return card
 
     def _make_map_selection(self,
                             turn_tabs_off: Callable[[], None],
@@ -235,7 +330,7 @@ class MainMenuUiLayerMaker:
         text = f"{text}:"
         margin_ratio = .13
         horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio)
-        horizontal.append(text := TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
+        horizontal.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
         horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
             self._sprites_loader, self._drawer))
@@ -292,11 +387,12 @@ class MainMenuUiLayerMaker:
                     play_was_pressed: Event[None],
                     tutorial_was_pressed: Event[None],
                     settings_was_pressed: Event[None],
+                    authors_was_pressed: Event[None],
                     exit_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
-            self._make_buttons(play_was_pressed, tutorial_was_pressed, settings_was_pressed, exit_was_pressed,
-                               turn_tabs_off),
+            self._make_buttons(play_was_pressed, tutorial_was_pressed, settings_was_pressed, authors_was_pressed,
+                               exit_was_pressed, turn_tabs_off),
             self._make_build_info(),
         ]
 
@@ -309,22 +405,27 @@ class MainMenuUiLayerMaker:
                       play_was_pressed: Event[None],
                       tutorial_was_pressed: Event[None],
                       settings_was_pressed: Event[None],
+                      authors_was_pressed: Event[None],
                       exit_was_pressed: Callable[[], None],
                       turn_tabs_off: Callable[[], None]) -> Layer:
         layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.1)
         layout.append(self._make_menu_button(self._language.get_play_message(), play_was_pressed.invoke, turn_tabs_off))
 
-        horizontal = HorizontalLayoutUi(Rectangle.zero())
-        layout.append(horizontal)
-        horizontal.append(tutorial := self._make_menu_button(self._language.get_tutorial_message(),
-                                                             tutorial_was_pressed.invoke, turn_tabs_off))
-        horizontal.append(settings := self._make_menu_button(self._language.get_settings_message(),
-                                                             settings_was_pressed.invoke, turn_tabs_off))
+        tutorial_settings = HorizontalLayoutUi(Rectangle.zero())
+        layout.append(tutorial_settings)
+        tutorial_settings.append(tutorial := self._make_menu_button(self._language.get_tutorial_message(),
+                                                                    tutorial_was_pressed.invoke, turn_tabs_off))
+        tutorial_settings.append(settings := self._make_menu_button(self._language.get_settings_message(),
+                                                                    settings_was_pressed.invoke, turn_tabs_off))
 
-        layout.append(close := self._make_null_button(self._language.get_exit_message(), exit_was_pressed))
+        authors_close = HorizontalLayoutUi(Rectangle.zero())
+        layout.append(authors_close)
+        authors_close.append(authors := self._make_menu_button(self._language.get_authors_message(),
+                                                               authors_was_pressed.invoke, turn_tabs_off))
+        authors_close.append(close := self._make_null_button(self._language.get_exit_message(), exit_was_pressed))
 
         synchroniser = TextSizeSynchroniser()
-        synchroniser.extend(tutorial.text, settings.text, close.text)
+        synchroniser.extend(tutorial.text, settings.text, close.text, authors.text)
         synchroniser.synchronise()
 
         return layout.layer

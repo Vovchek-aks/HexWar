@@ -127,6 +127,48 @@
         0,
         0
       ]
+    },
+    "_cyberDilf": {
+      "file": "ui/_cyberDilf.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "divan": {
+      "file": "ui/divan.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "github": {
+      "file": "ui/github.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "telegram": {
+      "file": "ui/telegram.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "twitch": {
+      "file": "ui/twitch.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "itch": {
+      "file": "ui/itch_io.png",
+      "pivot": [
+        0,
+        0
+      ]
     }
   },
   "effects": {
