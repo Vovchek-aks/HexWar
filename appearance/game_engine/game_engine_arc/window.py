@@ -19,10 +19,10 @@ class Window(arc.Window):
                          vsync=True,
                          samples=2,
                          update_rate=dt,
-                         fixed_rate=dt,
-                         fullscreen=is_fullscreen)
+                         fixed_rate=dt)
         self.background_color = arc.color.BLACK
         self.set_icon(load(str(ICON_FILE)))
+        self.set_fullscreen(fullscreen=is_fullscreen)
 
         self._pressed_keys = set[int]()
 
