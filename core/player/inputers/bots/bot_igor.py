@@ -470,6 +470,8 @@ class BotIgor(proto.Bot):
             targets.append((silos,
                             cells.with_owner(player) & cells.with_figure(PRODUCTION)))
 
+        if not targets:
+            return
         target = max(targets, key=lambda t: (len(t[1].as_set()), -len(t[0].as_set())))
 
         for cell in target[0]:

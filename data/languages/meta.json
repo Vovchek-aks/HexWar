@@ -1,4 +1,26 @@
 {
   "English": "eng.json",
-  "Русский": "rus.json"
+  "Русский": "rus.json",
+  "Deutsch": "deu.json",
+  "Français": "fra.json",
+  "Español": "spa.json",
+  "Português": "por.json",
+  "Polski": "pol.json",
+  "Српскохрватски": "srp_cyr.json",
+  "Srpskohrvatski": "srp_lat.json",
+  "Български": "bul.json",
+  "Українська": "ukr.json",
+  "Қазақша": "kaz.json",
+  "Čeština": "ces.json",
+  "Italiano": "ita.json",
+  "Türkçe": "tur.json",
+  "Nederlands": "nld.json",
+  "Svenska": "swe.json",
+  "Magyar": "hun.json",
+  "Română": "rom.json",
+  "Ελληνικά": "ell.json",
+  "Suomi": "fin.json",
+  "Norsk (bokmål)": "nor.json",
+  "Dansk": "dan.json",
+  "Tiếng Việt": "vie.json"
 }

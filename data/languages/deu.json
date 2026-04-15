@@ -1,0 +1,466 @@
+{
+  "loading": {
+    "MAP_LOADING": "Karte laden...",
+    "INTERMEDIATE_PREPARING": "Vorbereitung...",
+    "UI_MAKING": "UI erstellen...",
+    "SPRITE_LOADING": "Sprites laden..."
+  },
+  "ui": {
+    "PLAY": "Spielen",
+    "TUTORIAL": "Anleitung",
+    "EXIT": "Beenden",
+    "AUTHORS": "Autoren",
+    "CYBER_DILF_ROLES": [
+      "Ideengeber",
+      "Programmierer",
+      "Level-Designer",
+      "Audio-Designer"
+    ],
+    "DIVAN_ROLES": [
+      "Zeichner",
+      "Art-Designer"
+    ],
+    "SETTINGS": "Einstellungen",
+    "PAUSE": "Pause",
+    "CONTINUE": "Fortsetzen",
+    "TO_MAIN_MENU": "Speichern & Ende",
+    "BACK": "Zurück",
+    "END_TURN_BTN": "Zug beenden",
+    "PLAYERS_TURN_TEXT": "{player} ist dran",
+    "TO_MOTORIZATION": "Motorisieren",
+    "CAPTURE": "Erbeuten",
+    "TO_INFANTRY": "Entmotorisieren",
+    "ATTACK": "Angreifen",
+    "INITIATE_PULLING": "Anhängen",
+    "TERMINATE_PULLING": "Abhängen",
+    "LAUNCH_ORESHNIK": "Oreshnik starten",
+    "COMBAT_ABILITY": "KK: {combat_ability}",
+    "STRENGTH": "Angriff: {base}",
+    "HARDNESS": "Abwehr: {base}",
+    "COMBAT_ABILITY_COST": "Kostet {combat_ability_cost}% KK",
+    "COST": "Kosten",
+    "FLOW": "Bilanz",
+    "SELECTED_PLAYERS": "Ausgewählte Spieler",
+    "NO_PLAYERS_SELECTED": "Keine Spieler gewählt!",
+    "PAGE": "Teil",
+    "NEXT": "Weiter",
+    "MUSIC_VOLUME": "Musiklautstärke",
+    "VOICE_VOLUME": "Sprachlautstärke",
+    "EFFECTS_VOLUME": "Effektlautstärke",
+    "SELECTED_LANGUAGE": "Sprache",
+    "AUDIO": "Audio",
+    "OTHER": "Sonstiges",
+    "APPLY": "Anwenden"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Kann benachbarte",
+        "Feindtechnik erbeuten.",
+        "Kann sich in",
+        "motorisierte Inf.",
+        "verwandeln."
+      ],
+      "Tank": [
+        "Erhält Bonus auf",
+        "Angriff/Abwehr durch",
+        "nahe Infanterie."
+      ],
+      "Artillery": [
+        "Greift Feinde bis",
+        "zu 3 Felder weit an.",
+        "Kann nicht selbst",
+        "fahren."
+      ],
+      "Bunker": [
+        "Erhöht Abwehr",
+        "angrenzender Inf."
+      ],
+      "MissileSilo": [
+        "Startet Oreshnik-",
+        "Raketen."
+      ],
+      "Town": [
+        "Produziert Dollars."
+      ],
+      "LightFactory": [
+        "Produziert Konsumgut,",
+        "verbraucht Dollars."
+      ],
+      "HeavyFactory": [
+        "Produziert Schwermasch.",
+        "Braucht Konsumgut & $."
+      ],
+      "Capital": [
+        "Verdoppelt Ertrag",
+        "angrenzender Bauten,",
+        "verhindert Annexion",
+        "umzingelter Gebiete."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Zerstört jede Figur",
+        "bis 3 Felder entfernt."
+      ],
+      "TANK_ATTACK": [
+        "Zerstört schwächere",
+        "Nachbarfigur."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Hängt Artillerie an",
+        "gewählte Infanterie."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Hängt Artillerie ab."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Feuert Oreshnik auf",
+        "Zielfeld und Umgebung."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Macht diese Figur",
+        "zur Infanterie."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Erbeutet schwächere",
+        "Nachbarfigur."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Motorisiert diese",
+        "Figur."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Willkommen zur",
+          "Grundausbildung!",
+          "Hier lernst du",
+          "die Mechaniken."
+        ],
+        [
+          "Das Schlachtfeld",
+          "ist gerastert.",
+          "Jedes Feld hat",
+          "einen Besitzer."
+        ],
+        [
+          "Wasserfelder sind",
+          "unpassierbar.",
+          "Keine Figur kann",
+          "darauf ziehen."
+        ],
+        [
+          "Kamera: WASD.",
+          "Drehen: Q/E.",
+          "Mausrad zoomt."
+        ],
+        [
+          "Linksklick auf",
+          "Figur öffnet Menü",
+          "mit allen Werten."
+        ],
+        [
+          "Die meisten Figuren",
+          "springen auf Nach-",
+          "barfelder. Wähle",
+          "Einheit, Rechtsklick",
+          "auf Zielfeld."
+        ],
+        [
+          "Feindfeld wird nach",
+          "Sprung deins.",
+          "Auf eigene Felder",
+          "springen unmöglich."
+        ],
+        [
+          "Springst du auf",
+          "besetztes Feindfeld,",
+          "wird Feind zerstört.",
+          "Du nimmst Platz ein."
+        ],
+        [
+          "Jede Bewegung",
+          "verbraucht Kampfkraft",
+          "(KK). Siehe Menü."
+        ],
+        [
+          "KK regeneriert nur",
+          "bei Zugende. Spieler",
+          "sind abwechselnd dran."
+        ],
+        [
+          "Erste Mission:",
+          "Erobere feindliche",
+          "Hauptstadt."
+        ]
+      ],
+      [
+        [
+          "Jetzt zu Zahlen,",
+          "die Kämpfe lenken.",
+          "Jede Figur hat",
+          "Angriff & Abwehr."
+        ],
+        [
+          "Ist Feindabwehr",
+          "höher als dein",
+          "Angriff, kein Sprung",
+          "möglich."
+        ],
+        [
+          "Figuren geben",
+          "Abwehrbonus auf",
+          "Nachbarfelder."
+        ],
+        [
+          "Neue Einheiten:",
+          "Bunker und",
+          "Artillerie."
+        ],
+        [
+          "Bunker: harte Nuss,",
+          "stärkt Abwehr",
+          "naher Infanterie."
+        ],
+        [
+          "Artillerie feuert",
+          "bis 3 Felder weit,",
+          "ohne direkten Kampf."
+        ],
+        [
+          "Artillerie allein",
+          "unbeweglich. Hänge",
+          "sie an Infanterie."
+        ],
+        [
+          "Gespann springt nur,",
+          "wenn beide genug KK",
+          "haben."
+        ],
+        [
+          "Feindartillerie",
+          "erbeuten: Inf. ran,",
+          "Knopf 'Erbeuten',",
+          "Rechtsklick auf Ziel."
+        ],
+        [
+          "Erbeuten scheitert,",
+          "wenn Feindinf. oder",
+          "Bunker schützt."
+        ],
+        [
+          "Nimm die Insel ein.",
+          "Erbeute Artillerie",
+          "und brich Bunker."
+        ]
+      ],
+      [
+        [
+          "Guter Kommandant",
+          "siegt mit List.",
+          "Blutvergießen",
+          "vermeiden."
+        ],
+        [
+          "Umzingelung: Feind-",
+          "gebiet abtrennen.",
+          "Am Zugende droht",
+          "Annexion."
+        ],
+        [
+          "Sehr lukrativ!",
+          "Ausnahme: Hauptstadt",
+          "im Kessel verhindert",
+          "Annexion."
+        ],
+        [
+          "Kessel mit Wasser-",
+          "zugang und Inf.",
+          "wird nicht annektiert",
+          "(Versorgung über See)."
+        ],
+        [
+          "Bei Annexion flieht",
+          "Feindinfanterie,",
+          "andere Figuren",
+          "wechseln intakt zu dir."
+        ],
+        [
+          "Wir sind gut gelandet.",
+          "Schneide Nachschub ab",
+          "und rücke vor."
+        ]
+      ],
+      [
+        [
+          "Mehr Mobilität:",
+          "Infanterie kann",
+          "motorisieren."
+        ],
+        [
+          "Motorisierte hat",
+          "mehr KK und kann",
+          "Artillerie ziehen."
+        ],
+        [
+          "Motorisierte",
+          "verhindert Annexion",
+          "von Küstenkesseln."
+        ],
+        [
+          "Nachteil: mot.",
+          "Inf. kann keine",
+          "Feinde erbeuten."
+        ],
+        [
+          "Panzer zerstören",
+          "Bunker, an denen",
+          "Inf. scheitert."
+        ],
+        [
+          "Panzer können wie",
+          "Artillerie erbeutet",
+          "werden."
+        ],
+        [
+          "Panzerstärke wächst",
+          "neben eigener Inf.",
+          "Bonus auf Ang./Abw."
+        ],
+        [
+          "Schnellbewegung:",
+          "Shift halten, über",
+          "Fernfeld fahren,",
+          "Rechtsklick. Weg",
+          "wird gesucht."
+        ],
+        [
+          "Feind hier ahnungslos.",
+          "Nimm seine Panzer",
+          "und reib ihn auf."
+        ]
+      ],
+      [
+        [
+          "Jetzt ernst:",
+          "Armee vernichten",
+          "reicht nicht, wenn",
+          "Wirtschaft stark."
+        ],
+        [
+          "Lösung: Raketen-",
+          "silo. Es feuert",
+          "Oreshnik-Raketen."
+        ],
+        [
+          "Oreshnik: Langstrecke.",
+          "Erbeute Silo für",
+          "eigene Zwecke."
+        ],
+        [
+          "Start auf Feindfeld",
+          "mindestens 10 Felder",
+          "vom Silo entfernt."
+        ],
+        [
+          "Rakete trifft Ziel",
+          "und sechs zufällige",
+          "Nachbarfelder."
+        ],
+        [
+          "Diese Verrückten auf",
+          "Madagaskar glauben,",
+          "Meer schützt sie.",
+          "Drück den roten",
+          "Knopf."
+        ]
+      ],
+      [
+        [
+          "Letzte Lektion:",
+          "Wirtschaft zählt.",
+          "Figuren kosten",
+          "Ressourcen."
+        ],
+        [
+          "Drei Ressourcen:",
+          "Dollars, Konsumgut,",
+          "Schwermaschinen.",
+          "Stadt macht $,",
+          "Leichtfabrik Konsum,",
+          "Schwerfabrik Masch."
+        ],
+        [
+          "Geheimnis: Hauptstadt",
+          "verdoppelt Ertrag",
+          "angrenzender Bauten.",
+          "Input gleich, mehr",
+          "Output."
+        ],
+        [
+          "Feindgebäude",
+          "(Hauptst., Stadt,",
+          "Fabriken) sind",
+          "erbeutbar."
+        ],
+        [
+          "Figur bauen: leeres",
+          "Feld wählen, Icon",
+          "drücken. Kosten",
+          "oben links."
+        ],
+        [
+          "Viele Figuren",
+          "kosten Unterhalt",
+          "pro Zug. Siehe Menü."
+        ],
+        [
+          "Fehlender Unterhalt:",
+          "Figur entfernt.",
+          "Fabriken stehen still",
+          "bei Rohstoffmangel."
+        ],
+        [
+          "Oben links: Vorrat",
+          "und erwartetes",
+          "Einkommen (Klammern).",
+          "Stillstand nicht",
+          "einberechnet."
+        ],
+        [
+          "Ausbildung beendet!",
+          "Du weißt genug, um",
+          "Truppen zu führen.",
+          "Erobere die ganze",
+          "Insel. Feind wehrt",
+          "sich jetzt."
+        ],
+        [
+          "Mechanikwissen ist",
+          "halber Sieg. Rest",
+          "ist dein Verstand.",
+          "Vorwärts!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Infantry": "Infanterie",
+    "Tank": "Panzer",
+    "Artillery": "Artillerie",
+    "Motorization": "Mot. Inf.",
+    "Bunker": "Bunker",
+    "MissileSilo": "Raketensilo",
+    "Town": "Stadt",
+    "LightFactory": "Leichtfabrik",
+    "HeavyFactory": "Schwerfabrik",
+    "Capital": "Hauptstadt"
+  },
+  "resources": {
+    "Dollars": "Dollars",
+    "LightIndustryProducts": "Konsumgut",
+    "HeavyIndustryProducts": "Schwermasch"
+  }
+}

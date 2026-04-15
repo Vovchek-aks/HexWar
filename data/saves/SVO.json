@@ -10,8 +10,8 @@
       "RESOURCES": {
         "Dollars": 500000,
         "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
+        "LightIndustryProducts": 20000,
+        "HeavyIndustryProducts": 1000
       }
     },
     {

@@ -1,0 +1,433 @@
+{
+  "loading": {
+    "MAP_LOADING": "Cargando mapa...",
+    "INTERMEDIATE_PREPARING": "Preparando...",
+    "UI_MAKING": "Creando interfaz...",
+    "SPRITE_LOADING": "Cargando sprites..."
+  },
+  "ui": {
+    "PLAY": "Jugar",
+    "TUTORIAL": "Tutorial",
+    "EXIT": "Salir",
+    "AUTHORS": "Autores",
+    "CYBER_DILF_ROLES": [
+      "Autor de idea",
+      "Programador",
+      "Diseñador niveles",
+      "Diseñador audio"
+    ],
+    "DIVAN_ROLES": [
+      "Artista",
+      "Diseñador arte"
+    ],
+    "SETTINGS": "Ajustes",
+    "PAUSE": "Pausa",
+    "CONTINUE": "Continuar",
+    "TO_MAIN_MENU": "Guardar y salir",
+    "BACK": "Atrás",
+    "END_TURN_BTN": "Fin turno",
+    "PLAYERS_TURN_TEXT": "Turno de {player}",
+    "TO_MOTORIZATION": "Motorizar",
+    "CAPTURE": "Capturar",
+    "TO_INFANTRY": "Desmotorizar",
+    "ATTACK": "Atacar",
+    "INITIATE_PULLING": "Enganchar",
+    "TERMINATE_PULLING": "Desenganchar",
+    "LAUNCH_ORESHNIK": "Lanzar Oreshnik",
+    "COMBAT_ABILITY": "CC: {combat_ability}",
+    "STRENGTH": "Ataque: {base}",
+    "HARDNESS": "Defensa: {base}",
+    "COMBAT_ABILITY_COST": "Cuesta {combat_ability_cost}% CC",
+    "COST": "Coste",
+    "FLOW": "Balance",
+    "SELECTED_PLAYERS": "Jugadores elegidos",
+    "NO_PLAYERS_SELECTED": "¡Nadie elegido!",
+    "PAGE": "Parte",
+    "NEXT": "Siguiente",
+    "MUSIC_VOLUME": "Volumen música",
+    "VOICE_VOLUME": "Volumen voces",
+    "EFFECTS_VOLUME": "Volumen efectos",
+    "SELECTED_LANGUAGE": "Idioma",
+    "AUDIO": "Audio",
+    "OTHER": "Otro",
+    "APPLY": "Aplicar"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Captura vehículo",
+        "enemigo adyacente.",
+        "Puede convertirse",
+        "en inf. motorizada."
+      ],
+      "Tank": [
+        "Bonif. ataque/defensa",
+        "con infantería cerca."
+      ],
+      "Artillery": [
+        "Ataca a 3 casillas,",
+        "no se mueve sola."
+      ],
+      "Bunker": [
+        "Sube defensa de",
+        "infantería adyacente."
+      ],
+      "MissileSilo": [
+        "Lanza misiles",
+        "Oreshnik."
+      ],
+      "Town": [
+        "Genera dólares."
+      ],
+      "LightFactory": [
+        "Produce bs. consumo,",
+        "gasta dólares."
+      ],
+      "HeavyFactory": [
+        "Produce ind. pesada,",
+        "consume bs. consumo y $."
+      ],
+      "Capital": [
+        "Dobla producción",
+        "adyacente, evita",
+        "anexión de bolsa."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Destruye figura a",
+        "3 casillas."
+      ],
+      "TANK_ATTACK": [
+        "Destruye figura",
+        "adyacente más débil."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Engancha artillería",
+        "a infantería."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Desengancha artillería."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Lanza Oreshnik sobre",
+        "casilla y alrededores."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Convierte en infantería."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Captura figura",
+        "adyacente más débil."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Motoriza esta unidad."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Bienvenido al",
+          "curso básico.",
+          "Aprende mecánicas."
+        ],
+        [
+          "Campo de batalla",
+          "dividido en casillas.",
+          "Cada una con dueño."
+        ],
+        [
+          "Agua intransitable.",
+          "Ninguna unidad",
+          "puede entrar."
+        ],
+        [
+          "Cámara: WASD.",
+          "Rotar: Q/E.",
+          "Rueda ratón zoom."
+        ],
+        [
+          "Clic izq. en unidad",
+          "abre menú con sus",
+          "características."
+        ],
+        [
+          "La mayoría saltan",
+          "a casilla adyacente.",
+          "Selecciona + clic",
+          "der. en destino."
+        ],
+        [
+          "Casilla enemiga",
+          "se vuelve tuya.",
+          "No saltar a casilla",
+          "con unidad propia."
+        ],
+        [
+          "Si casilla enemiga",
+          "ocupada, enemigo",
+          "destruido, ocupas",
+          "su lugar."
+        ],
+        [
+          "Cada movimiento",
+          "gasta Capacidad Combate",
+          "(CC). Ver menú."
+        ],
+        [
+          "CC se recupera al",
+          "pasar turno. Turnos",
+          "alternos."
+        ],
+        [
+          "Misión 1: captura",
+          "capital enemiga."
+        ]
+      ],
+      [
+        [
+          "Números clave:",
+          "ataque y defensa."
+        ],
+        [
+          "Si defensa enemiga",
+          "> tu ataque, no",
+          "puedes saltar ahí."
+        ],
+        [
+          "Unidades proyectan",
+          "defensa a casillas",
+          "adyacentes."
+        ],
+        [
+          "Nuevas unidades:",
+          "Búnker y Artillería."
+        ],
+        [
+          "Búnker: duro, mejora",
+          "defensa inf. cercana."
+        ],
+        [
+          "Artillería golpea",
+          "hasta 3 casillas,",
+          "sin contacto directo."
+        ],
+        [
+          "Artillería inmóvil",
+          "sola. Engánchala a",
+          "infantería."
+        ],
+        [
+          "Enganche salta si",
+          "ambos tienen CC",
+          "suficiente."
+        ],
+        [
+          "Captura artillería:",
+          "infantería al lado,",
+          "botón Capturar, clic",
+          "der. en objetivo."
+        ],
+        [
+          "Falla si inf. o",
+          "búnker enemigo",
+          "protege."
+        ],
+        [
+          "Limpia la isla.",
+          "Captura artillería,",
+          "rompe búnkeres."
+        ]
+      ],
+      [
+        [
+          "Buen comandante",
+          "vence con astucia.",
+          "Evita masacres."
+        ],
+        [
+          "Cerco: aísla casillas",
+          "enemigas. Al final",
+          "del turno, anexión",
+          "posible."
+        ],
+        [
+          "¡Muy rentable!",
+          "Excepto si capital",
+          "está en la bolsa."
+        ],
+        [
+          "Bolsa con costa e",
+          "infantería resiste",
+          "(suministro naval)."
+        ],
+        [
+          "Si hay anexión, inf.",
+          "enemiga huye, otras",
+          "unidades se unen."
+        ],
+        [
+          "Bien desembarcados.",
+          "Corta comunicaciones",
+          "y avanza."
+        ]
+      ],
+      [
+        [
+          "Movilidad: infantería",
+          "se motoriza."
+        ],
+        [
+          "Motorizada tiene más",
+          "CC y arrastra",
+          "artillería."
+        ],
+        [
+          "Motorizada impide",
+          "anexión de bolsas",
+          "costeras."
+        ],
+        [
+          "Desventaja: no captura."
+        ],
+        [
+          "Tanques destruyen",
+          "búnkeres. Infantería",
+          "sola no puede."
+        ],
+        [
+          "Tanques capturables",
+          "como artillería."
+        ],
+        [
+          "Tanque potenciado",
+          "junto a infantería",
+          "aliada."
+        ],
+        [
+          "Movimiento rápido:",
+          "Shift + clic der.",
+          "en casilla lejana.",
+          "Busca ruta libre."
+        ],
+        [
+          "Enemigo desprevenido.",
+          "Toma sus tanques",
+          "y destrúyelo."
+        ]
+      ],
+      [
+        [
+          "Hablando en serio:",
+          "destruir ejército no",
+          "basta si economía",
+          "fuerte."
+        ],
+        [
+          "Solución: silo de",
+          "misiles Oreshnik."
+        ],
+        [
+          "Oreshnik: largo",
+          "alcance. Captura",
+          "silo enemigo."
+        ],
+        [
+          "Dispara a casilla",
+          "enemiga a ≥10 del",
+          "silo."
+        ],
+        [
+          "Impacta objetivo y",
+          "seis casillas",
+          "cercanas al azar."
+        ],
+        [
+          "Esos locos de",
+          "Madagascar creen",
+          "que el mar protege.",
+          "Aprieta el botón rojo."
+        ]
+      ],
+      [
+        [
+          "Última lección:",
+          "economía. Unidades",
+          "cuestan recursos."
+        ],
+        [
+          "Tres recursos:",
+          "Dólares, BienesConsumo,",
+          "IndustriaPesada.",
+          "Ciudad -> $.",
+          "Fab. ligera -> BsCons.",
+          "Fab. pesada -> IndPes."
+        ],
+        [
+          "Secreto: Capital",
+          "dobla producción",
+          "adyacente. Misma",
+          "entrada, más salida."
+        ],
+        [
+          "Edificios enemigos",
+          "(capital, ciudad,",
+          "fábricas) capturables."
+        ],
+        [
+          "Crear unidad: casilla",
+          "vacía, icono. Coste",
+          "visible arriba izq."
+        ],
+        [
+          "Muchas unidades",
+          "tienen coste de",
+          "mantenimiento/turno.",
+          "Ver menú."
+        ],
+        [
+          "Sin mantenimiento:",
+          "unidad eliminada.",
+          "Fábricas paran si",
+          "falta insumo."
+        ],
+        [
+          "Arriba izq.: reservas",
+          "e ingreso esperado",
+          "(paréntesis). Paros",
+          "no incluidos."
+        ],
+        [
+          "¡Curso terminado!",
+          "Dirige tropas a",
+          "victoria. Conquista",
+          "toda la isla. El",
+          "enemigo responderá."
+        ],
+        [
+          "Conocer mecánicas",
+          "es mitad victoria.",
+          "La otra, tu ingenio.",
+          "¡Adelante!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Infantry": "Infantería",
+    "Tank": "Tanque",
+    "Artillery": "Artillería",
+    "Motorization": "Inf. Motorizada",
+    "Bunker": "Búnker",
+    "MissileSilo": "Silo de misiles",
+    "Town": "Ciudad",
+    "LightFactory": "Fábrica ligera",
+    "HeavyFactory": "Fábrica pesada",
+    "Capital": "Capital"
+  },
+  "resources": {
+    "Dollars": "Dólares",
+    "LightIndustryProducts": "Bs. Consumo",
+    "HeavyIndustryProducts": "Ind. Pesada"
+  }
+}

@@ -1,0 +1,437 @@
+{
+  "loading": {
+    "MAP_LOADING": "Ładowanie mapy...",
+    "INTERMEDIATE_PREPARING": "Przygotowanie...",
+    "UI_MAKING": "Tworzenie UI...",
+    "SPRITE_LOADING": "Ładowanie sprite'ów..."
+  },
+  "ui": {
+    "PLAY": "Graj",
+    "TUTORIAL": "Samouczek",
+    "EXIT": "Wyjdź",
+    "AUTHORS": "Autorzy",
+    "CYBER_DILF_ROLES": [
+      "Autor pomysłu",
+      "Programista",
+      "Level designer",
+      "Audio designer"
+    ],
+    "DIVAN_ROLES": [
+      "Artysta",
+      "Projektant grafiki"
+    ],
+    "SETTINGS": "Ustawienia",
+    "PAUSE": "Pauza",
+    "CONTINUE": "Kontynuuj",
+    "TO_MAIN_MENU": "Zapisz i wyjdź",
+    "BACK": "Wstecz",
+    "END_TURN_BTN": "Koniec tury",
+    "PLAYERS_TURN_TEXT": "Tura: {player}",
+    "TO_MOTORIZATION": "Zmobilizuj",
+    "CAPTURE": "Przejmij",
+    "TO_INFANTRY": "Demobilizuj",
+    "ATTACK": "Atakuj",
+    "INITIATE_PULLING": "Doczep",
+    "TERMINATE_PULLING": "Odepnij",
+    "LAUNCH_ORESHNIK": "Odpal Oreshnik",
+    "COMBAT_ABILITY": "BZ: {combat_ability}",
+    "STRENGTH": "Atak: {base}",
+    "HARDNESS": "Obrona: {base}",
+    "COMBAT_ABILITY_COST": "Koszt {combat_ability_cost}% BZ",
+    "COST": "Koszt",
+    "FLOW": "Bilans",
+    "SELECTED_PLAYERS": "Wybrani gracze",
+    "NO_PLAYERS_SELECTED": "Nie wybrano!",
+    "PAGE": "Część",
+    "NEXT": "Dalej",
+    "MUSIC_VOLUME": "Głośność muzyki",
+    "VOICE_VOLUME": "Głośność głosów",
+    "EFFECTS_VOLUME": "Głośność efektów",
+    "SELECTED_LANGUAGE": "Język",
+    "AUDIO": "Audio",
+    "OTHER": "Inne",
+    "APPLY": "Zastosuj"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Przejmuje sąsiedni",
+        "pojazd wroga.",
+        "Może zmienić się",
+        "w piech. zmot."
+      ],
+      "Tank": [
+        "Premia do ataku/obrony",
+        "od bliskiej piechoty."
+      ],
+      "Artillery": [
+        "Atakuje do 3 pól,",
+        "nie porusza się",
+        "samodzielnie."
+      ],
+      "Bunker": [
+        "Zwiększa obronę",
+        "sąsiedniej piechoty."
+      ],
+      "MissileSilo": [
+        "Odpala rakiety",
+        "Oreshnik."
+      ],
+      "Town": [
+        "Produkuje dolary."
+      ],
+      "LightFactory": [
+        "Prod. dobra konsump.,",
+        "zużywa dolary."
+      ],
+      "HeavyFactory": [
+        "Prod. przem. ciężki,",
+        "zużywa dobra kons. i $."
+      ],
+      "Capital": [
+        "Podwaja produkcję",
+        "sąsiednich budynków,",
+        "blokuje aneksję",
+        "okrążonego rejonu."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Niszczy figurę do",
+        "3 pól odległości."
+      ],
+      "TANK_ATTACK": [
+        "Niszczy słabszą",
+        "sąsiednią figurę."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Doczepia artylerię",
+        "do wybranej piechoty."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Odepina artylerię."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Odpala Oreshnik na",
+        "pole i okolice."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Zamienia w piechotę."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Przejmuje słabszą",
+        "sąsiednią figurę."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Zamienia w piech.",
+        "zmotoryzowaną."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Witaj na szkoleniu",
+          "podstawowym.",
+          "Poznasz mechaniki."
+        ],
+        [
+          "Pole bitwy podzielone",
+          "na pola. Każde ma",
+          "właściciela."
+        ],
+        [
+          "Woda nieprzekraczalna.",
+          "Żadna jednostka",
+          "nie wejdzie."
+        ],
+        [
+          "Kamera: WASD.",
+          "Obrót: Q/E.",
+          "Kółko myszy zoom."
+        ],
+        [
+          "Lewy przycisk na",
+          "jednostce otwiera",
+          "menu z danymi."
+        ],
+        [
+          "Większość skacze na",
+          "sąsiednie pole.",
+          "Zaznacz + PPM na cel."
+        ],
+        [
+          "Wrogie pole staje się",
+          "twoje po skoku.",
+          "Nie skoczysz na",
+          "własną jednostkę."
+        ],
+        [
+          "Jeśli wrogie pole",
+          "zajęte, wróg ginie,",
+          "ty zajmujesz miejsce."
+        ],
+        [
+          "Każdy ruch kosztuje",
+          "Bojową Zdolność (BZ).",
+          "Patrz menu."
+        ],
+        [
+          "BZ odnawia się po",
+          "zakończeniu tury.",
+          "Gracze grają na zmianę."
+        ],
+        [
+          "Misja 1: przejmij",
+          "wrogą stolicę."
+        ]
+      ],
+      [
+        [
+          "Liczby decydujące:",
+          "atak i obrona."
+        ],
+        [
+          "Gdy obrona wroga",
+          "> twój atak, nie",
+          "skoczysz."
+        ],
+        [
+          "Jednostki dają",
+          "obronę sąsiednim",
+          "polom."
+        ],
+        [
+          "Nowe jednostki:",
+          "Bunkier i Artyleria."
+        ],
+        [
+          "Bunkier: twardy orzech,",
+          "zwiększa obronę",
+          "pobliskiej piechoty."
+        ],
+        [
+          "Artyleria strzela",
+          "do 3 pól, bez",
+          "bezpośredniego starcia."
+        ],
+        [
+          "Artyleria nie chodzi",
+          "sama. Doczep do",
+          "piechoty."
+        ],
+        [
+          "Zestaw skacze, jeśli",
+          "oboje mają dość BZ."
+        ],
+        [
+          "Przejmij artylerię:",
+          "piechota obok,",
+          "klawisz Przejmij,",
+          "PPM na cel."
+        ],
+        [
+          "Nie przejmiesz, jeśli",
+          "wróg ma obok piechotę",
+          "lub bunkier."
+        ],
+        [
+          "Oczyść wyspę.",
+          "Przejmij artylerię,",
+          "zniszcz bunkry."
+        ]
+      ],
+      [
+        [
+          "Dobry dowódca",
+          "wygrywa sprytem.",
+          "Unikaj rozlewu krwi."
+        ],
+        [
+          "Okrążenie: odetnij",
+          "wrogie pola. Pod",
+          "koniec tury możliwa",
+          "aneksja."
+        ],
+        [
+          "Bardzo opłacalne!",
+          "Wyjątek: stolica",
+          "wewnątrz kotła."
+        ],
+        [
+          "Kocioł z dostępem",
+          "do wody i piechotą",
+          "opiera się (zaopatrzenie)."
+        ],
+        [
+          "Przy aneksji piechota",
+          "wroga ucieka, reszta",
+          "sprzętu przechodzi."
+        ],
+        [
+          "Dobrze wylądowaliśmy.",
+          "Przetnij komunikację",
+          "i ruszaj dalej."
+        ]
+      ],
+      [
+        [
+          "Mobilność: piechota",
+          "może się zmotoryzować."
+        ],
+        [
+          "Zmotoryzowana ma",
+          "więcej BZ i ciągnie",
+          "artylerię."
+        ],
+        [
+          "Zmotoryzowana blokuje",
+          "aneksję kotłów",
+          "nadbrzeżnych."
+        ],
+        [
+          "Wada: nie przejmuje",
+          "jednostek."
+        ],
+        [
+          "Czołgi niszczą bunkry.",
+          "Piechota sama nie da",
+          "rady."
+        ],
+        [
+          "Czołgi można przejąć",
+          "jak artylerię."
+        ],
+        [
+          "Czołg silniejszy przy",
+          "sojuszniczej piechocie."
+        ],
+        [
+          "Szybki ruch: Shift",
+          "+ PPM na odległe",
+          "pole. Automatyczna",
+          "ścieżka."
+        ],
+        [
+          "Wróg nieświadom.",
+          "Zabierz jego czołgi",
+          "i rozjedź go."
+        ]
+      ],
+      [
+        [
+          "Poważna rozmowa:",
+          "zniszczenie armii",
+          "nie wystarczy, jeśli",
+          "ekonomia silna."
+        ],
+        [
+          "Rozwiązanie: silos",
+          "rakietowy Oreshnik."
+        ],
+        [
+          "Oreshnik: daleki",
+          "zasięg. Przejmij",
+          "wrogi silos."
+        ],
+        [
+          "Odpalenie na wrogie",
+          "pole ≥10 pól od",
+          "silosu."
+        ],
+        [
+          "Rakieta uderza w cel",
+          "i sześć losowych",
+          "pól wokół."
+        ],
+        [
+          "Ci wariaci z",
+          "Madagaskaru myślą,",
+          "że morze ich chroni.",
+          "Wciśnij czerwony",
+          "guzik."
+        ]
+      ],
+      [
+        [
+          "Ostatnia lekcja:",
+          "ekonomia. Jednostki",
+          "kosztują surowce."
+        ],
+        [
+          "Trzy surowce:",
+          "Dolary, DobraKonsump.,",
+          "PrzemysłCiężki.",
+          "Miasto -> $.",
+          "Fabryka lekka ->",
+          "DobraKonsump.",
+          "Fabryka ciężka ->",
+          "PrzemysłCiężki."
+        ],
+        [
+          "Sekret: Stolica",
+          "podwaja produkcję",
+          "sąsiednich budynków.",
+          "Ten sam wkład, więcej",
+          "zysku."
+        ],
+        [
+          "Wrogie budynki",
+          "(stolica, miasto,",
+          "fabryki) do przejęcia."
+        ],
+        [
+          "Tworzenie jednostki:",
+          "puste pole, ikona.",
+          "Koszt widoczny u góry."
+        ],
+        [
+          "Wiele jednostek ma",
+          "koszt utrzymania na",
+          "turę. Sprawdź menu."
+        ],
+        [
+          "Brak środków na",
+          "utrzymanie: jednostka",
+          "znika. Fabryki stają,",
+          "gdy brak surowców."
+        ],
+        [
+          "Zapasy i oczekiwany",
+          "dochód (w nawiasach)",
+          "w lewym górnym rogu.",
+          "Przestoje nieuwzględn."
+        ],
+        [
+          "Szkolenie ukończone!",
+          "Poprowadź wojska do",
+          "zwycięstwa. Zajmij",
+          "całą wyspę. Wróg",
+          "będzie się bronił."
+        ],
+        [
+          "Znajomość mechanik",
+          "to połowa sukcesu.",
+          "Reszta to twój spryt.",
+          "Naprzód!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Infantry": "Piechota",
+    "Tank": "Czołg",
+    "Artillery": "Artyleria",
+    "Motorization": "Piech. Zmot.",
+    "Bunker": "Bunkier",
+    "MissileSilo": "Silos rakietowy",
+    "Town": "Miasto",
+    "LightFactory": "Fabryka lekka",
+    "HeavyFactory": "Fabryka ciężka",
+    "Capital": "Stolica"
+  },
+  "resources": {
+    "Dollars": "Dolary",
+    "LightIndustryProducts": "DobraKonsump.",
+    "HeavyIndustryProducts": "PrzemysłCiężki"
+  }
+}

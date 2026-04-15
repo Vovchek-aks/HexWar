@@ -1,0 +1,432 @@
+{
+  "loading": {
+    "MAP_LOADING": "Laddar karta...",
+    "INTERMEDIATE_PREPARING": "Förbereder...",
+    "UI_MAKING": "Skapar gränssnitt...",
+    "SPRITE_LOADING": "Laddar sprites..."
+  },
+  "ui": {
+    "PLAY": "Spela",
+    "TUTORIAL": "Träning",
+    "EXIT": "Avsluta",
+    "AUTHORS": "Författare",
+    "CYBER_DILF_ROLES": [
+      "Idéskapare",
+      "Programmerare",
+      "Bandesigner",
+      "Ljuddesigner"
+    ],
+    "DIVAN_ROLES": [
+      "Tecknare",
+      "Grafisk formgivare"
+    ],
+    "SETTINGS": "Inställningar",
+    "PAUSE": "Paus",
+    "CONTINUE": "Fortsätt",
+    "TO_MAIN_MENU": "Spara & avsluta",
+    "BACK": "Tillbaka",
+    "END_TURN_BTN": "Avsluta drag",
+    "PLAYERS_TURN_TEXT": "{player}s tur",
+    "TO_MOTORIZATION": "Motorisera",
+    "CAPTURE": "Erövra",
+    "TO_INFANTRY": "Demotorisera",
+    "ATTACK": "Anfall",
+    "INITIATE_PULLING": "Koppla på",
+    "TERMINATE_PULLING": "Koppla av",
+    "LAUNCH_ORESHNIK": "Avfyra Oreshnik",
+    "COMBAT_ABILITY": "SF: {combat_ability}",
+    "STRENGTH": "Anfall: {base}",
+    "HARDNESS": "Försvar: {base}",
+    "COMBAT_ABILITY_COST": "Kostar {combat_ability_cost}% SF",
+    "COST": "Kostnad",
+    "FLOW": "Balans",
+    "SELECTED_PLAYERS": "Valda spelare",
+    "NO_PLAYERS_SELECTED": "Inga spelare valda!",
+    "PAGE": "Del",
+    "NEXT": "Nästa",
+    "MUSIC_VOLUME": "Musikvolym",
+    "VOICE_VOLUME": "Röstvolym",
+    "EFFECTS_VOLUME": "Effektvolym",
+    "SELECTED_LANGUAGE": "Språk",
+    "AUDIO": "Ljud",
+    "OTHER": "Övrigt",
+    "APPLY": "Verkställ"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Kan erövra intilliggande",
+        "fientligt fordon.",
+        "Kan bli motoriserad."
+      ],
+      "Tank": [
+        "Får anfalls-/försvars-",
+        "bonus av närstående",
+        "infanteri."
+      ],
+      "Artillery": [
+        "Anfaller upp till 3 rutor,",
+        "kan inte röra sig själv."
+      ],
+      "Bunker": [
+        "Ökar försvar hos",
+        "närstående infanteri."
+      ],
+      "MissileSilo": [
+        "Avfyrar Oreshnik-robotar."
+      ],
+      "Town": [
+        "Genererar dollar."
+      ],
+      "LightFactory": [
+        "Producerar konsumtions-",
+        "varor, förbrukar $."
+      ],
+      "HeavyFactory": [
+        "Producerar tung industri,",
+        "förbrukar kons.varor & $."
+      ],
+      "Capital": [
+        "Fördubblar utbyte hos",
+        "intilliggande byggnader,",
+        "förhindrar annektering",
+        "av inringat område."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Förstör valfri figur",
+        "upp till 3 rutor bort."
+      ],
+      "TANK_ATTACK": [
+        "Förstör svagare",
+        "intilliggande figur."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Kopplar artilleri till",
+        "valt infanteri."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Kopplar loss artilleri."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Avfyrar Oreshnik mot",
+        "målruta och omgivning."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Gör denna figur",
+        "till infanteri."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Erövrar svagare",
+        "intilliggande figur."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Motoriserar denna figur."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Välkommen till",
+          "grundutbildningen.",
+          "Du lär dig spelets",
+          "mekanik här."
+        ],
+        [
+          "Slagfältet är",
+          "rutindelat. Varje",
+          "ruta har en ägare."
+        ],
+        [
+          "Vatten är oframkom-",
+          "ligt. Inga figurer",
+          "kan gå dit."
+        ],
+        [
+          "Kamera: WASD.",
+          "Rotera: Q/E.",
+          "Mushjul zoomar."
+        ],
+        [
+          "Vänsterklicka figur",
+          "för att öppna meny",
+          "med egenskaper."
+        ],
+        [
+          "De flesta hoppar till",
+          "intilliggande ruta.",
+          "Välj + högerklicka mål."
+        ],
+        [
+          "Fientlig ruta blir din",
+          "efter hopp. Du kan",
+          "inte hoppa på egen",
+          "upptagen ruta."
+        ],
+        [
+          "Om fientlig ruta",
+          "är upptagen, förstörs",
+          "fienden, du tar plats."
+        ],
+        [
+          "Varje rörelse kostar",
+          "Stridsförmåga (SF).",
+          "Se meny."
+        ],
+        [
+          "SF återhämtas endast",
+          "vid dragslut. Spelare",
+          "turas om."
+        ],
+        [
+          "Första uppdrag:",
+          "erövra fiendens",
+          "högkvarter."
+        ]
+      ],
+      [
+        [
+          "Nu om siffror som",
+          "avgör strid: anfall",
+          "och försvar."
+        ],
+        [
+          "Om fiendens försvar",
+          "> ditt anfall, kan",
+          "du inte hoppa dit."
+        ],
+        [
+          "Figurer ger försvar",
+          "till intilliggande",
+          "rutor, skyddar kamrater."
+        ],
+        [
+          "Nya enheter: Bunker",
+          "och Artilleri."
+        ],
+        [
+          "Bunker: hårt nötskal,",
+          "ökar försvar hos",
+          "närstående infanteri."
+        ],
+        [
+          "Artilleri slår upp",
+          "till 3 rutor bort,",
+          "utan direktkontakt."
+        ],
+        [
+          "Artilleri går ej själv.",
+          "Koppla till infanteri."
+        ],
+        [
+          "Kopplat par hoppar",
+          "bara om båda har",
+          "tillräcklig SF."
+        ],
+        [
+          "Erövra artilleri:",
+          "infanteri intill,",
+          "knapp Erövra, höger-",
+          "klicka mål."
+        ],
+        [
+          "Misslyckas om fientligt",
+          "infanteri eller bunker",
+          "vaktar."
+        ],
+        [
+          "Rensa ön. Erövra",
+          "artilleri, slå ut",
+          "bunkrar."
+        ]
+      ],
+      [
+        [
+          "God befälhavare",
+          "vinner med list.",
+          "Undvik blodspillan."
+        ],
+        [
+          "Inringning: skär av",
+          "fientliga rutor. Efter",
+          "drag kan de annekteras."
+        ],
+        [
+          "Mycket lönsamt!",
+          "Undantag: högkvarter",
+          "i inringningen."
+        ],
+        [
+          "Inringning med vatten-",
+          "anslutning och infanteri",
+          "står emot (sjöförsörjning)."
+        ],
+        [
+          "Vid annektering flyr",
+          "fientligt infanteri,",
+          "övriga figurer blir",
+          "dina oskadda."
+        ],
+        [
+          "Vi har landstigit väl.",
+          "Skär av förbindelser",
+          "och avancera."
+        ]
+      ],
+      [
+        [
+          "Rörlighet: infanteri",
+          "kan motoriseras."
+        ],
+        [
+          "Motoriserat har mer",
+          "SF och drar artilleri."
+        ],
+        [
+          "Motoriserat hindrar",
+          "annektering av kust-",
+          "fickor."
+        ],
+        [
+          "Nackdel: kan inte",
+          "erövra figurer."
+        ],
+        [
+          "Stridsvagnar förstör",
+          "bunkrar. Infanteri",
+          "ensamt räcker inte."
+        ],
+        [
+          "Stridsvagnar kan",
+          "erövras som artilleri."
+        ],
+        [
+          "Vagnens styrka ökar",
+          "nära eget infanteri."
+        ],
+        [
+          "Snabb förflyttning:",
+          "Shift + högerklicka",
+          "avlägsen ruta. Vägen",
+          "söks automatiskt."
+        ],
+        [
+          "Fienden ovetande.",
+          "Ta hans vagnar och",
+          "krossa honom."
+        ]
+      ],
+      [
+        [
+          "Allvarligt talat:",
+          "förstöra armé räcker",
+          "inte om ekonomin",
+          "är stark."
+        ],
+        [
+          "Lösning: robotsilo",
+          "Oreshnik."
+        ],
+        [
+          "Oreshnik: lång räckvidd.",
+          "Erövra fiendens silo."
+        ],
+        [
+          "Avfyrning mot fientlig",
+          "ruta ≥10 från silo."
+        ],
+        [
+          "Träffar mål och sex",
+          "slumpmässiga rutor",
+          "runt om."
+        ],
+        [
+          "Dårarna på",
+          "Madagaskar tror",
+          "havet skyddar dem.",
+          "Tryck på röda knappen."
+        ]
+      ],
+      [
+        [
+          "Sista lektionen:",
+          "ekonomi. Figurer",
+          "kostar resurser."
+        ],
+        [
+          "Tre resurser: Dollar,",
+          "Konsumtionsvaror,",
+          "TungIndustri.",
+          "Stad -> $.",
+          "Lätt fabrik ->",
+          "Konsumtionsvaror.",
+          "Tung fabrik ->",
+          "TungIndustri."
+        ],
+        [
+          "Hemlighet: Högkvarter",
+          "fördubblar utbyte hos",
+          "intilliggande byggnader.",
+          "Samma insats, mer",
+          "produktion."
+        ],
+        [
+          "Fientliga byggnader",
+          "kan erövras."
+        ],
+        [
+          "Skapa figur: tom ruta,",
+          "ikon. Kostnad syns",
+          "uppe till vänster."
+        ],
+        [
+          "Många figurer har",
+          "underhållskostnad per",
+          "drag. Se meny."
+        ],
+        [
+          "Saknas medel för",
+          "underhåll: figur",
+          "försvinner. Fabriker",
+          "står stilla utan råvara."
+        ],
+        [
+          "Lager och förväntad",
+          "inkomst (parentes)",
+          "uppe till vänster.",
+          "Stillestånd ej medräknat."
+        ],
+        [
+          "Utbildningen klar!",
+          "Led dina trupper till",
+          "seger. Erövra hela ön.",
+          "Fienden slår nu tillbaka."
+        ],
+        [
+          "Kunskap om mekaniken",
+          "är halva segern.",
+          "Resten är din",
+          "fintlighet. Framåt!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Infantry": "Infanteri",
+    "Tank": "Stridsvagn",
+    "Artillery": "Artilleri",
+    "Motorization": "Motoriserad",
+    "Bunker": "Bunker",
+    "MissileSilo": "Robotsilo",
+    "Town": "Stad",
+    "LightFactory": "Lätt fabrik",
+    "HeavyFactory": "Tung fabrik",
+    "Capital": "Högkvarter"
+  },
+  "resources": {
+    "Dollars": "Dollar",
+    "LightIndustryProducts": "Konsumtionsvaror",
+    "HeavyIndustryProducts": "TungIndustri"
+  }
+}
