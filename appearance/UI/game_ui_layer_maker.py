@@ -50,7 +50,7 @@ class GameUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
-        resources, players_turn = self._make_dollars_and_player_turn()
+        resources, players_turn = self._make_resources_and_player_turn()
 
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
@@ -63,7 +63,7 @@ class GameUiLayerMaker:
         return Layer.as_multiple(layers)
 
     def make_for_multibot(self) -> Layer:
-        resources, players_turn = self._make_dollars_and_player_turn()
+        resources, players_turn = self._make_resources_and_player_turn()
 
         layers = [
             players_turn,
@@ -88,7 +88,7 @@ class GameUiLayerMaker:
                            tutorial_index: int,
                            on_end_turn_button_was_clicked: Callable[[], None],
                            current_turn_ui_maker: Callable[[ButtonUi], Layer]) -> Layer:
-        resources, players_turn = self._make_dollars_and_player_turn()
+        resources, players_turn = self._make_resources_and_player_turn()
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
 
@@ -129,7 +129,7 @@ class GameUiLayerMaker:
         self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
 
-    def _make_dollars_and_player_turn(self) -> tuple[VerticalLayoutUi, TextUi]:
+    def _make_resources_and_player_turn(self) -> tuple[VerticalLayoutUi, TextUi]:
         players_turn = TextUi.make(self._drawer,
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
@@ -449,7 +449,7 @@ class GameUiLayerMaker:
                                   RectangleBuilder(self._screen_shape)
                                   .from_left_bottom()
                                   .move(background_margin)
-                                  .set_shape(Vector2(300, 200))
+                                  .set_shape(Vector2(375, 250))
                                   .adjust_for_shape()
                                   .build(),
                                   self._sprites_loader.load_background_3_to_2())

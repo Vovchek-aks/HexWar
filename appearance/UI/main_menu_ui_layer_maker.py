@@ -409,14 +409,14 @@ class MainMenuUiLayerMaker:
                       exit_was_pressed: Callable[[], None],
                       turn_tabs_off: Callable[[], None]) -> Layer:
         layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.1)
-        layout.append(self._make_menu_button(self._language.get_play_message(), play_was_pressed.invoke, turn_tabs_off))
-
         tutorial_settings = HorizontalLayoutUi(Rectangle.zero())
         layout.append(tutorial_settings)
         tutorial_settings.append(tutorial := self._make_menu_button(self._language.get_tutorial_message(),
                                                                     tutorial_was_pressed.invoke, turn_tabs_off))
         tutorial_settings.append(settings := self._make_menu_button(self._language.get_settings_message(),
                                                                     settings_was_pressed.invoke, turn_tabs_off))
+
+        layout.append(self._make_menu_button(self._language.get_play_message(), play_was_pressed.invoke, turn_tabs_off))
 
         authors_close = HorizontalLayoutUi(Rectangle.zero())
         layout.append(authors_close)
@@ -500,4 +500,4 @@ def _get_version_message() -> str:
     version = "version"
     date = "date"
     build_info = read_build_info()
-    return f"{build_info[version_prefix]} {build_info[version]} from {build_info[date]}"
+    return f"{build_info[version_prefix]} {build_info[version]} from {build_info[date]}  (с) _cyberDilf"

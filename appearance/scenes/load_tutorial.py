@@ -178,6 +178,7 @@ def load_tutorial(screen_shape: Vector2Int,
     to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
     to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save(SAVE_FILE))
     to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
+    by_game_rules_session_changer.on_turn_start()
 
     yield scene
 

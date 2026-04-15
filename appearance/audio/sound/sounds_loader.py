@@ -17,6 +17,7 @@ SOUNDS_FOLDER = Path("data/sounds")
 MUSIC_FOLDER = Path("data/music")
 GAME_MUSIC_FOLDER = MUSIC_FOLDER / "game"
 MENU_MUSIC_FILE = MUSIC_FOLDER / "menu.mp3"
+PLAYER_SELECTION_MUSIC_FILE = MUSIC_FOLDER / "player_selection.mp3"
 
 NESTED = dict[str, str | list[...]]  # recursive
 FIGURES = dict[str, NESTED]
@@ -106,6 +107,10 @@ class SoundsLoader:
     def load_menu_music(self) -> Sound:
         volume = self._settings.music_volume * _MUSIC_VOLUME_MULTIPLIER
         return Sound.load(MENU_MUSIC_FILE, volume=volume, is_looped=True, is_streaming=True)
+
+    def load_player_selection_music(self) -> Sound:
+        volume = self._settings.music_volume * _MUSIC_VOLUME_MULTIPLIER
+        return Sound.load(PLAYER_SELECTION_MUSIC_FILE, volume=volume, is_looped=True, is_streaming=True)
 
     def _load_random_effects(self, key: str, volume: float) -> RandomSoundPlayer:
         return RandomSoundPlayer([self._load_sound(file, volume=volume) for file in self._effects[key]],

@@ -1,13 +1,45 @@
 {
   "empty_sound": "empty.wav",
   "figures": {
+    "Land": {
+      "type": "variants",
+      "elements": "figures/empty_variants"
+    },
+    "Water": {
+      "type": "variants",
+      "elements": "figures/empty_variants"
+    },
     "Infantry": {
       "type": "variants",
       "elements": "figures/infantry_variants"
     },
+    "Motorization": {
+      "type": "variants",
+      "elements": "figures/motorization_variants"
+    },
+    "Tank": {
+      "type": "variants",
+      "elements": "figures/tank_variants"
+    },
+    "Artillery": {
+      "type": "variants",
+      "elements": "figures/artillery_variants"
+    },
+    "LightFactory": {
+      "type": "variants",
+      "elements": "figures/lf_variants"
+    },
+    "HeavyFactory": {
+      "type": "variants",
+      "elements": "figures/hf_variants"
+    },
     "Capital": {
       "type": "loop",
       "elements": "figures/capital_loop"
+    },
+    "Bunker": {
+      "type": "loop",
+      "elements": "figures/bunker_loop"
     },
     "Town": {
       "type": "variants",

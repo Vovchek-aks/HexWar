@@ -44,7 +44,6 @@ def load_main_menu(screen_shape: Vector2Int,
     exit_was_pressed = Event[None]()
     reload_was_pressed = Event[None]()
 
-
     yield language.get_ui_making_message()
     drawer = UiDrawer()
     ui_layer = (MainMenuUiLayerMaker(drawer, screen_shape)
