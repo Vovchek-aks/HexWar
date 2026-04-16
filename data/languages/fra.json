@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Volume voix",
     "EFFECTS_VOLUME": "Volume effets",
     "SELECTED_LANGUAGE": "Langue",
+    "GRAPHICS": "Graphismes",
+    "SCREEN": "Écran",
+    "FULLSCREEN": "Plein écran",
+    "WINDOWED": "Fenêtré",
+    "WIDTH": "Largeur",
+    "HEIGHT": "Hauteur",
     "AUDIO": "Audio",
     "OTHER": "Autre",
     "APPLY": "Appliquer"

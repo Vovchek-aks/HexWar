@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Głośność głosów",
     "EFFECTS_VOLUME": "Głośność efektów",
     "SELECTED_LANGUAGE": "Język",
+    "GRAPHICS": "Grafika",
+    "SCREEN": "Ekran",
+    "FULLSCREEN": "Pełny ekran",
+    "WINDOWED": "Okno",
+    "WIDTH": "Szerokość",
+    "HEIGHT": "Wysokość",
     "AUDIO": "Audio",
     "OTHER": "Inne",
     "APPLY": "Zastosuj"

@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Röstvolym",
     "EFFECTS_VOLUME": "Effektvolym",
     "SELECTED_LANGUAGE": "Språk",
+    "GRAPHICS": "Grafik",
+    "SCREEN": "Skärm",
+    "FULLSCREEN": "Helskärm",
+    "WINDOWED": "Fönster",
+    "WIDTH": "Bredd",
+    "HEIGHT": "Höjd",
     "AUDIO": "Ljud",
     "OTHER": "Övrigt",
     "APPLY": "Verkställ"

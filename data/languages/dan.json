@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Talelydstyrke",
     "EFFECTS_VOLUME": "Effektlydstyrke",
     "SELECTED_LANGUAGE": "Sprog",
+    "GRAPHICS": "Grafik",
+    "SCREEN": "Skærm",
+    "FULLSCREEN": "Fuld skærm",
+    "WINDOWED": "Vindue",
+    "WIDTH": "Bredde",
+    "HEIGHT": "Højde",
     "AUDIO": "Lyd",
     "OTHER": "Andet",
     "APPLY": "Anvend"

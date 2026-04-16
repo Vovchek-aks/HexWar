@@ -14,6 +14,7 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
+from appearance.settings import Settings
 from core.protocols import GameSession
 from game_session_saver import GameSessionLoader, SAVE_FILE, is_tutorial
 from mathematics.rectangle import Rectangle
@@ -76,6 +77,11 @@ def load_main_menu(screen_shape: Vector2Int,
         return get_player_selection_loading_scene
 
     def reload() -> None:
+        settings = Settings.open()
+        screen_shape = settings.screen_shape
+        window.change_is_fullscreen(False)
+        window.change_screen_shape(screen_shape)
+        window.change_is_fullscreen(settings.if_fullscreen)
         scene.switch_to(LoadingScene.make(screen_shape,
                                           load_main_menu(screen_shape,
                                                          ups,

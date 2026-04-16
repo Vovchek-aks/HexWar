@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Âm lượng giọng",
     "EFFECTS_VOLUME": "Âm lượng hiệu ứng",
     "SELECTED_LANGUAGE": "Ngôn ngữ",
+    "GRAPHICS": "Đồ họa",
+    "SCREEN": "Màn hình",
+    "FULLSCREEN": "Toàn màn hình",
+    "WINDOWED": "Cửa sổ",
+    "WIDTH": "Chiều rộng",
+    "HEIGHT": "Chiều cao",
     "AUDIO": "Âm thanh",
     "OTHER": "Khác",
     "APPLY": "Áp dụng"

@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Hlasitost hlasů",
     "EFFECTS_VOLUME": "Hlasitost efektů",
     "SELECTED_LANGUAGE": "Jazyk",
+    "GRAPHICS": "Grafika",
+    "SCREEN": "Obrazovka",
+    "FULLSCREEN": "Celá obrazovka",
+    "WINDOWED": "Okno",
+    "WIDTH": "Šířka",
+    "HEIGHT": "Výška",
     "AUDIO": "Audio",
     "OTHER": "Ostatní",
     "APPLY": "Použít"

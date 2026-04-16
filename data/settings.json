@@ -12,5 +12,12 @@
     "effects": {
       "VOLUME": 0.25
     }
+  },
+  "graphics": {
+    "screen": {
+      "WIDTH": 1280,
+      "HEIGHT": 720,
+      "IS_FULLSCREEN": false
+    }
   }
 }

@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Ένταση φωνών",
     "EFFECTS_VOLUME": "Ένταση εφέ",
     "SELECTED_LANGUAGE": "Γλώσσα",
+    "GRAPHICS": "Γραφικά",
+    "SCREEN": "Οθόνη",
+    "FULLSCREEN": "Πλήρης οθόνη",
+    "WINDOWED": "Παράθυρο",
+    "WIDTH": "Πλάτος",
+    "HEIGHT": "Ύψος",
     "AUDIO": "Ήχος",
     "OTHER": "Άλλα",
     "APPLY": "Εφαρμογή"

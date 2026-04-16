@@ -18,6 +18,7 @@ class Window(arc.Window):
                          title,
                          vsync=True,
                          samples=2,
+                         fullscreen=is_fullscreen,
                          update_rate=dt,
                          fixed_rate=dt)
         self.background_color = arc.color.BLACK
@@ -72,6 +73,12 @@ class Window(arc.Window):
     @property
     def keyboard_state_changed(self) -> OnEventSubscriber[set[int], None]:
         return self._keyboard_state_changed.subscriber
+
+    def change_is_fullscreen(self, is_fullscreen: bool) -> None:
+        self.set_fullscreen(is_fullscreen)
+
+    def change_screen_shape(self, screen_shape: Vector2Int) -> None:
+        self.set_size(*screen_shape.tuple)
 
     def on_fixed_update(self, delta_time: float) -> None:
         self._fixed_update_started.invoke(delta_time)

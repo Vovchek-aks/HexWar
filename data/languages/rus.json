@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Громкость голосов",
     "EFFECTS_VOLUME": "Громкость эффектов",
     "SELECTED_LANGUAGE": "Язык интерфейса",
+    "GRAPHICS": "Графика",
+    "SCREEN": "Экран",
+    "FULLSCREEN": "Полный",
+    "WINDOWED": "Оконный",
+    "WIDTH": "Ширина",
+    "HEIGHT": "Высота",
     "AUDIO": "Аудио",
     "OTHER": "Прочее",
     "APPLY": "Применить"

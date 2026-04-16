@@ -83,7 +83,13 @@ _MUSIC_VOLUME = "MUSIC_VOLUME"
 _VOICE_VOLUME = "VOICE_VOLUME"
 _EFFECTS_VOLUME = "EFFECTS_VOLUME"
 _SELECTED_LANGUAGE = "SELECTED_LANGUAGE"
+_SCREEN = "SCREEN"
+_FULLSCREEN = "FULLSCREEN"
+_WINDOWED = "WINDOWED"
+_WIDTH = "WIDTH"
+_HEIGHT = "HEIGHT"
 _AUDIO = "AUDIO"
+_GRAPHICS = "GRAPHICS"
 _OTHER = "OTHER"
 _APPLY = "APPLY"
 
@@ -270,6 +276,24 @@ class Language:
 
     def get_audio_message(self) -> str:
         return self._ui[_AUDIO]
+
+    def get_graphics_message(self) -> str:
+        return self._ui[_GRAPHICS]
+
+    def get_screen_message(self) -> str:
+        return self._ui[_SCREEN]
+
+    def get_fullscreen_message(self) -> str:
+        return self._ui[_FULLSCREEN]
+
+    def get_windowed_message(self) -> str:
+        return self._ui[_WINDOWED]
+
+    def get_width_message(self) -> str:
+        return self._ui[_WIDTH]
+
+    def get_height_message(self) -> str:
+        return self._ui[_HEIGHT]
 
     def get_other_message(self) -> str:
         return self._ui[_OTHER]

@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Дауыс дыбысы",
     "EFFECTS_VOLUME": "Әсер дыбысы",
     "SELECTED_LANGUAGE": "Интерфейс тілі",
+    "GRAPHICS": "Графика",
+    "SCREEN": "Экран",
+    "FULLSCREEN": "Толық экран",
+    "WINDOWED": "Терезе",
+    "WIDTH": "Ені",
+    "HEIGHT": "Биіктігі",
     "AUDIO": "Аудио",
     "OTHER": "Басқа",
     "APPLY": "Қолдану"

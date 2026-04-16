@@ -5,15 +5,13 @@ from appearance.game_engine.game_engine_arc.window import Window
 from appearance.input.players_selector import PlayersSelector
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
+from appearance.settings import Settings
 from core.game_session import GameSession
 from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, HeavyIndustryProducts
 from game_session_saver import GameSessionLoader
 from mathematics.vector import Vector2Int
-from screeninfo import get_monitors
 
 IS_MULTIBOT = False
-
-IS_FULLSCREEN = True
 
 UPS = 60
 CAPTION = "HexWar"
@@ -21,9 +19,10 @@ CAPTION = "HexWar"
 
 def main() -> None:
     sys.setrecursionlimit(10_000)
-    screen_shape = (_get_screen_shape()
-                    if IS_FULLSCREEN else
-                    Vector2Int(1280, 720))
+
+    settings = Settings.open()
+    is_fullscreen = settings.if_fullscreen
+    screen_shape = settings.screen_shape
 
     make_first_scene = _make_multibot_loading_scene if IS_MULTIBOT else _make_main_menu_loading_scene
     # from game_session_saver import GameSessionSaver
@@ -32,13 +31,8 @@ def main() -> None:
     # GameSessionSaver(empty_map(board_size=75, player_names=["Red", "Albania"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
     # make_first_scene = _make_test_game_loading_scene
-    with GameEngine.make(CAPTION, UPS, IS_FULLSCREEN, screen_shape, make_first_scene) as engine:
+    with GameEngine.make(CAPTION, UPS, is_fullscreen, screen_shape, make_first_scene) as engine:
         engine.run()
-
-
-def _get_screen_shape() -> Vector2Int:
-    monitor = get_monitors()[0]
-    return Vector2Int(monitor.width, monitor.height)
 
 
 def _make_test_game_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:

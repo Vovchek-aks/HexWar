@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Ses seviyesi",
     "EFFECTS_VOLUME": "Efekt sesi",
     "SELECTED_LANGUAGE": "Arayüz dili",
+    "GRAPHICS": "Grafik",
+    "SCREEN": "Ekran",
+    "FULLSCREEN": "Tam ekran",
+    "WINDOWED": "Pencere",
+    "WIDTH": "Genişlik",
+    "HEIGHT": "Yükseklik",
     "AUDIO": "Ses",
     "OTHER": "Diğer",
     "APPLY": "Uygula"

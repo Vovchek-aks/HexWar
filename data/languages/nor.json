@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Stemmevolum",
     "EFFECTS_VOLUME": "Effektvolum",
     "SELECTED_LANGUAGE": "Språk",
+    "GRAPHICS": "Grafikk",
+    "SCREEN": "Skjerm",
+    "FULLSCREEN": "Fullskjerm",
+    "WINDOWED": "Vindu",
+    "WIDTH": "Bredde",
+    "HEIGHT": "Høyde",
     "AUDIO": "Lyd",
     "OTHER": "Annet",
     "APPLY": "Bruk"

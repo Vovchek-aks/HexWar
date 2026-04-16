@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Гласноћа гласова",
     "EFFECTS_VOLUME": "Гласноћа ефеката",
     "SELECTED_LANGUAGE": "Језик",
+    "GRAPHICS": "Графика",
+    "SCREEN": "Екран",
+    "FULLSCREEN": "Пун екран",
+    "WINDOWED": "Прозор",
+    "WIDTH": "Ширина",
+    "HEIGHT": "Висина",
     "AUDIO": "Аудио",
     "OTHER": "Остало",
     "APPLY": "Примени"

@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Beszédhangereje",
     "EFFECTS_VOLUME": "Effektek hangereje",
     "SELECTED_LANGUAGE": "Nyelv",
+    "GRAPHICS": "Grafika",
+    "SCREEN": "Képernyő",
+    "FULLSCREEN": "Teljes képernyő",
+    "WINDOWED": "Ablak",
+    "WIDTH": "Szélesség",
+    "HEIGHT": "Magasság",
     "AUDIO": "Hang",
     "OTHER": "Egyéb",
     "APPLY": "Alkalmaz"

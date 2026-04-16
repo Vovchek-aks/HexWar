@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Glasnoća glasova",
     "EFFECTS_VOLUME": "Glasnoća efekata",
     "SELECTED_LANGUAGE": "Jezik",
+    "GRAPHICS": "Grafika",
+    "SCREEN": "Ekran",
+    "FULLSCREEN": "Pun ekran",
+    "WINDOWED": "Prozor",
+    "WIDTH": "Širina",
+    "HEIGHT": "Visina",
     "AUDIO": "Audio",
     "OTHER": "Ostalo",
     "APPLY": "Primeni"

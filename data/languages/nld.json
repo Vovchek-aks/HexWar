@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Spraakvolume",
     "EFFECTS_VOLUME": "Effectvolume",
     "SELECTED_LANGUAGE": "Taal",
+    "GRAPHICS": "Grafisch",
+    "SCREEN": "Scherm",
+    "FULLSCREEN": "Volledig scherm",
+    "WINDOWED": "Venster",
+    "WIDTH": "Breedte",
+    "HEIGHT": "Hoogte",
     "AUDIO": "Audio",
     "OTHER": "Overig",
     "APPLY": "Toepassen"

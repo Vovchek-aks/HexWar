@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Volum voci",
     "EFFECTS_VOLUME": "Volum efecte",
     "SELECTED_LANGUAGE": "Limbă",
+    "GRAPHICS": "Grafică",
+    "SCREEN": "Ecran",
+    "FULLSCREEN": "Ecran complet",
+    "WINDOWED": "Fereastră",
+    "WIDTH": "Lățime",
+    "HEIGHT": "Înălțime",
     "AUDIO": "Audio",
     "OTHER": "Altele",
     "APPLY": "Aplică"

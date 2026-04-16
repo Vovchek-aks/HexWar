@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Puheen voimakkuus",
     "EFFECTS_VOLUME": "Efektien voimakkuus",
     "SELECTED_LANGUAGE": "Kieli",
+    "GRAPHICS": "Grafiikka",
+    "SCREEN": "Näyttö",
+    "FULLSCREEN": "Koko näyttö",
+    "WINDOWED": "Ikkuna",
+    "WIDTH": "Leveys",
+    "HEIGHT": "Korkeus",
     "AUDIO": "Ääni",
     "OTHER": "Muut",
     "APPLY": "Ota käyttöön"

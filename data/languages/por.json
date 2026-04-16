@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Volume voz",
     "EFFECTS_VOLUME": "Volume efeitos",
     "SELECTED_LANGUAGE": "Idioma",
+    "GRAPHICS": "Gráficos",
+    "SCREEN": "Ecrã",
+    "FULLSCREEN": "Ecrã inteiro",
+    "WINDOWED": "Janela",
+    "WIDTH": "Largura",
+    "HEIGHT": "Altura",
     "AUDIO": "Áudio",
     "OTHER": "Outro",
     "APPLY": "Aplicar"

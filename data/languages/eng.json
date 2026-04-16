@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Voice volume",
     "EFFECTS_VOLUME": "Effects volume",
     "SELECTED_LANGUAGE": "Language",
+    "GRAPHICS": "Graphics",
+    "SCREEN": "Screen",
+    "FULLSCREEN": "Fullscreen",
+    "WINDOWED": "Windowed",
+    "WIDTH": "Width",
+    "HEIGHT": "Height",
     "AUDIO": "Audio",
     "OTHER": "Other",
     "APPLY": "Apply"

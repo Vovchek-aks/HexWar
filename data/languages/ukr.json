@@ -48,6 +48,12 @@
     "VOICE_VOLUME": "Гучність голосів",
     "EFFECTS_VOLUME": "Гучність ефектів",
     "SELECTED_LANGUAGE": "Мова інтерфейсу",
+    "GRAPHICS": "Графіка",
+    "SCREEN": "Екран",
+    "FULLSCREEN": "Повний екран",
+    "WINDOWED": "Вікно",
+    "WIDTH": "Ширина",
+    "HEIGHT": "Висота",
     "AUDIO": "Аудіо",
     "OTHER": "Інше",
     "APPLY": "Застосувати"

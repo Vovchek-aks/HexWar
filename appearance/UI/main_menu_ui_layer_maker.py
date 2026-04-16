@@ -16,7 +16,7 @@ from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
-from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE
+from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT
 from files import read_build_info
 from game_session_saver import get_saved_maps, get_tutorials
 from mathematics.rectangle import Rectangle, RectangleBuilder
@@ -242,6 +242,9 @@ class MainMenuUiLayerMaker:
                 for key in (MUSIC, VOICE, EFFECTS)
             }
             settings[LANGUAGE] = value_changers[LANGUAGE].value
+            settings[IS_FULLSCREEN] = value_changers[IS_FULLSCREEN].value == self._language.get_fullscreen_message()
+            settings[WIDTH] = value_changers[WIDTH].value
+            settings[HEIGHT] = value_changers[HEIGHT].value
 
             Settings.from_keys(settings).save()
             reload()
@@ -279,11 +282,10 @@ class MainMenuUiLayerMaker:
                                       1 - margin_ratio) * 100)
 
         changers = self._get_changers()
+        synchroniser = TextSizeSynchroniser()
 
         layout.append(audio := TextUi.make(self._drawer, Rectangle.zero(),
                                            TextData.debug(self._language.get_audio_message()), is_center=True))
-
-        synchroniser = TextSizeSynchroniser()
         self._add_changer(synchroniser, layout, self._language.get_music_volume_message(), MUSIC, changers,
                           value_changers,
                           rectangle)
@@ -292,7 +294,15 @@ class MainMenuUiLayerMaker:
                           rectangle)
         self._add_changer(synchroniser, layout, self._language.get_effects_volume_message(), EFFECTS, changers,
                           value_changers, rectangle)
-        layout.append(BoxUi(Rectangle.zero()))
+
+        layout.append(graphics := TextUi.make(self._drawer, Rectangle.zero(),
+                                              TextData.debug(self._language.get_graphics_message()), is_center=True))
+        self._add_changer(synchroniser, layout, self._language.get_width_message(), WIDTH, changers,
+                          value_changers, rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_height_message(), HEIGHT, changers,
+                          value_changers, rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_screen_message(), IS_FULLSCREEN, changers,
+                          value_changers, rectangle)
 
         layout.append(other := TextUi.make(self._drawer, Rectangle.zero(),
                                            TextData.debug(self._language.get_other_message()), is_center=True))
@@ -300,7 +310,7 @@ class MainMenuUiLayerMaker:
                           value_changers, rectangle)
 
         titles_synchroniser = TextSizeSynchroniser()
-        titles_synchroniser.extend(other, audio)
+        titles_synchroniser.extend(other, audio, graphics)
 
         titles_synchroniser.synchronise()
         synchroniser.synchronise()
@@ -318,23 +328,23 @@ class MainMenuUiLayerMaker:
                         changers: dict[str, ValueChanger[T]],
                         value_changers: dict[str, TwoButtonsValueChanger[T]],
                         rectangle: Rectangle) -> None:
-        to_add, value_changer = self._make_changer(text, changers[key], rectangle)
+        to_add, value_changer, text_ui = self._make_changer(text, changers[key], rectangle)
         layout.append(to_add)
-        synchroniser.append(value_changer.text)
+        synchroniser.append(text_ui)
         value_changers[key] = value_changer
 
     def _make_changer[T](self,
                          text: str,
                          changer: ValueChanger[T],
-                         rectangle: Rectangle) -> tuple[LayoutUi, TwoButtonsValueChanger[T]]:
+                         rectangle: Rectangle) -> tuple[LayoutUi, TwoButtonsValueChanger[T], TextUi]:
         text = f"{text}:"
         margin_ratio = .13
         horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio)
-        horizontal.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
+        horizontal.append(text_ui := TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
         horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
             self._sprites_loader, self._drawer))
-        return horizontal, value_changer
+        return horizontal, value_changer, text_ui
 
     def _get_changers_rectangle(self) -> Rectangle:
         width = self._screen_shape.x / 2
@@ -353,14 +363,24 @@ class MainMenuUiLayerMaker:
 
     def _get_changers(self) -> dict[str, ValueChanger[str | int]]:
         settings = Settings.open()
+
         languages = self._language.languages()
         languages.remove(settings.selected_language)
         languages.insert(0, settings.selected_language)
-        int_changer_range = 0, _AUDIO_SETTER_STEPS, _AUDIO_SETTER_STEP
+
+        screen_mods = [self._language.get_fullscreen_message(), self._language.get_windowed_message()]
+        if not settings.if_fullscreen:
+            screen_mods = screen_mods[::-1]
+
+        audio_changer_range = 0, _AUDIO_SETTER_STEPS, _AUDIO_SETTER_STEP
+        screen_shape_changer_range = 400, 6400, 20
         return {
-            MUSIC: IntChanger(round(_AUDIO_SETTER_STEPS * settings.music_volume), *int_changer_range),
-            VOICE: IntChanger(round(_AUDIO_SETTER_STEPS * settings.voice_volume), *int_changer_range),
-            EFFECTS: IntChanger(round(_AUDIO_SETTER_STEPS * settings.effects_volume), *int_changer_range),
+            MUSIC: IntChanger(round(_AUDIO_SETTER_STEPS * settings.music_volume), *audio_changer_range),
+            VOICE: IntChanger(round(_AUDIO_SETTER_STEPS * settings.voice_volume), *audio_changer_range),
+            EFFECTS: IntChanger(round(_AUDIO_SETTER_STEPS * settings.effects_volume), *audio_changer_range),
+            WIDTH: IntChanger(settings.screen_shape.x, *screen_shape_changer_range),
+            HEIGHT: IntChanger(settings.screen_shape.y, *screen_shape_changer_range),
+            IS_FULLSCREEN: ListChanger(screen_mods),
             LANGUAGE: ListChanger(languages)
         }
 
