@@ -14,8 +14,7 @@ class CellsCache(proto.CellsCache):
     @classmethod
     def make(cls, board: proto.Board) -> "CellsCache":
         self = CellsCache(board)
-        for cell in board.cells:
-            self.update(cell)
+        self.update_fully()
         return self
 
     _board: proto.Board
@@ -48,6 +47,10 @@ class CellsCache(proto.CellsCache):
         for concrete_figure in get_args(figure):
             result |= self._cells_with[concrete_figure]
         return Cells(result)
+
+    def update_fully(self) -> None:
+        for cell in self._board.cells:
+            self.update(cell)
 
     def update(self, cell: proto.Cell) -> None:
         if not cell.figure.is_on_land():

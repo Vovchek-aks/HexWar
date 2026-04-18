@@ -25,8 +25,8 @@ def players_moves_maker(session: proto.GameSession,
                 moves_maker.make(move)
 
         by_game_rules_session_changer.on_turn_end()
-        session.master.pass_turn_to_next_player()
         session.figures_budget.clear()
+        session.master.pass_turn_to_next_player(session)
         by_game_rules_session_changer.on_turn_start()
 
 

@@ -195,6 +195,8 @@ def load_game(screen_shape: Vector2Int,
         user_inputer_builder.set_move_was_read(moves_inputer.move_was_read)
         user_inputer_builder.set_need_to_end_turn(end_turn_button_was_clicked.subscriber)
 
+        end_turn_button_was_clicked.subscribe(lambda: GameSessionSaver(session).save(SAVE_FILE))
+
         for player in session.master.players:
             if not isinstance(player.inputer, WantsToBeEventPlayerInputer):
                 continue

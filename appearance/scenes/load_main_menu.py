@@ -79,6 +79,7 @@ def load_main_menu(screen_shape: Vector2Int,
     def reload() -> None:
         settings = Settings.open()
         screen_shape = settings.screen_shape
+        window.change_is_fullscreen(True)
         window.change_is_fullscreen(False)
         window.change_screen_shape(screen_shape)
         window.change_is_fullscreen(settings.if_fullscreen)

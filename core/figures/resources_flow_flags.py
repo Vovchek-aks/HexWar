@@ -46,10 +46,10 @@ class ResourcesAdder(proto.ResourcesAdder, metaclass=ABCMeta):
         return set(map(type[proto.Resource], self.base_resources.not_zero))
 
     def get_resources_with_buffs(self, coord: Vector2Int, session: proto.GameSession) -> proto.ResourcesGroup:
-        player = session.board[coord].owner
-        cells = session.cells.with_owner(player)
-        cells &= session.cells.not_empty()
-        cells = cells.with_flag(proto.BuffsResourceAdders)
+        cell = session.board[coord]
+        cells = (session.board.get_neighbors(cell)
+                 .with_owner(cell.owner)
+                 .with_flag(proto.BuffsResourceAdders))
 
         buff = 0
         for the_one_who_buffs in cells:

@@ -27,9 +27,11 @@ class Master(proto.Master):
     def turn_has_passed(self) -> OnEventSubscriber[proto.Player, None]:
         return self._turn_has_passed.subscriber
 
-    def pass_turn_to_next_player(self) -> None:
+    def pass_turn_to_next_player(self, session: proto.GameSession) -> None:
         previous_player = self.current_player
         self._players.append(self._players.pop(0))
+        while not session.cells.with_owner(self.current_player):
+            self._players.pop(0)
 
         self._turn_has_passed.invoke(previous_player)
         self._turn_had_started.invoke(self.current_player)

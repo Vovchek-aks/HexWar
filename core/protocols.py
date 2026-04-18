@@ -30,7 +30,7 @@ class Master(ABC):
         ...
 
     @abstractmethod
-    def pass_turn_to_next_player(self) -> None:
+    def pass_turn_to_next_player(self, session: "GameSession") -> None:
         ...
 
 
@@ -229,6 +229,10 @@ class CellsCache(ABC):
 
     @abstractmethod
     def with_figure(self, figure: type["Figure"] | UnionType) -> "Cells":
+        ...
+
+    @abstractmethod
+    def update_fully(self) -> None:
         ...
 
     @abstractmethod

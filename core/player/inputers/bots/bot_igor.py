@@ -35,8 +35,8 @@ _INITIAL_STATE = _CATASTROPHY_PREVENTION
 # https://www.desmos.com/calculator/zkc3ewscyj
 _TARGET_RESERVE_RATIO_OF = ResourcesGroup.make(
     Dollars(1_340_000),
-    LightIndustryProducts(5_300),
-    HeavyIndustryProducts(2_660),
+    LightIndustryProducts(6_630),
+    HeavyIndustryProducts(5_300),
 )
 
 _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
@@ -46,6 +46,8 @@ _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
 }
 
 _MAX_ARMY = 150.
+
+_CAPITALS_RATIO = 1.06
 
 PRODUCTION = fig.Town | fig.Capital | fig.LightFactory | fig.HeavyFactory
 
@@ -120,7 +122,7 @@ class BotIgor(proto.Bot):
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _CATASTROPHY_PREVENTION:
-            for figure in fig.Capital, fig.Town, fig.LightFactory:
+            for figure in fig.Capital, fig.Town, fig.LightFactory, fig.HeavyFactory, fig.Artillery:
                 if self._count_of(figure) == 0:
                     self._try_create(figure)
                     # print(f"_try_create({figure})")
@@ -128,7 +130,11 @@ class BotIgor(proto.Bot):
                         # print(self._moves_to_make)
                         return
 
-            if self._count_of(fig.Capital) < cells_count / 200:
+            if self._count_of(fig.LightFactory) == 0:
+                self._ran_out_of_moves = True
+                return
+
+            if self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO * cells_count ** .25):
                 self._try_create(fig.Capital)
                 # print("_try_create(fig.Capital)")
                 if self._moves_to_make:
@@ -154,10 +160,9 @@ class BotIgor(proto.Bot):
             self._state = _BUILDING
 
         if self._state == _BUILDING:
-            has_developed = town_count > cells_count * .01
-            is_rich = self._player.resources.get(Dollars).amount / 1_000_000 > town_count
+            has_developed = town_count > cells_count * .05
 
-            bunker_ratio = .1 if has_developed and not is_rich else 0.75
+            bunker_ratio = 0.25
             if bunkers_count < empty_front_length * bunker_ratio:
                 self._try_create(fig.Bunker)
                 # print("_try_create(fig.Bunker)")
@@ -173,7 +178,7 @@ class BotIgor(proto.Bot):
                         # print(self._moves_to_make)
                         return
 
-            target_silos_count = max(1, town_count // 20)
+            target_silos_count = max(1, town_count // 10)
             if silos_count < target_silos_count:
                 self._try_create(fig.MissileSilo)
                 # print("_try_create(fig.MissileSilo)")
@@ -208,7 +213,7 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
+            if has_developed and infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
                 figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
                 if figure_to_create is not MISSING:
                     self._try_create(figure_to_create)
