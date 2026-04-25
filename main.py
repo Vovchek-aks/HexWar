@@ -28,8 +28,10 @@ def main() -> None:
     # from game_session_saver import GameSessionSaver
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
-    # GameSessionSaver(empty_map(board_size=75, player_names=["Red", "Albania"])).save(EDIT_MAP_FILE)
+    # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Sweden", "Estonia", "Finland"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
+    # is_fullscreen = False
+    # screen_shape = Vector2Int(1280, 720)
     # make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, is_fullscreen, screen_shape, make_first_scene) as engine:
         engine.run()
@@ -37,7 +39,7 @@ def main() -> None:
 
 def _make_test_game_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("_edit_map2.json", UPS).load()
+        session = GameSessionLoader.make("_edit_map.json", UPS).load()
         players_selector = PlayersSelector(session)
         players_selector.toggle(session.master.current_player)
         session.master.current_player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
@@ -63,7 +65,7 @@ def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> S
 
 def _make_multibot_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
     return LoadingScenesMaker(screen_shape, window, UPS).make_multibot_loading_scene(
-        lambda: GameSessionLoader.make("Balkans.json", UPS).load())
+        lambda: GameSessionLoader.make("Finnish Gulf.json", UPS).load())
 
 
 if __name__ == '__main__':

@@ -3,9 +3,10 @@ import arcade as arc
 
 import appearance.protocols as proto
 from appearance.input.moves_inputer.input_actions import CellClickAction
+from core.cells import Cells
 from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
-from core.protocols import GameSession
+from core.protocols import GameSession, Player, Movable
 from mathematics.a_star_path_searcher import AStarPathSearcher as PathSearcher
 import core.figures.figure as fig
 from mathematics.vector import Vector2Int
@@ -47,14 +48,30 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
         if MULTIPLE_RELOCATIONS_KEY not in self._input_state.pressed_keys:
             return False
 
-        return self._cell_selector.get_coord() is not MISSING
+        selected = self._cell_selector.get_coord()
+        if selected is MISSING:
+            return False
+
+        return Movable in self._session.board[selected].figure.FLAGS
 
     def get_path(self, from_coord: Vector2Int, to_coord: Vector2Int) -> list[Vector2Int]:
+        assert (movable := self._session.board[from_coord].figure.FLAGS.get(Movable)) is not MISSING
+
         player = self._session.master.current_player
         board = self._session.board
-        cells = self._session.cells
-        allowed = ((cells.with_owner(player) +
-                    cells.with_owner(board[to_coord].owner)) &
-                   cells.with_figure(fig.Land))
+        strength = movable.strength(from_coord, board)
+        allowed = self._get_allowed(player, board[to_coord].owner, strength)
         path = PathSearcher(self._session.board, allowed, board[to_coord]).search_from(board[from_coord])
         return path
+
+    def _get_allowed(self, from_player: Player, to_player: Player, strength: int) -> Cells:
+        cells = self._session.cells
+        allowed = (cells.with_owner(from_player) &
+                   cells.with_figure(fig.Land))
+
+        if to_player == from_player:
+            return allowed
+
+        allowed += Cells(set(filter(lambda cell: cell.hardness(self._session.board) <= strength,
+                                    cells.with_owner(to_player))))
+        return allowed

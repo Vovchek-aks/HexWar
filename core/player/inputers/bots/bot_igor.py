@@ -122,7 +122,7 @@ class BotIgor(proto.Bot):
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _CATASTROPHY_PREVENTION:
-            for figure in fig.Capital, fig.Town, fig.LightFactory, fig.HeavyFactory, fig.Artillery:
+            for figure in fig.Capital, fig.Town, fig.LightFactory, fig.HeavyFactory:
                 if self._count_of(figure) == 0:
                     self._try_create(figure)
                     # print(f"_try_create({figure})")
@@ -133,6 +133,13 @@ class BotIgor(proto.Bot):
             if self._count_of(fig.LightFactory) == 0:
                 self._ran_out_of_moves = True
                 return
+
+            if artillery_count == 0:
+                yield from self._try_spawn_and_connect_artillery(1)
+                # print("_try_spawn_and_connect_artillery")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
 
             if self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO * cells_count ** .25):
                 self._try_create(fig.Capital)
@@ -170,13 +177,12 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            if has_developed:
-                for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
-                    yield from self._try_launch_oreshnik(self._board.coordinates_of(silo))
-                    # print("_try_launch_oreshnik")
-                    if self._moves_to_make:
-                        # print(self._moves_to_make)
-                        return
+            for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
+                yield from self._try_launch_oreshnik(self._board.coordinates_of(silo))
+                # print("_try_launch_oreshnik")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
 
             target_silos_count = max(1, town_count // 10)
             if silos_count < target_silos_count:
@@ -186,12 +192,11 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            if has_developed:
-                yield from self._try_convert_infantry_to_motorization()
-                # print("_try_convert_infantry_to_motorization")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
+            yield from self._try_convert_infantry_to_motorization(.5 if has_developed else .1)
+            # print("_try_convert_infantry_to_motorization")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
 
             yield from self._try_connect_pullerless_artillery()
             # print("_try_connect_pullerless_artillery")
@@ -213,7 +218,7 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            if has_developed and infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
+            if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
                 figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
                 if figure_to_create is not MISSING:
                     self._try_create(figure_to_create)
@@ -513,7 +518,8 @@ class BotIgor(proto.Bot):
 
         cells = self._session.cells
         infantries = (cells.with_owner(self._player) &
-                      cells.with_figure(fig.Infantry))
+                      cells.with_figure(fig.Infantry) &
+                      cells.at_front)
         if not infantries:
             return
         yield
@@ -623,7 +629,8 @@ class BotIgor(proto.Bot):
     def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> Iterator[None]:
         cells = self._session.cells
         path_searcher = PathSearcher(self._board,
-                                     cells.with_figure(fig.Land) &
+                                     (cells.with_figure(fig.Land) +
+                                      cells.at_front) &
                                      cells.with_owner(self._player) +
                                      Cells({cell, target}),
                                      target)
@@ -641,6 +648,9 @@ class BotIgor(proto.Bot):
             return
 
         for previous, new in zip(path[:-1], path[1:]):
+            if not self._board[new].is_empty:
+                break
+
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
 
     def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
@@ -654,7 +664,7 @@ class BotIgor(proto.Bot):
 
         empty_front = front & cells.with_figure(fig.Land)
         if not empty_front:
-            return MISSING
+            empty_front = front
 
         target_front = min(empty_front.as_set(),
                            key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
@@ -689,7 +699,7 @@ class BotIgor(proto.Bot):
                                                                self._board.coordinates_of(front_cell)))
         return target_front
 
-    def _try_convert_infantry_to_motorization(self) -> Iterator[None]:
+    def _try_convert_infantry_to_motorization(self, target_ratio: float) -> Iterator[None]:
         cells = self._session.cells
         infantries = cells.with_owner(self._player) & cells.with_figure(fig.Infantry)
         if not infantries:
@@ -698,7 +708,7 @@ class BotIgor(proto.Bot):
 
         infantry_count = len(infantries.as_set())
         motorization_count = self._count_of(fig.Motorization)
-        to_convert = max(0, math.floor((infantry_count + motorization_count) * .5 - motorization_count))
+        to_convert = max(0, math.floor((infantry_count + motorization_count) * target_ratio - motorization_count))
         yield
 
         for infantry in islice(infantries.as_set(), 0, to_convert):

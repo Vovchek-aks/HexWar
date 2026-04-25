@@ -45,7 +45,6 @@ class MusicPlayer:
 
         candidates = list(set(self._playlist) - set(self._history))
         self._current = random.choice(candidates)
-        print(self._playlist.index(self._current))
         self._current.play()
 
 
