@@ -12,6 +12,7 @@ from mathematics.rectangle import Rectangle
 class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
     _rectangle: Rectangle
     _margin_ratio: float = .05
+    _reserved: int = 0
     _layer: proto.Layer = field(init=False, factory=Layer.empty)
     _elements: list[proto.ElementUi] = field(init=False, factory=list)
 
@@ -23,21 +24,29 @@ class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
     def layer(self) -> proto.Layer:
         return self._layer
 
+    @property
+    def elements_count(self) -> int:
+        return max(self._reserved, len(self._elements))
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
-        self._reshape_all(self._elements, self._margin_ratio)
+        self._reshape(self._elements, [], self._margin_ratio)
 
     def append(self, element: proto.ElementUi) -> None:
         self._elements.append(element)
         self._layer = Layer.as_multiple(self._elements)
-        self._reshape_all(self._elements, self._margin_ratio)
+        not_to_reshape = list(range(len(self._elements) - 1)) if self._reserved >= len(self._elements) else []
+        self._reshape(self._elements, not_to_reshape, self._margin_ratio)
 
     def extend(self, elements: Iterable[proto.ElementUi]) -> None:
         for element in elements:
             self.append(element)
 
-    def _reshape_all(self, elements: list[proto.ElementUi], margin_ratio: float) -> None:
+    def _reshape(self,
+                 elements: list[proto.ElementUi],
+                 not_to_reshape: list[int],
+                 margin_ratio: float) -> None:
         ...
 
     def __len__(self) -> int:
-        return len(self._elements)
+        return self.elements_count

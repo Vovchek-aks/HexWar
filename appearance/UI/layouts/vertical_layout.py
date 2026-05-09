@@ -8,17 +8,23 @@ from mathematics.vector import Vector2
 
 @define
 class VerticalLayoutUi(LayoutUi):
-    def _reshape_all(self, elements: list[proto.ElementUi], margin_ratio: float) -> None:
+    def _reshape(self,
+                 elements: list[proto.ElementUi],
+                 not_to_reshape: list[int],
+                 margin_ratio: float) -> None:
         x, y = self.rectangle.position
         width, height = self.rectangle.shape
-        total_empty = height * margin_ratio
+        total_empty = height * margin_ratio if self.elements_count > 1 else 0
 
-        margin = total_empty / (len(elements) - 1) if len(elements) > 1 else 0
-        element_height = (height - total_empty) / len(elements) if len(elements) else 1
+        margin = total_empty / (self.elements_count - 1) if self.elements_count > 1 else 0
+        element_height = (height - total_empty) / self.elements_count if self.elements_count else 1
         delta = margin + element_height
 
-        for index, element in enumerate(reversed(elements)):
-            element.set_rectangle(
-                Rectangle(Vector2(x, y + index * delta),
-                          Vector2(width, element_height))
-            )
+        for index, element in enumerate(elements):
+            if index in not_to_reshape:
+                continue
+
+            index = self.elements_count - 1 - index
+            rectangle = Rectangle(Vector2(x, y + index * delta),
+                                  Vector2(width, element_height))
+            element.set_rectangle(rectangle)

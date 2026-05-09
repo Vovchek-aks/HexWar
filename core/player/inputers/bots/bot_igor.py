@@ -109,6 +109,8 @@ class BotIgor(proto.Bot):
     def _add_moves(self, cells_count: int, *, _is_inner=False) -> Iterator[None]:
         cells = self._session.cells
         town_count = self._count_of(fig.Town)
+        lf_count = self._count_of(fig.LightFactory)
+        hf_count = self._count_of(fig.HeavyFactory)
         infantry_count = self._count_of(fig.Infantry)
         artillery_count = self._count_of(fig.Artillery)
         motorization_count = self._count_of(fig.Motorization)
@@ -141,14 +143,22 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            if self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO * cells_count ** .25):
+            is_any_to_develop = any(self._board
+                                    .get_neighbors(cell)
+                                    .with_owner(self._player)
+                                    .with_figure(fig.Land)
+                                    for cell in (cells.with_figure(fig.Capital) &
+                                                 cells.with_owner(self._player)))
+            print(f"{self._player.data.name}{is_any_to_develop}")
+
+            if self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO * cells_count ** .25) and not is_any_to_develop:
                 self._try_create(fig.Capital)
                 # print("_try_create(fig.Capital)")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
 
-            initial_army_size = min(_MAX_ARMY, .1 * len(cells.with_owner(self._player) & cells.at_front))
+            initial_army_size = min(_MAX_ARMY, .2 * len(cells.with_owner(self._player) & cells.at_front))
 
             if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
                 self._try_create(fig.Tank)
@@ -167,7 +177,7 @@ class BotIgor(proto.Bot):
             self._state = _BUILDING
 
         if self._state == _BUILDING:
-            has_developed = town_count > cells_count * .05
+            has_developed = hf_count > 0
 
             bunker_ratio = 0.25
             if bunkers_count < empty_front_length * bunker_ratio:
@@ -184,7 +194,7 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            target_silos_count = max(1, town_count // 10)
+            target_silos_count = max(1, hf_count // 3)
             if silos_count < target_silos_count:
                 self._try_create(fig.MissileSilo)
                 # print("_try_create(fig.MissileSilo)")
@@ -297,6 +307,18 @@ class BotIgor(proto.Bot):
                 return self._get_cell_for_armed_figure(front, production)
 
             case fig.Infantry:
+                tanks = front.with_figure(fig.Tank)
+                tanks_neighbors = set[proto.Cell]()
+                for cell in tanks:
+                    tanks_neighbors |= (self._board
+                                        .get_neighbors(cell)
+                                        .with_owner(self._player)
+                                        .with_figure(fig.Land)
+                                        .as_set())
+
+                if tanks_neighbors:
+                    return random.choice(list(tanks_neighbors))
+
                 return self._get_cell_for_armed_figure(front, production)
 
             case fig.Bunker:
@@ -320,6 +342,9 @@ class BotIgor(proto.Bot):
                     if points > max_points:
                         max_points = points
                         target = candidate
+
+                if target is MISSING:
+                    return random.choice(empties.as_list())
 
                 return target
 
@@ -600,6 +625,14 @@ class BotIgor(proto.Bot):
         cells = self._session.cells
         all_armed = (cells.with_owner(self._player) &
                      cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
+
+        all_armed = Cells(set(filter(lambda cell: self._session
+                                     .figures_budget
+                                     .can_spend(cell.figure,
+                                                cell.figure
+                                                .get_cost_of(Relocation(Vector2Int.zero(),
+                                                                        Vector2Int.zero()))),
+                                     all_armed)))
         if not all_armed:
             return
 

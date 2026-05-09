@@ -1,4 +1,4 @@
-from typing import Callable, Iterable
+from typing import Callable
 
 from attrs import frozen, Factory
 
@@ -161,18 +161,22 @@ class GameUiLayerMaker:
 
         return resources, players_turn
 
-    def _make_resources(self, resources: Iterable[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
+    def _make_resources(self, resources: list[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
         layout = VerticalLayoutUi((RectangleBuilder(self._screen_shape)
                                    .from_left_up()
                                    .move(Vector2(10, 60))
                                    .set_shape(Vector2(self._screen_shape.x / 4, 80))
                                    .adjust_for_shape()
                                    .build()),
-                                  margin_ratio=.2)
+                                  margin_ratio=.2,
+                                  reserved=len(resources))
         texts = list[TextUi]()
         for _ in resources:
             texts.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug('...')))
             layout.append(texts[-1])
+
+        synchroniser = TextSizeSynchroniser()
+        synchroniser.extend(*texts)
 
         def update() -> None:
             player = self._session.master.current_player
@@ -188,6 +192,7 @@ class GameUiLayerMaker:
                 flow = get_resource_flow(player, resource_type, self._session)
                 sign = '+' if flow >= 0 else ''
                 texts[index].set_text(f"{current} ({sign}{NumberShortener().shorten(flow)})")
+            synchroniser.synchronise()
 
         return layout, update
 
@@ -236,7 +241,8 @@ class GameUiLayerMaker:
                                     .move(Vector2(20, 20))
                                     .set_shape(Vector2(500, rectangle.shape.y))
                                     .adjust_for_shape()
-                                    .build())
+                                    .build(),
+                                    reserved=2)
         layout.append(buttons)
         layout.append(hint_box)
 
@@ -249,7 +255,7 @@ class GameUiLayerMaker:
         return layout.layer
 
     def _make_figures_creation_buttons(self, synchroniser: TextSizeSynchroniser, hint_box: BoxUi) -> LayoutUi:
-        layout = VerticalLayoutUi(self._get_figures_creation_buttons_rectangle(), margin_ratio=.2)
+        layout = VerticalLayoutUi(self._get_figures_creation_buttons_rectangle(), margin_ratio=.2, reserved=6)
 
         self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.Bunker, fig.Artillery, hint_box)
         layout.append(self._make_figure_creation_button(synchroniser, fig.MissileSilo, hint_box))
@@ -266,7 +272,7 @@ class GameUiLayerMaker:
                                                 left: type[fig.Figure],
                                                 right: type[fig.Figure],
                                                 hint_box: BoxUi) -> None:
-        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.03)
+        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.03, reserved=2)
         layout.append(horizontal_layout)
         horizontal_layout.append(self._make_figure_creation_button(synchroniser, left, hint_box))
         horizontal_layout.append(self._make_figure_creation_button(synchroniser, right, hint_box))
@@ -477,7 +483,8 @@ class GameUiLayerMaker:
                                             .move(buttons_position)
                                             .set_shape(Vector2(buttons_width, buttons_height))
                                             .adjust_for_shape()
-                                            .build())
+                                            .build(),
+                                            reserved=len(buttons))
         buttons_layout.extend(buttons)
 
         title_bottom = title.rectangle.position.y
@@ -491,9 +498,9 @@ class GameUiLayerMaker:
                                     .adjust_for_shape()
                                     .build())
 
-        stats = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2)
-        flow = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2)
-        stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle)
+        stats = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2, reserved=3)
+        flow = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2, reserved=3)
+        stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle, reserved=2)
         stats_and_flow.extend([stats, flow])
 
         text_data = TextDataBuilder().set_text("...").hints_font().black_colored()
@@ -594,9 +601,6 @@ class GameUiLayerMaker:
 
         flow.extend(text_of.values())
         synchroniser.extend(*text_of.values())
-
-        if len(text_of) < 3:
-            flow.append(BoxUi(Rectangle.zero()))
 
         def update(coord: Vector2Int | Status) -> None:
             if coord is MISSING:
@@ -730,7 +734,8 @@ class GameUiLayerMaker:
                                       .set_shape(Vector2(title_ui.rectangle.shape.x,
                                                          shape.y - content_margin.y - bottom_margin))
                                       .adjust_for_shape()
-                                      .build())
+                                      .build(),
+                                      reserved=len(content))
 
         for line in content:
             line_ui = TextUi.make(self._drawer,

@@ -21,21 +21,21 @@ from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.players_selection import PlayersSelectionScene
+from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
 from core.game_session import GameSession
 from core.by_game_rules_session_changer import ByGameRulesSessionChanger
-from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
 from statuses import Status
 
 
-def load_players_selection(screen_shape: Vector2Int,
-                           make_game_scene_loading: Callable[[GameSession], proto.Scene],
+def load_players_selection(make_game_scene_loading: Callable[[GameSession], proto.Scene],
                            make_main_menu_scene_loading: Callable[[], proto.Scene],
                            make_game_session: Callable[[], GameSession],
                            window: Window) -> Iterator[proto.Scene | Status]:
+    screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
     yield language.get_map_loading_message()

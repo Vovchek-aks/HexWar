@@ -48,6 +48,7 @@ class Sprite:
         return Sprite(self._image, self._shape, pivot)
 
     def reshape(self, shape: Vector2Int) -> "Sprite":
+        assert 0 not in shape.tuple
         pivot_x = int(self._pivot.x * (shape.x / self.shape.x))
         pivot_y = int(self._pivot.y * (shape.y / self.shape.y))
         pivot = Vector2Int(pivot_x, pivot_y)

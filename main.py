@@ -1,3 +1,4 @@
+import random
 import sys
 
 from appearance.game_engine import GameEngine
@@ -5,11 +6,9 @@ from appearance.game_engine.game_engine_arc.window import Window
 from appearance.input.players_selector import PlayersSelector
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
-from appearance.settings import Settings
 from core.game_session import GameSession
 from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, HeavyIndustryProducts
 from game_session_saver import GameSessionLoader
-from mathematics.vector import Vector2Int
 
 IS_MULTIBOT = False
 
@@ -20,24 +19,18 @@ CAPTION = "HexWar"
 def main() -> None:
     sys.setrecursionlimit(10_000)
 
-    settings = Settings.open()
-    is_fullscreen = settings.if_fullscreen
-    screen_shape = settings.screen_shape
-
     make_first_scene = _make_multibot_loading_scene if IS_MULTIBOT else _make_main_menu_loading_scene
     # from game_session_saver import GameSessionSaver
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Sweden", "Estonia", "Finland"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
-    # is_fullscreen = False
-    # screen_shape = Vector2Int(1280, 720)
     # make_first_scene = _make_test_game_loading_scene
-    with GameEngine.make(CAPTION, UPS, is_fullscreen, screen_shape, make_first_scene) as engine:
+    with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
 
-def _make_test_game_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
+def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
         session = GameSessionLoader.make("_edit_map.json", UPS).load()
         players_selector = PlayersSelector(session)
@@ -52,20 +45,25 @@ def _make_test_game_loading_scene(screen_shape: Vector2Int, window: Window) -> S
                            session.cells,
                            session.figures)
 
-    return LoadingScenesMaker(screen_shape, window, UPS).make_game_loading_scene(make_game_session)
+    return LoadingScenesMaker(window, UPS).make_game_loading_scene(make_game_session)
 
 
-def _make_map_editor_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
-    return LoadingScenesMaker(screen_shape, window, UPS).make_map_editor_loading_scene()
+def _make_map_editor_loading_scene(window: Window) -> Scene:
+    return LoadingScenesMaker(window, UPS).make_map_editor_loading_scene()
 
 
-def _make_main_menu_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
-    return LoadingScenesMaker(screen_shape, window, UPS).make_main_menu_loading_scene()
+def _make_main_menu_loading_scene(window: Window) -> Scene:
+    return LoadingScenesMaker(window, UPS).make_main_menu_loading_scene()
 
 
-def _make_multibot_loading_scene(screen_shape: Vector2Int, window: Window) -> Scene:
-    return LoadingScenesMaker(screen_shape, window, UPS).make_multibot_loading_scene(
-        lambda: GameSessionLoader.make("Finnish Gulf.json", UPS).load())
+def _make_multibot_loading_scene(window: Window) -> Scene:
+    # return LoadingScenesMaker(screen_shape, window, UPS).make_multibot_loading_scene(
+    #     lambda: GameSessionLoader.make(random.choice(["SVO.json"]), UPS).load())
+    return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
+        lambda: GameSessionLoader.make(random.choice(["SVO.json",
+                                                      "Middle East.json",
+                                                      "Finnish Gulf.json",
+                                                      "Balkans.json"]), UPS).load())
 
 
 if __name__ == '__main__':

@@ -4,7 +4,6 @@ import webbrowser
 from attrs import frozen, Factory
 
 import appearance.protocols as proto
-from appearance.UI.box import BoxUi
 from appearance.UI.button import ButtonUi
 from appearance.UI.image import ImageUi
 from appearance.UI.layouts import VerticalLayoutUi, HorizontalLayoutUi
@@ -71,31 +70,31 @@ class MainMenuUiLayerMaker:
                           tab_was_selected: Event[None],
                           to_main_menu_was_pressed: Event[None]) -> Layer:
         synchroniser = TextSizeSynchroniser()
-        cyber_dilf = self._make_author_card("_cyberDilf",
-                                            self._sprites_loader.load_cyber_dilf(),
-                                            self._language.get_cyber_dilf_roles(),
-                                            synchroniser,
-                                            [
-                                                self._make_link(self._sprites_loader.load_telegram(),
-                                                                "https://t.me/cyberdilf"),
-                                                self._make_link(self._sprites_loader.load_twitch(),
-                                                                "https://www.twitch.tv/cyberdilff"),
-                                                self._make_link(self._sprites_loader.load_itch(),
-                                                                "https://cyberdilf.itch.io/"),
-                                                self._make_link(self._sprites_loader.load_github(),
-                                                                "https://github.com/Vovchek-aks"),
-                                            ])
-        divan = self._make_author_card("Divan0_0",
-                                       self._sprites_loader.load_divan(),
-                                       self._language.get_divan_roles(),
-                                       synchroniser,
-                                       [
-                                           self._make_link(self._sprites_loader.load_github(),
-                                                           "https://github.com/Ktoto888550303"),
-                                       ])
-        layout = HorizontalLayoutUi(self._get_authors_cards_rectangle(), margin_ratio=.21)
-        layout.append(cyber_dilf)
-        layout.append(divan)
+        layout = HorizontalLayoutUi(self._get_authors_cards_rectangle(), margin_ratio=.21, reserved=2)
+        self._add_author_card("_cyberDilf",
+                              self._sprites_loader.load_cyber_dilf(),
+                              self._language.get_cyber_dilf_roles(),
+                              synchroniser,
+                              [
+                                  self._make_link(self._sprites_loader.load_telegram(),
+                                                  "https://t.me/cyberdilf"),
+                                  self._make_link(self._sprites_loader.load_twitch(),
+                                                  "https://www.twitch.tv/cyberdilff"),
+                                  self._make_link(self._sprites_loader.load_itch(),
+                                                  "https://cyberdilf.itch.io/"),
+                                  self._make_link(self._sprites_loader.load_github(),
+                                                  "https://github.com/Vovchek-aks"),
+                              ],
+                              layout)
+        self._add_author_card("Divan0_0",
+                              self._sprites_loader.load_divan(),
+                              self._language.get_divan_roles(),
+                              synchroniser,
+                              [
+                                  self._make_link(self._sprites_loader.load_github(),
+                                                  "https://github.com/Ktoto888550303"),
+                              ],
+                              layout)
         synchroniser.synchronise()
         layers = [
             layout,
@@ -122,20 +121,23 @@ class MainMenuUiLayerMaker:
         button.was_clicked.subscribe(lambda: webbrowser.open(url))
         return button
 
-    def _make_author_card(self,
-                          name: str,
-                          sprite: proto.Sprite,
-                          roles: list[str],
-                          roles_synchroniser: TextSizeSynchroniser,
-                          links: list[ButtonUi]) -> VerticalLayoutUi:
+    def _add_author_card(self,
+                         name: str,
+                         sprite: proto.Sprite,
+                         roles: list[str],
+                         roles_synchroniser: TextSizeSynchroniser,
+                         links: list[ButtonUi],
+                         layout: LayoutUi) -> None:
         max_links = 4
         max_roles = 6
         assert len(links) <= max_links
         assert len(roles) <= max_links
 
-        card = VerticalLayoutUi(Rectangle(Vector2.zero(), Vector2(200, 600)))
-        roles_ui = VerticalLayoutUi(Rectangle.zero())
+        card = VerticalLayoutUi(Rectangle(Vector2.zero(), Vector2(200, 600)), reserved=3)
+        layout.append(card)
+        roles_ui = VerticalLayoutUi(Rectangle.zero(), reserved=max_roles)
         card.append(roles_ui)
+
         while len(roles) < max_roles:
             roles.insert(0, ' ')
         for role in roles:
@@ -146,17 +148,12 @@ class MainMenuUiLayerMaker:
 
         card.append(ImageUi.make(self._drawer, Rectangle(Vector2.zero(), Vector2.ones()), sprite))
 
-        links_ui = HorizontalLayoutUi(Rectangle.zero())
-        links_halfer = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2)
+        links_halfer = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2, reserved=3)
         card.append(links_halfer)
+        links_ui = HorizontalLayoutUi(Rectangle.zero(), reserved=max_links)
         links_halfer.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(name), is_center=True))
         links_halfer.append(links_ui)
-        links_halfer.append(BoxUi(Rectangle.zero()))
         links_ui.extend(links)
-        while len(links_ui) < max_links:
-            links_ui.append(BoxUi(Rectangle.zero()))
-
-        return card
 
     def _make_map_selection(self,
                             turn_tabs_off: Callable[[], None],
@@ -186,17 +183,12 @@ class MainMenuUiLayerMaker:
 
         assert len(buttons) <= buttons_shape.x * buttons_shape.y
 
-        layout = VerticalLayoutUi(self._get_maps_buttons_rectangle(), margin_ratio=.2)
+        layout = VerticalLayoutUi(self._get_maps_buttons_rectangle(), margin_ratio=.2, reserved=buttons_shape.y)
         for index in range(0, len(buttons), buttons_shape.x):
             row = buttons[index:index + buttons_shape.x]
-            horizontal = HorizontalLayoutUi(Rectangle.zero())
+            horizontal = HorizontalLayoutUi(Rectangle.zero(), reserved=buttons_shape.x)
             layout.append(horizontal)
             horizontal.extend(row)
-            while len(horizontal) < buttons_shape.x:
-                horizontal.append(BoxUi(Rectangle.zero()))
-
-        while len(layout) < buttons_shape.y:
-            layout.append(BoxUi(Rectangle.zero()))
 
         synchroniser.synchronise()
 
@@ -276,7 +268,7 @@ class MainMenuUiLayerMaker:
 
         count = 10
         margin_ratio = .3
-        layout = VerticalLayoutUi(self._get_changers_rectangle(), margin_ratio=margin_ratio)
+        layout = VerticalLayoutUi(self._get_changers_rectangle(), margin_ratio=margin_ratio, reserved=count)
         rectangle = Rectangle(Vector2.zero(),
                               Vector2(count * layout.rectangle.shape.x / layout.rectangle.shape.y,
                                       1 - margin_ratio) * 100)
@@ -315,9 +307,6 @@ class MainMenuUiLayerMaker:
         titles_synchroniser.synchronise()
         synchroniser.synchronise()
 
-        for _ in range(count - len(layout)):
-            layout.append(BoxUi(Rectangle.zero()))
-
         return layout.layer
 
     def _add_changer[T](self,
@@ -328,28 +317,22 @@ class MainMenuUiLayerMaker:
                         changers: dict[str, ValueChanger[T]],
                         value_changers: dict[str, TwoButtonsValueChanger[T]],
                         rectangle: Rectangle) -> None:
-        to_add, value_changer, text_ui = self._make_changer(text, changers[key], rectangle)
-        layout.append(to_add)
-        synchroniser.append(text_ui)
-        value_changers[key] = value_changer
-
-    def _make_changer[T](self,
-                         text: str,
-                         changer: ValueChanger[T],
-                         rectangle: Rectangle) -> tuple[LayoutUi, TwoButtonsValueChanger[T], TextUi]:
+        changer = changers[key]
         text = f"{text}:"
         margin_ratio = .13
-        horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio)
+        horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio, reserved=2)
+        layout.append(horizontal)
         horizontal.append(text_ui := TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
         horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
             self._sprites_loader, self._drawer))
-        return horizontal, value_changer, text_ui
+        synchroniser.append(text_ui)
+        value_changers[key] = value_changer
 
     def _get_changers_rectangle(self) -> Rectangle:
         width = self._screen_shape.x / 2
         height = self._screen_shape.y / 1.3
-        bottom_margin = (self._screen_shape.y - height) / 2
+        bottom_margin = (self._screen_shape.y - height) / 1.5
 
         center_x = self._screen_shape.x / 2
         x = center_x - width / 2
@@ -428,8 +411,9 @@ class MainMenuUiLayerMaker:
                       authors_was_pressed: Event[None],
                       exit_was_pressed: Callable[[], None],
                       turn_tabs_off: Callable[[], None]) -> Layer:
-        layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.1)
-        tutorial_settings = HorizontalLayoutUi(Rectangle.zero())
+        layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.1, reserved=3)
+
+        tutorial_settings = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
         layout.append(tutorial_settings)
         tutorial_settings.append(tutorial := self._make_menu_button(self._language.get_tutorial_message(),
                                                                     tutorial_was_pressed.invoke, turn_tabs_off))
@@ -438,7 +422,7 @@ class MainMenuUiLayerMaker:
 
         layout.append(self._make_menu_button(self._language.get_play_message(), play_was_pressed.invoke, turn_tabs_off))
 
-        authors_close = HorizontalLayoutUi(Rectangle.zero())
+        authors_close = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
         layout.append(authors_close)
         authors_close.append(authors := self._make_menu_button(self._language.get_authors_message(),
                                                                authors_was_pressed.invoke, turn_tabs_off))

@@ -41,15 +41,6 @@ class AStarPathSearcher:
         yield from self._fill_path_process(path, root_of, start_cell)
         yield path
 
-    def _fill_path_process(self, path: Path, root_of: dict[Cell, tuple[Cell, int]], start_cell: Cell) -> Iterator[None]:
-        cell = self._target
-        while cell != start_cell:
-            yield
-            path.append(self._board.coordinates_of(cell))
-            cell = root_of[cell][0]
-        path.append(self._board.coordinates_of(start_cell))
-        path[:] = path[::-1]
-
     def _fill_process(self,
                       root_of: dict[Cell, tuple[Cell, int]],
                       leafs: set[Cell],
@@ -81,3 +72,12 @@ class AStarPathSearcher:
         coord = self._board.coordinates_of(cell)
         target_coord = self._board.coordinates_of(self._target)
         return get_distance(target_coord, coord)
+
+    def _fill_path_process(self, path: Path, root_of: dict[Cell, tuple[Cell, int]], start_cell: Cell) -> Iterator[None]:
+        cell = self._target
+        while cell != start_cell:
+            yield
+            path.append(self._board.coordinates_of(cell))
+            cell = root_of[cell][0]
+        path.append(self._board.coordinates_of(start_cell))
+        path[:] = path[::-1]

@@ -1,3 +1,4 @@
+from appearance.settings import Settings
 from my_types import TracebackType
 from typing import Iterator
 
@@ -18,7 +19,8 @@ PROCESS = Iterator[str | proto.Scene]
 @frozen
 class LoadingScene(proto.Scene):
     @classmethod
-    def make(cls, screen_shape: Vector2Int, process: PROCESS) -> "LoadingScene":
+    def make(cls, process: PROCESS) -> "LoadingScene":
+        screen_shape = Settings.open().screen_shape
         text = TextUi.make(UiDrawer(),
                            Rectangle.with_center_at(screen_shape.as_vector2 * .5 - Vector2(0, screen_shape.y / 4),
                                                     Vector2(screen_shape.x / 2, 30)),

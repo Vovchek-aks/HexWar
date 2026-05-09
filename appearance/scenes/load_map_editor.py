@@ -30,8 +30,10 @@ import appearance.protocols as proto
 from statuses import Status
 
 
-def load_map_editor(screen_shape: Vector2Int,
-                    window: Window) -> Iterator[proto.Scene | Status]:
+def load_map_editor(window: Window) -> Iterator[proto.Scene | Status]:
+    screen_shape = Vector2Int(1280, 720)
+    window.change_is_fullscreen(False)
+
     language = Language.from_meta()
 
     yield language.get_map_loading_message()

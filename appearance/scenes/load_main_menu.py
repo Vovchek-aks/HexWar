@@ -18,7 +18,7 @@ from appearance.settings import Settings
 from core.protocols import GameSession
 from game_session_saver import GameSessionLoader, SAVE_FILE, is_tutorial
 from mathematics.rectangle import Rectangle
-from mathematics.vector import Vector2Int, Vector2
+from mathematics.vector import Vector2
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
@@ -27,13 +27,13 @@ from statuses import Status
 FromSessionMakerLoadingSceneGetter = Callable[[Callable[[], GameSession]], LoadingScene]
 
 
-def load_main_menu(screen_shape: Vector2Int,
-                   ups: int,
+def load_main_menu(ups: int,
                    window: Window,
                    get_player_selection_loading_scene: FromSessionMakerLoadingSceneGetter,
                    get_game_loading_scene: FromSessionMakerLoadingSceneGetter,
                    get_tutorial_game_loading_scene_getter: Callable[[str], FromSessionMakerLoadingSceneGetter],
                    ) -> Iterator[proto.Scene | Status]:
+    screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
     yield language.get_intermediate_preparing_message()
@@ -83,9 +83,7 @@ def load_main_menu(screen_shape: Vector2Int,
         window.change_is_fullscreen(False)
         window.change_screen_shape(screen_shape)
         window.change_is_fullscreen(settings.if_fullscreen)
-        scene.switch_to(LoadingScene.make(screen_shape,
-                                          load_main_menu(screen_shape,
-                                                         ups,
+        scene.switch_to(LoadingScene.make(load_main_menu(ups,
                                                          window,
                                                          get_player_selection_loading_scene,
                                                          get_game_loading_scene,

@@ -190,11 +190,11 @@ class MissileSilo(_Figure):
                       StartsWithBudgetSpend(1),
                       TriesTakeResourcesElseDies.make(Dollars(25_000),
                                                       LightIndustryProducts(1_000),
-                                                      HeavyIndustryProducts(250)),
+                                                      HeavyIndustryProducts(500)),
                       CanLaunchOreshnik(min_distance=10,
                                         cost=ResourcesGroup.make(Dollars(250_000),
-                                                                 LightIndustryProducts(5_000),
-                                                                 HeavyIndustryProducts(5_000)),
+                                                                 LightIndustryProducts(15_000),
+                                                                 HeavyIndustryProducts(7_500)),
                                         spread_radius=3,
                                         targets_per_layer=3))
     MOVES_BUDGET = 1
@@ -352,11 +352,11 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
                       Pullable(),
-                      Creatable.make(Dollars(200_000), LightIndustryProducts(5_000), HeavyIndustryProducts(2_000)),
+                      Creatable.make(Dollars(200_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_250)),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(100_000),
-                                                      LightIndustryProducts(1_000),
-                                                      HeavyIndustryProducts(500)),
+                                                      LightIndustryProducts(750),
+                                                      HeavyIndustryProducts(300)),
                       CanAttack(max_distance=3))
     MOVES_BUDGET = 7
 

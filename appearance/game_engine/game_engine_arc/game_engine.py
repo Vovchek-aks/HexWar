@@ -1,3 +1,4 @@
+from appearance.settings import Settings
 from my_types import TracebackType
 from typing import Callable
 
@@ -6,7 +7,6 @@ from attrs import frozen
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
 from appearance.scenes.scene_switcher import SceneSwitcher
-from mathematics.vector import Vector2Int
 
 
 @frozen
@@ -15,11 +15,13 @@ class GameEngine:
     def make(cls,
              caption: str,
              ups: int,
-             is_fullscreen: bool,
-             screen_shape: Vector2Int,
-             make_scene: Callable[[Vector2Int, Window], proto.Scene]) -> "GameEngine":
+             make_scene: Callable[[Window], proto.Scene]) -> "GameEngine":
+        settings = Settings.open()
+        screen_shape = settings.screen_shape
+        is_fullscreen = settings.if_fullscreen
+
         window = Window(ups, is_fullscreen, caption, screen_shape)
-        scene_switcher = SceneSwitcher.make(make_scene(screen_shape, window))
+        scene_switcher = SceneSwitcher.make(make_scene(window))
         self = cls(caption, window, scene_switcher)
         window.update_started.subscribe(self.update)
         window.draw_event.subscribe(self.draw)

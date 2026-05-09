@@ -40,6 +40,7 @@ from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
+from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
 import core.figures.figure as fig
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
@@ -57,12 +58,12 @@ from statuses import Status
 from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 
-def load_game(screen_shape: Vector2Int,
-              window: Window,
+def load_game(window: Window,
               make_session: Callable[[], GameSession],
               make_next_scene_loading: Callable[[], proto.Scene],
               *,
               is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
+    screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
     yield language.get_map_loading_message()

@@ -38,9 +38,9 @@ from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.pause_menu import PauseMenu
+from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
-from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
@@ -54,11 +54,11 @@ from statuses import Status
 from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 
-def load_tutorial(screen_shape: Vector2Int,
-                  window: Window,
+def load_tutorial(window: Window,
                   make_session: Callable[[], GameSession],
                   make_next_scene_loading: Callable[[], proto.Scene],
                   tutorial_index: int) -> Iterator[proto.Scene | Status]:
+    screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
