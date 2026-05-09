@@ -149,7 +149,6 @@ class BotIgor(proto.Bot):
                                     .with_figure(fig.Land)
                                     for cell in (cells.with_figure(fig.Capital) &
                                                  cells.with_owner(self._player)))
-            print(f"{self._player.data.name}{is_any_to_develop}")
 
             if self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO * cells_count ** .25) and not is_any_to_develop:
                 self._try_create(fig.Capital)
