@@ -185,7 +185,7 @@ class Bunker(_Figure):
 class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(20_000), HeavyIndustryProducts(5_000)),
+                      Creatable.make(Dollars(1_500_000), LightIndustryProducts(10_000), HeavyIndustryProducts(5_000)),
                       Capturable(),
                       StartsWithBudgetSpend(1),
                       TriesTakeResourcesElseDies.make(Dollars(25_000),

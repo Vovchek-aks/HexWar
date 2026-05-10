@@ -35,8 +35,8 @@ _INITIAL_STATE = _CATASTROPHY_PREVENTION
 # https://www.desmos.com/calculator/zkc3ewscyj
 _TARGET_RESERVE_RATIO_OF = ResourcesGroup.make(
     Dollars(1_340_000),
-    LightIndustryProducts(6_630),
-    HeavyIndustryProducts(5_300),
+    LightIndustryProducts(8_000),
+    HeavyIndustryProducts(7_500),
 )
 
 _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
@@ -193,7 +193,7 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            target_silos_count = max(1, hf_count // 3)
+            target_silos_count = max(1, hf_count // 4)
             if silos_count < target_silos_count:
                 self._try_create(fig.MissileSilo)
                 # print("_try_create(fig.MissileSilo)")
