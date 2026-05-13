@@ -42,6 +42,10 @@ class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
         for element in elements:
             self.append(element)
 
+    def clear(self) -> None:
+        self._elements.clear()
+        self._layer = Layer.as_multiple([])
+
     def _reshape(self,
                  elements: list[proto.ElementUi],
                  not_to_reshape: list[int],

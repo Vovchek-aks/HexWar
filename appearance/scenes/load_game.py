@@ -12,8 +12,8 @@ from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.game_engine.game_engine_arc.updater import Updater
-from animations.moves_animator import MovesAnimator
-from animations.moves_animators_switcher import MovesAnimatorsSwitcher
+from appearance.animations.moves_animator import MovesAnimator
+from appearance.animations.moves_animators_switcher import MovesAnimatorsSwitcher
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
@@ -176,14 +176,8 @@ def load_game(window: Window,
         scene = MultibotScene(game)
 
         def on_player_turn_ended(player: Player) -> None:
-            production = session.cells.with_figure(fig.Town | fig.LightFactory | fig.HeavyFactory)
-            player_cells = session.cells.with_owner(player)
-            player_production = player_cells & production
             ratio_to_win = .7
-            is_territory_win = len(player_cells) / sum(len(session.cells.with_owner(other))
-                                                       for other in session.master.players) >= ratio_to_win
-            is_economically_win = len(player_production) > len(production) * ratio_to_win
-            if is_territory_win or is_economically_win:
+            if max(session.cells.get_territories_and_production_ratios_of(player)) >= ratio_to_win:
                 scene.on_reload(make_next_scene_loading())
 
         session.master.turn_has_passed.subscribe(on_player_turn_ended)

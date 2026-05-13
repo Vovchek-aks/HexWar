@@ -56,7 +56,10 @@
     "HEIGHT": "Высота",
     "AUDIO": "Аудио",
     "OTHER": "Прочее",
-    "APPLY": "Применить"
+    "APPLY": "Применить",
+    "PLAYERS_TOP": "Топ игроков",
+    "TERRITORIES": "Земли",
+    "ECONOMY": "Эко."
   },
   "hints": {
     "creation": {

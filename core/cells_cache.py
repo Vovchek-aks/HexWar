@@ -1,13 +1,14 @@
 from collections import defaultdict
 from types import UnionType
-from typing import get_args, Union
+from typing import get_args
 
 from attrs import frozen, field
 
 import core.protocols as proto
 from core.cells import Cells
+from my_types import union
 from statuses import MISSING
-
+import core.figures.figure as fig
 
 @frozen
 class CellsCache(proto.CellsCache):
@@ -47,6 +48,14 @@ class CellsCache(proto.CellsCache):
         for concrete_figure in get_args(figure):
             result |= self._cells_with[concrete_figure]
         return Cells(result)
+
+    def get_territories_and_production_ratios_of(self, player: proto.Player) -> tuple[float, float]:
+        production = self.with_figure(union(*fig.get_producers()))
+        player_cells = self.with_owner(player)
+        player_production = player_cells & production
+        return (len(player_cells) / sum(len(self.with_owner(other))
+                                        for other in self._cells_of),
+                0 if not production else len(player_production) / len(production))
 
     def update_fully(self) -> None:
         for cell in self._board.cells:

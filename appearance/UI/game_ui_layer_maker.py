@@ -57,6 +57,7 @@ class GameUiLayerMaker:
 
         layers = [
             players_turn,
+            self._make_player_top_list(),
             self._make_current_turn_ui(resources, end_turn_button)
         ]
 
@@ -128,6 +129,59 @@ class GameUiLayerMaker:
         ])
         self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
+
+    def _make_player_top_list(self) -> LayoutUi:
+        TOP_PLACES = 5
+
+        layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
+                                  .from_right_up()
+                                  .move(Vector2(20, 10))
+                                  .set_shape(Vector2(self._screen_shape.x / 5,
+                                                     self._screen_shape.y / 5))
+                                  .adjust_for_shape()
+                                  .build(),
+                                  reserved=TOP_PLACES)
+
+        def update() -> None:
+            layout.clear()
+            players = self._session.master.players
+            rows = sorted(zip(players, map(self._session.cells.get_territories_and_production_ratios_of, players)),
+                          key=lambda row: max(row[-1]), reverse=True)[:TOP_PLACES]
+            first_element_synchroniser = TextSizeSynchroniser()
+            first_row_synchroniser = TextSizeSynchroniser()
+            synchroniser = TextSizeSynchroniser()
+            add_row(first_element_synchroniser,
+                    first_row_synchroniser,
+                    self._language.get_player_top_message(),
+                    self._language.get_territories_message(),
+                    self._language.get_economy_message())
+            for player, ratios in rows:
+                add_row(synchroniser, synchroniser, player.data.name, *(f"{ratio:.0%}" for ratio in ratios))
+            synchroniser.synchronise(first_element_synchroniser.size * .8)
+            first_row_synchroniser.synchronise()
+
+        def add_row(first_synchroniser: TextSizeSynchroniser,
+                    synchroniser: TextSizeSynchroniser,
+                    first: str,
+                    second: str,
+                    third: str) -> None:
+            row_ui = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
+            layout.append(row_ui)
+            text = TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(first), is_center=True)
+            first_synchroniser.append(text)
+            row_ui.append(text)
+            ratios_ui = HorizontalLayoutUi(Rectangle.zero(), reserved=2, margin_ratio=0.01)
+            row_ui.append(ratios_ui)
+            ratios_texts = [TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(line), is_center=True)
+                            for line in (second, third)]
+            synchroniser.extend(*ratios_texts)
+            ratios_ui.extend(ratios_texts)
+
+        self._session.master.turn_had_started.subscribe(lambda _: update())
+        update()
+
+        return layout
+
 
     def _make_resources_and_player_turn(self) -> tuple[VerticalLayoutUi, TextUi]:
         players_turn = TextUi.make(self._drawer,

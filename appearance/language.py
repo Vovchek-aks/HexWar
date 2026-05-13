@@ -78,6 +78,9 @@ _COST = "COST"
 _FLOW = "FLOW"
 _PAGE = "PAGE"
 _NEXT = "NEXT"
+_PLAYERS_TOP = "PLAYERS_TOP"
+_TERRITORIES = "TERRITORIES"
+_ECONOMY = "ECONOMY"
 
 _MUSIC_VOLUME = "MUSIC_VOLUME"
 _VOICE_VOLUME = "VOICE_VOLUME"
@@ -261,6 +264,15 @@ class Language:
 
     def get_next_message(self) -> str:
         return self._ui[_NEXT]
+
+    def get_player_top_message(self) -> str:
+        return self._ui[_PLAYERS_TOP]
+
+    def get_territories_message(self) -> str:
+        return self._ui[_TERRITORIES]
+
+    def get_economy_message(self) -> str:
+        return self._ui[_ECONOMY]
 
     def get_music_volume_message(self) -> str:
         return self._ui[_MUSIC_VOLUME]

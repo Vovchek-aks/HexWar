@@ -232,6 +232,10 @@ class CellsCache(ABC):
         ...
 
     @abstractmethod
+    def get_territories_and_production_ratios_of(self, player: Player) -> tuple[float, float]:
+        ...
+
+    @abstractmethod
     def update_fully(self) -> None:
         ...
 
