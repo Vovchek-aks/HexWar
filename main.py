@@ -57,8 +57,8 @@ def _make_main_menu_loading_scene(window: Window) -> Scene:
 
 
 def _make_multibot_loading_scene(window: Window) -> Scene:
-    # return LoadingScenesMaker(screen_shape, window, UPS).make_multibot_loading_scene(
-    #     lambda: GameSessionLoader.make(random.choice(["SVO.json"]), UPS).load())
+    # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
+    #     lambda: GameSessionLoader.make(random.choice(["Balkans.json"]), UPS).load())
     return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
         lambda: GameSessionLoader.make(random.choice(["SVO.json",
                                                       "Middle East.json",
