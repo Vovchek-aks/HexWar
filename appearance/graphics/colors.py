@@ -1,3 +1,5 @@
+import colorsys
+
 from color import Color
 
 BACKGROUND = Color(111, 139, 158)
@@ -22,3 +24,16 @@ PLAYERS = [
     Color.from_hex_string("#824570"),
     Color.from_hex_string("#AE63A7"),
 ]
+
+
+def get_colors(colors_count: int, deepness: float = 0.7, lightness: float = 1.0) -> list[Color]:
+    colors = list[Color]()
+    for color in range(colors_count):
+        hue = color / colors_count
+        r, g, b = colorsys.hsv_to_rgb(hue, deepness, lightness)
+        r_255 = int(r * 255)
+        g_255 = int(g * 255)
+        b_255 = int(b * 255)
+        hex_color = f"#{r_255:02x}{g_255:02x}{b_255:02x}"
+        colors.append(Color.from_hex_string(hex_color))
+    return colors

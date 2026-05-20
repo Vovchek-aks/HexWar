@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import reduce
 from types import UnionType
 from typing import get_args
 
@@ -48,6 +49,9 @@ class CellsCache(proto.CellsCache):
         for concrete_figure in get_args(figure):
             result |= self._cells_with[concrete_figure]
         return Cells(result)
+
+    def get_all_players(self) -> Cells:
+        return reduce(lambda a, b: a + b, (self.with_owner(player) for player in self._cells_of))
 
     def get_territories_and_production_ratios_of(self, player: proto.Player) -> tuple[float, float]:
         production = self.with_figure(union(*fig.get_producers()))

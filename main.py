@@ -7,10 +7,13 @@ from appearance.input.players_selector import PlayersSelector
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
 from core.game_session import GameSession
+from core.map_randomizer import MapRandomizer
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
+from core.player.inputers.bots import BotIgor
 from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, HeavyIndustryProducts
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = False
+IS_MULTIBOT = True
 
 UPS = 60
 CAPTION = "HexWar"
@@ -25,7 +28,7 @@ def main() -> None:
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Sweden", "Estonia", "Finland"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
-    make_first_scene = _make_test_game_loading_scene
+    # make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
@@ -58,12 +61,14 @@ def _make_main_menu_loading_scene(window: Window) -> Scene:
 
 def _make_multibot_loading_scene(window: Window) -> Scene:
     # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-    #     lambda: GameSessionLoader.make(random.choice(["Balkans.json"]), UPS).load())
+    #     lambda: GameSessionLoader.make(random.choice(["SVO.json"]), UPS).load())
     return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-        lambda: GameSessionLoader.make(random.choice(["SVO.json",
-                                                      "Middle East.json",
-                                                      "Finnish Gulf.json",
-                                                      "Balkans.json"]), UPS).load())
+        lambda: MapRandomizer.make(GameSessionLoader.make(random.choice(["SVO.json",
+                                                                         "Middle East.json",
+                                                                         "Finnish Gulf.json",
+                                                                         "Balkans.json"]), UPS).load(),
+                                   lambda: BotPlayerInputer(BotIgor(), UPS))
+        .with_players_count(30, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 
 
 if __name__ == '__main__':

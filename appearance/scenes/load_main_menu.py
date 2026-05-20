@@ -15,7 +15,11 @@ from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
 from appearance.settings import Settings
+from core.map_randomizer import MapRandomizer
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
+from core.player.inputers.bots import BotIgor
 from core.protocols import GameSession
+from core.resources import ResourcesGroup, Dollars
 from game_session_saver import GameSessionLoader, SAVE_FILE, is_tutorial
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
@@ -63,9 +67,15 @@ def load_main_menu(ups: int,
 
     def on_map_was_selected(map_name: str) -> None:
         scene_loader = scene_loader_from(map_name)
-        scene.switch_to(scene_loader(lambda: GameSessionLoader
-                                     .make(f"{map_name}.json", ups)
-                                     .load()))
+        # scene.switch_to(scene_loader(lambda: GameSessionLoader
+        #                              .make(f"{map_name}.json", ups)
+        #                              .load()))
+        scene.switch_to(scene_loader(lambda: MapRandomizer.make(GameSessionLoader
+                                                                .make(f"{map_name}.json", ups)
+                                                                .load(),
+                                                                lambda: BotPlayerInputer(BotIgor(), ups))
+                                     .with_players_count(54, ResourcesGroup.make(Dollars(5_000_000)),
+                                                         4, ups)))
 
     def scene_loader_from(map_name: str) -> FromSessionMakerLoadingSceneGetter:
         if is_tutorial(map_name):

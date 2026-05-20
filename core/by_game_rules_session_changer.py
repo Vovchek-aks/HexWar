@@ -38,7 +38,23 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
 
         cells = self._discard_regions_without(capitals, cells)
         regions = self._get_regions_to_be_annexed(cells)
-        self._annex(regions)
+        for region in regions:
+            self.annex(region)
+
+    def annex(self, region: Cells) -> None:
+        manned = region & self._session.cells.with_figure(fig.Infantry | fig.Motorization)
+        for cell in manned:
+            self._session.figures.remove(cell.figure)
+
+        with self._multiple_cells_change(region):
+            while region:
+                annexed = self._annex_boundry(region)
+                if not annexed:
+                    break
+                region -= annexed
+
+        for cell in region:
+            self._session.cells.update(cell)
 
     def _discard_regions_without(self, targets: Cells, cells: Cells) -> Cells:
         while targets:
@@ -67,22 +83,6 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
             cells -= region
 
         return regions_to_be_annexed
-
-    def _annex(self, regions: list[Cells]) -> None:
-        for region in regions:
-            manned = region & self._session.cells.with_figure(fig.Infantry | fig.Motorization)
-            for cell in manned:
-                self._session.figures.remove(cell.figure)
-
-            with self._multiple_cells_change(region):
-                while region:
-                    annexed = self._annex_boundry(region)
-                    if not annexed:
-                        break
-                    region -= annexed
-
-            for cell in region:
-                self._session.cells.update(cell)
 
     def _annex_boundry(self, region: Cells) -> Cells:
         to_annex = list[tuple[proto.Cell, proto.Player]]()

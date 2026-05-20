@@ -68,7 +68,8 @@ class GameUiLayerMaker:
 
         layers = [
             players_turn,
-            resources
+            resources,
+            self._make_player_top_list(),
         ]
 
         return Layer.as_multiple(layers)

@@ -66,10 +66,10 @@ class GameSessionSaver:
     _session: proto.GameSession
 
     def save(self, filename: str) -> None:
-        json = self._get_json()
+        json = self.get_json()
         write_json(json, SAVE_FOLDER / filename)
 
-    def _get_json(self) -> SESSION_DICT:
+    def get_json(self) -> SESSION_DICT:
         json = SESSION_DICT()
         json[_PLAYERS] = self._get_player_dicts()
         json[_BUDGET] = self._get_budget_dict()
