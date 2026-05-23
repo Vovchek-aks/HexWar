@@ -16,11 +16,12 @@ from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT
-from files import read_build_info
+from files import read_build_info, read_random_bot_names
 from game_session_saver import get_saved_maps, get_tutorials
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 from observer import Event
+from statuses import Status, MISSING
 
 _AUDIO_SETTER_STEPS = 100
 _AUDIO_SETTER_STEP = 5
@@ -39,7 +40,7 @@ class MainMenuUiLayerMaker:
         return Rectangle(Vector2.zero(), self._screen_shape.as_vector2)
 
     def make(self,
-             on_map_was_selected: Callable[[str], None],
+             on_map_was_selected: Callable[[str, Status | int], None],
              on_exit_was_pressed: Callable[[], None],
              reload: Callable[[], None]) -> Layer:
         play_was_pressed = Event[None]()
@@ -59,7 +60,7 @@ class MainMenuUiLayerMaker:
         tabs.append(self._make_map_selection(turn_tabs_off, get_saved_maps(), on_map_was_selected, play_was_pressed,
                                              to_main_menu_was_pressed))
         tabs.append(self._make_map_selection(turn_tabs_off, get_tutorials(), on_map_was_selected, tutorial_was_pressed,
-                                             to_main_menu_was_pressed))
+                                             to_main_menu_was_pressed, allow_random_players=False))
         tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
         tabs.append(self._make_authors_tab(turn_tabs_off, authors_was_pressed, to_main_menu_was_pressed))
 
@@ -158,17 +159,84 @@ class MainMenuUiLayerMaker:
     def _make_map_selection(self,
                             turn_tabs_off: Callable[[], None],
                             map_names: list[str],
-                            on_map_was_selected: Callable[[str], None],
+                            on_map_was_selected: Callable[[str, Status | int], None],
                             tab_was_selected: Event[None],
-                            to_main_menu_was_pressed: Event[None]) -> Layer:
+                            to_main_menu_was_pressed: Event[None],
+                            allow_random_players: bool = True) -> Layer:
+        on_map_name_was_selected = Event[str, None]()
+        players_mode_selection, players_mode, players_count = self._make_players_mode_selection()
         layers = [
-            self._make_map_selection_buttons(map_names, on_map_was_selected),
+            self._make_map_selection_buttons(map_names, on_map_name_was_selected.invoke),
             self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
         ]
+        if allow_random_players:
+            layers.append(players_mode_selection)
+
         layer = Layer.as_multiple(layers)
         layer.set_activity(False)
         tab_was_selected.subscribe(lambda: layer.set_activity(True))
+
+        on_map_name_was_selected.subscribe(
+            lambda name: on_map_was_selected(name,
+                                             players_count.value
+                                             if allow_random_players and
+                                                players_mode.value == self._language.get_players_mode_random_message()
+                                             else
+                                             MISSING))
+
         return layer
+
+    def _make_players_mode_selection(self) -> tuple[Layer, ValueChanger[str], ValueChanger[int]]:
+        mode_changer = ListChanger([self._language.get_players_mode_random_message(),
+                                    self._language.get_players_mode_states_message()])
+        min_count = 2
+        max_count = len(read_random_bot_names())
+        start_count = (max_count + min_count) // 2
+        count_changer = IntChanger(start_count, min_count, max_count, 5)
+
+        title_synchroniser = TextSizeSynchroniser()
+        synchroniser = TextSizeSynchroniser()
+        layout = HorizontalLayoutUi(self._get_players_mode_selection_rectangle(), reserved=2)
+        count, _ = self._add_named_value_changer(title_synchroniser, synchroniser, layout,
+                                                 self._language.get_count_message(), count_changer)
+        count.set_activity(False)
+        _, mode = self._add_named_value_changer(title_synchroniser, synchroniser,
+                                                layout, self._language.get_players_mode_message(), mode_changer)
+        title_synchroniser.synchronise()
+        synchroniser.synchronise()
+
+        mode.next()
+        mode.value_had_changed.subscribe(
+            lambda value: count.set_activity(value == self._language.get_players_mode_random_message()))
+        return layout.layer, mode_changer, count_changer
+
+    def _get_players_mode_selection_rectangle(self) -> Rectangle:
+        return (RectangleBuilder(self._screen_shape)
+                .from_right_bottom()
+                .move(Vector2(20, 20))
+                .set_shape(Vector2(self._screen_shape.x / 3, self._screen_shape.y / 10))
+                .adjust_for_shape()
+                .build())
+
+    def _add_named_value_changer[T](self,
+                                    title_synchroniser: TextSizeSynchroniser,
+                                    synchroniser: TextSizeSynchroniser,
+                                    outer_layout: LayoutUi,
+                                    name: str,
+                                    changer: ValueChanger[T]) -> tuple[Layer, TwoButtonsValueChanger[T]]:
+        margin_ratio = .1
+        layout = VerticalLayoutUi(Rectangle.zero(), margin_ratio, reserved=2)
+        outer_layout.append(layout)
+        layout.append(text := TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(name), is_center=True))
+        title_synchroniser.append(text)
+        layout.append(value_changer := TwoButtonsValueChanger.make_horizontal(
+            Rectangle(Vector2.zero(), Vector2(layout.rectangle.shape.x,
+                                              layout.rectangle.shape.y * (1 - margin_ratio * 2) / 2)),
+            changer, self._sprites_loader, self._drawer, margin_ratio=.05
+        ))
+        synchroniser.append(value_changer.text)
+
+        return layout.layer, value_changer
 
     def _make_map_selection_buttons(self,
                                     map_names: list[str],

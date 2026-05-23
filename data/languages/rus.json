@@ -59,7 +59,11 @@
     "APPLY": "Применить",
     "PLAYERS_TOP": "Топ игроков",
     "TERRITORIES": "Земли",
-    "ECONOMY": "Эко."
+    "ECONOMY": "Эко.",
+    "PLAYERS_MODE": "Игроки",
+    "PLAYERS_MODE_STATES": "Страны",
+    "PLAYERS_MODE_RANDOM": "Случайно",
+    "COUNT": "Количество"
   },
   "hints": {
     "creation": {

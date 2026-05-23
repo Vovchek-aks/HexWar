@@ -26,7 +26,7 @@ from mathematics.vector import Vector2
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
-from statuses import Status
+from statuses import Status, MISSING
 
 FromSessionMakerLoadingSceneGetter = Callable[[Callable[[], GameSession]], LoadingScene]
 
@@ -45,7 +45,7 @@ def load_main_menu(ups: int,
 
     null_layer = WholeScreenLayer()
 
-    map_was_selected = Event[str, None]()
+    map_was_selected = Event[str, Status | int, None]()
     exit_was_pressed = Event[None]()
     reload_was_pressed = Event[None]()
 
@@ -65,17 +65,19 @@ def load_main_menu(ups: int,
 
     scene = MainMenuScene.make(screenshot_saver, InputState.make(window), layers)
 
-    def on_map_was_selected(map_name: str) -> None:
+    def on_map_was_selected(map_name: str, random_players_count: Status | int) -> None:
         scene_loader = scene_loader_from(map_name)
-        # scene.switch_to(scene_loader(lambda: GameSessionLoader
-        #                              .make(f"{map_name}.json", ups)
-        #                              .load()))
+        if random_players_count is MISSING:
+            scene.switch_to(scene_loader(lambda: GameSessionLoader
+                                         .make(f"{map_name}.json", ups)
+                                         .load()))
+            return
         scene.switch_to(scene_loader(lambda: MapRandomizer.make(GameSessionLoader
                                                                 .make(f"{map_name}.json", ups)
                                                                 .load(),
                                                                 lambda: BotPlayerInputer(BotIgor(), ups))
-                                     .with_players_count(54, ResourcesGroup.make(Dollars(5_000_000)),
-                                                         4, ups)))
+                                     .with_players_count(random_players_count, ResourcesGroup.make(Dollars(3_000_000)),
+                                                         10, ups)))
 
     def scene_loader_from(map_name: str) -> FromSessionMakerLoadingSceneGetter:
         if is_tutorial(map_name):

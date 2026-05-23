@@ -30,6 +30,7 @@ def get_colors(colors_count: int, deepness: float = 0.7, lightness: float = 1.0)
     colors = list[Color]()
     for color in range(colors_count):
         hue = color / colors_count
+
         r, g, b = colorsys.hsv_to_rgb(hue, deepness, lightness)
         r_255 = int(r * 255)
         g_255 = int(g * 255)

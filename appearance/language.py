@@ -95,6 +95,10 @@ _AUDIO = "AUDIO"
 _GRAPHICS = "GRAPHICS"
 _OTHER = "OTHER"
 _APPLY = "APPLY"
+_PLAYERS_MODE = "PLAYERS_MODE"
+_PLAYERS_MODE_STATES = "PLAYERS_MODE_STATES"
+_PLAYERS_MODE_RANDOM = "PLAYERS_MODE_RANDOM"
+_COUNT = "COUNT"
 
 _SELECTED_PLAYERS = "SELECTED_PLAYERS"
 _NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
@@ -312,6 +316,18 @@ class Language:
 
     def get_apply_message(self) -> str:
         return self._ui[_APPLY]
+
+    def get_players_mode_message(self) -> str:
+        return self._ui[_PLAYERS_MODE]
+
+    def get_players_mode_states_message(self) -> str:
+        return self._ui[_PLAYERS_MODE_STATES]
+
+    def get_players_mode_random_message(self) -> str:
+        return self._ui[_PLAYERS_MODE_RANDOM]
+
+    def get_count_message(self) -> str:
+        return self._ui[_COUNT]
 
     def get_combat_ability_cost_message(self, combat_ability_ratio_cost: float) -> str:
         combat_ability_cost = f"{100 * combat_ability_ratio_cost:.0f}"

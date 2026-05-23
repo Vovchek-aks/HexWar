@@ -1,4 +1,4 @@
-from attrs import frozen
+from attrs import frozen, field
 from typing import Protocol
 
 import appearance.protocols as proto
@@ -8,6 +8,7 @@ from appearance.UI.text import TextUi, TextData
 from appearance.graphics.sprites import SpritesLoader
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
+from observer import Event, OnEventSubscriber
 
 
 @frozen
@@ -17,13 +18,15 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
                         rectangle: Rectangle,
                         changer: "ValueChanger",
                         sprites_loader: SpritesLoader,
-                        drawer: proto.UiDrawer) -> "TwoButtonsValueChanger":
+                        drawer: proto.UiDrawer,
+                        margin_ratio: float = 0) -> "TwoButtonsValueChanger":
+        margin = rectangle.shape.x * margin_ratio
         stretcher = StretcherUi(rectangle)
 
         buttons_shape = Vector2.ones() * rectangle.shape.y
         text = TextUi.make(drawer,
-                           Rectangle(rectangle.position + buttons_shape.x * Vector2.right(),
-                                     rectangle.shape - 2 * buttons_shape.x * Vector2.right()),
+                           Rectangle(rectangle.position + (buttons_shape.x + margin) * Vector2.right(),
+                                     rectangle.shape - 2 * (buttons_shape.x + margin) * Vector2.right()),
                            TextData.debug(str(changer.value)), is_center=True)
 
         self = TwoButtonsValueChanger(stretcher, text, changer)
@@ -49,6 +52,8 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
     _text: TextUi
     _changer: "ValueChanger[T]"
 
+    _value_had_changed: Event[T, None] = field(init=False, factory=Event)
+
     @property
     def value(self) -> T:
         return self._changer.value
@@ -65,20 +70,27 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
     def text(self) -> TextUi:
         return self._text
 
+    @property
+    def value_had_changed(self) -> OnEventSubscriber[T, None]:
+        return self._value_had_changed.subscriber
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._stretcher.set_rectangle(rectangle)
 
     def set(self, value: T) -> None:
         self._changer.set(value)
         self._update_text()
+        self._value_had_changed.invoke(self.value)
 
     def next(self) -> None:
         self._changer.next()
         self._update_text()
+        self._value_had_changed.invoke(self.value)
 
     def back(self) -> None:
         self._changer.back()
         self._update_text()
+        self._value_had_changed.invoke(self.value)
 
     def _update_text(self) -> None:
         self._text.set_text(str(self._changer.value))
