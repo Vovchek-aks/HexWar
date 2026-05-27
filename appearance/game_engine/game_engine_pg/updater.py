@@ -3,7 +3,7 @@ from typing import Iterator
 from attrs import frozen
 
 from appearance.game_engine.game_engine_pg.user_input import UserInput
-from appearance.input.camera_mover import CameraMover
+from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from appearance.input.clicks_catcher import ClicksCatcher
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
@@ -13,7 +13,7 @@ import appearance.protocols as proto
 @frozen
 class Updater:
     @classmethod
-    def make(cls, camera_mover: CameraMover,
+    def make(cls, camera_mover: KeyboardCameraMover,
              screenshot_saver: ScreenshotSaver,
              mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[Layer],
@@ -25,7 +25,7 @@ class Updater:
                    clicks_catcher,
                    player_turner)
 
-    _camera_mover: CameraMover
+    _camera_mover: KeyboardCameraMover
     _screenshot_saver: ScreenshotSaver
     _mouse_movement_observer: proto.MouseMovementObserver
     _clicks_catcher: ClicksCatcher

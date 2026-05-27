@@ -36,6 +36,12 @@ class Cells(proto.Cells):
     def with_flag(self, target: type[proto.Flag] | UnionType) -> "Cells":
         return Cells({cell for cell in self._cells if target in cell.figure.FLAGS})
 
+    def players(self) -> set[proto.Player]:
+        players = set[proto.Player]()
+        for cell in self:
+            players.add(cell.owner)
+        return players
+
     def is_region_with_same_owner(self, board: proto.Board) -> bool:
         assert self
 

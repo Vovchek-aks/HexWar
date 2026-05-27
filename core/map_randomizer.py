@@ -33,11 +33,11 @@ class MapRandomizer:
     _by_game_rules_session_changer: proto.ByGameRulesSessionChanger
     _make_player_inputer: Callable[[], proto.PlayerInputer]
 
-    def with_players_count(self,
-                           players_count: int,
-                           start_resources: proto.ResourcesGroup,
-                           town_per_player: int,
-                           ups: int) -> proto.GameSession:
+    def get_randomized(self,
+                       players_count: int,
+                       start_resources: proto.ResourcesGroup,
+                       town_per_player: int,
+                       ups: int) -> proto.GameSession:
         self._remove_all_figures()
         player = self._fill_with_one_player()
         players = self._add_random_players(player, players_count)
@@ -58,8 +58,9 @@ class MapRandomizer:
 
     def _fill_with_one_player(self) -> proto.Player:
         player = self._session.master.current_player
-        for cell in self._session.cells.get_all_players() - self._session.cells.with_owner(player):
-            cell.change_owner(player)
+        for cell in (self._session.cells.get_all_players() -
+                     self._session.cells.with_owner(player)):
+            cell.change_owner_to(player)
             self._session.cells.update(cell)
         return player
 
@@ -78,7 +79,7 @@ class MapRandomizer:
     def _add_player(self, name: str, coord: Vector2Int, color: Color) -> proto.Player:
         player = Player(PlayerData(color, name), self._make_player_inputer())
 
-        self._session.board[coord].change_owner(player)
+        self._session.board[coord].change_owner_to(player)
         self._session.figures.add(fig.Capital, coord)
 
         return player

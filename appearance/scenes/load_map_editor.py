@@ -10,7 +10,7 @@ from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import Ca
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.map_editor_board_drawable_layer import MapEditorBoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
-from appearance.input.camera_mover import CameraMover
+from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
 from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
@@ -43,7 +43,7 @@ def load_map_editor(window: Window) -> Iterator[proto.Scene | Status]:
     screenshot_saver = ScreenshotSaver()
 
     camera_orientation = CameraOrientation.for_board(session.board)
-    camera_mover = CameraMover(camera_orientation)
+    camera_mover = KeyboardCameraMover(camera_orientation)
     camera = CachedCamera.make(Camera(screen_shape.as_vector2, ReadonlyCameraOrientation(camera_orientation)))
 
     hovered_cell_getter = UnderCursorCellGetter(camera, session.board)

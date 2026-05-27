@@ -48,5 +48,5 @@ class Capture(proto.Move):
         figure = from_cell.figure
         budget = session.figures_budget
 
-        to_cell.change_owner(from_cell.owner)
+        to_cell.change_owner_to(from_cell.owner)
         budget.add(figure, figure.get_cost_of(self))

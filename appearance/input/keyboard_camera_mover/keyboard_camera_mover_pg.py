@@ -21,7 +21,7 @@ ZOOM_SPEED = 1.15
 
 
 @frozen
-class CameraMover:
+class KeyboardCameraMover:
     _orientation: proto.CameraOrientation
 
     def update(self, events: Events, keys: pg.key.ScancodeWrapper, dt: float) -> None:

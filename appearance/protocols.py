@@ -18,6 +18,11 @@ import core.protocols as proto
 class Camera(ABC):
     @property
     @abstractmethod
+    def screen_shape(self) -> Vector2:
+        ...
+
+    @property
+    @abstractmethod
     def orientation(self) -> "ReadonlyCameraOrientation":
         ...
 
@@ -57,7 +62,7 @@ class CameraOrientation(ABC):
         ...
 
     @abstractmethod
-    def set_starter(self) -> None:
+    def take_from(self, orientation: "CameraOrientation") -> None:
         ...
 
     @abstractmethod

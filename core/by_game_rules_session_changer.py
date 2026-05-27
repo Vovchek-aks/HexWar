@@ -97,7 +97,7 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
             to_annex.append((cell, annexer))
 
         for cell, annexer in to_annex:
-            cell.change_owner(annexer)
+            cell.change_owner_to(annexer)
             self._on_changed_cell_owner(self._board.coordinates_of(cell))
 
         return Cells({pair[0] for pair in to_annex})

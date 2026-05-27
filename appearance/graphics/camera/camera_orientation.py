@@ -1,9 +1,8 @@
 from attrs import define, frozen, field
 
-from appearance.graphics.camera.camera import Camera
-from core.protocols import Board
+from core.protocols import Board, Cells
 from mathematics.angle import Angle
-from mathematics.hex_geometry import get_world_position
+from mathematics.hex_geometry import get_world_position, DISTANCE_BETWEEN_CENTERS
 from mathematics.vector import Vector2
 from appearance import protocols as proto
 from observer import Event, OnEventSubscriber
@@ -13,9 +12,7 @@ from observer import Event, OnEventSubscriber
 class CameraOrientation(proto.CameraOrientation):
     @classmethod
     def starter(cls) -> "CameraOrientation":
-        return cls(Vector2(0, 0), Angle(-60), 4.5)
-        # return cls(Vector2(75.5, -45.5), Angle(-60), 4.5)
-        # return cls(Vector2(57, -34), Angle(-60), 6.5)
+        return cls(Vector2(0, 0), Angle(0), 1)
 
     @classmethod
     def for_board(cls, board: Board) -> "CameraOrientation":
@@ -26,12 +23,38 @@ class CameraOrientation(proto.CameraOrientation):
 
         return cls(position, rotation, zoom)
 
-    _has_changed: Event[None] = field(init=False, factory=Event)
+    @classmethod
+    def for_cells(cls, cells: Cells, board: Board, camera: proto.Camera, *, margin: float = 0) -> "CameraOrientation":
+        assert cells
+
+        screen_positions = [camera.world_to_screen(get_world_position(board.coordinates_of(cell)))
+                            for cell in cells]
+        max_x = max(position.x for position in screen_positions)
+        min_x = min(position.x for position in screen_positions)
+        max_y = max(position.y for position in screen_positions)
+        min_y = min(position.y for position in screen_positions)
+
+        orientation = camera.orientation
+        width = max_x - min_x + DISTANCE_BETWEEN_CENTERS * orientation.zoom * (1 + margin * 2)
+        height = max_y - min_y + DISTANCE_BETWEEN_CENTERS * orientation.zoom * (1 + margin * 2)
+        screen_shape = camera.screen_shape
+        zoom_ratio = min(screen_shape.x / width,
+                         screen_shape.y / height)
+
+        center = Vector2(max_x + min_x,
+                         max_y + min_y) / 2
+        position = camera.screen_to_world(center)
+
+        return cls(position,
+                   orientation.rotation,
+                   orientation.zoom * zoom_ratio)
 
     _position: Vector2
     _rotation: Angle
     _zoom: float
     _had_changed: bool = field(init=False, default=False)
+
+    _has_changed: Event[None] = field(init=False, factory=Event)
 
     @property
     def has_changed(self) -> OnEventSubscriber[None]:
@@ -53,11 +76,11 @@ class CameraOrientation(proto.CameraOrientation):
     def tuple(self) -> tuple[Vector2, Angle, float]:
         return self._position, self._rotation, self._zoom
 
-    def set_starter(self) -> None:
-        starter = CameraOrientation.starter()
-        self._position = starter.position
-        self._rotation = starter.rotation
-        self._zoom = starter.zoom
+    def take_from(self, orientation: "CameraOrientation") -> None:
+        self._position = orientation.position
+        self._rotation = orientation.rotation
+        self._zoom = orientation.zoom
+        self._had_changed = True
 
     def update(self) -> None:
         if not self._had_changed:

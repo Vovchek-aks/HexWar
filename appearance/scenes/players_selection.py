@@ -5,7 +5,7 @@ from attrs import define, field
 
 import appearance.protocols as proto
 from appearance.graphics.layer_drawers.layers_drawer import LayersDrawer
-from appearance.input.camera_mover import CameraMover
+from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from appearance.input.clicks_catcher import ClicksCatcher
 from appearance.input.screenshot_saver import ScreenshotSaver
 from statuses import Status, MISSING, ABORT_NEEDED
@@ -15,7 +15,7 @@ from statuses import Status, MISSING, ABORT_NEEDED
 class PlayersSelectionScene(proto.Scene):
     @classmethod
     def make(cls,
-             camera_mover: CameraMover,
+             camera_mover: KeyboardCameraMover,
              camera_orientation: proto.CameraOrientation,
              screenshot_saver: ScreenshotSaver,
              input_state: proto.InputState,
@@ -27,7 +27,7 @@ class PlayersSelectionScene(proto.Scene):
                    input_state,
                    LayersDrawer(layers[::-1]))
 
-    _camera_mover: CameraMover
+    _camera_mover: KeyboardCameraMover
     _camera_orientation: proto.CameraOrientation
     _screenshot_saver: ScreenshotSaver
     _clicks_catcher: ClicksCatcher

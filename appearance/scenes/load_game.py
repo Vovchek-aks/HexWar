@@ -5,9 +5,12 @@ from attrs import frozen
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
+from appearance.animations.to_target_orientation_camera_mover import ToTargetOrientationCameraMover
+from appearance.animations.turn_pass_animator import TurnPassAnimator
 from appearance.audio.music.music_player import MusicPlayer, NoMusicPlayer
 from appearance.audio.sound.figure_selection.figures_sounds import FiguresSounds
 from appearance.audio.sound.figure_selection.on_figure_was_clicked_sound_player import OnFigureWasClickedSoundPlayer
+from appearance.camera_mover import CameraMover
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
@@ -22,7 +25,7 @@ from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import Ca
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
-from appearance.input.camera_mover import CameraMover
+from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from appearance.input.cell_selector import CellSelector
 from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
 from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
@@ -42,7 +45,6 @@ from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
 from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
-import core.figures.figure as fig
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
@@ -73,8 +75,10 @@ def load_game(window: Window,
     screenshot_saver = ScreenshotSaver()
 
     camera_orientation = CameraOrientation.for_board(session.board)
-    camera_mover = CameraMover(camera_orientation)
     camera = CachedCamera.make(Camera(screen_shape.as_vector2, ReadonlyCameraOrientation(camera_orientation)))
+    keyboard_camera_mover = KeyboardCameraMover(camera_orientation)
+    to_target_camera_mover = ToTargetOrientationCameraMover(camera_orientation)
+    camera_mover = CameraMover(keyboard_camera_mover, to_target_camera_mover)
 
     hovered_cell_getter = UnderCursorCellGetter(camera, session.board)
 
@@ -150,8 +154,9 @@ def load_game(window: Window,
                                                   in_game_time)
     bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                in_game_time, speed_multiplier=3, volume_multiplier=.2)
-    # speed_multiplier=float('inf'))
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
+
+    turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session)
 
     by_game_rules_session_changer = ByGameRulesSessionChanger(session,
                                                               board_drawer.not_updating_cells,
@@ -159,7 +164,10 @@ def load_game(window: Window,
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,
-                                               lambda move: animators_switcher.get().get_animation(move)),
+                                               lambda move: animators_switcher.get().get_animation(move),
+                                               turn_pass_animator.for_multibot
+                                               if is_multibot else
+                                               turn_pass_animator.for_game),
                            music_player, in_game_time)
     drawer = FrameDrawer.make(layers)
 
@@ -175,12 +183,12 @@ def load_game(window: Window,
     if is_multibot:
         scene = MultibotScene(game)
 
-        def on_player_turn_ended(player: Player) -> None:
+        def on_player_turn_started(player: Player) -> None:
             ratio_to_win = .7
             if max(session.cells.get_territories_and_production_ratios_of(player)) >= ratio_to_win:
                 scene.on_reload(make_next_scene_loading())
 
-        session.master.turn_has_passed.subscribe(on_player_turn_ended)
+        session.master.turn_had_started.subscribe(on_player_turn_started)
         by_game_rules_session_changer.on_turn_start()
     else:
         pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)

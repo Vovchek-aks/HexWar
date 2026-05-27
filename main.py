@@ -13,7 +13,7 @@ from core.player.inputers.bots import BotIgor
 from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, HeavyIndustryProducts
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = False
+IS_MULTIBOT = True
 
 UPS = 60
 CAPTION = "HexWar"
@@ -68,7 +68,7 @@ def _make_multibot_loading_scene(window: Window) -> Scene:
                                                                          "Finnish Gulf.json",
                                                                          "Balkans.json"]), UPS).load(),
                                    lambda: BotPlayerInputer(BotIgor(), UPS))
-        .with_players_count(32, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
+        .get_randomized(32, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 
 
 if __name__ == '__main__':

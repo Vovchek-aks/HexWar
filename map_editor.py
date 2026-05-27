@@ -106,7 +106,7 @@ class MapEditor:
         if self._handle_surface_type_change(player, cell):
             return
 
-        cell.change_owner(player)
+        cell.change_owner_to(player)
         self._on_changed_cell_owner(coord)
 
     def _handle_surface_type_change(self, player: proto.Player | Status, cell: proto.Cell) -> bool:

@@ -76,8 +76,8 @@ def load_main_menu(ups: int,
                                                                 .make(f"{map_name}.json", ups)
                                                                 .load(),
                                                                 lambda: BotPlayerInputer(BotIgor(), ups))
-                                     .with_players_count(random_players_count, ResourcesGroup.make(Dollars(3_000_000)),
-                                                         10, ups)))
+                                     .get_randomized(random_players_count, ResourcesGroup.make(Dollars(3_000_000)),
+                                                     10, ups)))
 
     def scene_loader_from(map_name: str) -> FromSessionMakerLoadingSceneGetter:
         if is_tutorial(map_name):

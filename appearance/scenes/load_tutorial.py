@@ -5,9 +5,11 @@ from attrs import frozen
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
+from appearance.animations.to_target_orientation_camera_mover import ToTargetOrientationCameraMover
 from appearance.audio.music.music_player import MusicPlayer
 from appearance.audio.sound.figure_selection.figures_sounds import FiguresSounds
 from appearance.audio.sound.figure_selection.on_figure_was_clicked_sound_player import OnFigureWasClickedSoundPlayer
+from appearance.camera_mover import CameraMover
 from appearance.game_engine.game_engine_arc.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
@@ -21,7 +23,7 @@ from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import Ca
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
-from appearance.input.camera_mover import CameraMover
+from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from appearance.input.cell_selector import CellSelector
 from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
 from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
@@ -67,9 +69,12 @@ def load_tutorial(window: Window,
     yield language.get_intermediate_preparing_message()
     screenshot_saver = ScreenshotSaver()
 
+
     camera_orientation = CameraOrientation.for_board(session.board)
-    camera_mover = CameraMover(camera_orientation)
     camera = CachedCamera.make(Camera(screen_shape.as_vector2, ReadonlyCameraOrientation(camera_orientation)))
+    keyboard_camera_mover = KeyboardCameraMover(camera_orientation)
+    to_target_camera_mover = ToTargetOrientationCameraMover(camera_orientation)
+    camera_mover = CameraMover(keyboard_camera_mover, to_target_camera_mover)
 
     hovered_cell_getter = UnderCursorCellGetter(camera, session.board)
 

@@ -10,6 +10,10 @@ class Camera(proto.Camera):
     _orientation: proto.ReadonlyCameraOrientation
 
     @property
+    def screen_shape(self) -> Vector2:
+        return self._screen_shape
+
+    @property
     def orientation(self) -> proto.ReadonlyCameraOrientation:
         return self._orientation
 
@@ -34,6 +38,10 @@ class CachedCamera(proto.Camera):
 
     _camera: proto.Camera
     _cache: dict[tuple[float, float], Vector2] = field(init=False, factory=dict)
+
+    @property
+    def screen_shape(self) -> Vector2:
+        return self._camera.screen_shape
 
     @property
     def orientation(self) -> proto.ReadonlyCameraOrientation:

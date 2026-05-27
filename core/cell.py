@@ -58,7 +58,7 @@ class Cell(proto.Cell):
 
         self._figure = figure
 
-    def change_owner(self, player: proto.Player) -> None:
+    def change_owner_to(self, player: proto.Player) -> None:
         assert self._owner != player
         self._owner = player
 
@@ -67,7 +67,7 @@ class Cell(proto.Cell):
         assert self.figure.is_on_land() == other.figure.is_on_land()
 
         if self.owner != other.owner:
-            self.change_owner(other.owner)
+            self.change_owner_to(other.owner)
         self._figure = other.pop()
 
     def turn_into_water(self) -> None:

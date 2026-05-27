@@ -3,9 +3,9 @@ from typing import Iterator
 from attrs import frozen
 
 from appearance.audio.music.music_player import MusicPlayer
+from appearance.camera_mover import CameraMover
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
-from appearance.input.camera_mover import CameraMover
 from appearance.input.clicks_catcher import ClicksCatcher
 from appearance.input.pause_menu_opener import PauseMenuOpener
 from appearance.input.screenshot_saver import ScreenshotSaver

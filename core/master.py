@@ -20,6 +20,10 @@ class Master(proto.Master):
         return self._players[0]
 
     @property
+    def next_player(self) -> proto.Player:
+        return self._players[1]
+
+    @property
     def turn_had_started(self) -> OnEventSubscriber[proto.Player, None]:
         return self._turn_had_started.subscriber
 
@@ -30,8 +34,16 @@ class Master(proto.Master):
     def pass_turn_to_next_player(self, session: proto.GameSession) -> None:
         previous_player = self.current_player
         self._players.append(self._players.pop(0))
-        while not session.cells.with_owner(self.current_player):
-            self._players.pop(0)
+        self._remove_empty_players(session)
 
         self._turn_has_passed.invoke(previous_player)
         self._turn_had_started.invoke(self.current_player)
+
+    def _remove_empty_players(self, session: proto.GameSession) -> None:
+        to_remove = list[proto.Player]()
+        for player in self._players:
+            if not session.cells.with_owner(player):
+                to_remove.append(player)
+
+        for player in to_remove:
+            self._players.remove(player)

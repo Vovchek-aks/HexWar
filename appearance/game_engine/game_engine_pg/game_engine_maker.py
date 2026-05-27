@@ -26,7 +26,7 @@ from core.moves_maker import MovesMaker
 from appearance.game_engine.game_engine_pg.events import UpdatableEvents
 from appearance.game_engine.game_engine_pg.frame_drawer import FrameDrawer
 from appearance.game_engine.game_engine_pg.timer import Timer
-from appearance.input.camera_mover import CameraMover
+from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder, EventPlayerInputer
 from core.protocols import GameSession
 from observer import Event
@@ -47,7 +47,7 @@ def make_game_engine(caption: str,
     screenshot_saver = ScreenshotSaver(screen)
 
     camera_orientation = CameraOrientation.starter()
-    camera_mover = CameraMover(camera_orientation)
+    camera_mover = KeyboardCameraMover(camera_orientation)
     camera = Camera(screen_shape, ReadonlyCameraOrientation(camera_orientation))
 
     hovered_cell_getter = UnderCursorCellGetter(camera, session.board)

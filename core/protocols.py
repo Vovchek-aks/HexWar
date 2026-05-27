@@ -16,6 +16,11 @@ class Master(ABC):
 
     @property
     @abstractmethod
+    def next_player(self) -> "Player":
+        ...
+
+    @property
+    @abstractmethod
     def players(self) -> list["Player"]:
         ...
 
@@ -331,7 +336,7 @@ class Cell(ABC):
         ...
 
     @abstractmethod
-    def change_owner(self, player: Player) -> None:
+    def change_owner_to(self, player: Player) -> None:
         ...
 
     @abstractmethod
@@ -375,6 +380,10 @@ class Cells(ABC):
 
     @abstractmethod
     def with_flag(self, target: type["Flag"] | UnionType) -> "Cells":
+        ...
+
+    @abstractmethod
+    def players(self) -> set[Player]:
         ...
 
     @abstractmethod
