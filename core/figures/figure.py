@@ -3,8 +3,10 @@ from abc import ABCMeta
 from attrs import define, field
 
 from core import protocols as proto
+from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
-    PreventCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend
+    PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
+    PreventsAnnexations
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNeighborResourceAdders, TransformsResourcesIndefinably
@@ -153,6 +155,7 @@ class Capital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
+                      PreventsAnnexations(distance=10),
                       Creatable.make(Dollars(2_000_000), LightIndustryProducts(10_000), HeavyIndustryProducts(1_000)),
                       TriesTakeResourcesElseDies.make(Dollars(800_000)),
                       BuffsNeighborResourceAdders(ratio=1))
@@ -170,6 +173,7 @@ class Capital(_Figure):
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
+                      PreventsCaptures(),
                       Creatable.make(Dollars(150_000), LightIndustryProducts(250)))
     MOVES_BUDGET = 0
 
@@ -219,9 +223,11 @@ class Infantry(_Figure):
                        .set_base_strength(3)
                        .build()),
                       CanPull(),
+                      PreventsAnnexations(distance=3,
+                                          can_prevent=lambda coord, board: Infantry.can_prevent(coord, board)),
                       Creatable.make(Dollars(200_000)),
                       CanCapture(),
-                      PreventCaptures(),
+                      PreventsCaptures(),
                       TriesTakeResourcesElseDies.make(Dollars(50_000)))
     MOVES_BUDGET = 6
 
@@ -242,6 +248,21 @@ class Infantry(_Figure):
             return cls._NEAR_BUNKER_HARDNESS_INCREASE
 
         return 0
+
+    @classmethod
+    def can_prevent(cls, coord: Vector2Int, board: Board) -> bool:
+        cell = board[coord]
+        region = board.get_region_with_same_owner(cell)
+        if region.with_figure(Capital):
+            return True
+
+        distance = cls.FLAGS.get(PreventsAnnexations).distance
+        cells = (DistantNeighborsGetter(cell, board)
+                 .get_all_not_farther_than(distance, include_cell=True)
+                 & region)
+        return bool(cells
+                    .at_outer_boundry(board)
+                    .with_flag(AtWater))
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
@@ -267,7 +288,9 @@ class Motorization(_Figure):
                        .set_base_strength(3)
                        .build()),
                       CanPull(),
-                      PreventCaptures(),
+                      PreventsAnnexations(distance=3,
+                                          can_prevent=lambda coord, board: Infantry.can_prevent(coord, board)),
+                      PreventsCaptures(),
                       TriesTakeResourcesElseDies.make(Dollars(75_000), LightIndustryProducts(500)))
     MOVES_BUDGET = 200
 

@@ -1,5 +1,5 @@
 from types import UnionType
-from typing import Iterator
+from typing import Iterator, Callable
 
 from attrs import frozen, field
 
@@ -11,6 +11,13 @@ class Cells(proto.Cells):
     @classmethod
     def empty(cls) -> proto.Cells:
         return cls(set())
+
+    @classmethod
+    def combine(cls, *cellses: "Cells") -> "Cells":
+        self = set[proto.Cell]()
+        for cells in cellses:
+            self |= cells.as_set()
+        return cls(self)
 
     _cells: set[proto.Cell] = field(factory=set)
 
@@ -36,6 +43,9 @@ class Cells(proto.Cells):
     def with_flag(self, target: type[proto.Flag] | UnionType) -> "Cells":
         return Cells({cell for cell in self._cells if target in cell.figure.FLAGS})
 
+    def filter(self, function: Callable[[proto.Cell], bool]) -> "Cells":
+        return Cells({cell for cell in self._cells if function(cell)})
+
     def players(self) -> set[proto.Player]:
         players = set[proto.Player]()
         for cell in self:
@@ -46,6 +56,46 @@ class Cells(proto.Cells):
         assert self
 
         return board.get_region_with_same_owner(self.any) >= self
+
+    def get_neighbor_regions(self, board: proto.Board) -> "list[Cells]":
+        boundry = self.at_outer_boundry(board)
+        cells = list[proto.Cell]()
+        for player in boundry.players():
+            cells.extend(chunk.any for chunk in boundry.with_owner(player).split(board))
+
+        regions = list[Cells]()
+        for cell in cells:
+            regions.append(board.get_region_with_same_owner(cell) - self)
+
+        return regions
+
+    def split(self, board: proto.Board) -> "list[Cells]":
+        regions = list[Cells]()
+        cells = self
+        while cells:
+            cell = cells.any
+            cells = cells.without(cell)
+
+            region = self.get_connected_to(cell, board)
+            regions.append(region)
+
+            cells -= region
+
+        return regions
+
+    def get_connected_to(self, cell: proto.Cell, board: proto.Board) -> "Cells":
+        def _get_connected_to(cell: proto.Cell, seen: set[proto.Cell]) -> "Cells":
+            if cell not in self:
+                return Cells.empty()
+
+            seen.add(cell)
+
+            for neighbor in board.get_neighbors(cell) - Cells(seen):
+                _get_connected_to(neighbor, seen)
+
+            return Cells(seen)
+
+        return _get_connected_to(cell, set())
 
     def at_front(self, board: proto.Board) -> "Cells":
         assert self

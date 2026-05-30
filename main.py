@@ -11,6 +11,7 @@ from core.map_randomizer import MapRandomizer
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots import BotIgor
 from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, HeavyIndustryProducts
+from files import read_random_bot_names
 from game_session_saver import GameSessionLoader
 
 IS_MULTIBOT = True
@@ -68,7 +69,7 @@ def _make_multibot_loading_scene(window: Window) -> Scene:
                                                                          "Finnish Gulf.json",
                                                                          "Balkans.json"]), UPS).load(),
                                    lambda: BotPlayerInputer(BotIgor(), UPS))
-        .get_randomized(32, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
+        .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 
 
 if __name__ == '__main__':

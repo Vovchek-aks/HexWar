@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod, ABCMeta
 from types import UnionType, TracebackType
-from typing import ClassVar, Iterable, Iterator
+from typing import ClassVar, Iterable, Iterator, Callable
 
 from observer import OnEventSubscriber
 from statuses import Status
@@ -140,6 +140,11 @@ class MovesMaker(ABC):
     @property
     @abstractmethod
     def resources_flow_could_have_changed(self) -> OnEventSubscriber[None]:
+        ...
+
+    @property
+    @abstractmethod
+    def cells_to_annex_could_have_changed(self) -> OnEventSubscriber[None]:
         ...
 
     @abstractmethod
@@ -383,11 +388,27 @@ class Cells(ABC):
         ...
 
     @abstractmethod
+    def filter(self, function: Callable[[Cell], bool]) -> "Cells":
+        ...
+
+    @abstractmethod
     def players(self) -> set[Player]:
         ...
 
     @abstractmethod
     def is_region_with_same_owner(self, board: Board) -> bool:
+        ...
+
+    @abstractmethod
+    def get_neighbor_regions(self, board: Board) -> "list[Cells]":
+        ...
+
+    @abstractmethod
+    def split(self, board: Board) -> "list[Cells]":
+        ...
+
+    @abstractmethod
+    def get_connected_to(self, cell: Cell, board: Board) -> "Cells":
         ...
 
     @abstractmethod
@@ -483,7 +504,7 @@ class Capturable(Flag, metaclass=ABCMeta):
     ...
 
 
-class PreventCaptures(Flag, metaclass=ABCMeta):
+class PreventsCaptures(Flag, metaclass=ABCMeta):
     ...
 
 
@@ -558,6 +579,17 @@ class Creatable(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
     def cost(self) -> "ResourcesGroup":
+        ...
+
+
+class PreventsAnnexations(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def distance(self) -> int:
+        ...
+
+    @abstractmethod
+    def can_prevent(self, coord: Vector2Int, board: Board) -> bool:
         ...
 
 

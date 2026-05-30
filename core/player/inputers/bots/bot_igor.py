@@ -764,15 +764,19 @@ class BotIgor(proto.Bot):
         yield
 
         for cell in armed_front:
+            yield
             if (target := self._get_target_enemy(cell)) is MISSING:
                 yield
                 continue
 
             move = Assault(self._board.coordinates_of(cell),
                            self._board.coordinates_of(target))
-            if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_make.append(valid_move)
-            yield
+            if (valid_move := move.validate(self._session)) is INVALID:
+                continue
+            if CanCapture in cell.figure.FLAGS and not target.is_empty:
+                self._moves_to_make.append(ValidMove(Capture(move.from_coord,
+                                                             move.to_coord)))
+            self._moves_to_make.append(valid_move)
 
     def _try_breakthrough_with_tanks(self) -> Iterator[None]:
         cells = self._session.cells

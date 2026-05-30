@@ -5,6 +5,7 @@ from attrs import frozen
 
 from core import protocols as proto
 from core.cells import Cells
+from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures import figure as fig
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
@@ -33,13 +34,45 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
 
     def on_turn_end(self) -> None:
         player = self._session.master.current_player
-        cells = self._session.cells.with_owner(player)
-        capitals = cells & self._session.cells.with_figure(fig.Capital)
 
-        cells = self._discard_regions_without(capitals, cells)
-        regions = self._get_regions_to_be_annexed(cells)
-        for region in regions:
+        for region in (self.get_cells_to_annex(player).split(self._session.board)):
             self.annex(region)
+
+    def get_cells_to_annex(self, player: proto.Player) -> Cells:  # God abandoned this place
+        cells = self._session.cells
+        board = self._session.board
+        player_cells = cells.with_owner(player)
+
+        with_flag = (cells.not_empty().with_flag(proto.PreventsAnnexations)
+                     .filter(lambda cell: cell.figure.FLAGS.get(proto.PreventsAnnexations)
+                             .can_prevent(board.coordinates_of(cell), board)))
+        not_to_annex = set[proto.Cell]()
+        necessary_to_annex = list[Cells]()
+        for region in player_cells.split(board):
+            if not region & with_flag:
+                necessary_to_annex.append(region)
+                continue
+
+            for cell in with_flag & region:
+                distance = cell.figure.FLAGS.get(proto.PreventsAnnexations).distance
+
+                not_to_annex |= (DistantNeighborsGetter(cell, board)
+                                 .get_all_not_farther_than(distance, include_cell=True)
+                                 & region).as_set()
+
+        cannot_hold = player_cells - Cells(not_to_annex)
+
+        to_annex = set[proto.Cell]()
+        for region in cannot_hold.split(board):
+            neighbors = Cells.combine(*(neighbor for neighbor in region.get_neighbor_regions(board)
+                                        if neighbor.any.owner is not player))
+            for cell in with_flag & neighbors:
+                distance = cell.figure.FLAGS.get(proto.PreventsAnnexations).distance
+                to_annex |= (DistantNeighborsGetter(cell, board)
+                             .get_all_not_farther_than(distance, include_cell=True)
+                             .as_set())
+
+        return cannot_hold & Cells(to_annex) + Cells.combine(*necessary_to_annex)
 
     def annex(self, region: Cells) -> None:
         manned = region & self._session.cells.with_figure(fig.Infantry | fig.Motorization)
@@ -56,7 +89,7 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         for cell in region:
             self._session.cells.update(cell)
 
-    def _discard_regions_without(self, targets: Cells, cells: Cells) -> Cells:
+    def _discard_regions_with(self, targets: Cells, cells: Cells) -> Cells:
         while targets:
             target = targets.any
             targets = targets.without(target)
@@ -66,23 +99,6 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
             targets -= region
 
         return cells
-
-    def _get_regions_to_be_annexed(self, cells: Cells) -> list[Cells]:
-        regions_to_be_annexed = list[proto.Cells]()
-        while cells:
-            cell = cells.any
-            cells = cells.without(cell)
-
-            region = self._board.get_region_with_same_owner(cell)
-
-            near_water = region.at_outer_boundry(self._board).with_flag(proto.AtWater)
-            manned = region & self._session.cells.with_figure(fig.Infantry | fig.Motorization)
-            if not (near_water and manned):
-                regions_to_be_annexed.append(region)
-
-            cells -= region
-
-        return regions_to_be_annexed
 
     def _annex_boundry(self, region: Cells) -> Cells:
         to_annex = list[tuple[proto.Cell, proto.Player]]()

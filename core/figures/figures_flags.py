@@ -1,9 +1,12 @@
 from itertools import product
+from typing import Callable
 
 from attrs import field, frozen
 
 from core import protocols as proto
+from core.protocols import Board
 from core.resources import ResourcesGroup
+from mathematics.vector import Vector2Int
 from statuses import Status, MISSING
 
 Flag = proto.Flag
@@ -45,7 +48,7 @@ class Empty(proto.Empty):
     EXCLUDES = {proto.Movable,
                 proto.Pullable,
                 proto.CanPull,
-                proto.PreventCaptures,
+                proto.PreventsCaptures,
                 proto.CanAttack,
                 proto.Creatable,
                 proto.CanCapture}
@@ -71,7 +74,7 @@ class DontHaveOwner(proto.DontHaveOwner):
     EXCLUDES = {proto.Movable,
                 proto.Pullable,
                 proto.CanPull,
-                proto.PreventCaptures,
+                proto.PreventsCaptures,
                 proto.CanAttack,
                 proto.Creatable,
                 proto.CanCapture}
@@ -105,11 +108,11 @@ class CanCapture(proto.CanCapture):
 
 @frozen
 class Capturable(proto.Capturable):
-    EXCLUDES = {proto.PreventCaptures}
+    EXCLUDES = {proto.PreventsCaptures}
 
 
 @frozen
-class PreventCaptures(proto.PreventCaptures):
+class PreventsCaptures(proto.PreventsCaptures):
     EXCLUDES = {proto.Capturable}
 
 
@@ -135,3 +138,11 @@ class CanLaunchOreshnik(proto.CanLaunchOreshnik):
     cost: proto.ResourcesGroup
     spread_radius: int
     targets_per_layer: int
+
+
+@frozen
+class PreventsAnnexations(proto.PreventsAnnexations):
+    EXCLUDES = set[type[Flag]]()
+
+    distance: int
+    can_prevent: Callable[[Vector2Int, Board], int] = lambda *_: True
