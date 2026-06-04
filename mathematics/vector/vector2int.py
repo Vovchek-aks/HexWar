@@ -2,7 +2,7 @@ from attrs import frozen
 from .vector2 import Vector2
 
 
-@frozen
+@frozen(hash=True)
 class Vector2Int:
     @classmethod
     def zero(cls) -> "Vector2Int":

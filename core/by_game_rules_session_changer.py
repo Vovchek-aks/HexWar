@@ -1,12 +1,12 @@
 import random
-from typing import Callable
+from typing import Callable, Iterator
 
 from attrs import frozen
 
 from core import protocols as proto
 from core.cells import Cells
-from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures import figure as fig
+from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
 
@@ -32,47 +32,52 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         for cell in priority_order:
             cell.figure.FLAGS.get(proto.UpdatableOnTurnStart).update(board.coordinates_of(cell), self._session)
 
-    def on_turn_end(self) -> None:
+    def on_turn_end(self) -> Iterator[None]:
         player = self._session.master.current_player
 
-        for region in (self.get_cells_to_annex(player).split(self._session.board)):
+        to_annex = Cells.empty()
+        for to_annex in self.get_cells_to_annex_process(player):
+            if to_annex is None:
+                yield
+
+        for region in (to_annex.split(self._session.board)):
+            yield
             self.annex(region)
 
-    def get_cells_to_annex(self, player: proto.Player) -> Cells:  # God abandoned this place
+    def get_cells_to_annex(self, player: proto.Player) -> Cells:
+        for cells in self.get_cells_to_annex_process(player):
+            if cells is not None:
+                return cells
+        assert False
+
+    def get_cells_to_annex_process(self, player: proto.Player) -> Iterator[None | Cells]:  # God abandoned this place
         cells = self._session.cells
         board = self._session.board
         player_cells = cells.with_owner(player)
 
+        front = player_cells & cells.at_front
+
         with_flag = (cells.not_empty().with_flag(proto.PreventsAnnexations)
                      .filter(lambda cell: cell.figure.FLAGS.get(proto.PreventsAnnexations)
                              .can_prevent(board.coordinates_of(cell), board)))
-        not_to_annex = set[proto.Cell]()
-        necessary_to_annex = list[Cells]()
+        to_annex = set[proto.Cell]()
         for region in player_cells.split(board):
+            yield
             if not region & with_flag:
-                necessary_to_annex.append(region)
+                to_annex.update(region)
                 continue
 
-            for cell in with_flag & region:
-                distance = cell.figure.FLAGS.get(proto.PreventsAnnexations).distance
+            our_annexation_preventers = with_flag & region
+            enemy_annexation_preventers = with_flag & Cells.combine(*region.get_neighbor_regions(board))
+            for cell in region & front:
+                yield
+                if self._is_within_any_prevention_distance(cell, our_annexation_preventers):
+                    continue
+                if self._is_within_any_prevention_distance(cell, enemy_annexation_preventers):
+                    to_annex.add(cell)
+                    continue
 
-                not_to_annex |= (DistantNeighborsGetter(cell, board)
-                                 .get_all_not_farther_than(distance, include_cell=True)
-                                 & region).as_set()
-
-        cannot_hold = player_cells - Cells(not_to_annex)
-
-        to_annex = set[proto.Cell]()
-        for region in cannot_hold.split(board):
-            neighbors = Cells.combine(*(neighbor for neighbor in region.get_neighbor_regions(board)
-                                        if neighbor.any.owner is not player))
-            for cell in with_flag & neighbors:
-                distance = cell.figure.FLAGS.get(proto.PreventsAnnexations).distance
-                to_annex |= (DistantNeighborsGetter(cell, board)
-                             .get_all_not_farther_than(distance, include_cell=True)
-                             .as_set())
-
-        return cannot_hold & Cells(to_annex) + Cells.combine(*necessary_to_annex)
+        yield Cells(to_annex)
 
     def annex(self, region: Cells) -> None:
         manned = region & self._session.cells.with_figure(fig.Infantry | fig.Motorization)
@@ -88,6 +93,16 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
 
         for cell in region:
             self._session.cells.update(cell)
+
+    def _is_within_any_prevention_distance(self, cell: proto.Cell, annexation_preventers: Cells) -> bool:
+        board = self._session.board
+        for annexation_preventer in annexation_preventers:
+            print(annexation_preventer.figure, annexation_preventer.figure.FLAGS)
+            distance = annexation_preventer.figure.FLAGS.get(proto.PreventsAnnexations).distance
+            if get_distance(board.coordinates_of(cell),
+                            board.coordinates_of(annexation_preventer)) <= distance:
+                return True
+        return False
 
     def _discard_regions_with(self, targets: Cells, cells: Cells) -> Cells:
         while targets:

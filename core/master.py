@@ -20,7 +20,7 @@ class Master(proto.Master):
         return self._players[0]
 
     @property
-    def next_player(self) -> proto.Player:
+    def next_player(self) -> proto.Player:  # todo
         return self._players[1]
 
     @property

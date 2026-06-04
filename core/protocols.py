@@ -211,6 +211,10 @@ class Board(ABC):
         ...
 
     @abstractmethod
+    def at(self, coord: Vector2Int) -> "Cell":
+        ...
+
+    @abstractmethod
     def __getitem__(self, coord: Vector2Int) -> "Cell":
         ...
 
@@ -301,6 +305,12 @@ class ByGameRulesSessionChanger(ABC):
 
     @abstractmethod
     def on_turn_end(self) -> None:
+        ...
+
+    def get_cells_to_annex(self, player: Player) -> "Cells":
+        ...
+
+    def get_cells_to_annex_process(self, player: Player) -> "Iterator[None | Cells]":
         ...
 
     @abstractmethod

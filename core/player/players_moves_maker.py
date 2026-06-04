@@ -31,7 +31,7 @@ def players_moves_maker(session: proto.GameSession,
 
                 moves_maker.make(move)
 
-        by_game_rules_session_changer.on_turn_end()
+        yield from by_game_rules_session_changer.on_turn_end()
         session.figures_budget.clear()
 
         process = get_turn_start_preparation_process(session.master.next_player)

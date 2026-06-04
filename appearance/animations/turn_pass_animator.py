@@ -56,6 +56,9 @@ class TurnPassAnimator:
             for neighbor in neighbors:
                 cells += self._session.cells.with_owner(neighbor)
 
+        if not cells:
+            return
+
         target = CameraOrientation.for_cells(cells, board, self._camera, margin=MARGIN)
         if (ratio := self._camera.orientation.zoom / target.zoom) > 1:
             target.zoom_in(ratio)

@@ -2,6 +2,8 @@ import colorsys
 
 from color import Color
 
+WHITE = Color(255, 255, 255)
+
 BACKGROUND = Color(111, 139, 158)
 WATER = Color.from_hex_string("#4c7d9e")
 SHORE = Color.from_hex_string("#5ACCCE")

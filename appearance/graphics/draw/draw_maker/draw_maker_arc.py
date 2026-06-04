@@ -21,6 +21,7 @@ class DrawMaker:
              screen_shape: Vector2Int,
              on_board_sprites_drawer: proto.OnBoardSpritesDrawer,
              board: Board,
+             hatching_map: proto.HatchingMap,
              cells_change_observer: CellsChangesObserver) -> tuple[Draw, FiguresDrawer, BordDrawer]:
         sprites_loader = SpritesLoader.from_meta()
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
@@ -32,7 +33,7 @@ class DrawMaker:
             index = on_board_sprites_drawer.add_sprite(figures_sprites.get(figure), Vector2Int.zero())
             on_board_sprites_drawer.remove_sprite(index)
 
-        board_drawer = BordDrawer.make(board, cells_change_observer.cell_changed_owner)
+        board_drawer = BordDrawer.make(board, hatching_map, cells_change_observer.cell_changed_owner)
 
         return (Draw(board_drawer, on_board_sprites_drawer, BackgroundDrawer(screen_shape, BACKGROUND)),
                 figures_drawer, board_drawer)

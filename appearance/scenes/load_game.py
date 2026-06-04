@@ -21,6 +21,9 @@ from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
 from appearance.graphics.draw.drawers.drawers_arc.background_drawer import BackgroundDrawer
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.annexation_hatching_map_updater import \
+    AnnexationHatchingMapUpdater
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
@@ -136,9 +139,11 @@ def load_game(window: Window,
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
+    hatching_map = HatchingMap()
     draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
                                                           on_board_sprites_drawer,
                                                           session.board,
+                                                          hatching_map,
                                                           cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
@@ -161,14 +166,22 @@ def load_game(window: Window,
     by_game_rules_session_changer = ByGameRulesSessionChanger(session,
                                                               board_drawer.not_updating_cells,
                                                               cell_changed_owner.invoke)
+    hatching_map_updater = AnnexationHatchingMapUpdater.make(hatching_map, board_drawer, moves_maker,
+                                                             by_game_rules_session_changer, session)
+
+    def prepare_for_turn_pass(player: Player) -> Iterator[None]:
+        while hatching_map_updater.is_active:
+            yield
+        yield from (turn_pass_animator.for_multibot
+                    if is_multibot else
+                    turn_pass_animator.for_game)(player)
+
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,
                                                lambda move: animators_switcher.get().get_animation(move),
-                                               turn_pass_animator.for_multibot
-                                               if is_multibot else
-                                               turn_pass_animator.for_game),
-                           music_player, in_game_time)
+                                               prepare_for_turn_pass),
+                           music_player, in_game_time, hatching_map_updater)
     drawer = FrameDrawer.make(layers)
 
     continue_was_pressed = Event[None]()

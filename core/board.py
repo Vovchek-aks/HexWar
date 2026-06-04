@@ -96,6 +96,9 @@ class Board(proto.Board):
 
         return _get_region_with_same_owner(cell, set())
 
+    def at(self, coord: Vector2Int) -> proto.Cell:
+        return self[coord]
+
     def __getitem__(self, coord: Vector2Int) -> proto.Cell:
         assert coord in self
 

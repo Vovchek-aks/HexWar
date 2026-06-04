@@ -6,11 +6,13 @@ from attrs import define, field
 import core.protocols as proto
 from statuses import Status, MISSING, IN_PROGRESS
 
+THINK_TIME_RATIO = .8
+
 
 @define
 class BotPlayerInputer(proto.PlayerInputer):
     _bot: proto.Bot
-    _time_to_think: float = 0
+    _ups: float = 0
 
     _wants_to_end_turn: bool = field(init=False, default=False)
 
@@ -20,7 +22,7 @@ class BotPlayerInputer(proto.PlayerInputer):
 
     @property
     def time_to_think(self) -> float:
-        return self._time_to_think
+        return THINK_TIME_RATIO / self._ups
 
     def wants_to_end_turn(self) -> bool:
         return self._wants_to_end_turn
@@ -31,7 +33,7 @@ class BotPlayerInputer(proto.PlayerInputer):
         start_thinking = time()
         while (move := self._bot.get_move(session)) is IN_PROGRESS:
             thinking_time = time() - start_thinking
-            if thinking_time >= self._time_to_think:
+            if thinking_time >= self.time_to_think:
                 break
 
         if move is MISSING:

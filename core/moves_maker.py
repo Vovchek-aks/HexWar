@@ -22,7 +22,7 @@ class MovesMaker(proto.MovesMaker):
     _board_move_was_made: Event[proto.ValidMove, None] = field(init=False, factory=Event)
     _cell_changed_owner: Event[Vector2Int, None] = field(init=False, factory=Event)
     _resources_flow_could_have_changed: Event[None] = field(init=False, factory=Event)
-    _cell_to_annex_could_have_changed: Event[None] = field(init=False, factory=Event)
+    _cells_to_annex_could_have_changed: Event[None] = field(init=False, factory=Event)
 
     @property
     def move_was_made(self) -> OnEventSubscriber[proto.ValidMove, None]:
@@ -42,7 +42,7 @@ class MovesMaker(proto.MovesMaker):
 
     @property
     def cells_to_annex_could_have_changed(self) -> OnEventSubscriber[None]:
-        return self._cell_to_annex_could_have_changed.subscriber
+        return self._cells_to_annex_could_have_changed.subscriber
 
     def make(self, move: proto.ValidMove) -> None:
         assert move.move.validate(self._session) is not INVALID
@@ -56,10 +56,10 @@ class MovesMaker(proto.MovesMaker):
 
                 for cell in move.move.get_target_cells(self._session):
                     if proto.PreventsAnnexations in cell.figure.FLAGS:
-                        self._cell_to_annex_could_have_changed.invoke()
+                        self._cells_to_annex_could_have_changed.invoke()
                         break
 
-            case Assault(to_coord=to_coord):
+            case Assault(to_coord=to_coord, from_coord=from_coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
 
@@ -68,12 +68,17 @@ class MovesMaker(proto.MovesMaker):
                 self._board_move_was_made.invoke(move)
 
                 if proto.PreventsAnnexations in self._session.board[to_coord].figure.FLAGS:
-                    self._cell_to_annex_could_have_changed.invoke()
-            case Relocation():
+                    self._cells_to_annex_could_have_changed.invoke()
+                if proto.PreventsAnnexations in self._session.board[from_coord].figure.FLAGS:
+                    self._cells_to_annex_could_have_changed.invoke()
+            case Relocation(from_coord=from_coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
                     
                 self._board_move_was_made.invoke(move)
+
+                if proto.PreventsAnnexations in self._session.board[from_coord].figure.FLAGS:
+                    self._cells_to_annex_could_have_changed.invoke()
             case Capture(to_coord=to_coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
@@ -83,7 +88,7 @@ class MovesMaker(proto.MovesMaker):
                 self._resources_flow_could_have_changed.invoke()
 
                 if proto.PreventsAnnexations in self._session.board[to_coord].figure.FLAGS:
-                    self._cell_to_annex_could_have_changed.invoke()
+                    self._cells_to_annex_could_have_changed.invoke()
             case Creation(to_coord=coord) | Conversion(coord=coord) | Attack(to_coord=coord):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
@@ -92,7 +97,7 @@ class MovesMaker(proto.MovesMaker):
                 self._resources_flow_could_have_changed.invoke()
 
                 if proto.PreventsAnnexations in self._session.board[coord].figure.FLAGS:
-                    self._cell_to_annex_could_have_changed.invoke()
+                    self._cells_to_annex_could_have_changed.invoke()
             case PullingInitiation() | PullingTermination():
                 self._session.make(move)
                 self._move_was_made.invoke(move)

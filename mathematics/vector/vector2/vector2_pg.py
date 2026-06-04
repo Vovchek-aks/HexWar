@@ -22,11 +22,18 @@ class Vector2(pg.Vector2):
     def tuple(self) -> tuple[float, float]:
         return self.x, self.y
 
+    @property
+    def perpendicular(self) -> "Vector2":
+        return Vector2(-self.y, self.x)
+
     def with_x(self, x: float) -> "Vector2":
         return type(self)(x, self.y)
 
     def with_y(self, y: float) -> "Vector2":
         return type(self)(self.x, y)
+
+    def __hash__(self) -> int:
+        return hash(self.tuple)
 
     def __str__(self) -> str:
         return f"{type(self).__name__}({self.x}, {self.y})"

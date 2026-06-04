@@ -196,8 +196,42 @@ class BordDrawer(ABC):
     def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
         ...
 
+    @abstractmethod
+    def update_cell(self, cell_coord: Vector2Int) -> None:
+        ...
+
+
+class HatchingMap(ABC):
+    @abstractmethod
+    def color_at(self, coord: Vector2Int) -> Color | Status:
+        ...
+
+    @abstractmethod
+    def coords_with(self, color: Color) -> list[Vector2Int]:
+        ...
+
+    @abstractmethod
+    def set_color_at(self, coord: Vector2Int, color: Color) -> None:
+        ...
+
+    @abstractmethod
+    def remove_at(self, coord: Vector2Int) -> None:
+        ...
+
+
+class AnnexationHatchingMapUpdater(ABC):
+    @property
+    @abstractmethod
+    def is_active(self) -> bool:
+        ...
+
+    @abstractmethod
+    def update(self) -> None:
+        ...
+
 
 class BackgroundDrawer(ABC):
+    @abstractmethod
     def draw_background(self) -> None:
         ...
 

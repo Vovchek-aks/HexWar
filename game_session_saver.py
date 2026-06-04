@@ -191,7 +191,7 @@ class GameSessionLoader:
         match inputer_info[0]:
             case BotPlayerInputer.__name__:
                 bot = BOTS[inputer_info[1]]()
-                return BotPlayerInputer(bot, 1 / self._ups)
+                return BotPlayerInputer(bot, self._ups)
             case PassPlayerInputer.__name__:
                 return PassPlayerInputer(float(inputer_info[1]))
             case WantsToBeEventPlayerInputer.__name__:

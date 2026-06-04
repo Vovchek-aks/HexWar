@@ -25,7 +25,8 @@ class Updater(proto.Updater):
              layers: list[Layer],
              player_turner: Iterator[None],
              music_player: MusicPlayer,
-             in_game_time: InGameTime) -> "Updater":
+             in_game_time: InGameTime,
+             annexation_hatching_map_updater: proto.AnnexationHatchingMapUpdater) -> "Updater":
         clicks_catcher = ClicksCatcher(layers)
         return cls(camera_mover,
                    camera_orientation,
@@ -35,7 +36,8 @@ class Updater(proto.Updater):
                    clicks_catcher,
                    player_turner,
                    music_player,
-                   in_game_time)
+                   in_game_time,
+                   annexation_hatching_map_updater)
 
     _camera_mover: CameraMover
     _camera_orientation: proto.CameraOrientation
@@ -46,6 +48,7 @@ class Updater(proto.Updater):
     _player_turner: Iterator[None]
     _music_player: MusicPlayer
     _in_game_time: InGameTime
+    _annexation_hatching_map_updater: proto.AnnexationHatchingMapUpdater
 
     def update(self, input_state: InputState) -> None:
         self._camera_mover.update(input_state.last_frame_mouse_wheel_delta,
@@ -58,4 +61,5 @@ class Updater(proto.Updater):
         self._clicks_catcher.update(input_state.last_frame_clicks)
         self._music_player.update()
         self._in_game_time.update(input_state.dt)
+        self._annexation_hatching_map_updater.update()
         next(self._player_turner)
