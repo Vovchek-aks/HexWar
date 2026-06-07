@@ -3,7 +3,7 @@ from types import TracebackType
 from typing import Callable
 from time import perf_counter as time
 
-from attrs import define
+from attrs import define, field
 
 
 def time_it[T: Callable](function: T) -> T:
@@ -23,12 +23,22 @@ def time_it[T: Callable](function: T) -> T:
 
 @define
 class Timer:
-    _start: float = 0
+    _title: str = "Time"
+    _need_to_print: bool = True
+
+    _start: float = field(init=False, default=0)
+    _time: float = field(init=False, default=0)
+
+    @property
+    def time(self) -> float:
+        return self._time
 
     def __enter__(self) -> "Timer":
         self._start = time()
         return self
 
     def __exit__(self, exc_type: type[BaseException], exc_val: BaseException, exc_tb: TracebackType) -> bool | None:
-        print(time() - self._start)
+        self._time = time() - self._start
+        if self._need_to_print:
+            print(f"{self._title}: {self._time:.10f}")
         return None

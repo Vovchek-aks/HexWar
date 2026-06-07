@@ -22,6 +22,7 @@ class AnnexationHatchingMapUpdater:
              session: GameSession) -> "AnnexationHatchingMapUpdater":
         self = cls(hatching_map, board_drawer, session_changer, session)
         moves_maker.board_move_was_made.subscribe(lambda _: self._on_board_move_was_made())
+        session.master.turn_has_passed.subscribe(self._on_turn_has_passed)
         return self
 
     _hatching_map: proto.HatchingMap
@@ -47,15 +48,27 @@ class AnnexationHatchingMapUpdater:
         if result is None:
             return
 
-        self._process = self._update_hatching_map_process(result)
+        self._process = self._update_hatching_map_process(*result)
+
+    def start_process_for(self, player: Player, *, frames_to_skip: int = 0) -> None:
+        self._process = self._get_cells_to_annex_process(player, frames_to_skip)
 
     def _on_board_move_was_made(self) -> None:
-        self._process = self._get_cells_to_annex_process(self._session.master.current_player)
+        self.start_process_for(self._session.master.current_player, frames_to_skip=30)
 
-    def _get_cells_to_annex_process(self, player: Player) -> Iterator[None]:
+    def _on_turn_has_passed(self, player: Player) -> None:
+        self.start_process_for(player)
+
+    def _get_cells_to_annex_process(self,
+                                    player: Player,
+                                    frames_to_skip: int) -> Iterator[None | tuple[Cells, list[Player]]]:
+        for _ in range(frames_to_skip):
+            yield
+
         players = (self._session.cells.with_owner(player)
                    .at_outer_boundry(self._session.board)
                    .players())
+        players.add(player)
 
         cells = Cells.empty()
         for player in players:
@@ -65,13 +78,13 @@ class AnnexationHatchingMapUpdater:
                     yield
             cells += result
 
-        yield cells
+        yield cells, players
 
-    def _update_hatching_map_process(self, to_annex: Cells) -> Iterator[None]:
+    def _update_hatching_map_process(self, to_annex: Cells, players: list[Player]) -> Iterator[None]:
         board = self._session.board
 
         all_cells = Cells.empty()
-        for player in to_annex.players():
+        for player in players:
             yield
             all_cells += self._session.cells.with_owner(player)
 
@@ -84,10 +97,10 @@ class AnnexationHatchingMapUpdater:
             yield
             coord = board.coordinates_of(cell)
             self._hatching_map.set_color_at(coord, COLOR)
-            self._board_drawer.update_cell(coord)
+            self._board_drawer.update_hatching(coord)
 
         for cell in to_remove:
             yield
             coord = board.coordinates_of(cell)
             self._hatching_map.remove_at(coord)
-            self._board_drawer.update_cell(coord)
+            self._board_drawer.update_hatching(coord)

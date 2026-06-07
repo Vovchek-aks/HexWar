@@ -18,15 +18,15 @@ from mathematics.hex_geometry import Neighbor, neighbors_vertexes, NEIGHBORS, ne
 from mathematics.vector import Vector2Int
 from observer import OnEventSubscriber
 from statuses import MISSING
+from .shape_list import ShapeList
 
-ShapeList = arc.shape_list.ShapeElementList
 Shape = arc.shape_list.Shape
 
 EDGES_WIDTH_RATIO = 1.1
 EDGES_BRIGHTNESS_RATIO = .6
 
-HATCHING_WIDTH = .1
-HATCHING_BRIGHTNESS_RATIO = .8
+HATCHING_WIDTH = .25
+HATCHING_BRIGHTNESS_RATIO = .2
 
 AVERAGE_COLOR_VARIATION_AMPLITUDE = 50
 MAX_COLOR_VARIATION_AMPLITUDE = 10
@@ -170,6 +170,10 @@ class BordDrawer(proto.BordDrawer):
             self._update_cell_color(self._board.coordinates_of(cell))
         self._shape_list.update()
 
+    def update_hatching(self, cell_coord: Vector2Int) -> None:
+        self._update_cell_color(cell_coord)
+        self._shape_list.update()
+
     def update_cells(self, cells: Cells) -> None:
         front = cells.at_inner_boundry(self._board)
         for cell in cells - front:
@@ -181,20 +185,22 @@ class BordDrawer(proto.BordDrawer):
     def _update_cell_color(self, cell_coord: Vector2Int) -> None:
         assert cell_coord in self._backgrounds
 
-        self._shape_list.remove(self._backgrounds[cell_coord])
-        self._append_hex_background(cell_coord)
+        shapes = list[Shape]()
+        shapes.append(self._backgrounds[cell_coord])
 
-        for line in self._hatchings.get(cell_coord, []):
-            self._shape_list.remove(line)
+        shapes.extend(self._hatchings.get(cell_coord, []))
         self._hatchings.get(cell_coord, []).clear()
+
+        shapes.extend(self._edges.get(cell_coord, []))
+        self._edges[cell_coord].clear()
+
+        self._shape_list.remove_many(*shapes)
+
+        self._append_hex_background(cell_coord)
 
         if self._hatching_map.color_at(cell_coord) is not MISSING:
             self._append_hatching(cell_coord)
 
-        if cell_coord in self._edges:
-            for edge in self._edges[cell_coord]:
-                self._shape_list.remove(edge)
-            self._edges[cell_coord].clear()
         self._append_edges(cell_coord)
 
     def _append_hex_background(self, cell_coord: Vector2Int) -> None:
@@ -203,17 +209,18 @@ class BordDrawer(proto.BordDrawer):
         self._shape_list.append(hexagon)
 
     def _append_edges(self, cell_coord: Vector2Int) -> None:
+        edges = list[Shape]()
         for neighbor in NEIGHBORS:
             if self._should_draw_edge(cell_coord, neighbor):
-                edge = self.make_edge(cell_coord, neighbor)
-                self._edges[cell_coord].append(edge)
-                self._shape_list.append(edge)
+                edges.append(self.make_edge(cell_coord, neighbor))
+
+        self._edges[cell_coord].extend(edges)
+        self._shape_list.extend(*edges)
 
     def _append_hatching(self, cell_coord: Vector2Int) -> None:
         hatching = self.make_hatching(cell_coord)
         self._hatchings[cell_coord] = hatching
-        for line in hatching:
-            self._shape_list.append(line)
+        self._shape_list.extend(*hatching)
 
     def _get_hex_color(self, cell_coord: Vector2Int) -> Color:
         figure = self._board[cell_coord].figure

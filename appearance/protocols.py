@@ -200,6 +200,14 @@ class BordDrawer(ABC):
     def update_cell(self, cell_coord: Vector2Int) -> None:
         ...
 
+    @abstractmethod
+    def update_hatching(self, cell_coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def update_cells(self, cells: proto.Cells) -> None:
+        ...
+
 
 class HatchingMap(ABC):
     @abstractmethod

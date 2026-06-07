@@ -7,6 +7,7 @@ from attrs import frozen
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
 from appearance.scenes.scene_switcher import SceneSwitcher
+from timer import Timer
 
 
 @frozen
@@ -37,7 +38,8 @@ class GameEngine:
     def update(self, dt: float) -> None:
         self._scene_switcher.update(self._window.close)
         self._scene_switcher.scene.update()
-        # print(f"FPS: {1 / dt:.0f}")
+        if dt > 1 / 50:
+            print(f"{1 / dt:.0f}FPS")
 
     def draw(self) -> None:
         self._scene_switcher.scene.draw()

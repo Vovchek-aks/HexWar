@@ -145,4 +145,4 @@ class PreventsAnnexations(proto.PreventsAnnexations):
     EXCLUDES = set[type[Flag]]()
 
     distance: int
-    can_prevent: Callable[[Vector2Int, Board], int] = lambda *_: True
+    can_prevent: Callable[[Vector2Int, proto.GameSession, proto.Cells], int] = lambda *_: True

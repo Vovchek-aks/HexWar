@@ -48,6 +48,7 @@ from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
 from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
@@ -110,7 +111,7 @@ def load_game(window: Window,
 
     figures_sounds = FiguresSounds.load()
     OnFigureWasClickedSoundPlayer.make(session, figures_sounds, actions_reader)
-    music_player = MusicPlayer.load() if not is_multibot else NoMusicPlayer()
+    music_player = MusicPlayer.load()  # if not is_multibot else NoMusicPlayer()
 
     input_state = InputState.make(window)
 
@@ -172,9 +173,16 @@ def load_game(window: Window,
     def prepare_for_turn_pass(player: Player) -> Iterator[None]:
         while hatching_map_updater.is_active:
             yield
+        hatching_map_updater.start_process_for(player)
+
         yield from (turn_pass_animator.for_multibot
                     if is_multibot else
                     turn_pass_animator.for_game)(player)
+
+        if not isinstance(player.inputer, BotPlayerInputer):
+            return
+        while hatching_map_updater.is_active:
+            yield
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,

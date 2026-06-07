@@ -224,7 +224,8 @@ class Infantry(_Figure):
                        .build()),
                       CanPull(),
                       PreventsAnnexations(distance=3,
-                                          can_prevent=lambda coord, board: Infantry.can_prevent(coord, board)),
+                                          can_prevent=lambda coord, session, region:
+                                          Infantry.can_prevent(coord, session, region)),
                       Creatable.make(Dollars(200_000)),
                       CanCapture(),
                       PreventsCaptures(),
@@ -250,15 +251,15 @@ class Infantry(_Figure):
         return 0
 
     @classmethod
-    def can_prevent(cls, coord: Vector2Int, board: Board) -> bool:
+    def can_prevent(cls, coord: Vector2Int, session: proto.GameSession, region: proto.Cells) -> bool:
+        board = session.board
         cell = board[coord]
-        region = board.get_region_with_same_owner(cell)
-        if region.with_figure(Capital):
+        if region & session.cells.with_figure(Capital):
             return True
 
         distance = cls.FLAGS.get(PreventsAnnexations).distance
         cells = (DistantNeighborsGetter(cell, board)
-                 .get_all_not_farther_than(distance, include_cell=True)
+                 .get_all_not_farther_than(distance - 1, include_cell=True)
                  & region)
         return bool(cells
                     .at_outer_boundry(board)
@@ -289,7 +290,8 @@ class Motorization(_Figure):
                        .build()),
                       CanPull(),
                       PreventsAnnexations(distance=3,
-                                          can_prevent=lambda coord, board: Infantry.can_prevent(coord, board)),
+                                          can_prevent=lambda coord, session, region:
+                                          Infantry.can_prevent(coord, session, region)),
                       PreventsCaptures(),
                       TriesTakeResourcesElseDies.make(Dollars(75_000), LightIndustryProducts(500)))
     MOVES_BUDGET = 200

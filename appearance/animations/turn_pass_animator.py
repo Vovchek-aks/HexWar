@@ -9,9 +9,9 @@ from core.protocols import GameSession, Player
 import appearance.protocols as proto
 import core.figures.figure as fig
 
-AFTER_TURN_WAIT_TIME = 1
-ON_FULL_BOARD_WAIT_TIME = 1
-MOVE_TIME = 1
+AFTER_TURN_WAIT_TIME = .3
+ON_FULL_BOARD_WAIT_TIME = 1.5
+MOVE_TIME = 1.5
 MARGIN = 2
 
 

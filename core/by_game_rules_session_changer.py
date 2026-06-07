@@ -6,9 +6,10 @@ from attrs import frozen
 from core import protocols as proto
 from core.cells import Cells
 from core.figures import figure as fig
-from mathematics.hex_geometry import get_distance
+from mathematics.hex_geometry import get_distance, DISTANCE_BETWEEN_CENTERS
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
+from time import perf_counter as time
 
 
 @frozen
@@ -56,21 +57,33 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         player_cells = cells.with_owner(player)
 
         front = player_cells & cells.at_front
+        yield
 
-        with_flag = (cells.not_empty().with_flag(proto.PreventsAnnexations)
-                     .filter(lambda cell: cell.figure.FLAGS.get(proto.PreventsAnnexations)
-                             .can_prevent(board.coordinates_of(cell), board)))
+        with_flag = cells.not_empty().with_flag(proto.PreventsAnnexations)
+        yield
+
         to_annex = set[proto.Cell]()
         for region in player_cells.split(board):
             yield
-            if not region & with_flag:
+            our_annexation_preventers = (region & with_flag).filter(lambda cell: cell.figure.FLAGS
+                                                                    .get(proto.PreventsAnnexations)
+                                                                    .can_prevent(board.coordinates_of(cell),
+                                                                                 self._session, region))
+            if not our_annexation_preventers:
                 to_annex.update(region)
                 continue
 
-            our_annexation_preventers = with_flag & region
-            enemy_annexation_preventers = with_flag & Cells.combine(*region.get_neighbor_regions(board))
+            enemy_annexation_preventers = Cells.empty()
+            for enemy_annexation_preventers in self._get_enemy_annexation_preventers(board, region, with_flag):
+                if enemy_annexation_preventers is None:
+                    yield
+
+            TIME_TO_PROCESS_CELLS = 0.006
+            start = time()
             for cell in region & front:
-                yield
+                if time() - start >= TIME_TO_PROCESS_CELLS:
+                    start = time()
+                    yield
                 if self._is_within_any_prevention_distance(cell, our_annexation_preventers):
                     continue
                 if self._is_within_any_prevention_distance(cell, enemy_annexation_preventers):
@@ -94,11 +107,24 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         for cell in region:
             self._session.cells.update(cell)
 
+    def _get_enemy_annexation_preventers(self,
+                                         board: proto.Board,
+                                         region: Cells,
+                                         with_flag: Cells) -> Iterator[None | Cells]:
+        enemy_annexation_preventers = Cells.empty()
+        for enemy_region in region.get_neighbor_regions(board):
+            yield
+            enemy_annexation_preventers += (with_flag & enemy_region).filter(lambda cell: cell.figure.FLAGS
+                                                                             .get(proto.PreventsAnnexations)
+                                                                             .can_prevent(board.coordinates_of(cell),
+                                                                                          self._session, region))
+        yield enemy_annexation_preventers
+
     def _is_within_any_prevention_distance(self, cell: proto.Cell, annexation_preventers: Cells) -> bool:
         board = self._session.board
         for annexation_preventer in annexation_preventers:
-            print(annexation_preventer.figure, annexation_preventer.figure.FLAGS)
-            distance = annexation_preventer.figure.FLAGS.get(proto.PreventsAnnexations).distance
+            distance = (annexation_preventer.figure.FLAGS.get(proto.PreventsAnnexations).distance *
+                        DISTANCE_BETWEEN_CENTERS)
             if get_distance(board.coordinates_of(cell),
                             board.coordinates_of(annexation_preventer)) <= distance:
                 return True
