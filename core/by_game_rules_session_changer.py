@@ -1,4 +1,5 @@
 import random
+from math import ceil
 from typing import Callable, Iterator
 
 from attrs import frozen
@@ -10,6 +11,15 @@ from mathematics.hex_geometry import get_distance, DISTANCE_BETWEEN_CENTERS
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
 from time import perf_counter as time
+
+PRIVATES_WEIGHTS = {
+    fig.Settlement: 1,
+    fig.PrivateLightFactory: .3,
+    fig.PrivateHeavyFactory: .05,
+}
+PRIVATES_RATIO = .25
+PRIVATES_DECREASE_FROM_CAPITALS_RATIO = 5
+PRIVATES_SPAWN_SPEED_MULTIPLIER = .1
 
 
 @frozen
@@ -44,6 +54,8 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         for region in (to_annex.split(self._session.board)):
             yield
             self.annex(region)
+
+        yield from self._spawn_private_figures(self._session.cells.with_owner(player))
 
     def get_cells_to_annex(self, player: proto.Player) -> Cells:
         for cells in self.get_cells_to_annex_process(player):
@@ -106,6 +118,23 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
 
         for cell in region:
             self._session.cells.update(cell)
+
+    def _spawn_private_figures(self, player_cells: Cells) -> Iterator[None]:
+        cells = self._session.cells
+        empties = player_cells - cells.not_empty()
+        privates = player_cells.with_flag(proto.Private)
+
+        target_count = ((len(empties) + len(privates)) * PRIVATES_RATIO -
+                        len(player_cells & cells.with_figure(fig.Capital)) * PRIVATES_DECREASE_FROM_CAPITALS_RATIO)
+        yield
+        progress = len(privates) / target_count
+        to_spawn = ceil(target_count * (1 - progress) * PRIVATES_SPAWN_SPEED_MULTIPLIER)
+
+        private_figures, weights = zip(*PRIVATES_WEIGHTS.items())  # Jaxx22
+        for cell in random.sample(empties.as_list(), to_spawn):
+            yield
+            figure: type[fig.Figure] = random.choices(private_figures, weights=weights)[0]
+            self._session.figures.add(figure, self._session.board.coordinates_of(cell))
 
     def _get_enemy_annexation_preventers(self,
                                          board: proto.Board,

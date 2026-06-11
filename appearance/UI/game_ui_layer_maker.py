@@ -262,6 +262,9 @@ class GameUiLayerMaker:
             self._make_town_menu(),
             self._make_light_factory_menu(),
             self._make_heavy_factory_menu(),
+            self._make_settlement_menu(),
+            self._make_private_light_factory_menu(),
+            self._make_private_heavy_factory_menu(),
             self._make_capital_menu(),
             self._make_tall_capital_menu(),
             self._make_wide_capital_menu(),
@@ -418,6 +421,15 @@ class GameUiLayerMaker:
 
     def _make_heavy_factory_menu(self) -> Layer:
         return self._make_figure_menu(fig.HeavyFactory, [], [])
+
+    def _make_settlement_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Settlement, [], [])
+
+    def _make_private_light_factory_menu(self) -> Layer:
+        return self._make_figure_menu(fig.PrivateLightFactory, [], [])
+
+    def _make_private_heavy_factory_menu(self) -> Layer:
+        return self._make_figure_menu(fig.PrivateHeavyFactory, [], [])
 
     def _make_capital_menu(self) -> Layer:
         to_tall_capital = self._make_null_button(Language.from_meta().get_to_tall_capital_message())

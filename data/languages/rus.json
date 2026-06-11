@@ -750,6 +750,9 @@
     "LightFactory": "Фабрика",
     "HeavyFactory": "Завод",
     "Capital": "Администрация",
+    "Settlement": "Поселение",
+    "PrivateLightFactory": "Кустарь",
+    "PrivateHeavyFactory": "Частник",
     "TallCapital": "Высокая администрация",
     "WideCapital": "Широкая администрация"
   },

@@ -6,7 +6,7 @@ from core import protocols as proto
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
-    PreventsAnnexations
+    PreventsAnnexations, Private
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
@@ -82,20 +82,6 @@ class Water(_Figure):
         return 0
 
 
-class Settlement(_Figure):
-    FLAGS = Flags.new(OnLand(),
-                      Static())
-    MOVES_BUDGET = 0
-
-    @classmethod
-    def base_hardness(cls) -> int:
-        return 0
-
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
-
-
 class Town(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
@@ -140,6 +126,62 @@ class HeavyFactory(_Figure):
                                                                          LightIndustryProducts(3_000)),
                                                      ResourcesGroup.make(HeavyIndustryProducts(1_000)),
                                                      priority=_get_transformer_of(LightFactory).priority + 1))
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class Settlement(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Private(),
+                      Capturable(),
+                      AddsResourcesIndefinably.make(Dollars(75_000)))
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class PrivateLightFactory(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Private(),
+                      Capturable(),
+                      TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(50_000)),
+                                                     ResourcesGroup.make(LightIndustryProducts(200)),
+                                                     priority=_get_transformer_of(HeavyFactory).priority + 1))
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class PrivateHeavyFactory(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Private(),
+                      Capturable(),
+                      TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(250_000),
+                                                                         LightIndustryProducts(1_500)),
+                                                     ResourcesGroup.make(HeavyIndustryProducts(200)),
+                                                     priority=_get_transformer_of(PrivateLightFactory).priority + 1))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -450,10 +492,12 @@ def get_figures() -> list[type[_Figure]]:
     return [
         Land,
         Water,
-        Settlement,
         Town,
         LightFactory,
         HeavyFactory,
+        Settlement,
+        PrivateLightFactory,
+        PrivateHeavyFactory,
         Capital,
         TallCapital,
         WideCapital,

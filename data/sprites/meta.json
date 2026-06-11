@@ -28,6 +28,27 @@
         183
       ]
     },
+    "Settlement": {
+      "file": "figures/settlement.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "PrivateLightFactory": {
+      "file": "figures/plf.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "PrivateHeavyFactory": {
+      "file": "figures/phf.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
     "Capital": {
       "file": "figures/capital2.png",
       "pivot": [

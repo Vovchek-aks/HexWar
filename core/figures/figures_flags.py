@@ -75,6 +75,8 @@ class DontHaveOwner(proto.DontHaveOwner):
                 proto.Pullable,
                 proto.CanPull,
                 proto.PreventsCaptures,
+                proto.PreventsAnnexations,
+                proto.Private,
                 proto.CanAttack,
                 proto.Creatable,
                 proto.CanCapture}
@@ -88,6 +90,11 @@ class Pullable(proto.Pullable):
 @frozen
 class CanPull(proto.CanPull):
     EXCLUDES = {proto.Static, proto.Capturable}
+
+
+@frozen
+class Private(proto.Private):
+    EXCLUDES = set[type[Flag]]()
 
 
 @frozen

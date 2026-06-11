@@ -12,7 +12,7 @@ COLOR = WHITE
 
 
 @define
-class AnnexationHatchingMapUpdater:
+class AnnexationHatchingMapUpdater(proto.AnnexationHatchingMapUpdater):
     @classmethod
     def make(cls,
              hatching_map: proto.HatchingMap,

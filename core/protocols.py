@@ -307,9 +307,11 @@ class ByGameRulesSessionChanger(ABC):
     def on_turn_end(self) -> None:
         ...
 
+    @abstractmethod
     def get_cells_to_annex(self, player: Player) -> "Cells":
         ...
 
+    @abstractmethod
     def get_cells_to_annex_process(self, player: Player) -> "Iterator[None | Cells]":
         ...
 
@@ -582,6 +584,10 @@ class Pullable(Flag, metaclass=ABCMeta):
 
 
 class CanPull(Flag, metaclass=ABCMeta):
+    ...
+
+
+class Private(Flag, metaclass=ABCMeta):
     ...
 
 

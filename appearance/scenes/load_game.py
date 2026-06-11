@@ -162,33 +162,21 @@ def load_game(window: Window,
                                                in_game_time, speed_multiplier=3, volume_multiplier=.2)
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
-    turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session)
-
     by_game_rules_session_changer = ByGameRulesSessionChanger(session,
                                                               board_drawer.not_updating_cells,
                                                               cell_changed_owner.invoke)
     hatching_map_updater = AnnexationHatchingMapUpdater.make(hatching_map, board_drawer, moves_maker,
                                                              by_game_rules_session_changer, session)
 
-    def prepare_for_turn_pass(player: Player) -> Iterator[None]:
-        while hatching_map_updater.is_active:
-            yield
-        hatching_map_updater.start_process_for(player)
-
-        yield from (turn_pass_animator.for_multibot
-                    if is_multibot else
-                    turn_pass_animator.for_game)(player)
-
-        if not isinstance(player.inputer, BotPlayerInputer):
-            return
-        while hatching_map_updater.is_active:
-            yield
+    turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session, hatching_map_updater)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,
                                                lambda move: animators_switcher.get().get_animation(move),
-                                               prepare_for_turn_pass),
+                                               (turn_pass_animator.for_multibot
+                                                if is_multibot else
+                                                turn_pass_animator.for_game)),
                            music_player, in_game_time, hatching_map_updater)
     drawer = FrameDrawer.make(layers)
 

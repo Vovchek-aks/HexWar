@@ -69,8 +69,6 @@ class OnBoardSpritesDrawer(proto.OnBoardSpritesDrawer):
         position = get_world_position(coord)
         arc_sprite = arc.Sprite()
         arc_sprite.texture = sprite.get()
-        arc_sprite.center_x = sprite.pivot.x
-        arc_sprite.center_y = sprite.pivot.y
         arc_sprite.scale = self._resizing_ratio_for(sprite) * scale_ratio
         arc_sprite.position = position.tuple
         arc_sprite.angle = self._camera_orientation.rotation.degrees
