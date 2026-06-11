@@ -29,7 +29,7 @@ def main() -> None:
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Sweden", "Estonia", "Finland"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
-    # make_first_scene = _make_test_game_loading_scene
+    make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 

@@ -35,6 +35,20 @@
         183
       ]
     },
+    "TallCapital": {
+      "file": "figures/tall_capital.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "WideCapital": {
+      "file": "figures/wide_capital.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
     "Bunker": {
       "file": "figures/bunk2.png",
       "pivot": [

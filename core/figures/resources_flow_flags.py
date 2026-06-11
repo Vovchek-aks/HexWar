@@ -1,12 +1,15 @@
 from abc import ABCMeta
 from typing import Iterator
 
-from attrs import frozen
+from attrs import frozen, field
 
 import core.protocols as proto
+from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.resources import ResourcesGroup
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING
+
+MAX_BUFF_DISTANCE = 2
 
 
 @frozen
@@ -46,15 +49,17 @@ class ResourcesAdder(proto.ResourcesAdder, metaclass=ABCMeta):
         return set(map(type[proto.Resource], self.base_resources.not_zero))
 
     def get_resources_with_buffs(self, coord: Vector2Int, session: proto.GameSession) -> proto.ResourcesGroup:
-        cell = session.board[coord]
-        cells = (session.board.get_neighbors(cell)
+        board = session.board
+        cell = board[coord]
+        cells = (DistantNeighborsGetter(cell, board)
+                 .get_all_not_farther_than(MAX_BUFF_DISTANCE, include_cell=False)
                  .with_owner(cell.owner)
                  .with_flag(proto.BuffsResourceAdders))
 
         buff = 0
         for the_one_who_buffs in cells:
             flag = the_one_who_buffs.figure.FLAGS.get(proto.BuffsResourceAdders)
-            buff += flag.get_buff(coord, session.board.coordinates_of(the_one_who_buffs), session)
+            buff += flag.get_buff(coord, board.coordinates_of(the_one_who_buffs), session)
 
         return self.base_resources * (1 + buff)
 
@@ -122,14 +127,23 @@ class TransformsResourcesIndefinably(ResourcesAdder, proto.TransformsResourcesIn
 
 
 @frozen
-class BuffsNeighborResourceAdders(proto.BuffsNeighborResourceAdders):
+class BuffsNearbyResourceAdders(proto.BuffsNearbyResourceAdders):
     EXCLUDES = {proto.ResourcesAdder}
 
-    _ratio: float
+    _additional_ratio: float
+    _distance: int = field(default=1)
+
+    @_distance.validator
+    def _validate_distance(self, _, distance: int) -> None:
+        assert distance <= MAX_BUFF_DISTANCE
 
     @property
-    def ratio(self) -> float:
-        return self._ratio
+    def additional_ratio(self) -> float:
+        return self._additional_ratio
+
+    @property
+    def distance(self) -> int:
+        return self._distance
 
     def get_buff(self, resources_adder_coord: Vector2Int, coord: Vector2Int, session: proto.GameSession) -> float:
         board = session.board
@@ -137,10 +151,11 @@ class BuffsNeighborResourceAdders(proto.BuffsNeighborResourceAdders):
         resource_adder = board[resources_adder_coord]
         assert cell.owner == resource_adder.owner
 
-        if resource_adder not in board.get_neighbors(cell):
+        nearby_cells = DistantNeighborsGetter(cell, board).get_all_not_farther_than(self._distance, include_cell=False)
+        if resource_adder not in nearby_cells:
             return 0
 
-        return self._ratio
+        return self._additional_ratio
 
 
 def get_resource_flow(player: proto.Player, target: type[proto.Resource], session: proto.GameSession) -> int:

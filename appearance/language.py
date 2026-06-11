@@ -29,6 +29,8 @@ TANK_ATTACK = "TANK_ATTACK"
 ARTILLERY_INITIATE_PULLING = "ARTILLERY_INITIATE_PULLING"
 ARTILLERY_TERMINATE_PULLING = "ARTILLERY_TERMINATE_PULLING"
 MOTORIZATION_TO_INFANTRY = "MOTORIZATION_TO_INFANTRY"
+CAPITAL_TO_TALL_CAPITAL = "CAPITAL_TO_TALL_CAPITAL"
+CAPITAL_TO_WIDE_CAPITAL = "CAPITAL_TO_WIDE_CAPITAL"
 INFANTRY_CAPTURE = "INFANTRY_CAPTURE"
 INFANTRY_TO_MOTORIZATION = "INFANTRY_TO_MOTORIZATION"
 LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
@@ -51,6 +53,13 @@ _MOVE_OF_TAG = {
     LAUNCH_ORESHNIK: lambda: OreshnikLaunch(Vector2Int.zero(), Vector2Int.zero())
 }
 
+_CONVERSIONS = {
+    INFANTRY_TO_MOTORIZATION: (fig.Infantry, fig.Motorization),
+    MOTORIZATION_TO_INFANTRY: (fig.Motorization, fig.Infantry),
+    CAPITAL_TO_TALL_CAPITAL: (fig.Capital, fig.TallCapital),
+    CAPITAL_TO_WIDE_CAPITAL: (fig.Capital, fig.WideCapital),
+}
+
 _FIGURES = "figures"
 
 _RESOURCES = "resources"
@@ -69,6 +78,8 @@ _TO_INFANTRY = "TO_INFANTRY"
 _ATTACK = "ATTACK"
 _INITIATE_PULLING = "INITIATE_PULLING"
 _TERMINATE_PULLING = "TERMINATE_PULLING"
+_TO_TALL_CAPITAL = "TO_TALL_CAPITAL"
+_TO_WIDE_CAPITAL = "TO_WIDE_CAPITAL"
 _LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _STRENGTH = "STRENGTH"
@@ -231,6 +242,12 @@ class Language:
     def get_to_infantry_message(self) -> str:
         return self._ui[_TO_INFANTRY]
 
+    def get_to_tall_capital_message(self) -> str:
+        return self._ui[_TO_TALL_CAPITAL]
+
+    def get_to_wide_capital_message(self) -> str:
+        return self._ui[_TO_WIDE_CAPITAL]
+
     def get_capture_message(self) -> str:
         return self._ui[_CAPTURE]
 
@@ -341,12 +358,10 @@ class Language:
         message.append("")
         combat_ability_index = len(message)
 
-        if tag == INFANTRY_TO_MOTORIZATION:
-            resources, move_cost = Conversion.conversions()[fig.Infantry, fig.Motorization]
-            budget = fig.Infantry.MOVES_BUDGET
-        elif tag == MOTORIZATION_TO_INFANTRY:
-            resources, move_cost = Conversion.conversions()[fig.Motorization, fig.Infantry]
-            budget = fig.Motorization.MOVES_BUDGET
+        if tag in _CONVERSIONS:
+            conversion = _CONVERSIONS[tag]
+            resources, move_cost = Conversion.conversions()[conversion]
+            budget = conversion[0].MOVES_BUDGET
         elif tag == LAUNCH_ORESHNIK:
             resources = _FIGURE_OF_TAG[tag].FLAGS.get(CanLaunchOreshnik).cost
             move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())

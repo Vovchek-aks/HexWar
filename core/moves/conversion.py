@@ -6,7 +6,7 @@ from attrs import frozen
 import core.protocols as proto
 import core.figures.figure as fig
 from core.moves.valid_move import ValidMove
-from core.resources import Dollars, Resource, ResourcesGroup, LightIndustryProducts
+from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, HeavyIndustryProducts
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID
 
@@ -22,6 +22,16 @@ class Conversion(proto.Move):
 
         (fig.Motorization, fig.Infantry): (ResourcesGroup(),
                                            round(fig.Motorization.MOVES_BUDGET / 3)),
+
+        (fig.Capital, fig.TallCapital): (ResourcesGroup.make(Dollars(3_000_000),
+                                                             LightIndustryProducts(7_500),
+                                                             HeavyIndustryProducts(1_000)),
+                                         fig.Capital.MOVES_BUDGET),
+
+        (fig.Capital, fig.WideCapital): (ResourcesGroup.make(Dollars(3_000_000),
+                                                             LightIndustryProducts(7_500),
+                                                             HeavyIndustryProducts(1_000)),
+                                         fig.Capital.MOVES_BUDGET),
     }
 
     @classmethod

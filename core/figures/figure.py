@@ -9,7 +9,7 @@ from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Cap
     PreventsAnnexations
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
-    BuffsNeighborResourceAdders, TransformsResourcesIndefinably
+    BuffsNearbyResourceAdders, TransformsResourcesIndefinably
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.oreshnik_launch import OreshnikLaunch
@@ -156,9 +156,49 @@ class Capital(_Figure):
                       Static(),
                       Capturable(),
                       PreventsAnnexations(distance=10),
-                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(10_000), HeavyIndustryProducts(1_000)),
+                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_500)),
                       TriesTakeResourcesElseDies.make(Dollars(800_000)),
-                      BuffsNeighborResourceAdders(ratio=1))
+                      BuffsNearbyResourceAdders(additional_ratio=1))
+    MOVES_BUDGET = 1
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 1
+
+
+class TallCapital(Capital):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      PreventsAnnexations(distance=15),
+                      TriesTakeResourcesElseDies.make(Dollars(1_250_000),
+                                                      LightIndustryProducts(5_000),
+                                                      HeavyIndustryProducts(1_000)),
+                      BuffsNearbyResourceAdders(additional_ratio=2))
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class WideCapital(Capital):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      PreventsAnnexations(distance=20),
+                      TriesTakeResourcesElseDies.make(Dollars(1_250_000),
+                                                      LightIndustryProducts(5_000),
+                                                      HeavyIndustryProducts(1_000)),
+                      BuffsNearbyResourceAdders(additional_ratio=1, distance=2))
     MOVES_BUDGET = 0
 
     @classmethod
@@ -415,6 +455,8 @@ def get_figures() -> list[type[_Figure]]:
         LightFactory,
         HeavyFactory,
         Capital,
+        TallCapital,
+        WideCapital,
         Bunker,
         MissileSilo,
         Infantry,

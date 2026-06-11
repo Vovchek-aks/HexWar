@@ -663,10 +663,15 @@ class BuffsResourceAdders(Flag, metaclass=ABCMeta):
         ...
 
 
-class BuffsNeighborResourceAdders(BuffsResourceAdders, metaclass=ABCMeta):
+class BuffsNearbyResourceAdders(BuffsResourceAdders, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def ratio(self) -> float:
+    def additional_ratio(self) -> float:
+        ...
+
+    @property
+    @abstractmethod
+    def distance(self) -> int:
         ...
 
 

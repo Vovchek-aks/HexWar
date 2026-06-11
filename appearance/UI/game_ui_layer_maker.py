@@ -20,7 +20,8 @@ from appearance.input.moves_inputer.input_actions import ButtonPressAction, Crea
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, PullingInitiationButtonPressAction, \
     PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction
 from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK
+    INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK, \
+    CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
@@ -262,6 +263,8 @@ class GameUiLayerMaker:
             self._make_light_factory_menu(),
             self._make_heavy_factory_menu(),
             self._make_capital_menu(),
+            self._make_tall_capital_menu(),
+            self._make_wide_capital_menu(),
             self._make_bunker_menu(),
             self._make_missile_silo_menu(),
             resources,
@@ -417,7 +420,23 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.HeavyFactory, [], [])
 
     def _make_capital_menu(self) -> Layer:
-        return self._make_figure_menu(fig.Capital, [], [])
+        to_tall_capital = self._make_null_button(Language.from_meta().get_to_tall_capital_message())
+        to_tall_capital.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                              .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                                  fig.TallCapital)))
+
+        to_wide_capital = self._make_null_button(Language.from_meta().get_to_wide_capital_message())
+        to_wide_capital.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                              .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                                  fig.WideCapital)))
+        return self._make_figure_menu(fig.Capital, [to_tall_capital, to_wide_capital],
+                                      [CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL])
+
+    def _make_tall_capital_menu(self) -> Layer:
+        return self._make_figure_menu(fig.TallCapital, [], [])
+
+    def _make_wide_capital_menu(self) -> Layer:
+        return self._make_figure_menu(fig.WideCapital, [], [])
 
     def _make_bunker_menu(self) -> Layer:
         return self._make_figure_menu(fig.Bunker, [], [])
@@ -859,17 +878,12 @@ class GameUiLayerMaker:
                                text_data)
         return button
 
-    def _get_position_from_left_bottom(self, delta: Vector2) -> Vector2:
-        position = Vector2(0, self._screen_shape.y)
-        position += Vector2(delta.x, -delta.y)
-        return position
-
     def _is_ui_needed(self, cell_coord: Vector2Int, figure: type[fig.Figure]) -> bool:
         cell = self._session.board[cell_coord]
         player = self._session.master.current_player
         return (self._is_current_player_need_ui() and
                 cell.owner is player and
-                isinstance(cell.figure, figure))
+                type(cell.figure) is figure)  # not isinstance
 
     def _is_current_player_need_ui(self) -> bool:
         return self._session.master.current_player.need_ui
