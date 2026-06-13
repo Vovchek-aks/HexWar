@@ -47,8 +47,9 @@ from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
 from appearance.settings import Settings
+from core.annexation_map.annexation_map import AnnexationMap
+from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
 from core.cells_changes_observer import CellsChangesObserver
-from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
@@ -159,25 +160,39 @@ def load_game(window: Window,
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
     bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
-                                               in_game_time, speed_multiplier=3, volume_multiplier=.2)
+                                               in_game_time, speed_multiplier=float('inf'), volume_multiplier=.2)
+    # bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
+    #                                            in_game_time, speed_multiplier=3, volume_multiplier=.2)
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
+    annexation_map_updater = AnnexationMapUpdater.make(session, moves_maker, AnnexationMap(session))
     by_game_rules_session_changer = ByGameRulesSessionChanger(session,
+                                                              annexation_map_updater,
                                                               board_drawer.not_updating_cells,
                                                               cell_changed_owner.invoke)
-    hatching_map_updater = AnnexationHatchingMapUpdater.make(hatching_map, board_drawer, moves_maker,
-                                                             by_game_rules_session_changer, session)
+    hatching_map_updater = AnnexationHatchingMapUpdater.make(session, hatching_map, board_drawer,
+                                                             annexation_map_updater)
 
-    turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session, hatching_map_updater)
+    turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session,
+                                          hatching_map_updater, annexation_map_updater)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,
                                                lambda move: animators_switcher.get().get_animation(move),
-                                               (turn_pass_animator.for_multibot
+                                               (turn_pass_animator.start_for_multibot
                                                 if is_multibot else
-                                                turn_pass_animator.for_game)),
-                           music_player, in_game_time, hatching_map_updater)
+                                                turn_pass_animator.start_for_game),
+                                               (turn_pass_animator.end_for_multibot
+                                                if is_multibot else
+                                                turn_pass_animator.end_for_game),
+                                               ),
+                           in_game_time,
+                           [
+                               annexation_map_updater.update,
+                               hatching_map_updater.update,
+                               music_player.update,
+                           ])
     drawer = FrameDrawer.make(layers)
 
     continue_was_pressed = Event[None]()

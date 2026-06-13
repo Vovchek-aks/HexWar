@@ -227,6 +227,63 @@ class Board(ABC):
         ...
 
 
+class AnnexationMap(ABC):
+    @abstractmethod
+    def get_cells_to_annex_of(self, player: Player) -> "Cells":
+        ...
+
+    @abstractmethod
+    def update_for(self, player: Player) -> Iterator[None]:
+        ...
+
+    @abstractmethod
+    def __contains__(self, cell: "Cell") -> bool:
+        ...
+
+
+class AnnexationMapUpdater(ABC):
+    @property
+    @abstractmethod
+    def is_active(self) -> bool:
+        ...
+
+    @property
+    @abstractmethod
+    def map(self) -> AnnexationMap:
+        ...
+
+    @property
+    @abstractmethod
+    def update_for_player_was_requested(self) -> OnEventSubscriber[Player, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def update_for_player_was_started(self) -> OnEventSubscriber[Player, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def update_for_player_was_finished(self) -> OnEventSubscriber[Player, None]:
+        ...
+
+    @abstractmethod
+    def is_about_to_be_updated(self, player: Player) -> bool:
+        ...
+
+    @abstractmethod
+    def update(self) -> None:
+        ...
+
+    @abstractmethod
+    def append(self, player: Player) -> None:
+        ...
+
+    @abstractmethod
+    def push(self, player: Player) -> None:
+        ...
+
+
 class CellsCache(ABC):
     @property
     @abstractmethod
@@ -305,14 +362,6 @@ class ByGameRulesSessionChanger(ABC):
 
     @abstractmethod
     def on_turn_end(self) -> None:
-        ...
-
-    @abstractmethod
-    def get_cells_to_annex(self, player: Player) -> "Cells":
-        ...
-
-    @abstractmethod
-    def get_cells_to_annex_process(self, player: Player) -> "Iterator[None | Cells]":
         ...
 
     @abstractmethod

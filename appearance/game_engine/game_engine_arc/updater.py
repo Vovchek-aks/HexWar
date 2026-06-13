@@ -1,8 +1,7 @@
-from typing import Iterator
+from typing import Iterator, Callable
 
 from attrs import frozen
 
-from appearance.audio.music.music_player import MusicPlayer
 from appearance.camera_mover import CameraMover
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
@@ -24,9 +23,8 @@ class Updater(proto.Updater):
              mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[Layer],
              player_turner: Iterator[None],
-             music_player: MusicPlayer,
              in_game_time: InGameTime,
-             annexation_hatching_map_updater: proto.AnnexationHatchingMapUpdater) -> "Updater":
+             other_updates: list[Callable[[], None]]) -> "Updater":
         clicks_catcher = ClicksCatcher(layers)
         return cls(camera_mover,
                    camera_orientation,
@@ -35,9 +33,8 @@ class Updater(proto.Updater):
                    mouse_movement_observer,
                    clicks_catcher,
                    player_turner,
-                   music_player,
                    in_game_time,
-                   annexation_hatching_map_updater)
+                   other_updates)
 
     _camera_mover: CameraMover
     _camera_orientation: proto.CameraOrientation
@@ -46,9 +43,8 @@ class Updater(proto.Updater):
     _mouse_movement_observer: proto.MouseMovementObserver
     _clicks_catcher: ClicksCatcher
     _player_turner: Iterator[None]
-    _music_player: MusicPlayer
     _in_game_time: InGameTime
-    _annexation_hatching_map_updater: proto.AnnexationHatchingMapUpdater
+    _other_updates: list[Callable[[], None]]
 
     def update(self, input_state: InputState) -> None:
         self._camera_mover.update(input_state.last_frame_mouse_wheel_delta,
@@ -59,7 +55,9 @@ class Updater(proto.Updater):
         self._pause_menu_opener.update(input_state.pressed_keys)
         self._mouse_movement_observer.update(input_state.mouse_position)
         self._clicks_catcher.update(input_state.last_frame_clicks)
-        self._music_player.update()
         self._in_game_time.update(input_state.dt)
-        self._annexation_hatching_map_updater.update()
+
+        for update in self._other_updates:
+            update()
+
         next(self._player_turner)

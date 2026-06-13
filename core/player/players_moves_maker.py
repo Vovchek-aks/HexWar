@@ -5,13 +5,15 @@ from statuses import Status, MISSING
 
 MovePreparationGetter = Callable[[proto.Move], Iterator[None] | Status]
 TurnStartPreparationGetter = Callable[[proto.Player], Iterator[None] | Status]
+TurnEndPreparationGetter = Callable[[proto.Player], Iterator[None] | Status]
 
 
 def players_moves_maker(session: proto.GameSession,
                         moves_maker: proto.MovesMaker,
                         by_game_rules_session_changer: proto.ByGameRulesSessionChanger,
                         get_move_preparation_process: MovePreparationGetter = lambda _: MISSING,
-                        get_turn_start_preparation_process: TurnStartPreparationGetter = lambda _: MISSING
+                        get_turn_start_preparation_process: TurnStartPreparationGetter = lambda _: MISSING,
+                        get_turn_end_preparation_process: TurnEndPreparationGetter = lambda _: MISSING
                         ) -> Iterator[None]:
     process = get_turn_start_preparation_process(session.master.current_player)
     if process is not MISSING:
@@ -30,6 +32,10 @@ def players_moves_maker(session: proto.GameSession,
                     yield from process
 
                 moves_maker.make(move)
+
+        process = get_turn_end_preparation_process(session.master.current_player)
+        if process is not MISSING:
+            yield from process
 
         yield from by_game_rules_session_changer.on_turn_end()
         session.figures_budget.clear()

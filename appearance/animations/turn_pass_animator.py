@@ -5,11 +5,11 @@ from appearance.animations.to_target_orientation_camera_mover import ToTargetOri
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.graphics.camera.camera_orientation import CameraOrientation
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
-from core.protocols import GameSession, Player
+from core.protocols import GameSession, Player, AnnexationMapUpdater
 import appearance.protocols as proto
 import core.figures.figure as fig
 
-AFTER_TURN_WAIT_TIME = .3
+AFTER_TURN_WAIT_TIME = 0
 ON_FULL_BOARD_WAIT_TIME = 1.5
 FOR_MULTIBOT_MOVE_TIME = 1.5
 FOR_GAME_MOVE_TIME = 1
@@ -23,8 +23,13 @@ class TurnPassAnimator:
     _in_game_time: InGameTime
     _session: GameSession
     _hatching_map_updater: proto.AnnexationHatchingMapUpdater
+    _annexation_map_updater: AnnexationMapUpdater
 
-    def for_game(self, player: Player) -> Animation:
+    @property
+    def _is_annexations_display_in_progress(self) -> bool:
+        return self._annexation_map_updater.is_active  # or self._hatching_map_updater.is_active
+
+    def start_for_game(self, player: Player) -> Animation:
         yield
         if isinstance(player.inputer, BotPlayerInputer):
             return
@@ -39,12 +44,17 @@ class TurnPassAnimator:
         yield from until_happen(self._to_target_camera_mover.target_has_been_reached)
         yield
 
-        self._hatching_map_updater.start_process_for(player)
+    def end_for_game(self, player: Player) -> Animation:
+        yield
+        if isinstance(player.inputer, BotPlayerInputer):
+            return
 
-    def for_multibot(self, player: Player) -> Animation:
-        while self._hatching_map_updater.is_active:
+        while self._is_annexations_display_in_progress:
             yield
-        self._hatching_map_updater.start_process_for(player)
+
+    def start_for_multibot(self, player: Player) -> Animation:
+        while self._is_annexations_display_in_progress:
+            yield
 
         yield from sleep_gametime(AFTER_TURN_WAIT_TIME, self._in_game_time)
         yield
@@ -74,5 +84,9 @@ class TurnPassAnimator:
         yield from until_happen(self._to_target_camera_mover.target_has_been_reached)
         yield
 
-        while self._hatching_map_updater.is_active:
+        while self._is_annexations_display_in_progress:
+            yield
+
+    def end_for_multibot(self, _: Player) -> Animation:
+        while self._is_annexations_display_in_progress:
             yield

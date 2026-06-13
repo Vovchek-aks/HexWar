@@ -237,10 +237,6 @@ class AnnexationHatchingMapUpdater(ABC):
     def update(self) -> None:
         ...
 
-    @abstractmethod
-    def start_process_for(self, player: proto.Player, *, frames_to_skip: int = 0) -> None:
-        ...
-
 
 class BackgroundDrawer(ABC):
     @abstractmethod

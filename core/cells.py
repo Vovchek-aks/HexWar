@@ -4,6 +4,7 @@ from typing import Iterator, Callable
 from attrs import frozen, field
 
 import core.protocols as proto
+from statuses import MISSING
 
 
 @frozen(order=False)
@@ -49,7 +50,8 @@ class Cells(proto.Cells):
     def players(self) -> set[proto.Player]:
         players = set[proto.Player]()
         for cell in self:
-            players.add(cell.owner)
+            if cell.owner is not MISSING:
+                players.add(cell.owner)
         return players
 
     def is_region_with_same_owner(self, board: proto.Board) -> bool:

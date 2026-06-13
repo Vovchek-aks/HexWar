@@ -6,6 +6,8 @@ from attrs import frozen
 
 import core.protocols as proto
 from appearance.graphics.colors import get_colors, Color
+from core.annexation_map.annexation_map import AnnexationMap
+from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
 from core.by_game_rules_session_changer import ByGameRulesSessionChanger
 from core.game_session import GameSession
 from core.master import Master
@@ -24,7 +26,9 @@ class MapRandomizer:
              make_player_inputer: Callable[[], proto.PlayerInputer]) -> "MapRandomizer":
         session.figures.figure_was_added_at.subscribe(lambda _, coord: session.cells.update(session.board[coord]))
         session.figures.figure_was_removed.subscribe(lambda _, coord: session.cells.update(session.board[coord]))
-        by_game_rules_session_changer = ByGameRulesSessionChanger(session, no_context_manager,
+        by_game_rules_session_changer = ByGameRulesSessionChanger(session,
+                                                                  AnnexationMapUpdater(session, AnnexationMap(session)),
+                                                                  no_context_manager,
                                                                   lambda coord: session.cells.update(
                                                                       session.board[coord]))
         return cls(session, by_game_rules_session_changer, make_player_inputer)
