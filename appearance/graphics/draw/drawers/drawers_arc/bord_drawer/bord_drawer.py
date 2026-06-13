@@ -65,6 +65,7 @@ class BordDrawer(proto.BordDrawer):
     def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
         color = self._get_hex_color(cell_coord).lerp(WHITE, highlight_ratio)
         self._make_hex_background_no_auto_color(cell_coord, color).draw()
+        self.draw_hatching(cell_coord)
         self.draw_edges(cell_coord)
 
     def make_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> Shape:
@@ -152,6 +153,9 @@ class BordDrawer(proto.BordDrawer):
         return lines
 
     def draw_hatching(self, cell_coord: Vector2Int) -> None:
+        if self._hatching_map.color_at(cell_coord) is MISSING:
+            return
+
         for shape in self.make_hatching(cell_coord):
             shape.draw()
 
