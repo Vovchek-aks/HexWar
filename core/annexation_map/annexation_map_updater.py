@@ -1,4 +1,5 @@
 from typing import Iterator
+from time import perf_counter as time
 
 from attrs import define, field
 
@@ -25,6 +26,7 @@ class AnnexationMapUpdater(proto.AnnexationMapUpdater):
 
     _session: proto.GameSession
     _map: proto.AnnexationMap
+    _last_move_time: float = 0
 
     _players_queue: list[proto.Player] = field(init=False, factory=list)
     _process: Iterator[None] | Status = field(init=False, default=MISSING)
@@ -97,6 +99,8 @@ class AnnexationMapUpdater(proto.AnnexationMapUpdater):
         self._process = MISSING
 
     def _on_annexations_might_have_changed(self, player: proto.Player) -> None:
+        self._last_move_time = time()
+
         neighbors = (self._session.cells.with_owner(player)
                      .at_outer_boundry(self._session.board)
                      .players())
@@ -107,5 +111,6 @@ class AnnexationMapUpdater(proto.AnnexationMapUpdater):
     def _start_next(self) -> None:
         assert self._players_queue
 
-        self._process = self._map.update_for(self._players_queue[0])
+        skips = 60 if time() - self._last_move_time <= 1 else 0
+        self._process = self._map.update_for(self._players_queue[0], initial_frame_skips=skips)
         self._update_for_player_was_started.invoke(self._players_queue[0])

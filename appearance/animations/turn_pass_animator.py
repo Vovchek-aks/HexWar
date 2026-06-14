@@ -9,7 +9,7 @@ from core.protocols import GameSession, Player, AnnexationMapUpdater
 import appearance.protocols as proto
 import core.figures.figure as fig
 
-AFTER_TURN_WAIT_TIME = 0
+AFTER_TURN_WAIT_TIME = .3
 ON_FULL_BOARD_WAIT_TIME = 1.5
 FOR_MULTIBOT_MOVE_TIME = 1.5
 FOR_GAME_MOVE_TIME = 1
@@ -24,10 +24,6 @@ class TurnPassAnimator:
     _session: GameSession
     _hatching_map_updater: proto.AnnexationHatchingMapUpdater
     _annexation_map_updater: AnnexationMapUpdater
-
-    @property
-    def _is_annexations_display_in_progress(self) -> bool:
-        return self._annexation_map_updater.is_active  # or self._hatching_map_updater.is_active
 
     def start_for_game(self, player: Player) -> Animation:
         yield
@@ -49,11 +45,11 @@ class TurnPassAnimator:
         if isinstance(player.inputer, BotPlayerInputer):
             return
 
-        while self._is_annexations_display_in_progress:
+        while self._is_annexations_display_in_progress_for(player):
             yield
 
     def start_for_multibot(self, player: Player) -> Animation:
-        while self._is_annexations_display_in_progress:
+        while self._is_annexations_display_in_progress_for(player):
             yield
 
         yield from sleep_gametime(AFTER_TURN_WAIT_TIME, self._in_game_time)
@@ -84,9 +80,17 @@ class TurnPassAnimator:
         yield from until_happen(self._to_target_camera_mover.target_has_been_reached)
         yield
 
-        while self._is_annexations_display_in_progress:
+        while self._is_annexations_display_in_progress_for(player):
             yield
 
-    def end_for_multibot(self, _: Player) -> Animation:
-        while self._is_annexations_display_in_progress:
+    def end_for_multibot(self, player: Player) -> Animation:
+        while self._annexation_map_updater.is_about_to_be_updated(player):
             yield
+
+        self._hatching_map_updater.push(player)
+        while self._is_annexations_display_in_progress_for(player):
+            yield
+
+    def _is_annexations_display_in_progress_for(self, player: Player) -> bool:
+        return (self._annexation_map_updater.is_about_to_be_updated(player) or
+                self._hatching_map_updater.is_about_to_be_updated(player))

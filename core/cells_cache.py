@@ -7,6 +7,7 @@ from attrs import frozen, field
 
 import core.protocols as proto
 from core.cells import Cells
+from core.distant_neighbors_getter import DistantNeighborsGetter
 from my_types import union
 from statuses import MISSING
 import core.figures.figure as fig
@@ -26,10 +27,16 @@ class CellsCache(proto.CellsCache):
     _owner_of: dict[proto.Cell, proto.Player] = field(init=False, factory=dict)
     _figure_of: dict[proto.Cell, type[proto.Figure]] = field(init=False, factory=dict)
     _front: set[proto.Cell] = field(init=False, factory=set)
+    _control_zone_of: dict[proto.Cell, Cells] = field(init=False, factory=dict)
 
     @property
     def at_front(self) -> Cells:
         return Cells(self._front)
+
+    def get_static_control_zone_of(self, cell: proto.Cell) -> Cells:
+        flag = cell.figure.FLAGS.get(proto.PreventsAnnexations)
+        assert flag is not MISSING
+        return self._control_zone_of[cell]
 
     def not_empty(self) -> Cells:
         result = set()
@@ -70,6 +77,7 @@ class CellsCache(proto.CellsCache):
             return
 
         self._update_front(cell)
+        self._update_control_zones(cell)
 
         figure = type(cell.figure)
         if cell not in self._owner_of:
@@ -94,6 +102,20 @@ class CellsCache(proto.CellsCache):
             self._cells_with[figure].add(cell)
 
             self._figure_of[cell] = figure
+
+    def _update_control_zones(self, cell: proto.Cell) -> None:
+        if proto.Static not in cell.figure.FLAGS:
+            return
+
+        flag = cell.figure.FLAGS.get(proto.PreventsAnnexations)
+        if flag is MISSING and cell in self._control_zone_of:
+            self._control_zone_of.pop(cell)
+            return
+
+        if flag is not MISSING:
+            assert flag.can_prevent(..., ..., ...)
+            self._control_zone_of[cell] = (DistantNeighborsGetter(cell, self._board)
+                                           .get_all_not_farther_than(flag.distance, include_cell=True))
 
     def _update_front(self, changed_cell: proto.Cell) -> None:
         for cell in self._board.get_neighbors(changed_cell, include_cell=True).with_flag(proto.OnLand):

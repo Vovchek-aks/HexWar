@@ -371,7 +371,7 @@ class Motorization(_Figure):
                        .set_base_strength(3)
                        .build()),
                       CanPull(),
-                      PreventsAnnexations(distance=3,
+                      PreventsAnnexations(distance=Infantry.FLAGS.get(PreventsAnnexations).distance,
                                           can_prevent=lambda coord, session, region:
                                           Infantry.can_prevent(coord, session, region)),
                       PreventsCaptures(),

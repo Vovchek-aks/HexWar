@@ -42,7 +42,7 @@ class Board(proto.Board):
 
     @property
     def cells(self) -> Cells:
-        return Cells(set(self._cells))
+        return Cells(self._cells_set)
 
     @property
     def cell_coords(self) -> Iterable[Vector2Int]:

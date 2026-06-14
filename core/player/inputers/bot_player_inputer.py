@@ -6,7 +6,7 @@ from attrs import define, field
 import core.protocols as proto
 from statuses import Status, MISSING, IN_PROGRESS
 
-THINK_TIME_RATIO = .3
+THINK_TIME_RATIO = 1
 
 
 @define

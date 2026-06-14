@@ -159,10 +159,10 @@ def load_game(window: Window,
     in_game_time = InGameTime()
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
-    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
-                                               in_game_time, speed_multiplier=float('inf'), volume_multiplier=.2)
     # bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
-    #                                            in_game_time, speed_multiplier=3, volume_multiplier=.2)
+    #                                            in_game_time, speed_multiplier=float('inf'), volume_multiplier=.2)
+    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
+                                               in_game_time, speed_multiplier=3, volume_multiplier=.2)
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     annexation_map_updater = AnnexationMapUpdater.make(session, moves_maker, AnnexationMap(session))

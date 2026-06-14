@@ -234,7 +234,15 @@ class AnnexationHatchingMapUpdater(ABC):
         ...
 
     @abstractmethod
+    def is_about_to_be_updated(self, player: proto.Player) -> bool:
+        ...
+
+    @abstractmethod
     def update(self) -> None:
+        ...
+
+    @abstractmethod
+    def push(self, player: proto.Player) -> None:
         ...
 
 

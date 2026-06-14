@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod, ABCMeta
 from types import UnionType, TracebackType
-from typing import ClassVar, Iterable, Iterator, Callable
+from typing import ClassVar, Iterable, Iterator, Callable, Hashable
 
 from observer import OnEventSubscriber
 from statuses import Status
@@ -233,7 +233,7 @@ class AnnexationMap(ABC):
         ...
 
     @abstractmethod
-    def update_for(self, player: Player) -> Iterator[None]:
+    def update_for(self, player: Player, *, initial_frame_skips: int = 0) -> Iterator[None]:
         ...
 
     @abstractmethod
@@ -288,6 +288,10 @@ class CellsCache(ABC):
     @property
     @abstractmethod
     def at_front(self) -> "Cells":
+        ...
+
+    @abstractmethod
+    def get_static_control_zone_of(self, cell: "Cell") -> "Cells":
         ...
 
     @abstractmethod
@@ -450,6 +454,10 @@ class Cells(ABC):
 
     @abstractmethod
     def filter(self, function: Callable[[Cell], bool]) -> "Cells":
+        ...
+
+    @abstractmethod
+    def group_by[T: Hashable](self, function: Callable[[Cell], T]) -> "dict[T, Cells]":
         ...
 
     @abstractmethod
@@ -654,7 +662,7 @@ class PreventsAnnexations(Flag, metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def can_prevent(self, coord: Vector2Int, board: Board) -> bool:
+    def can_prevent(self, coord: Vector2Int, session: GameSession, region: Cells) -> bool:
         ...
 
 

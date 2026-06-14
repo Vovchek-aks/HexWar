@@ -1,5 +1,6 @@
+from collections import defaultdict
 from types import UnionType
-from typing import Iterator, Callable
+from typing import Iterator, Callable, Hashable
 
 from attrs import frozen, field
 
@@ -46,6 +47,12 @@ class Cells(proto.Cells):
 
     def filter(self, function: Callable[[proto.Cell], bool]) -> "Cells":
         return Cells({cell for cell in self._cells if function(cell)})
+
+    def group_by[T: Hashable](self, function: Callable[[proto.Cell], T]) -> "dict[T, Cells]":
+        groups: dict[T, set[proto.Cell]] = defaultdict(set)
+        for cell in self:
+            groups[function(cell)].add(cell)
+        return {key: Cells(cells) for key, cells in groups.items()}
 
     def players(self) -> set[proto.Player]:
         players = set[proto.Player]()

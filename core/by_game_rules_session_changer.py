@@ -53,6 +53,8 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         for region in (map_updater.map.get_cells_to_annex_of(player).split(self._session.board)):
             yield
             self.annex(region)
+            for player in region.players():
+                map_updater.push(player)
 
         yield from self._spawn_private_figures(self._session.cells.with_owner(player))
 

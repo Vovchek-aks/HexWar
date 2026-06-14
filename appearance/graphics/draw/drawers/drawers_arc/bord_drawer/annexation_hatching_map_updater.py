@@ -38,6 +38,9 @@ class AnnexationHatchingMapUpdater(proto.AnnexationHatchingMapUpdater):
     def is_active(self) -> bool:
         return self._process is not MISSING
 
+    def is_about_to_be_updated(self, player: Player) -> bool:
+        return player in self._players_queue
+
     def update(self) -> None:
         if self.is_active:
             if next(self._process, ABORT_NEEDED) is not ABORT_NEEDED:
@@ -49,6 +52,10 @@ class AnnexationHatchingMapUpdater(proto.AnnexationHatchingMapUpdater):
             return
 
         self._process = self._update_hatching_map_process(self._players_queue[0])
+
+    def push(self, player: Player) -> None:
+        self._on_update_for_player_was_requested(player)
+        self._players_queue.insert(0, player)
 
     def _on_update_for_player_was_requested(self, player: Player) -> None:
         if not self._players_queue:
