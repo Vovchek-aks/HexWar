@@ -95,7 +95,7 @@ class AnnexationMap(proto.AnnexationMap):
         board = self._session.board
 
         surroundings = (DistantNeighborsGetter(cell, board)
-                        .get_all_not_farther_than(SMALL_ENOUGH_DISTANCE, include_cell=False))
+                        .get_all_not_farther_than(SMALL_ENOUGH_DISTANCE, include_cell=True))
         if surroundings & nearby:
             return True
 
