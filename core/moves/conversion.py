@@ -20,8 +20,9 @@ class Conversion(proto.Move):
                                                                LightIndustryProducts(500)),
                                            round(fig.Infantry.MOVES_BUDGET / 3)),
 
-        (fig.Motorization, fig.Infantry): (ResourcesGroup(),
-                                           round(fig.Motorization.MOVES_BUDGET / 3)),
+        (fig.Motorization, fig.Infantry): (ResourcesGroup.make(-Dollars(50_000),
+                                                               -LightIndustryProducts(450)),
+                                           0),
 
         (fig.Capital, fig.TallCapital): (ResourcesGroup.make(Dollars(3_000_000),
                                                              LightIndustryProducts(7_500),
@@ -43,6 +44,8 @@ class Conversion(proto.Move):
         (fig.PrivateHeavyFactory, fig.HeavyFactory): (ResourcesGroup.make(fig.HeavyFactory.FLAGS.get(proto.Creatable)
                                                                           .cost.get(Dollars) * 2),
                                                       fig.PrivateHeavyFactory.MOVES_BUDGET),
+
+        (fig.Town, fig.Infantry): (ResourcesGroup(), 1),
     }
 
     @classmethod

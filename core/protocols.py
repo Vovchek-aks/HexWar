@@ -909,6 +909,10 @@ class Resource(ABC):
         ...
 
     @abstractmethod
+    def __neg__(self) -> "Resource":
+        ...
+
+    @abstractmethod
     def __bool__(self) -> bool:
         ...
 

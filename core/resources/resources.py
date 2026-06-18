@@ -26,6 +26,9 @@ class Resource(proto.Resource, metaclass=ABCMeta):
     def __mul__(self, multiplier: float) -> "Resource":
         return type(self)(round(self.amount * multiplier))
 
+    def __neg__(self) -> "Resource":
+        return self * -1
+
     def __bool__(self) -> bool:
         return bool(self.amount)
 

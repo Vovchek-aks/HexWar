@@ -88,7 +88,7 @@ class Town(_Figure):
                       Creatable.make(Dollars(700_000), LightIndustryProducts(1_000)),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(250_000)))
-    MOVES_BUDGET = 0
+    MOVES_BUDGET = 198
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -312,7 +312,7 @@ class Infantry(_Figure):
                       CanCapture(),
                       PreventsCaptures(),
                       TriesTakeResourcesElseDies.make(Dollars(50_000)))
-    MOVES_BUDGET = 6
+    MOVES_BUDGET = 198
 
     _NEAR_BUNKER_HARDNESS_INCREASE = 5
 
@@ -351,11 +351,11 @@ class Infantry(_Figure):
     def get_cost_of(cls, move: proto.Move) -> int:
         match move:
             case Relocation():
-                return 1
+                return 33
             case Assault():
-                return 2
+                return 66
             case Capture():
-                return 2
+                return 66
             case PullingInitiation():
                 return 0
             case PullingTermination():

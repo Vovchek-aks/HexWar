@@ -22,7 +22,7 @@ from appearance.input.moves_inputer.input_actions import ButtonPressAction, Crea
 from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
     INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK, \
     CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL, PURCHASE_SETTLEMENT, PURCHASE_PRIVATE_LIGHT_FACTORY, \
-    PURCHASE_PRIVATE_HEAVY_FACTORY
+    PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
@@ -415,7 +415,11 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Motorization, [to_infantry], [MOTORIZATION_TO_INFANTRY])
 
     def _make_town_menu(self) -> Layer:
-        return self._make_figure_menu(fig.Town, [], [])
+        mobilise = self._make_null_button(Language.from_meta().get_mobilise_message())
+        mobilise.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                       .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                           fig.Infantry)))
+        return self._make_figure_menu(fig.Town, [mobilise], [MOBILISE_TOWN])
 
     def _make_light_factory_menu(self) -> Layer:
         return self._make_figure_menu(fig.LightFactory, [], [])
