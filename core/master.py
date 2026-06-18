@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from attrs import frozen, field
 
 import core.protocols as proto
@@ -8,8 +10,14 @@ from observer import Event, OnEventSubscriber
 class Master(proto.Master):
     _players: list[proto.Player]
 
+    _turn_of: dict[proto.Player, int] = field(init=False, factory=lambda: defaultdict(lambda: 1))
+
     _turn_had_started: Event[proto.Player, None] = field(init=False, factory=Event)
     _turn_has_passed: Event[proto.Player, None] = field(init=False, factory=Event)
+
+    @property
+    def current_turn(self) -> int:
+        return self._turn_of[self.current_player]
 
     @property
     def players(self) -> list[proto.Player]:
@@ -35,6 +43,7 @@ class Master(proto.Master):
         previous_player = self.current_player
         self._players.append(self._players.pop(0))
         self._remove_empty_players(session)
+        self._turn_of[previous_player] += 1
 
         self._turn_has_passed.invoke(previous_player)
         self._turn_had_started.invoke(self.current_player)

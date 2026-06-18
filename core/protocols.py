@@ -11,17 +11,22 @@ from color import Color
 class Master(ABC):
     @property
     @abstractmethod
+    def current_turn(self) -> int:
+        ...
+
+    @property
+    @abstractmethod
+    def players(self) -> list["Player"]:
+        ...
+
+    @property
+    @abstractmethod
     def current_player(self) -> "Player":
         ...
 
     @property
     @abstractmethod
     def next_player(self) -> "Player":
-        ...
-
-    @property
-    @abstractmethod
-    def players(self) -> list["Player"]:
         ...
 
     @property

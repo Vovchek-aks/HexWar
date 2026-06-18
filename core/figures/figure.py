@@ -1,3 +1,4 @@
+import random
 from abc import ABCMeta
 from typing import Callable
 
@@ -21,6 +22,7 @@ from core.resources import ResourcesGroup, Dollars, LightIndustryProducts, Heavy
 from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 from core.protocols import Figure, Board
+from my_random import temporarily_seed
 
 
 # it's here because of python stupidity
@@ -325,6 +327,7 @@ class Abandonment(_Figure):
                       TurnsOthersIntoItself(lambda coord, session: Abandonment.get_targets(coord, session)))
     MOVES_BUDGET = 0
 
+    _TURN_PROBABILITY = .3
     _TURN_RADIUS = 2
     _CAN_TURN_INTO_ITSELF = {
         Town,
@@ -347,6 +350,10 @@ class Abandonment(_Figure):
     def get_targets(cls, coord: Vector2Int, session: proto.GameSession) -> Cells:
         board = session.board
         cell = board[coord]
+
+        with temporarily_seed((coord, session.master.current_turn)):
+            if random.random() > cls._TURN_PROBABILITY:
+                return Cells.empty()
 
         neighbors = (DistantNeighborsGetter(cell, board)
                      .get_all_not_farther_than(cls._TURN_RADIUS, include_cell=False))

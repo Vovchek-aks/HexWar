@@ -6,18 +6,21 @@ from attrs import frozen
 
 from core import protocols as proto
 from core.cells import Cells
+from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures import figure as fig
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
 
+FROM_FRONT_TO_BUNKER_MAX_DISTANCE = 3
+
+PRIVATES_RATIO = .1
+PRIVATES_DECREASE_FROM_CAPITALS_RATIO = 5
+PRIVATES_SPAWN_SPEED_MULTIPLIER = .01
 PRIVATES_WEIGHTS = {
     fig.Settlement: 1,
     fig.PrivateLightFactory: .3,
     fig.PrivateHeavyFactory: .05,
 }
-PRIVATES_RATIO = .1
-PRIVATES_DECREASE_FROM_CAPITALS_RATIO = 5
-PRIVATES_SPAWN_SPEED_MULTIPLIER = .01
 
 
 @frozen
@@ -34,13 +37,24 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
     def on_turn_start(self) -> None:
         board = self._session.board
         player = self._session.master.current_player
-        cells = self._session.cells.with_owner(player)
+        cells_cache = self._session.cells
+        figures = self._session.figures
+        cells = cells_cache.with_owner(player)
 
-        to_update = cells.with_flag(proto.UpdatableOnTurnStart)
+        to_update = cells & cells_cache.with_flag(proto.UpdatableOnTurnStart)
         priority_order = sorted(to_update, key=lambda cell: cell.figure.FLAGS.get(proto.UpdatableOnTurnStart).priority)
 
         for cell in priority_order:
             cell.figure.FLAGS.get(proto.UpdatableOnTurnStart).update(board.coordinates_of(cell), self._session)
+
+        front = cells & cells_cache.at_front
+        for bunker in cells & cells_cache.with_figure(fig.Bunker):
+            neighbors = (DistantNeighborsGetter(bunker, board)
+                         .get_all_not_farther_than(FROM_FRONT_TO_BUNKER_MAX_DISTANCE, include_cell=True))
+            if not neighbors & front:
+                figures.remove(bunker.figure)
+                figures.add(fig.Abandonment, board.coordinates_of(bunker))
+
 
     def on_turn_end(self) -> Iterator[None]:
         player = self._session.master.current_player
