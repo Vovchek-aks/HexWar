@@ -291,6 +291,10 @@ class CellsCache(ABC):
         ...
 
     @abstractmethod
+    def with_flag(self, flag: "type[Flag] | UnionType") -> "Cells":
+        ...
+
+    @abstractmethod
     def get_static_control_zone_of(self, cell: "Cell") -> "Cells":
         ...
 
@@ -663,6 +667,12 @@ class PreventsAnnexations(Flag, metaclass=ABCMeta):
 
     @abstractmethod
     def can_prevent(self, coord: Vector2Int, session: GameSession, region: Cells) -> bool:
+        ...
+
+
+class TurnsOthersIntoItself(Flag, metaclass=ABCMeta):
+    @abstractmethod
+    def get_targets(self, coord: Vector2Int, session: GameSession) -> Cells:
         ...
 
 

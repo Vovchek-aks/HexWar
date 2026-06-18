@@ -21,9 +21,6 @@ class Attack(proto.Move):
         if from_cell.owner is not session.master.current_player:
             return INVALID
 
-        if from_cell.owner is to_cell.owner:
-            return INVALID
-
         if to_cell.is_empty:
             return INVALID
 

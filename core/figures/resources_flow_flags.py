@@ -1,5 +1,5 @@
 from abc import ABCMeta
-from typing import Iterator
+from typing import Iterator, Callable
 
 from attrs import frozen, field
 
@@ -95,6 +95,7 @@ class TransformsResourcesIndefinably(ResourcesAdder, proto.TransformsResourcesIn
     _input_resources: proto.ResourcesGroup
     _base_output_resources: proto.ResourcesGroup
     _priority: int = 10
+    _on_no_resources: Callable[[Vector2Int, proto.GameSession], None] = lambda *_: None
 
     @property
     def priority(self) -> int:
@@ -119,6 +120,7 @@ class TransformsResourcesIndefinably(ResourcesAdder, proto.TransformsResourcesIn
     def update(self, coord: Vector2Int, session: proto.GameSession) -> None:
         player_resources = session.master.current_player.resources
         if not player_resources.can_take(self._input_resources):
+            self._on_no_resources(coord, session)
             return
 
         player_resources.take(self._input_resources)

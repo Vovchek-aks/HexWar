@@ -33,6 +33,9 @@ class CellsCache(proto.CellsCache):
     def at_front(self) -> Cells:
         return Cells(self._front)
 
+    def with_flag(self, flag: type[proto.Flag] | UnionType) -> Cells:
+        return self.not_empty().with_flag(flag)
+
     def get_static_control_zone_of(self, cell: proto.Cell) -> Cells:
         flag = cell.figure.FLAGS.get(proto.PreventsAnnexations)
         assert flag is not MISSING

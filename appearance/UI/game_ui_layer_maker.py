@@ -270,6 +270,7 @@ class GameUiLayerMaker:
             self._make_tall_capital_menu(),
             self._make_wide_capital_menu(),
             self._make_bunker_menu(),
+            self._make_abandonment_menu(),
             self._make_missile_silo_menu(),
             resources,
             end_turn_button,
@@ -470,6 +471,9 @@ class GameUiLayerMaker:
 
     def _make_bunker_menu(self) -> Layer:
         return self._make_figure_menu(fig.Bunker, [], [])
+
+    def _make_abandonment_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Abandonment, [], [])
 
     def _make_missile_silo_menu(self) -> Layer:
         launch_oreshnik = self._make_activatable_button(self._language.get_launch_oreshnik_message(),

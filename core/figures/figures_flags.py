@@ -153,3 +153,10 @@ class PreventsAnnexations(proto.PreventsAnnexations):
 
     distance: int
     can_prevent: Callable[[Vector2Int, proto.GameSession, proto.Cells], int] = lambda *_: True
+
+
+@frozen
+class TurnsOthersIntoItself(proto.TurnsOthersIntoItself):
+    EXCLUDES = set[type[Flag]]()
+
+    get_targets: Callable[[Vector2Int, proto.GameSession], proto.Cells]

@@ -43,20 +43,14 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
             cell.figure.FLAGS.get(proto.UpdatableOnTurnStart).update(board.coordinates_of(cell), self._session)
 
     def on_turn_end(self) -> Iterator[None]:
-        map_updater = self._annexation_map_updater
         player = self._session.master.current_player
+        cells = self._session.cells.with_owner(player)
 
-        map_updater.push(player)
-        while map_updater.is_about_to_be_updated(player):
-            yield
+        yield from self._process_turn_end_annexations(player)
 
-        for region in (map_updater.map.get_cells_to_annex_of(player).split(self._session.board)):
-            yield
-            self.annex(region)
-            for player in region.players():
-                map_updater.push(player)
+        yield from self._spawn_private_figures(cells)
 
-        yield from self._spawn_private_figures(self._session.cells.with_owner(player))
+        yield from self._process_into_itself_other_turners(cells)
 
     def annex(self, region: Cells) -> None:
         manned = region & self._session.cells.with_figure(fig.Infantry | fig.Motorization)
@@ -72,6 +66,18 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
 
         for cell in region:
             self._session.cells.update(cell)
+
+    def _process_turn_end_annexations(self, player: proto.Player) -> Iterator[None]:
+        map_updater = self._annexation_map_updater
+        map_updater.push(player)
+        while map_updater.is_about_to_be_updated(player):
+            yield
+        for region in (map_updater.map.get_cells_to_annex_of(player).split(self._session.board)):
+            yield
+            self.annex(region)
+            for player in region.players():
+                map_updater.push(player)
+        return player
 
     def _spawn_private_figures(self, player_cells: Cells) -> Iterator[None]:
         cells = self._session.cells
@@ -91,6 +97,17 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
             yield
             figure: type[fig.Figure] = random.choices(private_figures, weights=weights)[0]
             self._session.figures.add(figure, self._session.board.coordinates_of(cell))
+
+    def _process_into_itself_other_turners(self, player_cells: Cells) -> Iterator[None]:
+        figures = self._session.figures
+        board = self._session.board
+        turners = player_cells & self._session.cells.with_flag(proto.TurnsOthersIntoItself)
+        for turner in turners:
+            yield
+            coord = board.coordinates_of(turner)
+            for cell in turner.figure.FLAGS.get(proto.TurnsOthersIntoItself).get_targets(coord, self._session):
+                figures.remove(cell.figure)
+                figures.add(type(turner.figure), board.coordinates_of(cell))
 
     def _discard_regions_with(self, targets: Cells, cells: Cells) -> Cells:
         while targets:

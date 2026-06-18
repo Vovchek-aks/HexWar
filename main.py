@@ -40,9 +40,9 @@ def _make_test_game_loading_scene(window: Window) -> Scene:
         player = session.master.current_player
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)
-        player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
-                                                 LightIndustryProducts(1_000_000),
-                                                 HeavyIndustryProducts(1_000_000)))
+        # player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
+        #                                          LightIndustryProducts(1_000_000),
+        #                                          HeavyIndustryProducts(1_000_000)))
         return GameSession(players_selector.make_master(),
                            session.board,
                            session.figures_budget,

@@ -1,12 +1,14 @@
 from abc import ABCMeta
+from typing import Callable
 
 from attrs import define, field
 
 from core import protocols as proto
+from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
-    PreventsAnnexations, Private
+    PreventsAnnexations, Private, TurnsOthersIntoItself
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
@@ -161,7 +163,10 @@ class PrivateLightFactory(_Figure):
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(50_000)),
                                                      ResourcesGroup.make(LightIndustryProducts(200)),
-                                                     priority=_get_transformer_of(HeavyFactory).priority + 1))
+                                                     priority=_get_transformer_of(LightFactory).priority + 1,
+                                                     on_no_resources=lambda coord, session:
+                                                     PrivateLightFactory.on_no_resources_getter(Abandonment)
+                                                     (coord, session)))
     MOVES_BUDGET = 1
 
     @classmethod
@@ -172,6 +177,17 @@ class PrivateLightFactory(_Figure):
     def get_cost_of(cls, move: proto.Move) -> int:
         return 0
 
+    @classmethod
+    def on_no_resources_getter(cls,
+                               figure_to_turn_into: type[Figure]
+                               ) -> Callable[[Vector2Int, proto.GameSession], None]:
+        def on_no_resources(coord: Vector2Int, session: proto.GameSession) -> None:
+            cell = session.board[coord]
+            session.figures.remove(cell.figure)
+            session.figures.add(figure_to_turn_into, coord)
+
+        return on_no_resources
+
 
 class PrivateHeavyFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
@@ -181,7 +197,10 @@ class PrivateHeavyFactory(_Figure):
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(250_000),
                                                                          LightIndustryProducts(1_500)),
                                                      ResourcesGroup.make(HeavyIndustryProducts(200)),
-                                                     priority=_get_transformer_of(PrivateLightFactory).priority + 1))
+                                                     priority=_get_transformer_of(PrivateLightFactory).priority + 1,
+                                                     on_no_resources=lambda coord, session:
+                                                     PrivateLightFactory.on_no_resources_getter(Abandonment)
+                                                     (coord, session)))
     MOVES_BUDGET = 1
 
     @classmethod
@@ -296,6 +315,46 @@ class MissileSilo(_Figure):
                 return 1
             case _:
                 raise NotSupportedMove(move)
+
+
+class Abandonment(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      AddsResourcesIndefinably.make(Dollars(-75_000)),
+                      TurnsOthersIntoItself(lambda coord, session: Abandonment.get_targets(coord, session)))
+    MOVES_BUDGET = 0
+
+    _TURN_RADIUS = 2
+    _CAN_TURN_INTO_ITSELF = {
+        Town,
+        LightFactory,
+        HeavyFactory,
+        Settlement,
+        PrivateLightFactory,
+        PrivateHeavyFactory
+    }
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+    @classmethod
+    def get_targets(cls, coord: Vector2Int, session: proto.GameSession) -> Cells:
+        board = session.board
+        cell = board[coord]
+
+        neighbors = (DistantNeighborsGetter(cell, board)
+                     .get_all_not_farther_than(cls._TURN_RADIUS, include_cell=False))
+        for neighbor in neighbors:
+            if type(neighbor.figure) in cls._CAN_TURN_INTO_ITSELF:
+                return Cells({neighbor})
+
+        return Cells.empty()
 
 
 class Infantry(_Figure):
@@ -502,6 +561,7 @@ def get_figures() -> list[type[_Figure]]:
         WideCapital,
         Bunker,
         MissileSilo,
+        Abandonment,
         Infantry,
         Motorization,
         Tank,
