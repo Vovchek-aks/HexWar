@@ -185,16 +185,27 @@ class GameUiLayerMaker:
 
         return layout
 
-
-    def _make_resources_and_player_turn(self) -> tuple[VerticalLayoutUi, TextUi]:
-        players_turn = TextUi.make(self._drawer,
+    def _make_resources_and_player_turn(self) -> tuple[VerticalLayoutUi, Layer]:
+        width = self._screen_shape.x / 4
+        height = self._screen_shape.y / 20
+        current_player = TextUi.make(self._drawer,
+                                     (RectangleBuilder(self._screen_shape)
+                                      .from_left_up()
+                                      .move(Vector2((self._screen_shape.x - width) / 2, 10))
+                                      .set_shape(Vector2(width, height))
+                                      .adjust_for_shape()
+                                      .build()),
+                                     TextData.debug('...'),
+                                     is_center=True)
+        current_turn = TextUi.make(self._drawer,
                                    (RectangleBuilder(self._screen_shape)
                                     .from_left_up()
-                                    .move(Vector2(10, 10))
-                                    .set_shape(Vector2(self._screen_shape.x / 4, 30))
+                                    .move(Vector2((self._screen_shape.x - width) / 2, height + 20))
+                                    .set_shape(Vector2(width, height))
                                     .adjust_for_shape()
                                     .build()),
-                                   TextData.debug('...'))
+                                   TextData.debug('...'),
+                                   is_center=True)
 
         resources, update_resources = self._make_resources([
             Dollars,
@@ -208,7 +219,8 @@ class GameUiLayerMaker:
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
-            players_turn.set_text(self._language.get_players_turn_message(name))
+            current_player.set_text(name)
+            current_turn.set_text(f"{self._session.master.current_turn}")
             update_resources()
 
         self._session.master.turn_had_started.subscribe(on_turn_passed)
@@ -216,13 +228,14 @@ class GameUiLayerMaker:
         on_turn_passed(self._session.master.current_player)
         update_resources()
 
-        return resources, players_turn
+        return resources, Layer.as_multiple([current_player, current_turn])
 
     def _make_resources(self, resources: list[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
         layout = VerticalLayoutUi((RectangleBuilder(self._screen_shape)
                                    .from_left_up()
-                                   .move(Vector2(10, 60))
-                                   .set_shape(Vector2(self._screen_shape.x / 4, 80))
+                                   .move(Vector2(10, 10))
+                                   .set_shape(Vector2(self._screen_shape.x / 4,
+                                                      self._screen_shape.y / 7))
                                    .adjust_for_shape()
                                    .build()),
                                   margin_ratio=.2,
