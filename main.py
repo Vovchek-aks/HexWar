@@ -27,21 +27,22 @@ def main() -> None:
     # from game_session_saver import GameSessionSaver
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
-    # GameSessionSaver(empty_map(board_size=75, player_names=["Russia", "Sweden", "Estonia", "Finland"])).save(EDIT_MAP_FILE)
+    # GameSessionSaver(empty_map(board_size=5, player_names=["Russia", "Sweden"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
-    # make_first_scene = _make_test_game_loading_scene
+    make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
 
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("Balkans.json", UPS).load()
+        session = GameSessionLoader.make("_edit_map.json", UPS).load()
+        player = session.master.current_player
         players_selector = PlayersSelector(session)
-        players_selector.toggle(session.master.current_player)
-        session.master.current_player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
-                                                                        LightIndustryProducts(1_000_000),
-                                                                        HeavyIndustryProducts(1_000_000)))
+        players_selector.toggle(player)
+        player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
+                                                 LightIndustryProducts(1_000_000),
+                                                 HeavyIndustryProducts(1_000_000)))
         return GameSession(players_selector.make_master(),
                            session.board,
                            session.figures_budget,
@@ -63,7 +64,7 @@ def _make_main_menu_loading_scene(window: Window) -> Scene:
 def _make_multibot_loading_scene(window: Window) -> Scene:
     return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
         lambda: MapRandomizer.make(GameSessionLoader.make(random.choice(["SVO.json",
-                                                                         "Round Cross.json",
+                                                                         # "Round Cross.json",
                                                                          "Middle East.json",
                                                                          "Finnish Gulf.json",
                                                                          "Balkans.json"]), UPS).load(),

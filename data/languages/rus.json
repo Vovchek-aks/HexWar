@@ -35,6 +35,7 @@
     "TERMINATE_PULLING": "Отцепиться",
     "TO_TALL_CAPITAL": "Возвыситься",
     "TO_WIDE_CAPITAL": "Расшириться",
+    "PURCHASE": "Выкупить",
     "LAUNCH_ORESHNIK": "Запустить \"Орешник\"",
     "COMBAT_ABILITY": "БС:  {combat_ability}",
     "STRENGTH": "Атака:  {base}",
@@ -156,6 +157,18 @@
         "увеличивая до двух клеток",
         "радиус применения бонуса",
         "к производительности."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Превращает эту фигуру",
+        "в жилой район."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Превращает эту фигуру",
+        "в фабрику."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Превращает эту фигуру",
+        "в завод."
       ],
       "INFANTRY_CAPTURE": [
         "Захватывает более слабую",

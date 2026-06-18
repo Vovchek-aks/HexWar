@@ -42,6 +42,9 @@ class MapEditor:
         transforms.append(("infantry", lambda coord: self._change_figure(coord, fig.Infantry)))
         transforms.append(("motorization", lambda coord: self._change_figure(coord, fig.Motorization)))
         transforms.append(("tank", lambda coord: self._change_figure(coord, fig.Tank)))
+        transforms.append(("settlement", lambda coord: self._change_figure(coord, fig.Settlement)))
+        transforms.append(("plf", lambda coord: self._change_figure(coord, fig.PrivateLightFactory)))
+        transforms.append(("phf", lambda coord: self._change_figure(coord, fig.PrivateHeavyFactory)))
 
         for player in session.master.players:
             transforms.append(self._make_set_player_transform(player))

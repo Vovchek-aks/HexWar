@@ -32,38 +32,33 @@
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {
-    "Bunker": [
-      "3 1",
-      "0 1"
-    ],
-    "Infantry": [
-      "0 4",
-      "1 4",
-      "4 2",
-      "0 3",
+    "Settlement": [
       "1 3"
     ],
-    "Tank": [
-      "2 4"
+    "PrivateLightFactory": [
+      "2 1"
+    ],
+    "PrivateHeavyFactory": [
+      "3 3"
     ]
   },
   "BOARD_SHAPE": "5 5",
   "CELLS": [
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
     0,
     0,
-    1,
-    1,
-    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0,

@@ -143,7 +143,7 @@ class Settlement(_Figure):
                       Private(),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(75_000)))
-    MOVES_BUDGET = 0
+    MOVES_BUDGET = 1
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -162,7 +162,7 @@ class PrivateLightFactory(_Figure):
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(50_000)),
                                                      ResourcesGroup.make(LightIndustryProducts(200)),
                                                      priority=_get_transformer_of(HeavyFactory).priority + 1))
-    MOVES_BUDGET = 0
+    MOVES_BUDGET = 1
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -182,7 +182,7 @@ class PrivateHeavyFactory(_Figure):
                                                                          LightIndustryProducts(1_500)),
                                                      ResourcesGroup.make(HeavyIndustryProducts(200)),
                                                      priority=_get_transformer_of(PrivateLightFactory).priority + 1))
-    MOVES_BUDGET = 0
+    MOVES_BUDGET = 1
 
     @classmethod
     def base_hardness(cls) -> int:

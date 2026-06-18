@@ -21,7 +21,8 @@ from appearance.input.moves_inputer.input_actions import ButtonPressAction, Crea
     PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction
 from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
     INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK, \
-    CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL
+    CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL, PURCHASE_SETTLEMENT, PURCHASE_PRIVATE_LIGHT_FACTORY, \
+    PURCHASE_PRIVATE_HEAVY_FACTORY
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
@@ -423,13 +424,26 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.HeavyFactory, [], [])
 
     def _make_settlement_menu(self) -> Layer:
-        return self._make_figure_menu(fig.Settlement, [], [])
+        purchase = self._make_null_button(Language.from_meta().get_purchase_message())
+        purchase.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                       .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                           fig.Town)))
+
+        return self._make_figure_menu(fig.Settlement, [purchase], [PURCHASE_SETTLEMENT])
 
     def _make_private_light_factory_menu(self) -> Layer:
-        return self._make_figure_menu(fig.PrivateLightFactory, [], [])
+        purchase = self._make_null_button(Language.from_meta().get_purchase_message())
+        purchase.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                       .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                           fig.LightFactory)))
+        return self._make_figure_menu(fig.PrivateLightFactory, [purchase], [PURCHASE_PRIVATE_LIGHT_FACTORY])
 
     def _make_private_heavy_factory_menu(self) -> Layer:
-        return self._make_figure_menu(fig.PrivateHeavyFactory, [], [])
+        purchase = self._make_null_button(Language.from_meta().get_purchase_message())
+        purchase.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                       .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                           fig.HeavyFactory)))
+        return self._make_figure_menu(fig.PrivateHeavyFactory, [purchase], [PURCHASE_PRIVATE_HEAVY_FACTORY])
 
     def _make_capital_menu(self) -> Layer:
         to_tall_capital = self._make_null_button(Language.from_meta().get_to_tall_capital_message())

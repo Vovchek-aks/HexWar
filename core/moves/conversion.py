@@ -32,6 +32,17 @@ class Conversion(proto.Move):
                                                              LightIndustryProducts(7_500),
                                                              HeavyIndustryProducts(1_000)),
                                          fig.Capital.MOVES_BUDGET),
+
+        (fig.Settlement, fig.Town): (ResourcesGroup.make(fig.Town.FLAGS.get(proto.Creatable).cost.get(Dollars) * 2),
+                                     fig.Settlement.MOVES_BUDGET),
+
+        (fig.PrivateLightFactory, fig.LightFactory): (ResourcesGroup.make(fig.LightFactory.FLAGS.get(proto.Creatable)
+                                                                          .cost.get(Dollars) * 2),
+                                                      fig.PrivateLightFactory.MOVES_BUDGET),
+
+        (fig.PrivateHeavyFactory, fig.HeavyFactory): (ResourcesGroup.make(fig.HeavyFactory.FLAGS.get(proto.Creatable)
+                                                                          .cost.get(Dollars) * 2),
+                                                      fig.PrivateHeavyFactory.MOVES_BUDGET),
     }
 
     @classmethod
