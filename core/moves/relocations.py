@@ -72,7 +72,7 @@ class Assault(FiguresRelocation):
         if not movable.can_relocate(self.from_coord, self.to_coord, board):
             return INVALID
 
-        if from_cell.strength(board) <= to_cell.hardness(board):
+        if from_cell.strength(board) < to_cell.hardness(board):
             return INVALID
 
         if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):

@@ -6,6 +6,7 @@ from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.map_editor_board_drawable_layer import MapEditorBoardDrawableLayer
@@ -72,6 +73,7 @@ def load_map_editor(window: Window) -> Iterator[proto.Scene | Status]:
     draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
                                                           on_board_sprites_drawer,
                                                           session.board,
+                                                          HatchingMap(),
                                                           cells_change_observer)
 
     map_editor = MapEditor.make(input_state,

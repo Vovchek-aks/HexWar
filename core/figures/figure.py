@@ -261,7 +261,7 @@ class Bunker(_Figure):
 
     @classmethod
     def base_hardness(cls) -> int:
-        return 4
+        return 5
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
@@ -314,7 +314,7 @@ class Infantry(_Figure):
                       TriesTakeResourcesElseDies.make(Dollars(50_000)))
     MOVES_BUDGET = 6
 
-    _NEAR_BUNKER_HARDNESS_INCREASE = 4
+    _NEAR_BUNKER_HARDNESS_INCREASE = 5
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -401,7 +401,7 @@ class Tank(_Figure):
     FLAGS = Flags.new(OnLand(),
                       (MovableBuilder()
                        .can_move_to_neighbor()
-                       .set_base_strength(3)
+                       .set_base_strength(4)
                        .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
                        .build()),
                       Creatable.make(Dollars(500_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_000)),
@@ -417,7 +417,7 @@ class Tank(_Figure):
 
     @classmethod
     def base_hardness(cls) -> int:
-        return 2
+        return 3
 
     @classmethod
     def additional_hardness(cls, coord: Vector2Int, board: proto.Board) -> int:
@@ -459,11 +459,10 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
                       Pullable(),
-                      Creatable.make(Dollars(200_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_250)),
+                      Creatable.make(Dollars(200_000), LightIndustryProducts(3_000)),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(100_000),
-                                                      LightIndustryProducts(750),
-                                                      HeavyIndustryProducts(300)),
+                                                      LightIndustryProducts(750)),
                       CanAttack(max_distance=3))
     MOVES_BUDGET = 7
 
