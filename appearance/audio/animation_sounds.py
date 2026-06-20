@@ -6,6 +6,7 @@ import core.figures.figure as fig
 
 @frozen
 class AnimationSounds:
+    _no_sound: SoundPlayer
     _creation_landing: SoundPlayer
     _pulling_initiation: SoundPlayer
     _conversion: SoundPlayer
@@ -46,9 +47,10 @@ class AnimationSounds:
         return self._attack
 
     def relocation_for(self, figure: type[fig.Figure]) -> SoundPlayer:
-        return {
+        sound_for: dict[type[fig.Figure], SoundPlayer] = {
             fig.Infantry: self._relocation_infantry,
             fig.Artillery: self._relocation_infantry,
             fig.Motorization: self._relocation_motorization,
             fig.Tank: self._relocation_tank
-        }[figure]
+        }
+        return sound_for.get(figure, self._no_sound)

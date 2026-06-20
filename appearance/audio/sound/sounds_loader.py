@@ -85,6 +85,7 @@ class SoundsLoader:
     def load_animation_sounds(self, volume_multiplier: float) -> AnimationSounds:
         volume = self._settings.effects_volume * volume_multiplier
         return AnimationSounds(
+            self.load_empty(),
             self._load_sound(self._effects[_CREATION_LANDING], volume=volume),
             self._load_sound(self._effects[_PULLING_INITIATION], volume=volume),
             self._load_sound(self._effects[_CONVERSION], volume=volume),

@@ -40,6 +40,11 @@ class ConversionButtonPressAction(ButtonPressAction):
 
 
 @frozen
+class CombinationButtonPressAction(ButtonPressAction):
+    target: type[Figure]
+
+
+@frozen
 class CaptureButtonPressAction(ButtonPressAction):
     ...
 

@@ -7,6 +7,7 @@ from appearance.UI.number_shortener import NumberShortener
 from appearance.settings import Settings
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.comnination import Combination
 from core.moves.conversion import Conversion
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.oreshnik_launch import OreshnikLaunch
@@ -25,12 +26,14 @@ LANGUAGE_DICT = dict[str, LANGUAGE_SECTION_DICT | dict[str, LANGUAGE_SECTION_DIC
 LANGUAGES_META_DICT = dict[str, str]
 
 ARTILLERY_ATTACK = "ARTILLERY_ATTACK"
+HOWITZER_ATTACK = "HOWITZER_ATTACK"
 TANK_ATTACK = "TANK_ATTACK"
 ARTILLERY_INITIATE_PULLING = "ARTILLERY_INITIATE_PULLING"
 ARTILLERY_TERMINATE_PULLING = "ARTILLERY_TERMINATE_PULLING"
 MOTORIZATION_TO_INFANTRY = "MOTORIZATION_TO_INFANTRY"
 CAPITAL_TO_TALL_CAPITAL = "CAPITAL_TO_TALL_CAPITAL"
 CAPITAL_TO_WIDE_CAPITAL = "CAPITAL_TO_WIDE_CAPITAL"
+TANK_AND_ARTILLERY_TO_HOWITZER = "TANK_AND_ARTILLERY_TO_HOWITZER"
 PURCHASE_SETTLEMENT = "PURCHASE_SETTLEMENT"
 PURCHASE_PRIVATE_LIGHT_FACTORY = "PURCHASE_PRIVATE_LIGHT_FACTORY"
 PURCHASE_PRIVATE_HEAVY_FACTORY = "PURCHASE_PRIVATE_HEAVY_FACTORY"
@@ -42,6 +45,7 @@ LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _FIGURE_OF_TAG: dict[str, type[Figure]] = {
     INFANTRY_CAPTURE: fig.Infantry,
     TANK_ATTACK: fig.Tank,
+    HOWITZER_ATTACK: fig.Howitzer,
     ARTILLERY_ATTACK: fig.Artillery,
     ARTILLERY_INITIATE_PULLING: fig.Artillery,
     ARTILLERY_TERMINATE_PULLING: fig.Artillery,
@@ -51,6 +55,7 @@ _FIGURE_OF_TAG: dict[str, type[Figure]] = {
 _MOVE_OF_TAG = {
     INFANTRY_CAPTURE: lambda: Capture(Vector2Int.zero(), Vector2Int.zero()),
     TANK_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+    HOWITZER_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_INITIATE_PULLING: lambda: PullingInitiation(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_TERMINATE_PULLING: lambda: PullingTermination(Vector2Int.zero()),
@@ -66,6 +71,10 @@ _CONVERSIONS = {
     PURCHASE_PRIVATE_LIGHT_FACTORY: (fig.PrivateLightFactory, fig.LightFactory),
     PURCHASE_PRIVATE_HEAVY_FACTORY: (fig.PrivateHeavyFactory, fig.HeavyFactory),
     MOBILISE_TOWN: (fig.Town, fig.Infantry),
+}
+
+_COMBINATIONS = {
+    TANK_AND_ARTILLERY_TO_HOWITZER: (fig.Tank, fig.Artillery, fig.Howitzer)
 }
 
 _FIGURES = "figures"
@@ -90,6 +99,7 @@ _TO_TALL_CAPITAL = "TO_TALL_CAPITAL"
 _TO_WIDE_CAPITAL = "TO_WIDE_CAPITAL"
 _PURCHASE = "PURCHASE"
 _MOBILISE = "MOBILISE"
+_COMBINE = "COMBINE"
 _LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _STRENGTH = "STRENGTH"
@@ -264,6 +274,9 @@ class Language:
     def get_mobilise_message(self) -> str:
         return self._ui[_MOBILISE]
 
+    def get_combine_message(self) -> str:
+        return self._ui[_COMBINE]
+
     def get_capture_message(self) -> str:
         return self._ui[_CAPTURE]
 
@@ -378,6 +391,10 @@ class Language:
             conversion = _CONVERSIONS[tag]
             resources, move_cost = Conversion.conversions()[conversion]
             budget = conversion[0].MOVES_BUDGET
+        elif tag in _COMBINATIONS:
+            combination = _COMBINATIONS[tag]
+            resources, move_cost = Combination.combinations()[combination]
+            budget = combination[0].MOVES_BUDGET
         elif tag == LAUNCH_ORESHNIK:
             resources = _FIGURE_OF_TAG[tag].FLAGS.get(CanLaunchOreshnik).cost
             move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())

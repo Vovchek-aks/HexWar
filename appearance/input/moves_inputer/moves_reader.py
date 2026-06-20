@@ -5,15 +5,18 @@ from attrs import frozen
 from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, ButtonPressAction, \
-    PullingInitiationButtonPressAction, PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction
+    PullingInitiationButtonPressAction, PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction, \
+    CombinationButtonPressAction
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.comnination import Combination
 from core.moves.conversion import Conversion
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
 from core.moves.creation import Creation
 from core.protocols import ValidMove, GameSession, Move
+from mathematics.vector import Vector2Int
 from statuses import Status, INVALID, MISSING, CAN_BECOME_CORRECT, ABORT_NEEDED
 import appearance.protocols as proto
 
@@ -32,6 +35,7 @@ class MoveReaders:
             self._try_read_conversion_move,
             self._try_read_capture_move,
             self._try_read_attack_move,
+            self._try_read_combination_move,
             self._try_read_pulling_initiation_move,
             self._try_read_pulling_termination_move,
             self._try_read_oreshnik_launch_move
@@ -100,6 +104,14 @@ class MoveReaders:
     def _try_read_attack_move(self, actions: list[InputAction]) -> ValidMove | Status:
         return self._try_read_right_click_after(AttackButtonPressAction, Attack, actions)
 
+    def _try_read_combination_move(self, actions: list[InputAction]) -> ValidMove | Status:
+        if not isinstance(actions[0], CombinationButtonPressAction):
+            return INVALID
+        return self._try_read_right_click_after(CombinationButtonPressAction,
+                                                (lambda coord, to_coord: Combination(coord, to_coord,
+                                                                                     actions[0].target)),
+                                                actions)
+
     def _try_read_pulling_initiation_move(self, actions: list[InputAction]) -> ValidMove | Status:
         return self._try_read_right_click_after(PullingInitiationButtonPressAction, PullingInitiation, actions)
 
@@ -108,7 +120,7 @@ class MoveReaders:
 
     def _try_read_right_click_after[T: Move](self,
                                              action_type: type[ButtonPressAction],
-                                             move_type: type[T],
+                                             move_maker: type[T] | Callable[[Vector2Int, Vector2Int], T],
                                              actions: list[InputAction]) -> ValidMove | Status:
         match actions:
             case [action,
@@ -120,7 +132,7 @@ class MoveReaders:
                 if (coord := self._cell_selector.get_coord()) is MISSING:
                     return INVALID
 
-                move = move_type(coord, to_coord).validate(self._session)
+                move = move_maker(coord, to_coord).validate(self._session)
                 if move is INVALID:
                     return ABORT_NEEDED
 

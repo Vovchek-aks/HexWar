@@ -3,6 +3,7 @@ from attrs import frozen, field
 import core.protocols as proto
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.comnination import Combination
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingTermination, PullingInitiation
 from core.moves.relocations import Relocation, Assault
@@ -89,7 +90,8 @@ class MovesMaker(proto.MovesMaker):
 
                 if proto.PreventsAnnexations in self._session.board[to_coord].figure.FLAGS:
                     self._cells_to_annex_could_have_changed.invoke()
-            case Creation(to_coord=coord) | Conversion(coord=coord) | Attack(to_coord=coord):
+            case (Creation(to_coord=coord) | Conversion(coord=coord) | Combination(first_coord=coord) |
+                  Attack(to_coord=coord)):
                 self._session.make(move)
                 self._move_was_made.invoke(move)
 

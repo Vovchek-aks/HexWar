@@ -118,6 +118,13 @@
         450,
         475
       ]
+    },
+    "Howitzer": {
+      "file": "figures/howitzer.png",
+      "pivot": [
+        450,
+        475
+      ]
     }
   },
   "ui": {

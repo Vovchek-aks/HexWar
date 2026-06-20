@@ -18,11 +18,11 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, PullingInitiationButtonPressAction, \
-    PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction
+    PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction, CombinationButtonPressAction
 from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
     INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK, \
     CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL, PURCHASE_SETTLEMENT, PURCHASE_PRIVATE_LIGHT_FACTORY, \
-    PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN
+    PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, TANK_AND_ARTILLERY_TO_HOWITZER, HOWITZER_ATTACK
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
@@ -273,6 +273,7 @@ class GameUiLayerMaker:
             self._make_motorization_menu(),
             self._make_tank_menu(),
             self._make_artillery_menu(),
+            self._make_howitzer_menu(),
             self._make_town_menu(),
             self._make_light_factory_menu(),
             self._make_heavy_factory_menu(),
@@ -498,8 +499,11 @@ class GameUiLayerMaker:
     def _make_tank_menu(self) -> Layer:
         attack = self._make_activatable_button(self._language.get_attack_message(),
                                                lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
+        combine = self._make_activatable_button(self._language.get_combine_message(),
+                                                lambda: CombinationButtonPressAction(self._cell_selector.get_coord(),
+                                                                                     fig.Howitzer))
 
-        return self._make_figure_menu(fig.Tank, [attack], [TANK_ATTACK])
+        return self._make_figure_menu(fig.Tank, [attack, combine], [TANK_ATTACK, TANK_AND_ARTILLERY_TO_HOWITZER])
 
     def _make_artillery_menu(self) -> Layer:
         attack = self._make_activatable_button(self._language.get_attack_message(),
@@ -536,6 +540,12 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Artillery,
                                       [attack, attach_detach],
                                       [ARTILLERY_ATTACK, (ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING)])
+
+    def _make_howitzer_menu(self) -> Layer:
+        attack = self._make_activatable_button(self._language.get_attack_message(),
+                                               lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
+
+        return self._make_figure_menu(fig.Howitzer, [attack], [HOWITZER_ATTACK])
 
     def _make_figure_menu(self,
                           figure: type[fig.Figure],

@@ -116,8 +116,8 @@ class ByGameRulesSessionChanger(proto.ByGameRulesSessionChanger):
         figures = self._session.figures
         board = self._session.board
         turners = player_cells & self._session.cells.with_flag(proto.TurnsOthersIntoItself)
+        yield
         for turner in turners:
-            yield
             coord = board.coordinates_of(turner)
             for cell in turner.figure.FLAGS.get(proto.TurnsOthersIntoItself).get_targets(coord, self._session):
                 figures.remove(cell.figure)

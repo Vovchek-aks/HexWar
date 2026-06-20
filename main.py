@@ -37,7 +37,7 @@ def main() -> None:
 
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("Finnish Gulf.json", UPS).load()
+        session = GameSessionLoader.make("Balkans.json", UPS).load()
         player = session.master.current_player
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)

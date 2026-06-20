@@ -470,11 +470,11 @@ class Tank(_Figure):
                        .set_base_strength(4)
                        .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
                        .build()),
-                      Creatable.make(Dollars(500_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_000)),
+                      Creatable.make(Dollars(750_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_500)),
                       Capturable(),
-                      TriesTakeResourcesElseDies.make(Dollars(150_000),
+                      TriesTakeResourcesElseDies.make(Dollars(250_000),
                                                       LightIndustryProducts(1_000),
-                                                      HeavyIndustryProducts(250)),
+                                                      HeavyIndustryProducts(500)),
                       CanAttack(max_distance=1))
     MOVES_BUDGET = 200
 
@@ -553,6 +553,36 @@ class Artillery(_Figure):
                 raise NotSupportedMove(move)
 
 
+class Howitzer(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      MovableBuilder()
+                      .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
+                      .can_move_to_neighbor()
+                      .build(),
+                      Capturable(),
+                      TriesTakeResourcesElseDies.make(Dollars(300_000),
+                                                      LightIndustryProducts(1_000),
+                                                      HeavyIndustryProducts(750)),
+                      CanAttack(max_distance=3))
+    MOVES_BUDGET = 200
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 1
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        match move:
+            case Relocation():
+                return 15
+            case Assault():
+                return cls.MOVES_BUDGET + 1
+            case Attack():
+                return 50
+            case _:
+                raise NotSupportedMove(move)
+
+
 def get_figures() -> list[type[_Figure]]:
     return [
         Land,
@@ -572,7 +602,8 @@ def get_figures() -> list[type[_Figure]]:
         Infantry,
         Motorization,
         Tank,
-        Artillery
+        Artillery,
+        Howitzer
     ]
 
 
