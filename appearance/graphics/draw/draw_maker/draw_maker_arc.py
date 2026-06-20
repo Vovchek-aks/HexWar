@@ -1,5 +1,6 @@
 from attrs import frozen
 
+from core.cells import Cells
 from core.protocols import Board, CellsChangesObserver
 import appearance.protocols as proto
 from mathematics.vector import Vector2Int
@@ -9,6 +10,7 @@ from appearance.graphics.colors import BACKGROUND
 from appearance.graphics.sprites import SpritesLoader
 from appearance.graphics.draw.drawers.drawers_arc.figures_drawer import FiguresSpritesLoader
 from core.figures.figure import Figure, get_figures
+from ..drawers.drawers_arc.waves_drawer import WavesDrawer
 
 
 @frozen
@@ -34,6 +36,8 @@ class DrawMaker:
             on_board_sprites_drawer.remove_sprite(index)
 
         board_drawer = BordDrawer.make(board, hatching_map, cells_change_observer.cell_changed_owner)
+
+        WavesDrawer(board, sprites_loader, on_board_sprites_drawer).draw()
 
         return (Draw(board_drawer, on_board_sprites_drawer, BackgroundDrawer(screen_shape, BACKGROUND)),
                 figures_drawer, board_drawer)

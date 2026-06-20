@@ -36,7 +36,7 @@
       ]
     },
     "Settlement": {
-      "file": "figures/settlement.png",
+      "file": "figures/settlement2.png",
       "pivot": [
         183,
         183
@@ -223,6 +223,13 @@
     },
     "rocket": {
       "file": "effects/rocket2.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "waves": {
+      "file": "effects/waves.png",
       "pivot": [
         183,
         183
