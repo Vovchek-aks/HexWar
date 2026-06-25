@@ -66,7 +66,9 @@ _MAX_ARMY = 150.
 
 _CAPITALS_RATIO = 1.06
 
-PRODUCTION = fig.Town | fig.Capital | fig.LightFactory | fig.HeavyFactory
+PRODUCTION = (fig.Town | fig.LightFactory | fig.HeavyFactory | fig.Settlement | fig.PrivateLightFactory |
+              fig.PrivateHeavyFactory)
+CRITICAL = PRODUCTION | fig.Capital
 
 
 @define
@@ -244,6 +246,12 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
+            yield from self._try_upgrade_capitals()
+            # print("_try_upgrade_capitals")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
             if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
                 figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
                 if figure_to_create is not MISSING:
@@ -316,6 +324,7 @@ class BotIgor(proto.Bot):
         front = empties & cells.at_front
         back = empties - front
         production = own_cells & cells.with_figure(PRODUCTION)
+        critical = own_cells & cells.with_figure(CRITICAL)
         capitals = cells.with_figure(fig.Capital) & cells.with_owner(self._player)
 
         match figure:
@@ -325,7 +334,7 @@ class BotIgor(proto.Bot):
                               .with_owner(self._player).with_figure(fig.Infantry)})
                 if not front:
                     return MISSING
-                return self._get_cell_for_armed_figure(front, production)
+                return self._get_cell_for_armed_figure(front, critical)
 
             case fig.Infantry:
                 tanks = front.with_figure(fig.Tank)
@@ -340,10 +349,10 @@ class BotIgor(proto.Bot):
                 if tanks_neighbors:
                     return random.choice(list(tanks_neighbors))
 
-                return self._get_cell_for_armed_figure(front, production)
+                return self._get_cell_for_armed_figure(front, critical)
 
             case fig.Bunker:
-                return self._get_cell_for_bunker(front, production)
+                return self._get_cell_for_bunker(front, critical)
 
             case fig.Capital:
                 candidates = back or empties
@@ -358,7 +367,7 @@ class BotIgor(proto.Bot):
 
                     neighbors = self._board.get_neighbors(candidate).with_owner(self._player)
                     points = len(neighbors.with_figure(fig.Land))
-                    points += len(neighbors.with_flag(proto.ResourcesAdder)) * 100
+                    points += len(neighbors & production) * 100
 
                     if points > max_points:
                         max_points = points
@@ -495,6 +504,29 @@ class BotIgor(proto.Bot):
     def _getting_flow_process(self, resource: type[Resource]) -> Iterator[Status | int]:
         return getting_resources_flow_process(self._player, resource, self._session)
 
+    def _try_upgrade_capitals(self) -> Iterator[None]:
+        cells = self._session.cells
+        board = self._session.board
+        our_cells = cells.with_owner(self._player)
+
+        capitals = our_cells & cells.with_figure(fig.Capital)
+        capitals -= cells.with_figure(fig.TallCapital | fig.WideCapital)
+        if not capitals:
+            return
+
+        distance = fig.WideCapital.FLAGS.get(proto.BuffsNearbyResourceAdders).distance
+        for capital in capitals:
+            yield
+            neighbors = our_cells & DistantNeighborsGetter(capital, board).get_as_far_as(distance)
+            figure_to_upgrade_into = (fig.WideCapital
+                                      if neighbors.with_figure(PRODUCTION) else
+                                      fig.TallCapital)
+
+            move = Conversion(board.coordinates_of(capital),
+                              figure_to_upgrade_into)
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+
     def _try_destroy_abandonments(self) -> Iterator[None]:
         connections = self._session.pulling_connections
         cells = self._session.cells
@@ -532,7 +564,6 @@ class BotIgor(proto.Bot):
             self._moves_to_make.append(valid_move)
             return
 
-        print(123)
         yield from self._add_distant_relocation_moves(infantry, target)
 
 
@@ -565,7 +596,7 @@ class BotIgor(proto.Bot):
             silos = cells.with_owner(player) & cells.with_figure(fig.MissileSilo)
 
             targets.append((silos,
-                            cells.with_owner(player) & cells.with_figure(PRODUCTION)))
+                            cells.with_owner(player) & cells.with_figure(CRITICAL)))
 
         if not targets:
             return
