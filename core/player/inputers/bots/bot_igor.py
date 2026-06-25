@@ -28,8 +28,9 @@ from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 # Заброшки +
-# Администрации и саушки +
-# Частники
+# Администрации +-
+# саушки +
+# Частники +
 # Аннексии
 
 _ATTACKING = 0
@@ -49,6 +50,12 @@ _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
     Dollars: fig.Town,
     LightIndustryProducts: fig.LightFactory,
     HeavyIndustryProducts: fig.HeavyFactory,
+}
+
+_NOT_PRIVATE_VERSION_OF: dict[type[fig.Figure], type[fig.Figure]] = {
+    fig.Settlement: fig.Town,
+    fig.PrivateLightFactory: fig.LightFactory,
+    fig.PrivateHeavyFactory: fig.HeavyFactory,
 }
 
 _NOT_TO_CAPTURE = {
@@ -236,6 +243,12 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
+            yield from self._try_upgrade_capitals()
+            # print("_try_upgrade_capitals")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
             if has_developed:
                 yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .3) -
                                                                  artillery_count)
@@ -251,14 +264,14 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
+                yield from self._try_buy_out_private_figures()
+                # print("_try_buy_out_private_figures")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
             yield from self._try_align_resources_flow(cells_count)
             # print("_try_align_resources_flow")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
-
-            yield from self._try_upgrade_capitals()
-            # print("_try_upgrade_capitals")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
@@ -550,7 +563,7 @@ class BotIgor(proto.Bot):
         yield
         abandonment = abandonments.any
 
-        infantries = our_cells & cells.with_figure(fig.Infantry)
+        infantries = our_cells & cells.with_figure(fig.Infantry | fig.Motorization)
         yield
         infantries = infantries.filter(lambda cell: connections.is_puller(cell.figure) and
                                                     isinstance(connections.get_pullable(cell.figure),
@@ -577,6 +590,16 @@ class BotIgor(proto.Bot):
 
         yield from self._add_distant_relocation_moves(infantry, target)
 
+    def _try_buy_out_private_figures(self) -> Iterator[None]:
+        cells = self._session.cells
+        privates = (cells.with_owner(self._player) &
+                    cells.with_figure(fig.Settlement | fig.PrivateLightFactory | fig.PrivateHeavyFactory))
+        for private in privates:
+            yield
+            target = _NOT_PRIVATE_VERSION_OF[type(private.figure)]
+            move = Conversion(self._board.coordinates_of(private), target)
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
 
     def _try_launch_oreshnik(self, silo_coord: Vector2Int) -> Iterator[None]:
         silo = self._board[silo_coord]
