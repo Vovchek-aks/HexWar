@@ -323,11 +323,11 @@ class Abandonment(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
-                      AddsResourcesIndefinably.make(Dollars(-75_000)),
+                      AddsResourcesIndefinably.make(Dollars(-25_000)),
                       TurnsOthersIntoItself(lambda coord, session: Abandonment.get_targets(coord, session)))
     MOVES_BUDGET = 0
 
-    _TURN_PROBABILITY = .3
+    _TURN_PROBABILITY = .2
     _TURN_RADIUS = 2
     _CAN_TURN_INTO_ITSELF = {
         Town,

@@ -26,6 +26,11 @@ from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
+# Заброшки +
+# Администрации и саушки
+# Частники
+# Аннексии
+
 _ATTACKING = 0
 _BUILDING = 1
 _PULLING = 2
@@ -44,6 +49,18 @@ _PRODUCER_OF: dict[type[Resource], type[fig.Figure]] = {
     LightIndustryProducts: fig.LightFactory,
     HeavyIndustryProducts: fig.HeavyFactory,
 }
+
+_NOT_TO_CAPTURE = {
+    fig.Abandonment
+}
+
+_ARTILLERY_PRIORITY_LIST = [
+    fig.Tank,
+    fig.Bunker,
+    fig.Howitzer,
+    fig.Artillery,
+    fig.Figure,
+]
 
 _MAX_ARMY = 150.
 
@@ -239,6 +256,11 @@ class BotIgor(proto.Bot):
             self._state = _ATTACKING
 
         if self._state == _ATTACKING:
+            yield from self._try_destroy_abandonments()
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
             yield from self._try_capture()
             # print("_try_capture")
             if self._moves_to_make:
@@ -473,6 +495,47 @@ class BotIgor(proto.Bot):
     def _getting_flow_process(self, resource: type[Resource]) -> Iterator[Status | int]:
         return getting_resources_flow_process(self._player, resource, self._session)
 
+    def _try_destroy_abandonments(self) -> Iterator[None]:
+        connections = self._session.pulling_connections
+        cells = self._session.cells
+        board = self._session.board
+        our_cells = cells.with_owner(self._player)
+
+        abandonments = our_cells & cells.with_figure(fig.Abandonment)
+        if not abandonments:
+            return
+        yield
+        abandonment = abandonments.any
+
+        infantries = our_cells & cells.with_figure(fig.Infantry)
+        yield
+        infantries = infantries.filter(lambda cell: connections.is_puller(cell.figure) and
+                                                    isinstance(connections.get_pullable(cell.figure),
+                                                               fig.Artillery) and
+                                                    (board.get_neighbors(cell) & our_cells).with_figure(fig.Land))
+        if not infantries:
+            return
+        yield
+
+        infantry = min(infantries, key=lambda cell: get_distance(board.coordinates_of(cell),
+                                                                 board.coordinates_of(abandonment)))
+        artillery = board[self._session.figures.locate(connections.get_pullable(infantry.figure))]
+        yield
+
+        target = min(abandonments, key=lambda cell: get_distance(board.coordinates_of(cell),
+                                                                 board.coordinates_of(infantry)))
+        yield
+
+        move = Attack(board.coordinates_of(artillery),
+                      board.coordinates_of(target))
+        if (valid_move := move.validate(self._session)) is not INVALID:
+            self._moves_to_make.append(valid_move)
+            return
+
+        print(123)
+        yield from self._add_distant_relocation_moves(infantry, target)
+
+
     def _try_launch_oreshnik(self, silo_coord: Vector2Int) -> Iterator[None]:
         silo = self._board[silo_coord]
         assert isinstance(silo.figure, fig.MissileSilo)
@@ -661,9 +724,8 @@ class BotIgor(proto.Bot):
     def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> Iterator[None]:
         cells = self._session.cells
         path_searcher = PathSearcher(self._board,
-                                     (cells.with_figure(fig.Land) +
-                                      cells.at_front) &
-                                     cells.with_owner(self._player) +
+                                     cells.with_owner(self._player) -
+                                     (cells.not_empty() - cells.at_front) +
                                      Cells({cell, target}),
                                      target)
 
@@ -773,7 +835,9 @@ class BotIgor(proto.Bot):
                            self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is INVALID:
                 continue
-            if CanCapture in cell.figure.FLAGS and not target.is_empty:
+            if all((CanCapture in cell.figure.FLAGS,
+                    not target.is_empty,
+                    type(target.figure) not in _NOT_TO_CAPTURE)):
                 self._moves_to_make.append(ValidMove(Capture(move.from_coord,
                                                              move.to_coord)))
             self._moves_to_make.append(valid_move)
@@ -840,35 +904,48 @@ class BotIgor(proto.Bot):
             yield
 
     def _try_attack_with_artillery(self) -> Iterator[None]:
-        artilleries = (self._session.cells.with_owner(self._player) &
-                       self._session.cells.with_figure(fig.Artillery))
+        cells = self._session.cells
+        artilleries = (cells.with_owner(self._player) &
+                       cells.with_figure(fig.Artillery))
         if not artilleries:
             return
         yield
 
         for artillery in artilleries:
+            yield
             neighbors = (DistantNeighborsGetter(artillery, self._board)
                          .get_all_not_farther_than(fig.Artillery.FLAGS.get(proto.CanAttack).max_distance,
                                                    include_cell=False)
                          .with_flag(proto.OnLand))
-            neighbors -= neighbors.with_owner(self._player)
-            neighbors -= neighbors.with_figure(fig.Land)
+
+            abandonments = (neighbors &
+                            cells.with_owner(self._player) &
+                            cells.with_figure(fig.Abandonment))
+            if abandonments:
+                target = abandonments.any
+                move = Attack(self._board.coordinates_of(artillery),
+                              self._board.coordinates_of(target))
+                if (valid_move := move.validate(self._session)) is not INVALID:
+                    self._moves_to_make.append(valid_move)
+                return
+
+            neighbors -= cells.with_owner(self._player)
+            neighbors -= cells.with_figure(fig.Land | fig.Abandonment)
             if not neighbors:
-                yield
                 continue
 
-            targets = neighbors.with_figure(fig.Artillery)
-            if not targets:
-                targets = neighbors.with_figure(fig.Tank | fig.Bunker)
-            if not targets:
-                targets = neighbors
+            targets = Cells.empty()
+            for figure in _ARTILLERY_PRIORITY_LIST:
+                targets = neighbors.with_figure(figure)
+                if targets:
+                    break
+            assert targets
 
             target = max(targets.as_set(), key=lambda cell: cell.hardness(self._board))
             move = Attack(self._board.coordinates_of(artillery),
                           self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
-            yield
 
     def _try_capture(self) -> Iterator[None]:
         infantries = self._session.cells.with_owner(self._player).with_flag(CanCapture)
@@ -882,6 +959,7 @@ class BotIgor(proto.Bot):
                          .with_flag(proto.OnLand))
             neighbors -= neighbors.with_owner(self._player)
             neighbors -= neighbors.with_figure(fig.Land)
+            neighbors = neighbors.filter(lambda cell: type(cell.figure) not in _NOT_TO_CAPTURE)
             if not neighbors:
                 yield
                 continue

@@ -39,12 +39,14 @@ class MapEditor:
         transforms.append(("bunker", lambda coord: self._change_figure(coord, fig.Bunker)))
         transforms.append(("silo", lambda coord: self._change_figure(coord, fig.MissileSilo)))
         transforms.append(("artillery", lambda coord: self._change_figure(coord, fig.Artillery)))
+        transforms.append(("howitzer", lambda coord: self._change_figure(coord, fig.Howitzer)))
         transforms.append(("infantry", lambda coord: self._change_figure(coord, fig.Infantry)))
         transforms.append(("motorization", lambda coord: self._change_figure(coord, fig.Motorization)))
         transforms.append(("tank", lambda coord: self._change_figure(coord, fig.Tank)))
         transforms.append(("settlement", lambda coord: self._change_figure(coord, fig.Settlement)))
         transforms.append(("plf", lambda coord: self._change_figure(coord, fig.PrivateLightFactory)))
         transforms.append(("phf", lambda coord: self._change_figure(coord, fig.PrivateHeavyFactory)))
+        transforms.append(("abandonment", lambda coord: self._change_figure(coord, fig.Abandonment)))
 
         for player in session.master.players:
             transforms.append(self._make_set_player_transform(player))
