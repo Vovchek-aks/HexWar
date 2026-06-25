@@ -13,6 +13,7 @@ from core.figures import figure as fig
 from core.figures.resources_flow_flags import getting_resources_flow_process
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.comnination import Combination
 from core.moves.conversion import Conversion
 from core.moves.creation import Creation
 from core.moves.oreshnik_launch import OreshnikLaunch
@@ -27,7 +28,7 @@ from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 # Заброшки +
-# Администрации и саушки
+# Администрации и саушки +
 # Частники
 # Аннексии
 
@@ -65,6 +66,8 @@ _ARTILLERY_PRIORITY_LIST = [
 _MAX_ARMY = 150.
 
 _CAPITALS_RATIO = 1.06
+
+_HOWITZERS_TO_TANKS_RATIO = .3
 
 PRODUCTION = (fig.Town | fig.LightFactory | fig.HeavyFactory | fig.Settlement | fig.PrivateLightFactory |
               fig.PrivateHeavyFactory)
@@ -140,6 +143,7 @@ class BotIgor(proto.Bot):
                                   cells.at_front &
                                   cells.with_figure(fig.Land)).as_set())
         tanks_count = self._count_of(fig.Tank)
+        howitzers_count = self._count_of(fig.Howitzer)
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _CATASTROPHY_PREVENTION:
@@ -151,7 +155,7 @@ class BotIgor(proto.Bot):
                         # print(self._moves_to_make)
                         return
 
-            if self._count_of(fig.LightFactory) == 0:
+            if lf_count == 0:
                 self._ran_out_of_moves = True
                 return
 
@@ -236,6 +240,13 @@ class BotIgor(proto.Bot):
                 yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .3) -
                                                                  artillery_count)
                 # print("_try_spawn_and_connect_artillery")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
+                yield from self._try_convert_tanks_to_howitzers(math.floor(tanks_count * _HOWITZERS_TO_TANKS_RATIO) -
+                                                                howitzers_count)
+                # print("_try_convert_tanks_to_howitzers")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
@@ -630,6 +641,33 @@ class BotIgor(proto.Bot):
                                                                  cells.with_figure(fig.Land | fig.Water)).as_set()))
         self._moves_to_make.append(ValidMove(most_profitable))
 
+    def _try_convert_tanks_to_howitzers(self, amount: int) -> Iterator[None]:
+        if amount <= 0:
+            return
+
+        print(amount)
+
+        cells = self._session.cells
+        our_cells = cells.with_owner(self._player)
+
+        tanks = our_cells & cells.with_figure(fig.Tank)
+        converted = 0
+        for tank in tanks:
+            yield
+            neighbors = self._board.get_neighbors(tank) & our_cells - cells.not_empty()
+            if not neighbors:
+                continue
+            cell = neighbors.any
+            creation = Creation(fig.Artillery, self._board.coordinates_of(cell))
+            if (valid_creation := creation.validate(self._session)) is not INVALID:
+                converted += 1
+                self._moves_to_make.append(valid_creation)
+                self._moves_to_make.append(ValidMove(Combination(self._board.coordinates_of(tank),
+                                                                 self._board.coordinates_of(cell),
+                                                                 fig.Howitzer)))
+            if converted >= amount:
+                return
+
     def _try_spawn_and_connect_artillery(self, amount: int) -> Iterator[None]:
         if amount <= 0:
             return
@@ -716,25 +754,25 @@ class BotIgor(proto.Bot):
 
     def _try_pull_forces_to_front(self) -> Iterator[None]:
         cells = self._session.cells
-        all_armed = (cells.with_owner(self._player) &
-                     cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank))
+        to_pull = (cells.with_owner(self._player) &
+                   cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank | fig.Howitzer))
 
-        all_armed = Cells(set(filter(lambda cell: self._session
+        to_pull = Cells(set(filter(lambda cell: self._session
                                      .figures_budget
                                      .can_spend(cell.figure,
                                                 cell.figure
                                                 .get_cost_of(Relocation(Vector2Int.zero(),
                                                                         Vector2Int.zero()))),
-                                     all_armed)))
-        if not all_armed:
+                                   to_pull)))
+        if not to_pull:
             return
 
-        tanks = all_armed.with_figure(fig.Tank)
-        not_tanks = all_armed - tanks
+        tanks = to_pull.with_figure(fig.Tank)
+        not_tanks = to_pull - tanks
 
         for cell in not_tanks:
             yield
-            target = self._get_pull_infantry_motorization_cell(cell)
+            target = self._get_pull_not_tanks_cell(cell)
             if target is MISSING:
                 continue
 
@@ -778,8 +816,8 @@ class BotIgor(proto.Bot):
 
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
 
-    def _get_pull_infantry_motorization_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        assert isinstance(cell.figure, fig.Infantry | fig.Motorization)
+    def _get_pull_not_tanks_cell(self, cell: proto.Cell) -> proto.Cell | Status:
+        assert isinstance(cell.figure, fig.Infantry | fig.Motorization | fig.Howitzer)
 
         cells = self._session.cells
         front = cells.at_front & cells.with_owner(self._player)
@@ -937,7 +975,7 @@ class BotIgor(proto.Bot):
     def _try_attack_with_artillery(self) -> Iterator[None]:
         cells = self._session.cells
         artilleries = (cells.with_owner(self._player) &
-                       cells.with_figure(fig.Artillery))
+                       cells.with_figure(fig.Artillery | fig.Howitzer))
         if not artilleries:
             return
         yield
