@@ -40,7 +40,7 @@ def players_moves_maker(session: proto.GameSession,
         yield from by_game_rules_session_changer.on_turn_end()
         session.figures_budget.clear()
 
-        process = get_turn_start_preparation_process(session.master.next_player)
+        process = get_turn_start_preparation_process(session.master.get_next_player(session))
         if process is not MISSING:
             yield from process
 

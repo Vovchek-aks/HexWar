@@ -34,9 +34,22 @@ class Annexer(GameRule):
                 map_updater.push(player)
 
     def annex(self, session: proto.GameSession, region: Cells) -> None:
-        manned = region & session.cells.with_figure(fig.Infantry | fig.Motorization)
+        cells = session.cells
+        manned = region & cells.with_figure(fig.Infantry | fig.Motorization)
         for cell in manned:
             session.figures.remove(cell.figure)
+
+        connections = session.pulling_connections
+        for cell in region & cells.with_flag(proto.Pullable):
+            figure = cell.figure
+            if not connections.is_pullable(figure):
+                return
+            connections.unregister(connections.get_connected(figure), figure)
+        for cell in region & cells.with_flag(proto.CanPull):
+            figure = cell.figure
+            if not connections.is_puller(figure):
+                return
+            connections.unregister(figure, connections.get_connected(figure))
 
         with self._multiple_cells_change(region):
             while region:
@@ -46,7 +59,7 @@ class Annexer(GameRule):
                 region -= annexed
 
         for cell in region:
-            session.cells.update(cell)
+            cells.update(cell)
 
     def _annex_boundry(self, region: Cells, board: proto.Board) -> Cells:
         to_annex = list[tuple[proto.Cell, proto.Player]]()

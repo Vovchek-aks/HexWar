@@ -171,6 +171,8 @@ class PrivateLightFactory(_Figure):
                                                      (coord, session)))
     MOVES_BUDGET = 1
 
+    _TURN_PROBABILITY = .5
+
     @classmethod
     def base_hardness(cls) -> int:
         return 0
@@ -185,6 +187,11 @@ class PrivateLightFactory(_Figure):
                                ) -> Callable[[Vector2Int, proto.GameSession], None]:
         def on_no_resources(coord: Vector2Int, session: proto.GameSession) -> None:
             cell = session.board[coord]
+
+            with temporarily_seed((coord, session.master.current_turn)):
+                if random.random() > cls._TURN_PROBABILITY:
+                    return
+
             session.figures.remove(cell.figure)
             session.figures.add(figure_to_turn_into, coord)
 
@@ -281,7 +288,7 @@ class Bunker(_Figure):
                       Creatable.make(Dollars(150_000), LightIndustryProducts(250)))
     MOVES_BUDGET = 0
 
-    FROM_FRONT_MAX_DISTANCE = 3
+    _FROM_FRONT_MAX_DISTANCE = 3
     _TURN_PROBABILITY = .3
 
     @classmethod
@@ -298,7 +305,7 @@ class Bunker(_Figure):
         cell = board[coord]
 
         neighbors = (DistantNeighborsGetter(cell, board)
-                     .get_all_not_farther_than(cls.FROM_FRONT_MAX_DISTANCE, include_cell=True))
+                     .get_all_not_farther_than(cls._FROM_FRONT_MAX_DISTANCE, include_cell=True))
         if neighbors & session.cells.at_front:
             return Bunker
 

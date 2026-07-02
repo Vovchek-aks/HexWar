@@ -26,17 +26,16 @@ class Master(ABC):
 
     @property
     @abstractmethod
-    def next_player(self) -> "Player":
-        ...
-
-    @property
-    @abstractmethod
     def turn_had_started(self) -> OnEventSubscriber["Player", None]:
         ...
 
     @property
     @abstractmethod
     def turn_has_passed(self) -> OnEventSubscriber["Player", None]:
+        ...
+
+    @abstractmethod
+    def get_next_player(self, session: "GameSession") -> "Player":
         ...
 
     @abstractmethod
