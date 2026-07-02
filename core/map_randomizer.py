@@ -84,7 +84,7 @@ class MapRandomizer:
         player = Player(PlayerData(color, name), self._make_player_inputer())
 
         self._session.board[coord].change_owner_to(player)
-        self._session.figures.add(fig.Capital, coord)
+        self._session.figures.add(fig.TierOneCapital, coord)
 
         return player
 

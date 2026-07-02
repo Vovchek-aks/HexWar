@@ -67,7 +67,7 @@ def _make_multibot_loading_scene(window: Window) -> Scene:
     return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
         lambda: MapRandomizer.make(GameSessionLoader.make(random.choice(["SVO.json",
                                                                          # "Round Cross.json",
-                                                                         "Middle East.json",
+                                                                         # "Middle East.json",
                                                                          "Finnish Gulf.json",
                                                                          "Balkans.json"]), UPS).load(),
                                    lambda: BotPlayerInputer(BotIgor(), UPS))

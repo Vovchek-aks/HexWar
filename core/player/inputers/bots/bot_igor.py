@@ -29,7 +29,7 @@ from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 # Заброшки +
 # Администрации +-
-# саушки +
+# САУшки +
 # Частники +
 # Аннексии
 
@@ -154,7 +154,7 @@ class BotIgor(proto.Bot):
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _CATASTROPHY_PREVENTION:
-            for figure in fig.Capital, fig.Town, fig.LightFactory, fig.HeavyFactory:
+            for figure in fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory:
                 if self._count_of(figure) == 0:
                     self._try_create(figure)
                     # print(f"_try_create({figure})")
@@ -181,7 +181,7 @@ class BotIgor(proto.Bot):
                                                  cells.with_owner(self._player)))
 
             if self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO * cells_count ** .25) and not is_any_to_develop:
-                self._try_create(fig.Capital)
+                self._try_create(fig.TierOneCapital)
                 # print("_try_create(fig.Capital)")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
@@ -378,7 +378,7 @@ class BotIgor(proto.Bot):
             case fig.Bunker:
                 return self._get_cell_for_bunker(front, critical)
 
-            case fig.Capital:
+            case fig.TierOneCapital:
                 candidates = back or empties
                 max_points = -float("inf")
                 target: proto.Cell | Status = MISSING
@@ -667,8 +667,6 @@ class BotIgor(proto.Bot):
     def _try_convert_tanks_to_howitzers(self, amount: int) -> Iterator[None]:
         if amount <= 0:
             return
-
-        print(amount)
 
         cells = self._session.cells
         our_cells = cells.with_owner(self._player)

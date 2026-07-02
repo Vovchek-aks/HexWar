@@ -35,7 +35,7 @@ class MapEditor:
         transforms.append(("town", lambda coord: self._change_figure(coord, fig.Town)))
         transforms.append(("light factory", lambda coord: self._change_figure(coord, fig.LightFactory)))
         transforms.append(("heavy factory", lambda coord: self._change_figure(coord, fig.HeavyFactory)))
-        transforms.append(("capital", lambda coord: self._change_figure(coord, fig.Capital)))
+        transforms.append(("capital", lambda coord: self._change_figure(coord, fig.TierOneCapital)))
         transforms.append(("bunker", lambda coord: self._change_figure(coord, fig.Bunker)))
         transforms.append(("silo", lambda coord: self._change_figure(coord, fig.MissileSilo)))
         transforms.append(("artillery", lambda coord: self._change_figure(coord, fig.Artillery)))

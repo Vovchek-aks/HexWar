@@ -146,7 +146,7 @@ class Settlement(_Figure):
                       Static(),
                       Private(),
                       Capturable(),
-                      AddsResourcesIndefinably.make(Dollars(75_000)))
+                      AddsResourcesIndefinably.make(Dollars(100_000)))
     MOVES_BUDGET = 1
 
     @classmethod
@@ -164,7 +164,7 @@ class PrivateLightFactory(_Figure):
                       Private(),
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(50_000)),
-                                                     ResourcesGroup.make(LightIndustryProducts(200)),
+                                                     ResourcesGroup.make(LightIndustryProducts(350)),
                                                      priority=_get_transformer_of(LightFactory).priority + 1,
                                                      on_no_resources=lambda coord, session:
                                                      PrivateLightFactory.on_no_resources_getter(Abandonment)
@@ -198,7 +198,7 @@ class PrivateHeavyFactory(_Figure):
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(250_000),
                                                                          LightIndustryProducts(1_500)),
-                                                     ResourcesGroup.make(HeavyIndustryProducts(200)),
+                                                     ResourcesGroup.make(HeavyIndustryProducts(350)),
                                                      priority=_get_transformer_of(PrivateLightFactory).priority + 1,
                                                      on_no_resources=lambda coord, session:
                                                      PrivateLightFactory.on_no_resources_getter(Abandonment)
@@ -214,7 +214,7 @@ class PrivateHeavyFactory(_Figure):
         return 0
 
 
-class Capital(_Figure):
+class TierOneCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
@@ -233,14 +233,14 @@ class Capital(_Figure):
         return 1
 
 
-class TallCapital(Capital):
+class TallCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
                       PreventsAnnexations(distance=15),
-                      TriesTakeResourcesElseDies.make(Dollars(1_250_000),
-                                                      LightIndustryProducts(5_000),
-                                                      HeavyIndustryProducts(1_000)),
+                      TriesTakeResourcesElseDies.make(Dollars(1_000_000),
+                                                      LightIndustryProducts(1_000),
+                                                      HeavyIndustryProducts(200)),
                       BuffsNearbyResourceAdders(additional_ratio=2))
     MOVES_BUDGET = 0
 
@@ -253,14 +253,14 @@ class TallCapital(Capital):
         return 0
 
 
-class WideCapital(Capital):
+class WideCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
                       PreventsAnnexations(distance=20),
-                      TriesTakeResourcesElseDies.make(Dollars(1_250_000),
-                                                      LightIndustryProducts(5_000),
-                                                      HeavyIndustryProducts(1_000)),
+                      TriesTakeResourcesElseDies.make(Dollars(1_000_000),
+                                                      LightIndustryProducts(1_000),
+                                                      HeavyIndustryProducts(200)),
                       BuffsNearbyResourceAdders(additional_ratio=1, distance=2))
     MOVES_BUDGET = 0
 
@@ -583,6 +583,9 @@ class Howitzer(_Figure):
                 raise NotSupportedMove(move)
 
 
+Capital = TierOneCapital | TallCapital | WideCapital
+
+
 def get_figures() -> list[type[_Figure]]:
     return [
         Land,
@@ -593,7 +596,7 @@ def get_figures() -> list[type[_Figure]]:
         Settlement,
         PrivateLightFactory,
         PrivateHeavyFactory,
-        Capital,
+        TierOneCapital,
         TallCapital,
         WideCapital,
         Bunker,

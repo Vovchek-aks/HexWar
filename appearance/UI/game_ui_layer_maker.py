@@ -337,7 +337,7 @@ class GameUiLayerMaker:
         self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.Bunker, fig.Artillery, hint_box)
         layout.append(self._make_figure_creation_button(synchroniser, fig.MissileSilo, hint_box))
         self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.Tank, fig.Infantry, hint_box)
-        layout.append(self._make_figure_creation_button(synchroniser, fig.Capital, hint_box))
+        layout.append(self._make_figure_creation_button(synchroniser, fig.TierOneCapital, hint_box))
         self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.LightFactory, fig.HeavyFactory, hint_box)
         layout.append(self._make_figure_creation_button(synchroniser, fig.Town, hint_box))
 
@@ -474,7 +474,7 @@ class GameUiLayerMaker:
         to_wide_capital.was_clicked.subscribe(lambda: self._button_press_action_happened
                                               .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                                   fig.WideCapital)))
-        return self._make_figure_menu(fig.Capital, [to_tall_capital, to_wide_capital],
+        return self._make_figure_menu(fig.TierOneCapital, [to_tall_capital, to_wide_capital],
                                       [CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL])
 
     def _make_tall_capital_menu(self) -> Layer:

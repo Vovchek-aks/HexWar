@@ -65,8 +65,8 @@ _MOVE_OF_TAG = {
 _CONVERSIONS = {
     INFANTRY_TO_MOTORIZATION: (fig.Infantry, fig.Motorization),
     MOTORIZATION_TO_INFANTRY: (fig.Motorization, fig.Infantry),
-    CAPITAL_TO_TALL_CAPITAL: (fig.Capital, fig.TallCapital),
-    CAPITAL_TO_WIDE_CAPITAL: (fig.Capital, fig.WideCapital),
+    CAPITAL_TO_TALL_CAPITAL: (fig.TierOneCapital, fig.TallCapital),
+    CAPITAL_TO_WIDE_CAPITAL: (fig.TierOneCapital, fig.WideCapital),
     PURCHASE_SETTLEMENT: (fig.Settlement, fig.Town),
     PURCHASE_PRIVATE_LIGHT_FACTORY: (fig.PrivateLightFactory, fig.LightFactory),
     PURCHASE_PRIVATE_HEAVY_FACTORY: (fig.PrivateHeavyFactory, fig.HeavyFactory),
