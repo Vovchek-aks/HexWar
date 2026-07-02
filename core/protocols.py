@@ -368,17 +368,23 @@ class GameSession(ABC):
         ...
 
 
-class ByGameRulesSessionChanger(ABC):
+class GameRule(ABC):
     @abstractmethod
-    def on_turn_start(self) -> None:
+    def on_turn_start(self, session: GameSession) -> Iterator[None]:
         ...
 
     @abstractmethod
-    def on_turn_end(self) -> None:
+    def on_turn_end(self, session: GameSession) -> Iterator[None]:
+        ...
+
+
+class GameRulesApplier(ABC):
+    @abstractmethod
+    def on_turn_start(self) -> Iterator[None]:
         ...
 
     @abstractmethod
-    def annex(self, region: "Cells") -> None:
+    def on_turn_end(self) -> Iterator[None]:
         ...
 
 
@@ -483,6 +489,10 @@ class Cells(ABC):
 
     @abstractmethod
     def split(self, board: Board) -> "list[Cells]":
+        ...
+
+    @abstractmethod
+    def discard_regions_with(self, targets: "Cells", board: Board) -> "Cells":
         ...
 
     @abstractmethod

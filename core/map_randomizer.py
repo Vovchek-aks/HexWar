@@ -6,9 +6,7 @@ from attrs import frozen
 
 import core.protocols as proto
 from appearance.graphics.colors import get_colors, Color
-from core.annexation_map.annexation_map import AnnexationMap
-from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
-from core.by_game_rules_session_changer import ByGameRulesSessionChanger
+from core.game_rules import Annexer
 from core.game_session import GameSession
 from core.master import Master
 from core.player import Player, PlayerData
@@ -26,15 +24,14 @@ class MapRandomizer:
              make_player_inputer: Callable[[], proto.PlayerInputer]) -> "MapRandomizer":
         session.figures.figure_was_added_at.subscribe(lambda _, coord: session.cells.update(session.board[coord]))
         session.figures.figure_was_removed.subscribe(lambda _, coord: session.cells.update(session.board[coord]))
-        by_game_rules_session_changer = ByGameRulesSessionChanger(session,
-                                                                  AnnexationMapUpdater(session, AnnexationMap(session)),
-                                                                  no_context_manager,
-                                                                  lambda coord: session.cells.update(
-                                                                      session.board[coord]))
-        return cls(session, by_game_rules_session_changer, make_player_inputer)
+        annexer = Annexer(no_context_manager,
+                          lambda coord: session.cells.update(
+                              session.board[coord]),
+                          ...)
+        return cls(session, annexer, make_player_inputer)
 
     _session: proto.GameSession
-    _by_game_rules_session_changer: proto.ByGameRulesSessionChanger
+    _annexer: Annexer
     _make_player_inputer: Callable[[], proto.PlayerInputer]
 
     def get_randomized(self,
@@ -45,7 +42,7 @@ class MapRandomizer:
         self._remove_all_figures()
         player = self._fill_with_one_player()
         players = self._add_random_players(player, players_count)
-        self._by_game_rules_session_changer.annex(self._session.cells.with_owner(player))
+        self._annexer.annex(self._session, self._session.cells.with_owner(player))
         self._spawn_towns_and_get_resources(players, town_per_player, start_resources)
         session = GameSession(Master(players),
                               self._session.board,

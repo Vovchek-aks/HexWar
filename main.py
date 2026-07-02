@@ -6,7 +6,7 @@ from appearance.game_engine.game_engine_arc.window import Window
 from appearance.input.players_selector import PlayersSelector
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
-from core.by_game_rules_session_changer import ByGameRulesSessionChanger
+from core.game_rules import FiguresUpdateFlagCaller
 from core.game_session import GameSession
 from core.map_randomizer import MapRandomizer
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
@@ -44,7 +44,7 @@ def _make_test_game_loading_scene(window: Window) -> Scene:
         player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
                                                  LightIndustryProducts(1_000_000),
                                                  HeavyIndustryProducts(1_000_000)))
-        ByGameRulesSessionChanger(session, ..., ..., ...).on_turn_start()
+        FiguresUpdateFlagCaller().on_turn_start(session)
         return GameSession(players_selector.make_master(),
                            session.board,
                            session.figures_budget,

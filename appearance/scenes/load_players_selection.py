@@ -24,7 +24,7 @@ from appearance.scenes.players_selection import PlayersSelectionScene
 from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
 from core.game_session import GameSession
-from core.by_game_rules_session_changer import ByGameRulesSessionChanger
+from core.game_rules.game_rules_applier import GameRulesApplier
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
@@ -96,7 +96,7 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
                                   session.cells,
                                   session.figures)
 
-        ByGameRulesSessionChanger(new_session, board_drawer.not_updating_cells, lambda _: None).on_turn_start()
+        GameRulesApplier(new_session, board_drawer.not_updating_cells, lambda _: None).on_turn_start()
         scene.switch_to(make_game_scene_loading(new_session))
 
     play_was_pressed.subscribe(on_play_was_pressed)

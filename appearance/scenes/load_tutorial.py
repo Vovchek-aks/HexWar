@@ -46,7 +46,7 @@ from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEvent
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
-from core.by_game_rules_session_changer import ByGameRulesSessionChanger
+from core.game_rules.game_rules_applier import GameRulesApplier
 from core.protocols import GameSession
 from mathematics.vector import Vector2Int
 from observer import Event
@@ -147,9 +147,9 @@ def load_tutorial(window: Window,
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
 
-    by_game_rules_session_changer = ByGameRulesSessionChanger(session,
-                                                              board_drawer.not_updating_cells,
-                                                              cell_changed_owner.invoke)
+    by_game_rules_session_changer = GameRulesApplier(session,
+                                                     board_drawer.not_updating_cells,
+                                                     cell_changed_owner.invoke)
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, by_game_rules_session_changer,

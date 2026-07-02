@@ -33,7 +33,7 @@
       "type": "variants",
       "elements": "figures/hf_variants"
     },
-    "Capital": {
+    "TierOneCapital": {
       "type": "loop",
       "elements": "figures/capital_loop"
     },

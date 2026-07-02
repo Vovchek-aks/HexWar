@@ -10,7 +10,7 @@ TurnEndPreparationGetter = Callable[[proto.Player], Iterator[None] | Status]
 
 def players_moves_maker(session: proto.GameSession,
                         moves_maker: proto.MovesMaker,
-                        by_game_rules_session_changer: proto.ByGameRulesSessionChanger,
+                        by_game_rules_session_changer: proto.GameRulesApplier,
                         get_move_preparation_process: MovePreparationGetter = lambda _: MISSING,
                         get_turn_start_preparation_process: TurnStartPreparationGetter = lambda _: MISSING,
                         get_turn_end_preparation_process: TurnEndPreparationGetter = lambda _: MISSING
@@ -45,6 +45,4 @@ def players_moves_maker(session: proto.GameSession,
             yield from process
 
         session.master.pass_turn_to_next_player(session)
-        by_game_rules_session_changer.on_turn_start()
-
-
+        yield from by_game_rules_session_changer.on_turn_start()

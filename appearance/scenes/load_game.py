@@ -7,7 +7,7 @@ from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
 from appearance.animations.to_target_orientation_camera_mover import ToTargetOrientationCameraMover
 from appearance.animations.turn_pass_animator import TurnPassAnimator
-from appearance.audio.music.music_player import MusicPlayer, NoMusicPlayer
+from appearance.audio.music.music_player import MusicPlayer
 from appearance.audio.sound.figure_selection.figures_sounds import FiguresSounds
 from appearance.audio.sound.figure_selection.on_figure_was_clicked_sound_player import OnFigureWasClickedSoundPlayer
 from appearance.camera_mover import CameraMover
@@ -55,7 +55,7 @@ from game_session_saver import GameSessionSaver, SAVE_FILE
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
-from core.by_game_rules_session_changer import ByGameRulesSessionChanger
+from core.game_rules.game_rules_applier import GameRulesApplier
 from core.protocols import GameSession, Player
 from mathematics.vector import Vector2Int
 from observer import Event
@@ -166,10 +166,10 @@ def load_game(window: Window,
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     annexation_map_updater = AnnexationMapUpdater.make(session, moves_maker, AnnexationMap(session))
-    by_game_rules_session_changer = ByGameRulesSessionChanger(session,
-                                                              annexation_map_updater,
-                                                              board_drawer.not_updating_cells,
-                                                              cell_changed_owner.invoke)
+    game_rules_applier = GameRulesApplier.default_rules(session,
+                                                        annexation_map_updater,
+                                                        board_drawer.not_updating_cells,
+                                                        cell_changed_owner.invoke)
     hatching_map_updater = AnnexationHatchingMapUpdater.make(session, hatching_map, board_drawer,
                                                              annexation_map_updater)
 
@@ -178,7 +178,7 @@ def load_game(window: Window,
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
-                           players_moves_maker(session, moves_maker, by_game_rules_session_changer,
+                           players_moves_maker(session, moves_maker, game_rules_applier,
                                                lambda move: animators_switcher.get().get_animation(move),
                                                (turn_pass_animator.start_for_multibot
                                                 if is_multibot else
@@ -213,7 +213,8 @@ def load_game(window: Window,
                 scene.on_reload(make_next_scene_loading())
 
         session.master.turn_had_started.subscribe(on_player_turn_started)
-        by_game_rules_session_changer.on_turn_start()
+        for _ in game_rules_applier.on_turn_start():
+            ...
     else:
         pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)
         scene = GameWithPauseScene(game, pause_menu)

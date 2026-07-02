@@ -92,6 +92,18 @@ class Cells(proto.Cells):
 
         return regions
 
+    def discard_regions_with(self, targets: "Cells", board: proto.Board) -> "Cells":
+        cells = self
+        while targets:
+            target = targets.any
+            targets = targets.without(target)
+
+            region = board.get_region_with_same_owner(target)
+            cells -= region
+            targets -= region
+
+        return cells
+
     def get_connected_to(self, cell: proto.Cell, board: proto.Board) -> "Cells":
         def _get_connected_to(cell: proto.Cell, seen: set[proto.Cell]) -> "Cells":
             if cell not in self:
