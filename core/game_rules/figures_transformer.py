@@ -7,7 +7,6 @@ import core.protocols as proto
 from core.distant_neighbors_getter import DistantNeighborsGetter
 import core.figures.figure as fig
 
-FROM_FRONT_TO_BUNKER_MAX_DISTANCE = 3
 
 
 @frozen
@@ -26,12 +25,12 @@ class FiguresTransformer(GameRule):
                 figures.remove(cell.figure)
                 figures.add(type(turner.figure), board.coordinates_of(cell))
 
-        front = cells & cells_cache.at_front  # todo
-        for bunker in cells & cells_cache.with_figure(fig.Bunker):
-            neighbors = (DistantNeighborsGetter(bunker, board)
-                         .get_all_not_farther_than(FROM_FRONT_TO_BUNKER_MAX_DISTANCE, include_cell=True))
-            if not neighbors & front:
-                figures.remove(bunker.figure)
-                figures.add(fig.Abandonment, board.coordinates_of(bunker))
+        transformers = cells & session.cells.with_flag(proto.Transforms)
+        for transformer in transformers:
+            coord = board.coordinates_of(transformer)
+            target = transformer.figure.FLAGS.get(proto.Transforms).get_target(coord, session)
+            if target is not type(transformer.figure):
+                figures.remove(transformer.figure)
+                figures.add(target, board.coordinates_of(transformer))
 
         yield

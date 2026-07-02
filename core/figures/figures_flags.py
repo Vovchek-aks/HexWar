@@ -160,3 +160,10 @@ class TurnsOthersIntoItself(proto.TurnsOthersIntoItself):
     EXCLUDES = set[type[Flag]]()
 
     get_targets: Callable[[Vector2Int, proto.GameSession], proto.Cells]
+
+
+@frozen
+class Transforms(proto.Transforms):
+    EXCLUDES = set[type[Flag]]()
+
+    get_target: Callable[[Vector2Int, proto.GameSession], type[proto.Figure]]

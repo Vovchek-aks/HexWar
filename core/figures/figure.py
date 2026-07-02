@@ -9,7 +9,7 @@ from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
-    PreventsAnnexations, Private, TurnsOthersIntoItself
+    PreventsAnnexations, Private, TurnsOthersIntoItself, Transforms
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
@@ -277,8 +277,12 @@ class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       PreventsCaptures(),
+                      Transforms(lambda coord, session: Bunker.get_target(coord, session)),
                       Creatable.make(Dollars(150_000), LightIndustryProducts(250)))
     MOVES_BUDGET = 0
+
+    FROM_FRONT_MAX_DISTANCE = 3
+    _TURN_PROBABILITY = .3
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -287,6 +291,22 @@ class Bunker(_Figure):
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
         return 0
+
+    @classmethod
+    def get_target(cls, coord: Vector2Int, session: proto.GameSession) -> type[proto.Figure]:
+        board = session.board
+        cell = board[coord]
+
+        neighbors = (DistantNeighborsGetter(cell, board)
+                     .get_all_not_farther_than(cls.FROM_FRONT_MAX_DISTANCE, include_cell=True))
+        if neighbors & session.cells.at_front:
+            return Bunker
+
+        with temporarily_seed((coord, session.master.current_turn)):
+            if random.random() > cls._TURN_PROBABILITY:
+                return Bunker
+
+        return Abandonment
 
 
 class MissileSilo(_Figure):

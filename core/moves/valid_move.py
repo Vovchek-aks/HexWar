@@ -4,9 +4,9 @@ import core.protocols as proto
 
 
 @frozen
-class ValidMove(proto.ValidMove):
-    _move: proto.Move
+class ValidMove[T: proto.Move](proto.ValidMove):
+    _move: T
 
     @property
-    def move(self) -> proto.Move:
+    def move(self) -> T:
         return self._move

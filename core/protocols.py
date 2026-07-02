@@ -44,10 +44,10 @@ class Master(ABC):
         ...
 
 
-class ValidMove(ABC):
+class ValidMove[T: "Move"](ABC):
     @property
     @abstractmethod
-    def move(self) -> "Move":
+    def move(self) -> T:
         ...
 
 
@@ -688,6 +688,12 @@ class PreventsAnnexations(Flag, metaclass=ABCMeta):
 class TurnsOthersIntoItself(Flag, metaclass=ABCMeta):
     @abstractmethod
     def get_targets(self, coord: Vector2Int, session: GameSession) -> Cells:
+        ...
+
+
+class Transforms(Flag, metaclass=ABCMeta):
+    @abstractmethod
+    def get_target(self, coord: Vector2Int, session: GameSession) -> type["Figure"]:
         ...
 
 
