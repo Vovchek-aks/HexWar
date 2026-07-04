@@ -166,10 +166,10 @@ def load_game(window: Window,
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     annexation_map_updater = AnnexationMapUpdater.make(session, moves_maker, AnnexationMap(session))
-    game_rules_applier = GameRulesApplier.default_rules(session,
-                                                        annexation_map_updater,
-                                                        board_drawer.not_updating_cells,
-                                                        cell_changed_owner.invoke)
+    game_rules_applier = GameRulesApplier.with_default_rules(session,
+                                                             annexation_map_updater,
+                                                             board_drawer.not_updating_cells,
+                                                             cell_changed_owner.invoke)
     hatching_map_updater = AnnexationHatchingMapUpdater.make(session, hatching_map, board_drawer,
                                                              annexation_map_updater)
 

@@ -11,11 +11,11 @@ from . import Annexer, FiguresTransformer, PrivateFiguresSpawner, FiguresUpdateF
 @frozen
 class GameRulesApplier(proto.GameRulesApplier):
     @classmethod
-    def default_rules(cls,
-                      session: proto.GameSession,
-                      annexation_map: proto.AnnexationMapUpdater,
-                      multiple_cells_change: Callable[[proto.Cells], ContextManager[None]],
-                      on_changed_cell_owner: Callable[[Vector2Int], None]) -> proto.GameRulesApplier:
+    def with_default_rules(cls,
+                           session: proto.GameSession,
+                           annexation_map: proto.AnnexationMapUpdater,
+                           multiple_cells_change: Callable[[proto.Cells], ContextManager[None]],
+                           on_changed_cell_owner: Callable[[Vector2Int], None]) -> proto.GameRulesApplier:
         return cls(session,
                    [
                        FiguresUpdateFlagCaller(),

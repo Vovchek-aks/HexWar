@@ -72,7 +72,7 @@ _ARTILLERY_PRIORITY_LIST = [
 
 _MAX_ARMY = 150.
 
-_CAPITALS_RATIO = 1.06
+_CAPITALS_RATIO = 2
 
 _HOWITZERS_TO_TANKS_RATIO = .3
 
@@ -180,7 +180,8 @@ class BotIgor(proto.Bot):
                                     for cell in (cells.with_figure(fig.Capital) &
                                                  cells.with_owner(self._player)))
 
-            if self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO * cells_count ** .25) and not is_any_to_develop:
+            if (not is_any_to_develop) and self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO *
+                                                                                   cells_count ** .25):
                 self._try_create(fig.TierOneCapital)
                 # print("_try_create(fig.Capital)")
                 if self._moves_to_make:
@@ -249,14 +250,14 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            if has_developed:
-                yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .3) -
-                                                                 artillery_count)
-                # print("_try_spawn_and_connect_artillery")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
+            yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .3) -
+                                                             artillery_count)
+            # print("_try_spawn_and_connect_artillery")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
 
+            if has_developed:
                 yield from self._try_convert_tanks_to_howitzers(math.floor(tanks_count * _HOWITZERS_TO_TANKS_RATIO) -
                                                                 howitzers_count)
                 # print("_try_convert_tanks_to_howitzers")

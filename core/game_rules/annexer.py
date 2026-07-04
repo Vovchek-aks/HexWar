@@ -27,7 +27,7 @@ class Annexer(GameRule):
         while map_updater.is_about_to_be_updated(player):
             yield
 
-        for region in (map_updater.map.get_cells_to_annex_of(player).split(board)):
+        for region in map_updater.map.get_cells_to_annex_of(player).split(board):
             yield
             self.annex(session, region)
             for player in region.players():
@@ -40,15 +40,15 @@ class Annexer(GameRule):
             session.figures.remove(cell.figure)
 
         connections = session.pulling_connections
-        for cell in region & cells.with_flag(proto.Pullable):
+        for cell in region.with_flag(proto.Pullable):
             figure = cell.figure
             if not connections.is_pullable(figure):
-                return
+                continue
             connections.unregister(connections.get_connected(figure), figure)
-        for cell in region & cells.with_flag(proto.CanPull):
+        for cell in region.with_flag(proto.CanPull):
             figure = cell.figure
             if not connections.is_puller(figure):
-                return
+                continue
             connections.unregister(figure, connections.get_connected(figure))
 
         with self._multiple_cells_change(region):
