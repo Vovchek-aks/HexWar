@@ -76,6 +76,8 @@ _CAPITALS_RATIO = 2
 
 _HOWITZERS_TO_TANKS_RATIO = .3
 
+_CATASTROPHY_ABANDONMENTS_COUNT = 3
+
 PRODUCTION = (fig.Town | fig.LightFactory | fig.HeavyFactory | fig.Settlement | fig.PrivateLightFactory |
               fig.PrivateHeavyFactory)
 CRITICAL = PRODUCTION | fig.Capital
@@ -556,6 +558,7 @@ class BotIgor(proto.Bot):
         connections = self._session.pulling_connections
         cells = self._session.cells
         board = self._session.board
+        budget = self._session.figures_budget
         our_cells = cells.with_owner(self._player)
 
         abandonments = our_cells & cells.with_figure(fig.Abandonment)
@@ -570,26 +573,31 @@ class BotIgor(proto.Bot):
                                                     isinstance(connections.get_pullable(cell.figure),
                                                                fig.Artillery) and
                                                     (board.get_neighbors(cell) & our_cells).with_figure(fig.Land))
-        if not infantries:
-            return
-        yield
 
-        infantry = min(infantries, key=lambda cell: get_distance(board.coordinates_of(cell),
-                                                                 board.coordinates_of(abandonment)))
-        artillery = board[self._session.figures.locate(connections.get_pullable(infantry.figure))]
-        yield
+        is_catastrophy = len(abandonments) >= _CATASTROPHY_ABANDONMENTS_COUNT
 
-        target = min(abandonments, key=lambda cell: get_distance(board.coordinates_of(cell),
-                                                                 board.coordinates_of(infantry)))
-        yield
+        for _ in range(1 if not is_catastrophy else min(len(infantries), len(abandonments))):
+            yield
 
-        move = Attack(board.coordinates_of(artillery),
-                      board.coordinates_of(target))
-        if (valid_move := move.validate(self._session)) is not INVALID:
-            self._moves_to_make.append(valid_move)
-            return
+            if not infantries:
+                return
+            infantry = min(infantries, key=lambda cell: get_distance(board.coordinates_of(cell),
+                                                                     board.coordinates_of(abandonment)))
+            infantries = infantries.without(infantry)
+            artillery = board[self._session.figures.locate(connections.get_pullable(infantry.figure))]
+            yield
 
-        yield from self._add_distant_relocation_moves(infantry, target)
+            target = min(abandonments, key=lambda cell: get_distance(board.coordinates_of(cell),
+                                                                     board.coordinates_of(infantry)))
+            yield
+
+            move = Attack(board.coordinates_of(artillery),
+                          board.coordinates_of(target))
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+                continue
+
+            yield from self._add_distant_relocation_moves(infantry, target)
 
     def _try_buy_out_private_figures(self) -> Iterator[None]:
         cells = self._session.cells
@@ -780,11 +788,11 @@ class BotIgor(proto.Bot):
                    cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank | fig.Howitzer))
 
         to_pull = Cells(set(filter(lambda cell: self._session
-                                     .figures_budget
-                                     .can_spend(cell.figure,
-                                                cell.figure
-                                                .get_cost_of(Relocation(Vector2Int.zero(),
-                                                                        Vector2Int.zero()))),
+                                   .figures_budget
+                                   .can_spend(cell.figure,
+                                              cell.figure
+                                              .get_cost_of(Relocation(Vector2Int.zero(),
+                                                                      Vector2Int.zero()))),
                                    to_pull)))
         if not to_pull:
             return

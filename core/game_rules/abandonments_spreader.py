@@ -28,8 +28,15 @@ class AbandonmentsSpreader(GameRule):
     }
 
     @classmethod
-    def get_square_growth_length(cls) -> float:
-        return cls._SQUARE_GROWTH_LENGTH
+    def get_to_spawn(cls, count: int, session: proto.GameSession) -> int:
+        # https://www.desmos.com/calculator/kjz1ypimkn
+
+        to_spawn = (cls._PLATO * (count / cls._SQUARE_GROWTH_LENGTH) ** 2
+                    if count < cls._SQUARE_GROWTH_LENGTH else
+                    cls._PLATO - cls._WAVE_AMPLITUDE * math.sin(count - cls._SQUARE_GROWTH_LENGTH))
+        rounded = math.floor(to_spawn)
+        with temporarily_seed(session.master.current_turn):
+            return rounded + (1 if random.random() < to_spawn - rounded else 0)
 
     def on_turn_end(self, session: proto.GameSession) -> Iterator[None]:
         board = session.board
@@ -39,17 +46,13 @@ class AbandonmentsSpreader(GameRule):
         figures = session.figures
 
         abandonments = cells & session.cells.with_figure(fig.Abandonment)
-        count = len(abandonments)
         if not abandonments:
             return
 
-        # https://www.desmos.com/calculator/kjz1ypimkn
-        to_spawn = (self._PLATO * (count / self._SQUARE_GROWTH_LENGTH) ** 2
-                    if count < self._SQUARE_GROWTH_LENGTH else
-                    self._PLATO - self._WAVE_AMPLITUDE * math.sin(count - self._SQUARE_GROWTH_LENGTH))
-        rounded = math.floor(to_spawn)
+        to_spawn = self.get_to_spawn(len(abandonments), session)
+        print(to_spawn)
+
         with temporarily_seed(session.master.current_turn):
-            to_spawn = rounded + (1 if random.random() < to_spawn - rounded else 0)
             shuffled = abandonments.as_list()
             random.shuffle(shuffled)
 
@@ -61,8 +64,10 @@ class AbandonmentsSpreader(GameRule):
             neighbors = (DistantNeighborsGetter(abandonment, board)
                          .get_all_not_farther_than(self._TURN_RADIUS, include_cell=False))
             for neighbor in neighbors:
-                if type(neighbor.figure) in self._CAN_TURN:
-                    figures.remove(neighbor.figure)
-                    figures.add(fig.Abandonment, board.coordinates_of(neighbor))
-                    to_spawn -= 1
-                    break
+                if type(neighbor.figure) not in self._CAN_TURN:
+                    continue
+
+                figures.remove(neighbor.figure)
+                figures.add(fig.Abandonment, board.coordinates_of(neighbor))
+                to_spawn -= 1
+                break
