@@ -580,7 +580,7 @@ class BotIgor(proto.Bot):
             yield
 
             if not infantries:
-                return
+                break
             infantry = min(infantries, key=lambda cell: get_distance(board.coordinates_of(cell),
                                                                      board.coordinates_of(abandonment)))
             infantries = infantries.without(infantry)
@@ -595,6 +595,7 @@ class BotIgor(proto.Bot):
                           board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
+                abandonments = abandonments.without(target)
                 continue
 
             yield from self._add_distant_relocation_moves(infantry, target)

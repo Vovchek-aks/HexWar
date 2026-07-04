@@ -8,8 +8,9 @@ from .game_rule import GameRule
 import core.protocols as proto
 import core.figures.figure as fig
 
-PRIVATES_RATIO = .2
-PRIVATES_DECREASE_FROM_CAPITALS_RATIO = 0
+PRIVATES_FLAT_COUNT = 10
+PRIVATES_RATIO = .1
+PRIVATES_DECREASE_FROM_CAPITALS_RATIO = 5
 PRIVATES_SPAWN_SPEED_MULTIPLIER = .1
 PRIVATES_WEIGHTS = {
     fig.Settlement: 1,
@@ -28,13 +29,15 @@ class PrivateFiguresSpawner(GameRule):
         empties = player_cells - cells.not_empty()
         privates = player_cells.with_flag(proto.Private)
 
-        target_count = ((len(empties) + len(privates)) * PRIVATES_RATIO -
+        target_count = (PRIVATES_FLAT_COUNT +
+                        (len(empties) + len(privates)) * PRIVATES_RATIO -
                         len(player_cells & cells.with_figure(fig.Capital)) * PRIVATES_DECREASE_FROM_CAPITALS_RATIO)
         if target_count <= 0:
             return
         yield
         progress = len(privates) / target_count
         to_spawn = math.ceil(target_count * (1 - progress) * PRIVATES_SPAWN_SPEED_MULTIPLIER)
+        to_spawn = min(to_spawn, len(empties))
 
         private_figures, weights = zip(*PRIVATES_WEIGHTS.items())  # Jaxx22
         for cell in random.sample(empties.as_list(), to_spawn):
