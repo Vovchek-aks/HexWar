@@ -4,8 +4,6 @@ from attrs import frozen
 
 from .game_rule import GameRule
 import core.protocols as proto
-from core.distant_neighbors_getter import DistantNeighborsGetter
-import core.figures.figure as fig
 
 
 
@@ -17,13 +15,6 @@ class FiguresTransformer(GameRule):
         cells_cache = session.cells
         cells = cells_cache.with_owner(player)
         figures = session.figures
-
-        turners = cells & session.cells.with_flag(proto.TurnsOthersIntoItself)
-        for turner in turners:
-            coord = board.coordinates_of(turner)
-            for cell in turner.figure.FLAGS.get(proto.TurnsOthersIntoItself).get_targets(coord, session):
-                figures.remove(cell.figure)
-                figures.add(type(turner.figure), board.coordinates_of(cell))
 
         transformers = cells & session.cells.with_flag(proto.Transforms)
         for transformer in transformers:

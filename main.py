@@ -15,7 +15,7 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from files import read_random_bot_names
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = False
+IS_MULTIBOT = True
 
 UPS = 60
 CAPTION = "HexWar"
@@ -37,7 +37,7 @@ def main() -> None:
 
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("Balkans.json", UPS).load()
+        session = GameSessionLoader.make("_edit_map.json", UPS).load()
         player = session.master.current_player
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)
@@ -64,21 +64,21 @@ def _make_main_menu_loading_scene(window: Window) -> Scene:
 
 
 def _make_multibot_loading_scene(window: Window) -> Scene:
-    return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-        lambda: MapRandomizer.make(GameSessionLoader.make(random.choice(["SVO.json",
-                                                                         # "Round Cross.json",
-                                                                         # "Middle East.json",
-                                                                         "Finnish Gulf.json",
-                                                                         "Balkans.json"]), UPS).load(),
-                                   lambda: BotPlayerInputer(BotIgor(), UPS))
-        .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
+    # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
+    #     lambda: MapRandomizer.make(GameSessionLoader.make(random.choice(["SVO.json",
+    #                                                                      # "Round Cross.json",
+    #                                                                      # "Middle East.json",
+    #                                                                      "Finnish Gulf.json",
+    #                                                                      "Balkans.json"]), UPS).load(),
+    #                                lambda: BotPlayerInputer(BotIgor(), UPS))
+    #     .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
     # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
     #     lambda: MapRandomizer.make(GameSessionLoader.make("Round Cross.json", UPS).load(),
     #                                lambda: BotPlayerInputer(BotIgor(), UPS))
     #     .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
-    # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-    #     lambda: GameSessionLoader.make("_edit_map.json", UPS).load()
-    # )
+    return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
+        lambda: GameSessionLoader.make("_edit_map.json", UPS).load()
+    )
 
 
 if __name__ == '__main__':

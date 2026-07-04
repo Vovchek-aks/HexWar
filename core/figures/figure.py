@@ -9,7 +9,7 @@ from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
-    PreventsAnnexations, Private, TurnsOthersIntoItself, Transforms
+    PreventsAnnexations, Private, Transforms
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
@@ -350,20 +350,8 @@ class Abandonment(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
-                      AddsResourcesIndefinably.make(Dollars(-25_000)),
-                      TurnsOthersIntoItself(lambda coord, session: Abandonment.get_targets(coord, session)))
+                      AddsResourcesIndefinably.make(Dollars(-25_000)))
     MOVES_BUDGET = 0
-
-    _TURN_PROBABILITY = .05
-    _TURN_RADIUS = 2
-    _CAN_TURN_INTO_ITSELF = {
-        Town,
-        LightFactory,
-        HeavyFactory,
-        Settlement,
-        PrivateLightFactory,
-        PrivateHeavyFactory
-    }
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -372,23 +360,6 @@ class Abandonment(_Figure):
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
         return 0
-
-    @classmethod
-    def get_targets(cls, coord: Vector2Int, session: proto.GameSession) -> Cells:
-        board = session.board
-        cell = board[coord]
-
-        with temporarily_seed((coord, session.master.current_turn)):
-            if random.random() > cls._TURN_PROBABILITY:
-                return Cells.empty()
-
-        neighbors = (DistantNeighborsGetter(cell, board)
-                     .get_all_not_farther_than(cls._TURN_RADIUS, include_cell=False))
-        for neighbor in neighbors:
-            if type(neighbor.figure) in cls._CAN_TURN_INTO_ITSELF:
-                return Cells({neighbor})
-
-        return Cells.empty()
 
 
 class Infantry(_Figure):

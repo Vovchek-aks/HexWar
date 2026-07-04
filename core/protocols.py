@@ -684,12 +684,6 @@ class PreventsAnnexations(Flag, metaclass=ABCMeta):
         ...
 
 
-class TurnsOthersIntoItself(Flag, metaclass=ABCMeta):
-    @abstractmethod
-    def get_targets(self, coord: Vector2Int, session: GameSession) -> Cells:
-        ...
-
-
 class Transforms(Flag, metaclass=ABCMeta):
     @abstractmethod
     def get_target(self, coord: Vector2Int, session: GameSession) -> type["Figure"]:

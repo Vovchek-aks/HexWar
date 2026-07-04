@@ -13,6 +13,11 @@ class Matrix2:
 
     _matrix: np.matrix = field()
 
+    @_matrix.validator
+    def _validate_matrix(self, _, matrix: np.matrix) -> None:
+        if tuple(matrix.shape) != (2, 2):
+            raise ValueError(f"Only 2x2 matrix supported")
+
     @property
     def as_vectors(self) -> tuple[Vector2, Vector2]:
         m = self._matrix
@@ -22,11 +27,6 @@ class Matrix2:
     @property
     def inverse(self) -> "Matrix2":
         return Matrix2(np.matrix(np.linalg.inv(self._matrix)))
-
-    @_matrix.validator
-    def _validate_matrix(self, _, matrix: np.matrix) -> None:
-        if tuple(matrix.shape) != (2, 2):
-            raise ValueError(f"Only 2x2 matrix supported")
 
     def apply(self, vector: Vector2) -> Vector2:
         array = np.array([vector.x, vector.y])

@@ -6,6 +6,7 @@ from core import protocols as proto
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
 from . import Annexer, FiguresTransformer, PrivateFiguresSpawner, FiguresUpdateFlagCaller
+from .abandonments_spreader import AbandonmentsSpreader
 
 
 @frozen
@@ -22,6 +23,7 @@ class GameRulesApplier(proto.GameRulesApplier):
                        Annexer(multiple_cells_change,
                                on_changed_cell_owner,
                                annexation_map),
+                       AbandonmentsSpreader(),
                        FiguresTransformer(),
                        PrivateFiguresSpawner(),
                    ])
