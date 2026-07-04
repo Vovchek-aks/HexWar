@@ -26,7 +26,6 @@
     "TO_MAIN_MENU": "Сохраниться и выйти",
     "BACK": "Назад",
     "END_TURN_BTN": "Завершить ход",
-    "PLAYERS_TURN_TEXT": "{player} ходит",
     "TO_MOTORIZATION": "Околёситься",
     "CAPTURE": "Захватить",
     "TO_INFANTRY": "Обесколёситься",
@@ -111,7 +110,7 @@
         "потребляет ширпотреб",
         "и доллары."
       ],
-      "Capital": [
+      "TierOneCapital": [
         "Увеличивает в 2 раза",
         "производительность соседних",
         "зданий и предотвращает",
@@ -778,13 +777,13 @@
     "Town": "Жилой район",
     "LightFactory": "Фабрика",
     "HeavyFactory": "Завод",
-    "Capital": "Администрация",
+    "TierOneCapital": "Администрация",
+    "TallCapital": "Высокая администрация",
+    "WideCapital": "Широкая администрация",
     "Settlement": "Поселение",
     "PrivateLightFactory": "Кустарь",
     "PrivateHeavyFactory": "Частник",
-    "Abandonment": "Заброшка",
-    "TallCapital": "Высокая администрация",
-    "WideCapital": "Широкая администрация"
+    "Abandonment": "Заброшка"
   },
   "resources": {
     "Dollars": "Доллары",

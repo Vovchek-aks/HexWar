@@ -19,6 +19,9 @@ from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
 from appearance.graphics.draw.drawers.drawers_arc.background_drawer import BackgroundDrawer
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.annexation_hatching_map_updater import \
+    AnnexationHatchingMapUpdater
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
@@ -41,6 +44,8 @@ from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.pause_menu import PauseMenu
 from appearance.settings import Settings
+from core.annexation_map.annexation_map import AnnexationMap
+from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
 from core.cells_changes_observer import CellsChangesObserver
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from core.moves_maker import MovesMaker
@@ -130,9 +135,11 @@ def load_tutorial(window: Window,
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
+    hatching_map = HatchingMap()
     draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
                                                           on_board_sprites_drawer,
                                                           session.board,
+                                                          hatching_map,
                                                           cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
@@ -147,14 +154,24 @@ def load_tutorial(window: Window,
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
 
-    by_game_rules_session_changer = GameRulesApplier(session,
-                                                     board_drawer.not_updating_cells,
-                                                     cell_changed_owner.invoke)
+    annexation_map_updater = AnnexationMapUpdater.make(session, moves_maker, AnnexationMap(session))
+    game_rules_applier = GameRulesApplier.with_default_rules(session,
+                                                             annexation_map_updater,
+                                                             board_drawer.not_updating_cells,
+                                                             cell_changed_owner.invoke)
+    hatching_map_updater = AnnexationHatchingMapUpdater.make(session, hatching_map, board_drawer,
+                                                             annexation_map_updater)
+
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
-                           players_moves_maker(session, moves_maker, by_game_rules_session_changer,
+                           players_moves_maker(session, moves_maker, game_rules_applier,
                                                lambda move: players_moves_animations.get_animation(move)),
-                           music_player, in_game_time)
+                           in_game_time,
+                           [
+                               annexation_map_updater.update,
+                               hatching_map_updater.update,
+                               music_player.update,
+                           ])
     drawer = FrameDrawer.make(layers)
 
     continue_was_pressed = Event[None]()
@@ -182,7 +199,9 @@ def load_tutorial(window: Window,
     continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
     to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
     to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
-    by_game_rules_session_changer.on_turn_start()
+
+    for _ in game_rules_applier.on_turn_start():
+        ...
 
     yield scene
 

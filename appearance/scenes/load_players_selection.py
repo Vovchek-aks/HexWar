@@ -6,6 +6,7 @@ from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.map_editor_board_drawable_layer import MapEditorBoardDrawableLayer
@@ -22,6 +23,8 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.players_selection import PlayersSelectionScene
 from appearance.settings import Settings
+from core.annexation_map.annexation_map import AnnexationMap
+from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
 from core.cells_changes_observer import CellsChangesObserver
 from core.game_session import GameSession
 from core.game_rules.game_rules_applier import GameRulesApplier
@@ -75,6 +78,7 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
     draw, _, board_drawer = DrawMaker().make(screen_shape,
                                              on_board_sprites_drawer,
                                              session.board,
+                                             HatchingMap(),
                                              cells_change_observer)
 
     camera_assistant = CameraAssistant.make(camera)
@@ -84,6 +88,7 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
     scene = PlayersSelectionScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, layers)
+
 
     def on_play_was_pressed() -> None:
         if not players_selector.has_selected:
@@ -96,7 +101,14 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
                                   session.cells,
                                   session.figures)
 
-        GameRulesApplier(new_session, board_drawer.not_updating_cells, lambda _: None).on_turn_start()
+        game_rules_applier = GameRulesApplier.with_default_rules(new_session,
+                                                                 AnnexationMapUpdater(new_session,
+                                                                                      AnnexationMap(new_session)),
+                                                                 board_drawer.not_updating_cells,
+                                                                 lambda _: None)
+        for _ in game_rules_applier.on_turn_start():
+            ...
+
         scene.switch_to(make_game_scene_loading(new_session))
 
     play_was_pressed.subscribe(on_play_was_pressed)

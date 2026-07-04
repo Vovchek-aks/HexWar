@@ -443,9 +443,6 @@ class Language:
     def get_tutorial_hints(self, tutorial_index: int) -> list[list[str]]:
         return self._hints[_TUTORIALS][tutorial_index]
 
-    def get_players_turn_message(self, player: str) -> str:
-        return self._ui[_PLAYERS_TURN_TEXT].format(player=player)
-
     def get_selected_players_message(self, selected_players: list[str]) -> str:
         if not selected_players:
             return self._ui[_NO_PLAYERS_SELECTED]
@@ -459,7 +456,7 @@ class Language:
 class Section(dict[str, str]):
     def __getitem__(self, key: str) -> str:
         if key not in self:
-            print(f"NO MESSAGE FOR [{key}] key")
+            print(f"No message for [{key}] key.")
             return key
 
         return super().__getitem__(key)
@@ -468,7 +465,7 @@ class Section(dict[str, str]):
 class HintSection(dict[str, list[str]]):
     def __getitem__(self, key: str) -> list[str]:
         if key not in self:
-            print(f"NO MESSAGE FOR [{key}] key")
+            print(f"No message for [{key}] key.")
             return [key]
 
         return super().__getitem__(key)

@@ -15,7 +15,7 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from files import read_random_bot_names
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = True
+IS_MULTIBOT = False
 
 UPS = 60
 CAPTION = "HexWar"
