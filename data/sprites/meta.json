@@ -241,6 +241,13 @@
         183,
         183
       ]
+    },
+    "hatching": {
+      "file": "effects/hatching.png",
+      "pivot": [
+        183,
+        183
+      ]
     }
   }
 }

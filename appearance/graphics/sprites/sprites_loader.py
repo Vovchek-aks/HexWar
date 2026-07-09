@@ -38,6 +38,7 @@ _EFFECTS = "effects"
 _EXPLOSION = "explosion"
 _ROCKET = "rocket"
 _WAVES = "waves"
+_HATCHING = "hatching"
 
 
 @frozen
@@ -136,6 +137,10 @@ class SpritesLoader:
 
     def load_waves(self) -> Sprite:
         sprite_info = self._effects[_WAVES]
+        return self._load_sprite(sprite_info)
+
+    def load_hatching(self) -> Sprite:
+        sprite_info = self._effects[_HATCHING]
         return self._load_sprite(sprite_info)
 
     @staticmethod
