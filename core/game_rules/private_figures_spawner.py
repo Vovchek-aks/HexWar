@@ -37,7 +37,7 @@ class PrivateFiguresSpawner(GameRule):
         yield
         progress = len(privates) / target_count
         to_spawn = math.ceil(target_count * (1 - progress) * PRIVATES_SPAWN_SPEED_MULTIPLIER)
-        to_spawn = min(to_spawn, len(empties))
+        to_spawn = max(0, min(to_spawn, len(empties)))
 
         private_figures, weights = zip(*PRIVATES_WEIGHTS.items())  # Jaxx22
         for cell in random.sample(empties.as_list(), to_spawn):

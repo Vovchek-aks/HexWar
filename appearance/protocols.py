@@ -197,6 +197,10 @@ class BordDrawer(ABC):
         ...
 
     @abstractmethod
+    def not_updating_cells(self, cells: proto.Cells) -> Iterator[None]:
+        ...
+
+    @abstractmethod
     def update_cell(self, cell_coord: Vector2Int) -> None:
         ...
 

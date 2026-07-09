@@ -4,7 +4,7 @@
   },
   "audio": {
     "music": {
-      "VOLUME": 0
+      "VOLUME": 0.3
     },
     "voice": {
       "VOLUME": 0

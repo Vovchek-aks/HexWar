@@ -15,7 +15,7 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from files import read_random_bot_names
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = True
+IS_MULTIBOT = False
 
 UPS = 60
 CAPTION = "HexWar"
@@ -66,11 +66,11 @@ def _make_main_menu_loading_scene(window: Window) -> Scene:
 def _make_multibot_loading_scene(window: Window) -> Scene:
     return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
         lambda: MapRandomizer.make(GameSessionLoader.make(random.choice([
-            # "SVO.json",
             # "Round Cross.json",
+            "SVO.json",
             "Middle East.json",
-            # "Finnish Gulf.json",
-            # "Balkans.json"
+            "Finnish Gulf.json",
+            "Balkans.json"
         ]), UPS).load(), lambda: BotPlayerInputer(BotIgor(), UPS))
         .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 

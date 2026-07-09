@@ -558,7 +558,6 @@ class BotIgor(proto.Bot):
         connections = self._session.pulling_connections
         cells = self._session.cells
         board = self._session.board
-        budget = self._session.figures_budget
         our_cells = cells.with_owner(self._player)
 
         abandonments = our_cells & cells.with_figure(fig.Abandonment)

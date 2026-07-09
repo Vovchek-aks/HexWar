@@ -46,6 +46,9 @@ class BordDrawer(proto.BordDrawer):
         for cell_coord in board.cell_coords:
             self._append_hex_background(cell_coord)
         for cell_coord in board.cell_coords:
+            if self._hatching_map.color_at(cell_coord) is not MISSING:
+                self._append_hatching(cell_coord)
+        for cell_coord in board.cell_coords:
             self._append_edges(cell_coord)
 
         return self
