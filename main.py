@@ -30,14 +30,15 @@ def main() -> None:
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=20, player_names=["Russia", "Sweden", "aboba", "biba"])).save(EDIT_MAP_FILE)
     # make_first_scene = _make_map_editor_loading_scene
-    # make_first_scene = _make_test_game_loading_scene
+    make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
 
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("_edit_map.json", UPS).load()
+        session = GameSessionLoader.make("edit_map.json", UPS).load()
+        # player = session.master.players[10]
         player = session.master.current_player
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)

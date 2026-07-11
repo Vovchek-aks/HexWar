@@ -241,9 +241,25 @@
         183,
         183
       ]
+    }
+  },
+  "board": {
+    "background1": {
+      "file": "board/background1.png",
+      "pivot": [
+        183,
+        183
+      ]
     },
-    "hatching": {
-      "file": "effects/hatching.png",
+    "background2": {
+      "file": "board/background2.png",
+      "pivot": [
+        183,
+        183
+      ]
+    },
+    "background3": {
+      "file": "board/background3.png",
       "pivot": [
         183,
         183

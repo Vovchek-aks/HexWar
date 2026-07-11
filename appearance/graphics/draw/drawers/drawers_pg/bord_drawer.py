@@ -14,7 +14,7 @@ EDGES_BRIGHTNESS_RATIO = .6
 
 
 @frozen
-class BordDrawer(proto.BordDrawer):
+class BoardDrawer(proto.BoardDrawer):
     _screen: pg.Surface
     _camera: proto.Camera
     _board: Board

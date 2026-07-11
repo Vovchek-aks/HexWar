@@ -2,6 +2,8 @@ from attrs import frozen, field
 import arcade as arc
 
 import appearance.protocols as proto
+from appearance.graphics.colors import WHITE
+from color import Color
 from mathematics.hex_geometry import get_world_position
 from mathematics.vector import Vector2Int
 from appearance.graphics.sprites import Sprite
@@ -28,9 +30,11 @@ class OnBoardSpritesDrawer(proto.OnBoardSpritesDrawer):
                    sprite: Sprite,
                    coord: Vector2Int,
                    *,
+                   color: Color = WHITE,
                    scale_ratio: float = 1,
                    need_rotation: bool = True) -> int:
         arc_sprite = self._get_arc_sprite(sprite, coord, scale_ratio=scale_ratio)
+        arc_sprite.color = color
         index = id(arc_sprite)
         self._sprite_list.append(arc_sprite)
         self._sprites[index] = arc_sprite

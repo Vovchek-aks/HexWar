@@ -20,7 +20,8 @@ class Window(arc.Window):
                          samples=2,
                          fullscreen=is_fullscreen,
                          update_rate=dt,
-                         fixed_rate=dt)
+                         fixed_rate=dt,
+                         draw_rate=dt)
         self.background_color = arc.color.BLACK
         self.set_icon(load(str(ICON_FILE)))
         self.set_fullscreen(fullscreen=is_fullscreen)
@@ -32,6 +33,7 @@ class Window(arc.Window):
         self._update_started = Event[float, None]()
         self._update_finished = Event[float, None]()
         self._draw = Event[None]()
+        self._after_draw = Event[None]()
 
         self._click_was_made = Event[Click, None]()
         self._mouse_has_moved = Event[Vector2, None]()
@@ -57,6 +59,10 @@ class Window(arc.Window):
     @property
     def draw_event(self) -> OnEventSubscriber[None]:
         return self._draw.subscriber
+
+    @property
+    def draw_event_finished(self) -> OnEventSubscriber[None]:
+        return self._after_draw.subscriber
 
     @property
     def click_was_made(self) -> OnEventSubscriber[Click, None]:
@@ -91,6 +97,7 @@ class Window(arc.Window):
     def on_draw(self) -> None:
         self.clear()
         self._draw.invoke()
+        self._after_draw.invoke()
 
     def on_mouse_scroll(self, x: int, y: int, scroll_x: float, scroll_y: float) -> None:
         self._mouse_wheel_has_moved.invoke(scroll_y)

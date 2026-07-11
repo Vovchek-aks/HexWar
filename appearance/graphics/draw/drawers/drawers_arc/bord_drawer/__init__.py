@@ -1,1 +1,1 @@
-from .bord_drawer import BordDrawer
+from .board_drawer import BoardDrawer

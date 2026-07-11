@@ -38,7 +38,11 @@ _EFFECTS = "effects"
 _EXPLOSION = "explosion"
 _ROCKET = "rocket"
 _WAVES = "waves"
-_HATCHING = "hatching"
+
+_BOARD = "board"
+_BACKGROUND1 = "background1"
+_BACKGROUND2 = "background2"
+_BACKGROUND3 = "background3"
 
 
 @frozen
@@ -61,6 +65,10 @@ class SpritesLoader:
     @property
     def _effects(self) -> SPRITES_GROUP_DICT:
         return self._meta[_EFFECTS]
+
+    @property
+    def _board(self) -> SPRITES_GROUP_DICT:
+        return self._meta[_BOARD]
 
     def load_no_sprite(self) -> Sprite:
         sprite_info = self._meta[_NO_SPRITE]
@@ -139,8 +147,16 @@ class SpritesLoader:
         sprite_info = self._effects[_WAVES]
         return self._load_sprite(sprite_info)
 
-    def load_hatching(self) -> Sprite:
-        sprite_info = self._effects[_HATCHING]
+    def load_background1(self) -> Sprite:
+        sprite_info = self._board[_BACKGROUND1]
+        return self._load_sprite(sprite_info)
+
+    def load_background2(self) -> Sprite:
+        sprite_info = self._board[_BACKGROUND2]
+        return self._load_sprite(sprite_info)
+
+    def load_background3(self) -> Sprite:
+        sprite_info = self._board[_BACKGROUND3]
         return self._load_sprite(sprite_info)
 
     @staticmethod

@@ -2,7 +2,7 @@ from attrs import frozen
 
 import appearance.protocols as proto
 from mathematics.vector import Vector2Int
-from .drawers import BordDrawer, OnBoardSpritesDrawer, BackgroundDrawer
+from .drawers import BoardDrawer, OnBoardSpritesDrawer, BackgroundDrawer
 
 INTEREST_HIGHLIGHT_RATIO = .10
 HOVER_HIGHLIGHT_RATIO = .15
@@ -11,7 +11,7 @@ SELECT_HIGHLIGHT_RATIO = .25
 
 @frozen
 class Draw(proto.Draw):
-    _bord_drawer: BordDrawer
+    _bord_drawer: BoardDrawer
     _on_board_sprites_drawer: OnBoardSpritesDrawer
     _background_drawer: BackgroundDrawer
 

@@ -25,7 +25,6 @@ class BoardDrawableLayer(proto.DrawableLayer):
             self._draw_layer(mouse_position)
 
     def _draw_layer(self, mouse_position: Vector2) -> None:
-        self._draw.board()
         hovered_coord = self._hovered_cell_getter.get_coord(mouse_position)
         selected_coord = self._cell_selector.get_coord()
         is_empty = True if selected_coord is MISSING else self._session.board[selected_coord].is_empty
@@ -42,6 +41,7 @@ class BoardDrawableLayer(proto.DrawableLayer):
             if not is_empty:
                 self._draw_connected_if_needed(selected_coord)
 
+        self._draw.board()
         self._draw.board_sprites()
 
     def _draw_path_if_needed(self, hovered_coord: Vector2Int, selected_coord: Vector2Int | Status) -> None:

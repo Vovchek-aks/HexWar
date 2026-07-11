@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod, ABCMeta
+
+from appearance.graphics.colors import WHITE
 from my_types import TracebackType
 from typing import Callable, Iterator
 
@@ -145,6 +147,7 @@ class OnBoardSpritesDrawer(ABC):
                    sprite: Sprite,
                    coord: Vector2Int,
                    *,
+                   color: Color = WHITE,
                    scale_ratio: float = 1,
                    need_rotation: bool = True) -> int:
         ...
@@ -187,7 +190,7 @@ class FiguresSprites(ABC):
         ...
 
 
-class BordDrawer(ABC):
+class BoardDrawer(ABC):
     @abstractmethod
     def draw_board(self) -> None:
         ...

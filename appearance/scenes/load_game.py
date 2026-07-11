@@ -141,12 +141,35 @@ def load_game(window: Window,
 
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
+
+    # from appearance.graphics.sprites.sprites_loader import SpritesLoader
+    # import random
+    # sprite1 = SpritesLoader.from_meta().load_background1()
+    # sprite3 = SpritesLoader.from_meta().load_background3()
+    # for coord in session.board:
+    #     sprite = random.choice([sprite1, sprite3])
+    #     on_board_sprites_drawer.add_sprite(sprite, coord, scale_ratio=2.01 / 1.6,
+    #                                        color=Color(255, 181, 72),
+    #                                        need_rotation=False)
+    #
+    # from appearance.graphics.draw import BoardDrawer
+    # sprite = BoardDrawer(..., ..., ...).make_hatching()
+    # for coord in session.board:
+    #     on_board_sprites_drawer.add_sprite(sprite, coord, scale_ratio=2 / 1.6,
+    #                                        need_rotation=False)
+
+
     hatching_map = HatchingMap()
+    # for cell in session.cells.with_owner(session.master.current_player):
+    #     hatching_map.set_color_at(session.board.coordinates_of(cell), WHITE)
+
     draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
                                                           on_board_sprites_drawer,
                                                           session.board,
+                                                          camera.orientation,
                                                           hatching_map,
-                                                          cells_change_observer)
+                                                          cells_change_observer,
+                                                          window.draw_event_finished)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [

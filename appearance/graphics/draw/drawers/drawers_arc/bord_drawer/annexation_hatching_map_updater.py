@@ -1,4 +1,6 @@
+import random
 from typing import Iterator
+from itertools import batched
 
 from attrs import define, field
 
@@ -10,6 +12,8 @@ from statuses import Status, MISSING, ABORT_NEEDED
 
 COLOR = WHITE
 
+BATCH_SIZE = 10
+
 
 @define
 class AnnexationHatchingMapUpdater(proto.AnnexationHatchingMapUpdater):
@@ -17,7 +21,7 @@ class AnnexationHatchingMapUpdater(proto.AnnexationHatchingMapUpdater):
     def make(cls,
              session: GameSession,
              hatching_map: proto.HatchingMap,
-             board_drawer: proto.BordDrawer,
+             board_drawer: proto.BoardDrawer,
              annexation_map_updater: AnnexationMapUpdater) -> "AnnexationHatchingMapUpdater":
         self = cls(session, hatching_map, board_drawer, annexation_map_updater)
         annexation_map_updater.update_for_player_was_finished.subscribe(
@@ -28,7 +32,7 @@ class AnnexationHatchingMapUpdater(proto.AnnexationHatchingMapUpdater):
 
     _session: GameSession
     _hatching_map: proto.HatchingMap
-    _board_drawer: proto.BordDrawer
+    _board_drawer: proto.BoardDrawer
     _annexation_map_updater: AnnexationMapUpdater
 
     _players_queue: list[Player] = field(init=False, factory=list)
@@ -74,17 +78,22 @@ class AnnexationHatchingMapUpdater(proto.AnnexationHatchingMapUpdater):
         all_cells = self._session.cells.with_owner(player)
         colored = Cells(set(map(board.at, self._hatching_map.coords_with(COLOR)))) & all_cells
 
-        to_color = to_annex - colored
-        to_remove = colored - to_annex
+        to_color = (to_annex - colored).as_list()
+        to_remove = (colored - to_annex).as_list()
 
-        for cell in to_color:
-            yield
-            coord = board.coordinates_of(cell)
-            self._hatching_map.set_color_at(coord, COLOR)
-            self._board_drawer.update_hatching(coord)
+        random.shuffle(to_color)
+        random.shuffle(to_remove)
 
-        for cell in to_remove:
+        for batch in batched(to_color, BATCH_SIZE):
             yield
-            coord = board.coordinates_of(cell)
-            self._hatching_map.remove_at(coord)
-            self._board_drawer.update_hatching(coord)
+            for cell in batch:
+                coord = board.coordinates_of(cell)
+                self._hatching_map.set_color_at(coord, COLOR)
+                self._board_drawer.update_hatching(coord)
+
+        for batch in batched(to_remove, BATCH_SIZE):
+            yield
+            for cell in batch:
+                coord = board.coordinates_of(cell)
+                self._hatching_map.remove_at(coord)
+                self._board_drawer.update_hatching(coord)

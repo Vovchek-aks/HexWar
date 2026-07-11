@@ -4,7 +4,7 @@ import pygame as pg
 from core.protocols import Board
 import appearance.protocols as proto
 from ..draw import Draw
-from ..drawers.drawers_pg.bord_drawer import BordDrawer
+from ..drawers.drawers_pg.bord_drawer import BoardDrawer
 from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresDrawer
 from appearance.graphics.sprites import SpritesLoader
 from appearance.graphics.draw.drawers.drawers_pg.figures_drawer import FiguresSpritesLoader
@@ -25,6 +25,6 @@ class DrawMaker[T: Draw]:
         figures_sprites = figures_sprites_loader.load(get_figures(), self._on_no_figure_sprite)
         figures_drawer = FiguresDrawer(screen, camera, board, figures_sprites)
 
-        board_drawer = BordDrawer(screen, camera, board)
+        board_drawer = BoardDrawer(screen, camera, board)
 
         return self._draw_class(board_drawer, figures_drawer)

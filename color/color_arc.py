@@ -5,6 +5,10 @@ import arcade as arc
 
 class Color(arc.color.Color):
     @classmethod
+    def zero(cls) -> "Color":
+        return cls(0, 0, 0, 0)
+
+    @classmethod
     def average(cls, *colors: "Color") -> "Color":
         return cls.weighted_average(*((color, 1) for color in colors))
 
@@ -20,6 +24,10 @@ class Color(arc.color.Color):
         return cls(math.floor(total_r / total),
                    math.floor(total_g / total),
                    math.floor(total_b / total))
+
+    @property
+    def tuple4(self) -> tuple[int, int, int, int]:
+        return self.r, self.g, self.b, self.a
 
     def hex(self) -> str:
         return f"#{hex(self.r)[2:]}{hex(self.g)[2:]}{hex(self.b)[2:]}"
