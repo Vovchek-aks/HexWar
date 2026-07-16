@@ -1,5 +1,11 @@
 import random
 import sys
+import psutil
+import os
+
+import pyglet
+
+pyglet.options['audio'] = 'openal', 'pulse', 'xaudio2', 'directsound'
 
 from appearance.game_engine import GameEngine
 from appearance.game_engine.game_engine_arc.window import Window
@@ -22,6 +28,7 @@ CAPTION = "HexWar"
 
 
 def main() -> None:
+    psutil.Process(os.getpid()).nice(psutil.HIGH_PRIORITY_CLASS)
     sys.setrecursionlimit(10_000)
 
     make_first_scene = _make_multibot_loading_scene if IS_MULTIBOT else _make_main_menu_loading_scene
@@ -38,8 +45,8 @@ def main() -> None:
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
         session = GameSessionLoader.make("edit_map.json", UPS).load()
-        # player = session.master.players[10]
-        player = session.master.current_player
+        player = session.master.players[10]
+        # player = session.master.current_player
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)
         player.resources.add(ResourcesGroup.make(Dollars(100_000_000),

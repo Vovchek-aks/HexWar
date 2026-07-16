@@ -30,18 +30,16 @@ class DrawMaker:
              cells_change_observer: CellsChangesObserver,
              draw_event_finished: OnEventSubscriber[None]) -> tuple[Draw, FiguresDrawer, BoardDrawer]:
         sprites_loader = SpritesLoader.from_meta()
+        board_drawer = BoardDrawer.make(board, hatching_map, sprites_loader, on_board_sprites_drawer,
+                                        draw_event_finished, cells_change_observer.cell_changed_owner)
+
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
         figures_sprites = figures_sprites_loader.load(get_figures(), self._on_no_figure_sprite)
         figures_drawer = FiguresDrawer.make(board, figures_sprites, on_board_sprites_drawer)
         cells_change_observer.cell_changed_figure.subscribe(figures_drawer.update_cell)
-
         for figure in get_figures():
             index = on_board_sprites_drawer.add_sprite(figures_sprites.get(figure), Vector2Int.zero())
             on_board_sprites_drawer.remove_sprite(index)
-
-        board_drawer = BoardDrawer.make(board, hatching_map, sprites_loader,
-                                        OnBoardSpritesDrawer.make(camera_orientation),
-                                        draw_event_finished, cells_change_observer.cell_changed_owner)
 
         WavesDrawer(board, sprites_loader, on_board_sprites_drawer).draw()
 

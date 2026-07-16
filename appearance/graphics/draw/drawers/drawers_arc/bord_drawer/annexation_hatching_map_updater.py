@@ -12,7 +12,7 @@ from statuses import Status, MISSING, ABORT_NEEDED
 
 COLOR = WHITE
 
-BATCH_SIZE = 10
+BATCH_SIZE = 100
 
 
 @define

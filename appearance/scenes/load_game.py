@@ -142,27 +142,7 @@ def load_game(window: Window,
     yield language.get_sprite_loading_message()
     on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
 
-    # from appearance.graphics.sprites.sprites_loader import SpritesLoader
-    # import random
-    # sprite1 = SpritesLoader.from_meta().load_background1()
-    # sprite3 = SpritesLoader.from_meta().load_background3()
-    # for coord in session.board:
-    #     sprite = random.choice([sprite1, sprite3])
-    #     on_board_sprites_drawer.add_sprite(sprite, coord, scale_ratio=2.01 / 1.6,
-    #                                        color=Color(255, 181, 72),
-    #                                        need_rotation=False)
-    #
-    # from appearance.graphics.draw import BoardDrawer
-    # sprite = BoardDrawer(..., ..., ...).make_hatching()
-    # for coord in session.board:
-    #     on_board_sprites_drawer.add_sprite(sprite, coord, scale_ratio=2 / 1.6,
-    #                                        need_rotation=False)
-
-
     hatching_map = HatchingMap()
-    # for cell in session.cells.with_owner(session.master.current_player):
-    #     hatching_map.set_color_at(session.board.coordinates_of(cell), WHITE)
-
     draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
                                                           on_board_sprites_drawer,
                                                           session.board,
@@ -199,6 +179,28 @@ def load_game(window: Window,
     turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session,
                                           hatching_map_updater, annexation_map_updater)
 
+    # def aboba() -> Iterator[None]:
+    #     from appearance.graphics.sprites.sprites_loader import SpritesLoader
+    #     from color import Color
+    #     import itertools
+    #     import random
+    #
+    #     sprites = []
+    #     sprite = SpritesLoader.from_meta().load_twitch()
+    #     for coord in session.board:
+    #         idx = on_board_sprites_drawer.add_sprite(sprite, coord)
+    #         sprites.append(on_board_sprites_drawer.get_sprite(idx))
+    #
+    #     random.shuffle(sprites)
+    #
+    #     while True:
+    #         for batch in itertools.batched(sprites, 500):
+    #             yield
+    #             for sprite in batch:
+    #                 sprite.color = Color.random(a=(0 if random.random() < .7 else 255))
+    #
+    # test = aboba()
+
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, game_rules_applier,
@@ -214,6 +216,7 @@ def load_game(window: Window,
                            [
                                annexation_map_updater.update,
                                hatching_map_updater.update,
+                               # lambda: next(test),
                                music_player.update,
                            ])
     drawer = FrameDrawer.make(layers)

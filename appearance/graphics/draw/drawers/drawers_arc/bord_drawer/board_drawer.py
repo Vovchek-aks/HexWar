@@ -50,7 +50,8 @@ class BoardDrawer(proto.BoardDrawer):
 
         backgrounds = [
             sprites_loader.load_background1(),
-            sprites_loader.load_background2()
+            # sprites_loader.load_background2(),
+            sprites_loader.load_background3(),
         ]
         for coord in board.cell_coords:
             color = self._get_hex_color(coord)
@@ -94,7 +95,8 @@ class BoardDrawer(proto.BoardDrawer):
     _hatchings: dict[Vector2Int, arc.Sprite] = field(init=False, factory=dict)
 
     def draw_board(self) -> None:
-        self._on_board_sprites_drawer.draw()
+        # self._on_board_sprites_drawer.draw()
+        ...
 
     def draw_highlighted(self, coord: Vector2Int, highlight_ratio: float) -> None:
         color = self._get_hex_color(coord).lerp(WHITE, highlight_ratio)

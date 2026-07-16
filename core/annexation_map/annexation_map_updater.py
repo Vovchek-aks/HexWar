@@ -111,6 +111,6 @@ class AnnexationMapUpdater(proto.AnnexationMapUpdater):
     def _start_next(self) -> None:
         assert self._players_queue
 
-        skips = 60 if time() - self._last_move_time <= 1 else 0
+        skips = 120 if time() - self._last_move_time <= 1 else 10
         self._process = self._map.update_for(self._players_queue[0], initial_frame_skips=skips)
         self._update_for_player_was_started.invoke(self._players_queue[0])

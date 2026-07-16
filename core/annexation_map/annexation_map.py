@@ -8,7 +8,7 @@ import core.protocols as proto
 from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
 
-TIME_TO_PROCESS_CELLS = 0.006
+TIME_TO_PROCESS_CELLS = 0.001
 SMALL_ENOUGH_DISTANCE = 3
 
 
