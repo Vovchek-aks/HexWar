@@ -22,7 +22,7 @@ class OnBoardSpritesDrawer(proto.OnBoardSpritesDrawer):
         return self
 
     _camera_orientation: proto.ReadonlyCameraOrientation
-    _sprite_list: SpriteList = field(init=False, factory=lambda: SpriteList(capacity=100_000))
+    _sprite_list: SpriteList = field(init=False, factory=lambda: SpriteList(capacity=10_000))
     _sprites: dict[int, arc.Sprite] = field(init=False, factory=dict)
     _dont_need_rotation: set[int] = field(init=False, factory=set)
 

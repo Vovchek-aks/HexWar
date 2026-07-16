@@ -30,7 +30,8 @@ class DrawMaker:
              cells_change_observer: CellsChangesObserver,
              draw_event_finished: OnEventSubscriber[None]) -> tuple[Draw, FiguresDrawer, BoardDrawer]:
         sprites_loader = SpritesLoader.from_meta()
-        board_drawer = BoardDrawer.make(board, hatching_map, sprites_loader, on_board_sprites_drawer,
+        board_drawer = BoardDrawer.make(board, hatching_map, sprites_loader,
+                                        OnBoardSpritesDrawer.make(camera_orientation),
                                         draw_event_finished, cells_change_observer.cell_changed_owner)
 
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)

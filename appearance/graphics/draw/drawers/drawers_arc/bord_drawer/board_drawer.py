@@ -1,5 +1,6 @@
 import math
 import random
+from collections import defaultdict
 from contextlib import contextmanager
 from typing import Iterator
 
@@ -20,6 +21,9 @@ from mathematics.hex_geometry import Neighbor, neighbors_vertexes, NEIGHBORS, ne
 from mathematics.vector import Vector2Int, Vector2
 from observer import OnEventSubscriber
 from statuses import MISSING
+from .shape_list import ShapeList
+
+Shape = arc.shape_list.Shape
 
 EDGES_WIDTH_RATIO = 1.1
 EDGES_BRIGHTNESS_RATIO = .6
@@ -71,16 +75,8 @@ class BoardDrawer(proto.BoardDrawer):
                                                      need_rotation=False)
             self._hatchings[coord] = on_board_sprites_drawer.get_sprite(idx)
 
-        neighbors_and_sprites = [(neighbor, self.make_edge(neighbor)) for neighbor in NEIGHBORS]
-        for coord in board.cell_coords:
-            self._edges[coord] = {}
-            for neighbor, sprite in neighbors_and_sprites:
-                color = self._get_edges_color(coord, neighbor)
-                idx = on_board_sprites_drawer.add_sprite(sprite, coord,
-                                                         scale_ratio=SIZE_RATIO,
-                                                         color=color,
-                                                         need_rotation=False)
-                self._edges[coord][neighbor] = on_board_sprites_drawer.get_sprite(idx)
+        for cell_coord in board.cell_coords:
+            self._append_edges(cell_coord)
 
         return self
 
@@ -91,12 +87,14 @@ class BoardDrawer(proto.BoardDrawer):
     _draw_event_finished: OnEventSubscriber[None]
 
     _backgrounds: dict[Vector2Int, arc.Sprite] = field(init=False, factory=dict)
-    _edges: dict[Vector2Int, dict[Neighbor, arc.Sprite]] = field(init=False, factory=dict)
     _hatchings: dict[Vector2Int, arc.Sprite] = field(init=False, factory=dict)
+    _shape_list: ShapeList = field(init=False, factory=ShapeList)
+    _edges: dict[Vector2Int, list[Shape]] = field(init=False, factory=lambda: defaultdict(list))
 
     def draw_board(self) -> None:
-        # self._on_board_sprites_drawer.draw()
-        ...
+        self._on_board_sprites_drawer.draw()
+        self._shape_list.draw()
+        # ...
 
     def draw_highlighted(self, coord: Vector2Int, highlight_ratio: float) -> None:
         color = self._get_hex_color(coord).lerp(WHITE, highlight_ratio)
@@ -112,18 +110,22 @@ class BoardDrawer(proto.BoardDrawer):
 
         self._draw_event_finished.subscribe(on_draw_event_finished)
 
-    def make_edge(self, neighbor: Neighbor) -> arc.Sprite:
-        neighbor = NEIGHBORS[(NEIGHBORS.index(neighbor) + 1) % len(NEIGHBORS)]
-        square_delta = neighbor_square_deltas()[neighbor]
-        position = get_world_position(square_delta)
+    def make_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> Shape:
+        color = self._get_edges_color(cell_coord)
+
+        cell_coord = cell_coord + neighbor_square_deltas()[neighbor]
         neighbor = OPPOSITE_NEIGHBOR[neighbor]
+
+        world_position = get_world_position(cell_coord)
 
         left_vertex, right_vertex = neighbors_vertexes()[neighbor]
         left_vertex_far = left_vertex * EDGES_WIDTH_RATIO
         right_vertex_far = right_vertex * EDGES_WIDTH_RATIO
         vertexes = [left_vertex, left_vertex_far, right_vertex_far, right_vertex]
-        vertexes = [point + position for point in vertexes]
-        return self._get_sprite_from(vertexes)
+
+        points = [vertex + world_position for vertex in vertexes]
+        edge = arc.shape_list.create_polygon(points, color)
+        return edge
 
     def make_hatching(self) -> Sprite:
         polygons = list[list[Vector2]]()
@@ -201,8 +203,19 @@ class BoardDrawer(proto.BoardDrawer):
 
         self._backgrounds[coord].color = self._get_hex_color(coord)
         self._hatchings[coord].color = self._get_hatching_color(coord)
-        for neighbor, edge in self._edges[coord].items():
-            edge.color = self._get_edges_color(coord, neighbor)
+
+        self._shape_list.remove_many(*self._edges[coord])
+        self._edges.clear()
+        self._append_edges(coord)
+
+    def _append_edges(self, cell_coord: Vector2Int) -> None:
+        edges = list[Shape]()
+        for neighbor in NEIGHBORS:
+            if self._should_draw_edge(cell_coord, neighbor):
+                edges.append(self.make_edge(cell_coord, neighbor))
+
+        self._edges[cell_coord].extend(edges)
+        self._shape_list.extend(*edges)
 
     def _get_hex_color(self, coord: Vector2Int) -> Color:
         figure = self._board[coord].figure
@@ -235,10 +248,7 @@ class BoardDrawer(proto.BoardDrawer):
         return max(min_value, min(max_value, channel + round(random.gauss(sigma=MAJOR_COLOR_VARIATION_FREQUENCY) *
                                                              AVERAGE_COLOR_VARIATION_AMPLITUDE)))
 
-    def _get_edges_color(self, coord: Vector2Int, neighbor: Neighbor) -> Color:
-        if not self._should_draw_edge(coord, neighbor):
-            return Color.zero()
-
+    def _get_edges_color(self, coord: Vector2Int) -> Color:
         return self._get_hex_color(coord).lerp(WHITE, EDGES_BRIGHTNESS_RATIO)
 
     def _get_hatching_color(self, coord: Vector2Int) -> Color:

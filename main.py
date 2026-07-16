@@ -45,8 +45,8 @@ def main() -> None:
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
         session = GameSessionLoader.make("edit_map.json", UPS).load()
-        player = session.master.players[10]
-        # player = session.master.current_player
+        # player = session.master.players[10]
+        player = session.master.current_player
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)
         player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
