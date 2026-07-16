@@ -169,6 +169,21 @@ class OnBoardSpritesDrawer(ABC):
         ...
 
 
+class SpritesPool(ABC):
+    @property
+    @abstractmethod
+    def sprite_list(self) -> arc.SpriteList:
+        ...
+
+    @abstractmethod
+    def get(self, sprite: Sprite) -> arc.Sprite:
+        ...
+
+    @abstractmethod
+    def release(self, arc_sprite: arc.Sprite) -> None:
+        ...
+
+
 class FiguresDrawer(ABC):
     @property
     @abstractmethod

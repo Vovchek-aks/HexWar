@@ -20,6 +20,7 @@ from appearance.animations.moves_animators_switcher import MovesAnimatorsSwitche
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
+from appearance.graphics.draw.drawers.drawers_arc.SpritesPool import SpritesPool
 from appearance.graphics.draw.drawers.drawers_arc.background_drawer import BackgroundDrawer
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.annexation_hatching_map_updater import \
     AnnexationHatchingMapUpdater
@@ -140,16 +141,13 @@ def load_game(window: Window,
                 game_ui_layer_maker.make(end_turn_button_was_clicked.invoke))
 
     yield language.get_sprite_loading_message()
-    on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
-
     hatching_map = HatchingMap()
-    draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
-                                                          on_board_sprites_drawer,
-                                                          session.board,
-                                                          camera.orientation,
-                                                          hatching_map,
-                                                          cells_change_observer,
-                                                          window.draw_event_finished)
+    draw, figures_drawer, board_drawer, on_board_sprites_drawer = DrawMaker().make(screen_shape,
+                                                                                   session.board,
+                                                                                   camera.orientation,
+                                                                                   hatching_map,
+                                                                                   cells_change_observer,
+                                                                                   window.draw_event_finished)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
@@ -184,20 +182,21 @@ def load_game(window: Window,
     #     from color import Color
     #     import itertools
     #     import random
+    #     from mathematics.hex_geometry import get_world_position
+    #     from statuses import MISSING
     #
-    #     sprites = []
-    #     sprite = SpritesLoader.from_meta().load_twitch()
-    #     for coord in session.board:
-    #         idx = on_board_sprites_drawer.add_sprite(sprite, coord)
-    #         sprites.append(on_board_sprites_drawer.get_sprite(idx))
-    #
-    #     random.shuffle(sprites)
+    #     idx = on_board_sprites_drawer.add_sprite(SpritesLoader.from_meta().load_twitch(), Vector2Int.zero())
+    #     sprite = on_board_sprites_drawer.get_sprite(idx)
     #
     #     while True:
-    #         for batch in itertools.batched(sprites, 500):
-    #             yield
-    #             for sprite in batch:
-    #                 sprite.color = Color.random(a=(0 if random.random() < .7 else 255))
+    #         yield
+    #         mouse_position = mouse_movement_observer.mouse_position
+    #         coord = hovered_cell_getter.get_coord(mouse_position)
+    #         if coord is MISSING:
+    #             continue
+    #         position = get_world_position(coord)
+    #         sprite.position = position
+    #         sprite.visible = not sprite.visible
     #
     # test = aboba()
 
@@ -214,9 +213,9 @@ def load_game(window: Window,
                                                ),
                            in_game_time,
                            [
+                               # lambda: next(test),
                                annexation_map_updater.update,
                                hatching_map_updater.update,
-                               # lambda: next(test),
                                music_player.update,
                            ])
     drawer = FrameDrawer.make(layers)
