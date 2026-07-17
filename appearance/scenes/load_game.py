@@ -20,13 +20,11 @@ from appearance.animations.moves_animators_switcher import MovesAnimatorsSwitche
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
-from appearance.graphics.draw.drawers.drawers_arc.SpritesPool import SpritesPool
 from appearance.graphics.draw.drawers.drawers_arc.background_drawer import BackgroundDrawer
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.annexation_hatching_map_updater import \
     AnnexationHatchingMapUpdater
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
-from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.input.keyboard_camera_mover import KeyboardCameraMover

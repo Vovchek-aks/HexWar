@@ -53,7 +53,7 @@ class OnBoardSpritesDrawer(proto.OnBoardSpritesDrawer):
         assert index in self._sprites
 
         sprite = self._sprites.pop(index)
-        self._pool.release(sprite)
+        self._pool.release(sprite, return_to_pool=False)
         self._dont_need_rotation.discard(index)
 
     def discard_sprite(self, index: int) -> bool:

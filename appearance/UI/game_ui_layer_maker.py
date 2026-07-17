@@ -214,8 +214,9 @@ class GameUiLayerMaker:
         ])
 
         self._moves_maker.resources_flow_could_have_changed.subscribe(lambda: update_resources())
-        for player in self._session.master.players:
-            player.resources.has_changed.subscribe(lambda _: update_resources())
+
+        # for player in self._session.master.players:
+        #     player.resources.has_changed.subscribe(lambda _: update_resources())
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name

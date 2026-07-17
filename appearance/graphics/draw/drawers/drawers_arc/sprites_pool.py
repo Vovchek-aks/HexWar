@@ -49,6 +49,10 @@ class SpritesPool(proto.SpritesPool):
         self._sprite_list.append(arc_sprite)
         return arc_sprite
 
-    def release(self, arc_sprite: arc.Sprite) -> None:
+    def release(self, arc_sprite: arc.Sprite, *, return_to_pool=True) -> None:
+        if not return_to_pool:
+            self._sprite_list.remove(arc_sprite)
+            return
+
         arc_sprite.visible = False
         self._pool[arc_sprite.texture].append(arc_sprite)

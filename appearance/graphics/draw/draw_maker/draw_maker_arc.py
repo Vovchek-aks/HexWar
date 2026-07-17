@@ -10,7 +10,7 @@ from appearance.graphics.colors import BACKGROUND
 from appearance.graphics.sprites import SpritesLoader
 from appearance.graphics.draw.drawers.drawers_arc.figures_drawer import FiguresSpritesLoader
 import core.figures.figure as fig
-from ..drawers.drawers_arc.SpritesPool import SpritesPool
+from ..drawers.drawers_arc.sprites_pool import SpritesPool
 from ..drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from ..drawers.drawers_arc.waves_drawer import WavesDrawer
 
@@ -39,15 +39,15 @@ class DrawMaker:
         figures_sprites = figures_sprites_loader.load(fig.get_figures(), self._on_no_figure_sprite)
 
         pool = SpritesPool.make(count_multiplier_of_sprites={
-            figures_sprites.get(figure): 5 if figure in {fig.Infantry, fig.Town, fig.LightFactory} else 1
-            for figure in fig.get_figures()
+            figures_sprites.get(figure): 1
+            for figure in {fig.Infantry, fig.Town, fig.LightFactory}
         })
         on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera_orientation, pool)
         figures_drawer = FiguresDrawer.make(board, figures_sprites, on_board_sprites_drawer)
         cells_change_observer.cell_changed_figure.subscribe(figures_drawer.update_cell)
         for figure in fig.get_figures():
             index = on_board_sprites_drawer.add_sprite(figures_sprites.get(figure), Vector2Int.zero())
-            on_board_sprites_drawer.remove_sprite(index)
+            on_board_sprites_drawer.get_sprite(index).visible = False
 
         WavesDrawer(board, sprites_loader, on_board_sprites_drawer).draw()
 

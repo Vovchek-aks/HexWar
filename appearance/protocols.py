@@ -180,7 +180,7 @@ class SpritesPool(ABC):
         ...
 
     @abstractmethod
-    def release(self, arc_sprite: arc.Sprite) -> None:
+    def release(self, arc_sprite: arc.Sprite, *, return_to_pool=True) -> None:
         ...
 
 
