@@ -49,7 +49,7 @@ class DrawMaker:
             index = on_board_sprites_drawer.add_sprite(figures_sprites.get(figure), Vector2Int.zero())
             on_board_sprites_drawer.get_sprite(index).visible = False
 
-        WavesDrawer(board, sprites_loader, on_board_sprites_drawer).draw()
+        # WavesDrawer(board, sprites_loader, on_board_sprites_drawer).draw()
 
         return (Draw(board_drawer, on_board_sprites_drawer, BackgroundDrawer(screen_shape, BACKGROUND)),
                 figures_drawer, board_drawer, on_board_sprites_drawer)

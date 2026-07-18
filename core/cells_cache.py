@@ -67,9 +67,12 @@ class CellsCache(proto.CellsCache):
         production = self.with_figure(union(*fig.get_producers()))
         player_cells = self.with_owner(player)
         player_production = player_cells & production
-        return (len(player_cells) / sum(len(self.with_owner(other))
-                                        for other in self._cells_of),
-                0 if not production else len(player_production) / len(production))
+        try:
+            return (len(player_cells) / sum(len(self.with_owner(other))
+                                            for other in self._cells_of),
+                    0 if not production else len(player_production) / len(production))
+        except ZeroDivisionError:
+            return 0, 0
 
     def update_fully(self) -> None:
         for cell in self._board.cells:

@@ -43,6 +43,7 @@ _BOARD = "board"
 _BACKGROUND1 = "background1"
 _BACKGROUND2 = "background2"
 _BACKGROUND3 = "background3"
+_WATER = "water"
 
 
 @frozen
@@ -157,6 +158,10 @@ class SpritesLoader:
 
     def load_background3(self) -> Sprite:
         sprite_info = self._board[_BACKGROUND3]
+        return self._load_sprite(sprite_info)
+
+    def load_water(self) -> Sprite:
+        sprite_info = self._board[_WATER]
         return self._load_sprite(sprite_info)
 
     @staticmethod

@@ -264,6 +264,13 @@
         183,
         183
       ]
+    },
+    "water": {
+      "file": "board/water.png",
+      "pivot": [
+        183,
+        183
+      ]
     }
   }
 }
