@@ -43,13 +43,6 @@ class Master(ABC):
         ...
 
 
-class ValidMove[T: "Move"](ABC):
-    @property
-    @abstractmethod
-    def move(self) -> T:
-        ...
-
-
 class PlayerData(ABC):
     @property
     @abstractmethod
@@ -64,7 +57,7 @@ class PlayerData(ABC):
 
 class PlayerInputer(ABC):
     @abstractmethod
-    def get_move(self, session: "GameSession") -> ValidMove | Status:
+    def get_move(self, session: "GameSession") -> "ValidMove | Status":
         ...
 
     @abstractmethod
@@ -111,17 +104,24 @@ class Player(ABC):
 
 class Bot:
     @abstractmethod
-    def get_move(self, session: "GameSession") -> ValidMove | Status:
+    def get_move(self, session: "GameSession") -> "ValidMove | Status":
         ...
 
 
 class Move(ABC):
     @abstractmethod
-    def validate(self, session: "GameSession") -> ValidMove | Status:
+    def validate(self, session: "GameSession") -> "ValidMove | Status":
         ...
 
     @abstractmethod
     def execute(self, session: "GameSession") -> None:
+        ...
+
+
+class ValidMove[T: Move](ABC):
+    @property
+    @abstractmethod
+    def move(self) -> T:
         ...
 
 
@@ -143,12 +143,12 @@ class MovesMaker(ABC):
 
     @property
     @abstractmethod
-    def resources_flow_could_have_changed(self) -> OnEventSubscriber[None]:
+    def current_player_resources_flow_could_have_changed(self) -> OnEventSubscriber[None]:
         ...
 
     @property
     @abstractmethod
-    def cells_to_annex_could_have_changed(self) -> OnEventSubscriber[None]:
+    def cells_to_annex_could_have_changed(self) -> OnEventSubscriber[Player, None]:
         ...
 
     @abstractmethod

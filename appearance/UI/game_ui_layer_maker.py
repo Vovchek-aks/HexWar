@@ -213,7 +213,7 @@ class GameUiLayerMaker:
             HeavyIndustryProducts,
         ])
 
-        self._moves_maker.resources_flow_could_have_changed.subscribe(lambda: update_resources())
+        self._moves_maker.current_player_resources_flow_could_have_changed.subscribe(lambda: update_resources())
 
         # for player in self._session.master.players:
         #     player.resources.has_changed.subscribe(lambda _: update_resources())

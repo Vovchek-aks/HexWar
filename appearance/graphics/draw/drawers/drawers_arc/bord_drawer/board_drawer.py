@@ -125,7 +125,7 @@ class BoardDrawer(proto.BoardDrawer):
         self._draw_event_finished.subscribe(on_draw_event_finished)
 
     def make_edge(self, cell_coord: Vector2Int, neighbor: Neighbor) -> Shape:
-        color = self._get_edges_color(cell_coord)
+        color = self._get_edge_color(cell_coord)
 
         cell_coord = cell_coord + neighbor_square_deltas()[neighbor]
         neighbor = OPPOSITE_NEIGHBOR[neighbor]
@@ -223,13 +223,13 @@ class BoardDrawer(proto.BoardDrawer):
         self._append_edges(coord)
 
     def _append_edges(self, cell_coord: Vector2Int) -> None:
-        edges = list[Shape]()
+        assert not self._edges[cell_coord]
+
         for neighbor in NEIGHBORS:
             if self._should_draw_edge(cell_coord, neighbor):
-                edges.append(self.make_edge(cell_coord, neighbor))
+                self._edges[cell_coord].append(self.make_edge(cell_coord, neighbor))
 
-        self._edges[cell_coord].extend(edges)
-        self._shape_list.extend(*edges)
+        self._shape_list.extend(*self._edges[cell_coord])
 
     @staticmethod
     def _get_hex_color(coord: Vector2Int, board: Board) -> Color:
@@ -264,7 +264,7 @@ class BoardDrawer(proto.BoardDrawer):
         return max(min_value, min(max_value, channel + round(random.gauss(sigma=MAJOR_COLOR_VARIATION_FREQUENCY) *
                                                              AVERAGE_COLOR_VARIATION_AMPLITUDE)))
 
-    def _get_edges_color(self, coord: Vector2Int) -> Color:
+    def _get_edge_color(self, coord: Vector2Int) -> Color:
         return self._get_hex_color(coord, self._board).lerp(WHITE, EDGES_BRIGHTNESS_RATIO)
 
     def _get_hatching_color(self, coord: Vector2Int) -> Color:

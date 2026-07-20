@@ -17,8 +17,9 @@ class AnnexationMapUpdater(proto.AnnexationMapUpdater):
              annexation_map: proto.AnnexationMap) -> proto.AnnexationMapUpdater:
         self = cls(session, annexation_map)
         moves_maker.cells_to_annex_could_have_changed.subscribe(
-            lambda: self._on_annexations_might_have_changed(session.master.current_player)
+            self._on_annexations_might_have_changed
         )
+        moves_maker.board_move_was_made.subscribe(self._on_board_move_was_made)
         session.master.turn_has_passed.subscribe(self._on_annexations_might_have_changed)
         session.master.turn_had_started.subscribe(self._on_annexations_might_have_changed)
         self._on_annexations_might_have_changed(session.master.current_player)
@@ -109,6 +110,16 @@ class AnnexationMapUpdater(proto.AnnexationMapUpdater):
         for neighbor in neighbors:
             self.append(neighbor)
         self.push(player)
+
+    def _on_board_move_was_made(self, _: proto.ValidMove) -> None:
+        self._last_move_time = time()
+
+        if not self._players_queue:
+            return
+
+        player = self._session.master.current_player
+        if player is self._players_queue[0]:
+            self._on_annexations_might_have_changed(player)
 
     def _start_next(self) -> None:
         assert self._players_queue

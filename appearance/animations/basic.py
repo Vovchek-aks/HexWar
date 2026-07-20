@@ -1,5 +1,5 @@
 from typing import Iterator, Callable
-from itertools import chain
+from itertools import chain  # dont remove
 
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from observer import OnEventSubscriber
