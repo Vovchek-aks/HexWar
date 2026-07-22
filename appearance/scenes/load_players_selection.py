@@ -74,12 +74,13 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
                                    players_selector.selected_players_were_changed)
 
     yield language.get_sprite_loading_message()
-    on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
-    draw, _, board_drawer = DrawMaker().make(screen_shape,
-                                             on_board_sprites_drawer,
-                                             session.board,
-                                             HatchingMap(),
-                                             cells_change_observer)
+    hatching_map = HatchingMap()
+    draw, figures_drawer, board_drawer, on_board_sprites_drawer = DrawMaker().make(screen_shape,
+                                                                                   session.board,
+                                                                                   camera.orientation,
+                                                                                   hatching_map,
+                                                                                   cells_change_observer,
+                                                                                   window.draw_event_finished)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [

@@ -21,6 +21,10 @@
       "type": "variants",
       "elements": "figures/tank_variants"
     },
+    "Howitzer": {
+      "type": "variants",
+      "elements": "figures/tank_variants"
+    },
     "Artillery": {
       "type": "variants",
       "elements": "figures/artillery_variants"
@@ -71,6 +75,11 @@
       "effects/inf_reloc_2.wav"
     ],
     "tank_reloc": [
+      "effects/tank_reloc_1.wav",
+      "effects/tank_reloc_2.wav",
+      "effects/tank_reloc_3.wav"
+    ],
+    "howitzer_reloc": [
       "effects/tank_reloc_1.wav",
       "effects/tank_reloc_2.wav",
       "effects/tank_reloc_3.wav"

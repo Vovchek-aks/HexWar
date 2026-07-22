@@ -21,7 +21,7 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from files import read_random_bot_names
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = True
+IS_MULTIBOT = False
 
 UPS = 60
 CAPTION = "HexWar"
@@ -49,7 +49,7 @@ def _make_test_game_loading_scene(window: Window) -> Scene:
         player = session.master.current_player
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)
-        player.resources.add(ResourcesGroup.make(Dollars(100_000_000),
+        player.resources.add(ResourcesGroup.make(Dollars(1_000_000_000),
                                                  LightIndustryProducts(1_000_000),
                                                  HeavyIndustryProducts(1_000_000)))
         FiguresUpdateFlagCaller().on_turn_start(session)

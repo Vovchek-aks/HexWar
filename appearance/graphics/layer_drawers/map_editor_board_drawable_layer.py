@@ -16,9 +16,8 @@ class MapEditorBoardDrawableLayer(proto.DrawableLayer):
             self._draw_layer(mouse_position)
 
     def _draw_layer(self, mouse_position: Vector2) -> None:
-        self._draw.board()
-
         if (hovered_coord := self._hovered_cell_getter.get_coord(mouse_position)) is not MISSING:
             self._draw.under_cursor_cell(hovered_coord)
 
+        self._draw.board()
         self._draw.board_sprites()

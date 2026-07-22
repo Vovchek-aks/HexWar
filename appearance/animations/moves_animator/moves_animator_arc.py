@@ -12,6 +12,7 @@ from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.comnination import Combination
 from core.moves.creation import Creation
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation
@@ -119,6 +120,8 @@ class MovesAnimator(proto.MovesAnimator):
                 return self._get_capture_animation(coord)
             case Conversion(coord=coord, target=target):
                 return self._get_conversion_animation(coord, target)
+            case Combination(first_coord=to_coord, second_coord=from_coord):
+                return self._get_relocation_animation(from_coord, to_coord)
             case Creation(to_coord=coord, figure_type=figure):
                 return self._get_creation_animation(coord, figure)
             case OreshnikLaunch(from_coord=coord, to_coord=target):

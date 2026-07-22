@@ -45,6 +45,7 @@ _EXPLOSIONS = "explosions"
 _ATTACKS = "attacks"
 _INFANTRY_RELOCATIONS = "inf_reloc"
 _TANK_RELOCATIONS = "tank_reloc"
+_HOWITZER_RELOCATIONS = "howitzer_reloc"
 _MOTORIZATION_RELOCATIONS = "mt_reloc"
 
 _MUSIC_VOLUME_MULTIPLIER = .5
@@ -96,6 +97,7 @@ class SoundsLoader:
             self._load_random_effects(_INFANTRY_RELOCATIONS, volume),
             self._load_random_effects(_MOTORIZATION_RELOCATIONS, volume),
             self._load_random_effects(_TANK_RELOCATIONS, volume),
+            self._load_random_effects(_HOWITZER_RELOCATIONS, volume),
         )
 
     def load_game_music(self) -> list[Sound]:

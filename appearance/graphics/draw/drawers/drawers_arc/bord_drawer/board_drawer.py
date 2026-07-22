@@ -107,7 +107,9 @@ class BoardDrawer(proto.BoardDrawer):
         self._water_animator.update_all(time())
 
     def draw_highlighted(self, coord: Vector2Int, highlight_ratio: float) -> None:
-        initial_color = self._backgrounds[coord].color
+        initial_color = (self._backgrounds[coord].color
+                         if AtWater in self._board[coord].figure.FLAGS else
+                         self._get_hex_color(coord, self._board))
         color = Color.lerp(initial_color, WHITE, highlight_ratio)
         self._backgrounds[coord].color = color
         if self._hatching_map.color_at(coord) is not MISSING:
