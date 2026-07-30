@@ -6,11 +6,12 @@ from appearance.input.clicks_catcher.click import MouseButtons
 from appearance.input.moves_inputer.input_actions import CellClickAction, InputAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, ButtonPressAction, \
     PullingInitiationButtonPressAction, PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction, \
-    CombinationButtonPressAction
+    CombinationButtonPressAction, GradAttackButtonPressAction
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.comnination import Combination
 from core.moves.conversion import Conversion
+from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
@@ -35,6 +36,7 @@ class MoveReaders:
             self._try_read_conversion_move,
             self._try_read_capture_move,
             self._try_read_attack_move,
+            self._try_read_grad_attack_move,
             self._try_read_combination_move,
             self._try_read_pulling_initiation_move,
             self._try_read_pulling_termination_move,
@@ -103,6 +105,9 @@ class MoveReaders:
 
     def _try_read_attack_move(self, actions: list[InputAction]) -> ValidMove | Status:
         return self._try_read_right_click_after(AttackButtonPressAction, Attack, actions)
+
+    def _try_read_grad_attack_move(self, actions: list[InputAction]) -> ValidMove | Status:
+        return self._try_read_right_click_after(GradAttackButtonPressAction, GradAttack, actions)
 
     def _try_read_combination_move(self, actions: list[InputAction]) -> ValidMove | Status:
         if not isinstance(actions[0], CombinationButtonPressAction):

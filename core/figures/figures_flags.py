@@ -148,6 +148,16 @@ class CanLaunchOreshnik(proto.CanLaunchOreshnik):
 
 
 @frozen
+class CanGradAttack(proto.CanGradAttack):
+    EXCLUDES = set[type[Flag]]()
+
+    max_distance: int
+    targets_count: int
+    is_attacking_center: bool
+    cost: proto.ResourcesGroup
+
+
+@frozen
 class PreventsAnnexations(proto.PreventsAnnexations):
     EXCLUDES = set[type[Flag]]()
 

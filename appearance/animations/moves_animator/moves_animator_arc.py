@@ -14,6 +14,7 @@ from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.comnination import Combination
 from core.moves.creation import Creation
+from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation
 from core.moves.relocations import Assault, Relocation
@@ -58,6 +59,14 @@ ORESHNIK_LAUNCH_EXPLOSIONS_MIN_LAG = 0
 ORESHNIK_LAUNCH_EXPLOSIONS_MAX_LAG = .5
 ORESHNIK_LAUNCH_EXPLOSIONS_MIN_SCALE_RATIO = 1
 ORESHNIK_LAUNCH_EXPLOSIONS_MAX_SCALE_RATIO = 1.5
+
+GRAD_ATTACK_FLIGHT_DURATION = 1
+GRAD_ATTACK_FLIGHTS_TIME_SPACING = .1
+GRAD_ATTACK_FLIGHT_HEIGHT = DISTANCE_BETWEEN_CENTERS * 4
+GRAD_ATTACK_ROCKET_SCALE = .4
+GRAD_ATTACK_EXPLOSIONS_DURATION = .6
+GRAD_ATTACK_EXPLOSIONS_MIN_SCALE_RATIO = 1
+GRAD_ATTACK_EXPLOSIONS_MAX_SCALE_RATIO = 1.5
 
 
 @frozen
@@ -126,6 +135,8 @@ class MovesAnimator(proto.MovesAnimator):
                 return self._get_creation_animation(coord, figure)
             case OreshnikLaunch(from_coord=coord, to_coord=target):
                 return self._get_oreshnik_launch_animation(coord, target, move.get_target_cells(self._session))
+            case GradAttack(from_coord=coord):
+                return self._get_grad_attack_animation(coord, move.get_target_cells(self._session))
             case _:
                 return MISSING
         assert False
@@ -271,6 +282,67 @@ class MovesAnimator(proto.MovesAnimator):
                           ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION)
         get_jump_delta_position = self._get_jump_delta_position_getter(*jump_arguments)
 
+        flight = chain(group(chain(self._play_sound(self._sounds.oreshnik_flight), cycle(no_animation)),
+                             self._jump(rocket, *jump_arguments),
+                             self._rotate_sprite(rocket, self._get_rocket_delta_angle_getter(get_jump_delta_position),
+                                                 ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION),
+                             self._sleep(ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION *
+                                         ORESHNIK_LAUNCH_VISIBLE_FLIGHT_DURATION_RATIO)),
+                       call(lambda: self._on_board_sprites_drawer.discard_sprite(rocket_index)))
+
+        try:
+            yield from chain(flight, explosions)
+        finally:
+            self._on_board_sprites_drawer.discard_sprite(rocket_index)
+
+    def _get_grad_attack_animation(self, coord: Vector2Int, targets: Cells) -> Animation:
+        animations = list[Animation]()
+
+        for index, target in enumerate(targets):
+            target_coord = self._session.board.coordinates_of(target)
+
+            explosion = chain(group(self._play_sound(self._sounds.explosion),
+                                    self._show_sprite(self._explosion,
+                                                      self._session.board.coordinates_of(target),
+                                                      GRAD_ATTACK_EXPLOSIONS_DURATION,
+                                                      scale_ratio=random.uniform(
+                                                          GRAD_ATTACK_EXPLOSIONS_MIN_SCALE_RATIO,
+                                                          GRAD_ATTACK_EXPLOSIONS_MAX_SCALE_RATIO
+                                                      ))),
+                              (self._hide_figure(self._session.board.coordinates_of(target))
+                               if Empty not in target.figure.FLAGS else
+                               no_animation()))
+
+            animations.append(chain(self._sleep(GRAD_ATTACK_FLIGHTS_TIME_SPACING * index),
+                                    self._get_grad_rocket_flight_animation(coord, target_coord),
+                                    explosion))
+
+        return group(*animations)
+
+    def _get_grad_rocket_flight_animation(self, coord: Vector2Int, target: Vector2Int) -> Animation:
+        yield
+
+        rocket_index = self._on_board_sprites_drawer.add_sprite(self._rocket, coord,
+                                                                scale_ratio=GRAD_ATTACK_ROCKET_SCALE)
+        rocket = self._on_board_sprites_drawer.get_sprite(rocket_index)
+
+        jump_arguments = (coord,
+                          target,
+                          GRAD_ATTACK_FLIGHT_HEIGHT,
+                          GRAD_ATTACK_FLIGHT_DURATION)
+        get_jump_delta_position = self._get_jump_delta_position_getter(*jump_arguments)
+        flight = chain(group(self._jump(rocket, *jump_arguments),
+                             self._rotate_sprite(rocket, self._get_rocket_delta_angle_getter(get_jump_delta_position),
+                                                 GRAD_ATTACK_FLIGHT_DURATION)),
+                       call(lambda: self._on_board_sprites_drawer.discard_sprite(rocket_index)))
+
+        try:
+            yield from flight
+        finally:
+            self._on_board_sprites_drawer.discard_sprite(rocket_index)
+
+    def _get_rocket_delta_angle_getter(self,
+                                       get_jump_delta_position: Callable[[float], Vector2]) -> Callable[[float], Angle]:
         def get_rocket_delta_angle(t: float) -> Angle:
             if t == 0:
                 return Angle(0)
@@ -287,17 +359,7 @@ class MovesAnimator(proto.MovesAnimator):
             up = self._camera.orientation.rotation.inverse.apply(-Vector2.right()).normalize()
             return -Angle(up.angle_to(direction))
 
-        flight = chain(group(chain(self._play_sound(self._sounds.oreshnik_flight), cycle(no_animation)),
-                             self._jump(rocket, *jump_arguments),
-                             self._rotate_sprite(rocket, get_rocket_delta_angle, ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION),
-                             self._sleep(ORESHNIK_LAUNCH_FULL_FLIGHT_DURATION *
-                                         ORESHNIK_LAUNCH_VISIBLE_FLIGHT_DURATION_RATIO)),
-                       call(lambda: self._on_board_sprites_drawer.discard_sprite(rocket_index)))
-
-        try:
-            yield from chain(flight, explosions)
-        finally:
-            self._on_board_sprites_drawer.discard_sprite(rocket_index)
+        return get_rocket_delta_angle
 
     def _jump(self,
               sprite: arc.Sprite,

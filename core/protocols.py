@@ -631,6 +631,28 @@ class CanLaunchOreshnik(Flag, metaclass=ABCMeta):
         ...
 
 
+class CanGradAttack(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def max_distance(self) -> int:
+        ...
+
+    @property
+    @abstractmethod
+    def targets_count(self) -> int:
+        ...
+
+    @property
+    @abstractmethod
+    def is_attacking_center(self) -> bool:
+        ...
+
+    @property
+    @abstractmethod
+    def cost(self) -> "ResourcesGroup":
+        ...
+
+
 class Static(Flag, metaclass=ABCMeta):
     ...
 

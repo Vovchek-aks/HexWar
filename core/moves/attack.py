@@ -31,7 +31,7 @@ class Attack(proto.Move):
                 .get_all_not_farther_than(can_attack.max_distance, include_cell=False)):
             return INVALID
 
-        if from_cell.strength(board) <= to_cell.hardness(board):
+        if from_cell.strength(board) < to_cell.hardness(board):
             return INVALID
 
         if not session.figures_budget.can_spend(figure, figure.get_cost_of(self)):

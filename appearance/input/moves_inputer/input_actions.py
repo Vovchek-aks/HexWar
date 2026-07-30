@@ -55,6 +55,11 @@ class AttackButtonPressAction(ButtonPressAction):
 
 
 @frozen
+class GradAttackButtonPressAction(ButtonPressAction):
+    ...
+
+
+@frozen
 class PullingInitiationButtonPressAction(ButtonPressAction):
     ...
 

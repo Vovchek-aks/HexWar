@@ -18,11 +18,13 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction, CreationButtonPressAction, \
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, PullingInitiationButtonPressAction, \
-    PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction, CombinationButtonPressAction
+    PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction, CombinationButtonPressAction, \
+    GradAttackButtonPressAction
 from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
     INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK, \
     CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL, PURCHASE_SETTLEMENT, PURCHASE_PRIVATE_LIGHT_FACTORY, \
-    PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, TANK_AND_ARTILLERY_TO_HOWITZER, HOWITZER_ATTACK
+    PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, TANK_AND_ARTILLERY_TO_HOWITZER, HOWITZER_ATTACK, \
+    MOTORIZATION_AND_ARTILLERY_TO_GRAD, GRAD_ATTACK
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
@@ -275,6 +277,7 @@ class GameUiLayerMaker:
             self._make_tank_menu(),
             self._make_artillery_menu(),
             self._make_howitzer_menu(),
+            self._make_grad_menu(),
             self._make_town_menu(),
             self._make_light_factory_menu(),
             self._make_heavy_factory_menu(),
@@ -427,8 +430,13 @@ class GameUiLayerMaker:
         to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
                                           .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                               fig.Infantry)))
+        combine = self._make_activatable_button(self._language.get_combine_message(),
+                                                lambda: CombinationButtonPressAction(self._cell_selector.get_coord(),
+                                                                                     fig.Grad))
 
-        return self._make_figure_menu(fig.Motorization, [to_infantry], [MOTORIZATION_TO_INFANTRY])
+        return self._make_figure_menu(fig.Motorization,
+                                      [to_infantry, combine],
+                                      [MOTORIZATION_TO_INFANTRY, MOTORIZATION_AND_ARTILLERY_TO_GRAD])
 
     def _make_town_menu(self) -> Layer:
         mobilise = self._make_null_button(Language.from_meta().get_mobilise_message())
@@ -547,6 +555,12 @@ class GameUiLayerMaker:
                                                lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Howitzer, [attack], [HOWITZER_ATTACK])
+
+    def _make_grad_menu(self) -> Layer:
+        attack = self._make_activatable_button(self._language.get_attack_message(),
+                                               lambda: GradAttackButtonPressAction(self._cell_selector.get_coord()))
+
+        return self._make_figure_menu(fig.Grad, [attack], [GRAD_ATTACK])
 
     def _make_figure_menu(self,
                           figure: type[fig.Figure],

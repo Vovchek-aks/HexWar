@@ -4,6 +4,7 @@ import core.protocols as proto
 from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.comnination import Combination
+from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingTermination, PullingInitiation
 from core.moves.relocations import Relocation, Assault
@@ -49,7 +50,7 @@ class MovesMaker(proto.MovesMaker):
         assert move.move.validate(self._session) is not INVALID
 
         match move.move:  # move move
-            case OreshnikLaunch():
+            case OreshnikLaunch() | GradAttack():
                 to_invoke = set[proto.Player]()
                 for cell in move.move.get_target_cells(self._session):
                     if proto.PreventsAnnexations in cell.figure.FLAGS:

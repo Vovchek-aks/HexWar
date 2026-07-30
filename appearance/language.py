@@ -9,10 +9,11 @@ from core.moves.attack import Attack
 from core.moves.capture import Capture
 from core.moves.comnination import Combination
 from core.moves.conversion import Conversion
+from core.moves.grad_attack import GradAttack
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.relocations import Relocation, Assault
-from core.protocols import Figure, Resource, Movable, CanLaunchOreshnik
+from core.protocols import Figure, Resource, Movable, CanLaunchOreshnik, CanGradAttack
 from files import read_meta, read_json
 import core.figures.figure as fig
 from mathematics.vector import Vector2Int
@@ -27,6 +28,7 @@ LANGUAGES_META_DICT = dict[str, str]
 
 ARTILLERY_ATTACK = "ARTILLERY_ATTACK"
 HOWITZER_ATTACK = "HOWITZER_ATTACK"
+GRAD_ATTACK = "GRAD_ATTACK"
 TANK_ATTACK = "TANK_ATTACK"
 ARTILLERY_INITIATE_PULLING = "ARTILLERY_INITIATE_PULLING"
 ARTILLERY_TERMINATE_PULLING = "ARTILLERY_TERMINATE_PULLING"
@@ -34,6 +36,7 @@ MOTORIZATION_TO_INFANTRY = "MOTORIZATION_TO_INFANTRY"
 CAPITAL_TO_TALL_CAPITAL = "CAPITAL_TO_TALL_CAPITAL"
 CAPITAL_TO_WIDE_CAPITAL = "CAPITAL_TO_WIDE_CAPITAL"
 TANK_AND_ARTILLERY_TO_HOWITZER = "TANK_AND_ARTILLERY_TO_HOWITZER"
+MOTORIZATION_AND_ARTILLERY_TO_GRAD = "MOTORIZATION_AND_ARTILLERY_TO_GRAD"
 PURCHASE_SETTLEMENT = "PURCHASE_SETTLEMENT"
 PURCHASE_PRIVATE_LIGHT_FACTORY = "PURCHASE_PRIVATE_LIGHT_FACTORY"
 PURCHASE_PRIVATE_HEAVY_FACTORY = "PURCHASE_PRIVATE_HEAVY_FACTORY"
@@ -46,6 +49,7 @@ _FIGURE_OF_TAG: dict[str, type[Figure]] = {
     INFANTRY_CAPTURE: fig.Infantry,
     TANK_ATTACK: fig.Tank,
     HOWITZER_ATTACK: fig.Howitzer,
+    GRAD_ATTACK: fig.Grad,
     ARTILLERY_ATTACK: fig.Artillery,
     ARTILLERY_INITIATE_PULLING: fig.Artillery,
     ARTILLERY_TERMINATE_PULLING: fig.Artillery,
@@ -56,6 +60,7 @@ _MOVE_OF_TAG = {
     INFANTRY_CAPTURE: lambda: Capture(Vector2Int.zero(), Vector2Int.zero()),
     TANK_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
     HOWITZER_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+    GRAD_ATTACK: lambda: GradAttack(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_INITIATE_PULLING: lambda: PullingInitiation(Vector2Int.zero(), Vector2Int.zero()),
     ARTILLERY_TERMINATE_PULLING: lambda: PullingTermination(Vector2Int.zero()),
@@ -74,7 +79,13 @@ _CONVERSIONS = {
 }
 
 _COMBINATIONS = {
-    TANK_AND_ARTILLERY_TO_HOWITZER: (fig.Tank, fig.Artillery, fig.Howitzer)
+    TANK_AND_ARTILLERY_TO_HOWITZER: (fig.Tank, fig.Artillery, fig.Howitzer),
+    MOTORIZATION_AND_ARTILLERY_TO_GRAD: (fig.Motorization, fig.Artillery, fig.Grad)
+}
+
+_FLAG_OF_RESOURCE_TAKER = {
+    LAUNCH_ORESHNIK: CanLaunchOreshnik,
+    GRAD_ATTACK: CanGradAttack,
 }
 
 _FIGURES = "figures"
@@ -395,8 +406,8 @@ class Language:
             combination = _COMBINATIONS[tag]
             resources, move_cost = Combination.combinations()[combination]
             budget = combination[0].MOVES_BUDGET
-        elif tag == LAUNCH_ORESHNIK:
-            resources = _FIGURE_OF_TAG[tag].FLAGS.get(CanLaunchOreshnik).cost
+        elif tag in _FLAG_OF_RESOURCE_TAKER:
+            resources = _FIGURE_OF_TAG[tag].FLAGS.get(_FLAG_OF_RESOURCE_TAKER[tag]).cost
             move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())
             budget = _FIGURE_OF_TAG[tag].MOVES_BUDGET
         else:

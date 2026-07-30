@@ -1,8 +1,10 @@
 from attrs import frozen
 
 import appearance.protocols as proto
-from appearance.input.moves_inputer.input_actions import OreshnikLaunchButtonPressAction, AttackButtonPressAction
+from appearance.input.moves_inputer.input_actions import OreshnikLaunchButtonPressAction, AttackButtonPressAction, \
+    GradAttackButtonPressAction
 from core.distant_neighbors_getter import DistantNeighborsGetter
+from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.protocols import GameSession, CanPull, Pullable, CanAttack, CanLaunchOreshnik
 from mathematics.hex_geometry import get_distance
@@ -33,6 +35,7 @@ class BoardDrawableLayer(proto.DrawableLayer):
             if not is_empty:
                 self._draw_path_if_needed(hovered_coord, selected_coord)
                 self._draw_oreshnik_targets_if_needed(hovered_coord, selected_coord)
+                self._draw_grad_attack_targets_if_needed(hovered_coord, selected_coord)
                 self._draw_attack_targets_if_needed(hovered_coord, selected_coord)
             self._draw.under_cursor_cell(hovered_coord)
 
@@ -58,6 +61,21 @@ class BoardDrawableLayer(proto.DrawableLayer):
 
         board = self._session.board
         move = OreshnikLaunch(selected_coord, hovered_coord)
+        if move.validate(self._session) is INVALID:
+            return
+
+        for cell in move.get_target_cells(self._session):
+            self._draw.interest_cell(board.coordinates_of(cell))
+
+    def _draw_grad_attack_targets_if_needed(self,
+                                            hovered_coord: Vector2Int,
+                                            selected_coord: Vector2Int | Status) -> None:
+        if not self._is_highlighting_for_click_after_button_press_needed(hovered_coord, selected_coord,
+                                                                         GradAttackButtonPressAction):
+            return
+
+        board = self._session.board
+        move = GradAttack(selected_coord, hovered_coord)
         if move.validate(self._session) is INVALID:
             return
 

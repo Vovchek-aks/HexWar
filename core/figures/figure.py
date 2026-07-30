@@ -5,16 +5,16 @@ from typing import Callable
 from attrs import define, field
 
 from core import protocols as proto
-from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
-    PreventsAnnexations, Private, Transforms
+    PreventsAnnexations, Private, Transforms, CanGradAttack
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
 from core.moves.relocations import Relocation, Assault
@@ -581,6 +581,38 @@ class Howitzer(_Figure):
                 raise NotSupportedMove(move)
 
 
+class Grad(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      MovableBuilder()
+                      .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
+                      .can_move_to_neighbor()
+                      .build(),
+                      Capturable(),
+                      TriesTakeResourcesElseDies.make(Dollars(200_000),
+                                                      LightIndustryProducts(500)),
+                      CanGradAttack(max_distance=5,
+                                    targets_count=3,
+                                    is_attacking_center=False,
+                                    cost=ResourcesGroup.make(LightIndustryProducts(500))))
+    MOVES_BUDGET = 20
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 1
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        match move:
+            case Relocation():
+                return 1
+            case Assault():
+                return cls.MOVES_BUDGET + 1
+            case GradAttack():
+                return 15
+            case _:
+                raise NotSupportedMove(move)
+
+
 Capital = TierOneCapital | TallCapital | WideCapital
 
 
@@ -604,7 +636,8 @@ def get_figures() -> list[type[_Figure]]:
         Motorization,
         Tank,
         Artillery,
-        Howitzer
+        Howitzer,
+        Grad,
     ]
 
 

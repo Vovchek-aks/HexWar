@@ -6,7 +6,7 @@ from attrs import frozen
 import core.protocols as proto
 import core.figures.figure as fig
 from core.moves.valid_move import ValidMove
-from core.resources import ResourcesGroup, HeavyIndustryProducts
+from core.resources import ResourcesGroup, HeavyIndustryProducts, LightIndustryProducts
 from mathematics.vector import Vector2Int
 from statuses import Status, INVALID
 
@@ -18,6 +18,8 @@ class Combination(proto.Move):
     _combinations: ClassVar[COMBINATIONS] = {
         (fig.Tank, fig.Artillery, fig.Howitzer): (ResourcesGroup.make(HeavyIndustryProducts(500)),
                                                   round(fig.Tank.MOVES_BUDGET / 2)),
+        (fig.Motorization, fig.Artillery, fig.Grad): (ResourcesGroup.make(LightIndustryProducts(500)),
+                                                      round(fig.Motorization.MOVES_BUDGET / 2)),
     }
 
     @classmethod

@@ -125,6 +125,13 @@
         450,
         475
       ]
+    },
+    "Grad": {
+      "file": "figures/grad.png",
+      "pivot": [
+        450,
+        475
+      ]
     }
   },
   "ui": {
