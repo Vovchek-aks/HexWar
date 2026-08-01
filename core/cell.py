@@ -45,6 +45,15 @@ class Cell(proto.Cell):
         coord = board.coordinates_of(self)
         return movable.strength(coord, board)
 
+    def terrain_kinds(self, board: proto.Board) -> set[type[proto.TerrainKind]]:
+        terrains = set[type[proto.TerrainKind]]()
+        for cell in board.get_neighbors(self, include_cell=True):
+            if proto.TerrainKind not in cell.figure.FLAGS:
+                continue
+            terrains.add(type(cell.figure.FLAGS.get(proto.TerrainKind)))
+
+        return terrains
+
     def pop(self) -> proto.Figure:
         assert not self.is_empty
 

@@ -417,6 +417,10 @@ class Cell(ABC):
         ...
 
     @abstractmethod
+    def terrain_kinds(self, board: Board) -> "set[type[TerrainKind]]":
+        ...
+
+    @abstractmethod
     def pop(self) -> "Figure":
         ...
 
@@ -585,6 +589,26 @@ class OnLand(Flag, metaclass=ABCMeta):
 
 
 class AtWater(Flag, metaclass=ABCMeta):
+    ...
+
+
+class TerrainKind(Flag, metaclass=ABCMeta):
+    ...
+
+
+class TerrainMountain(TerrainKind, metaclass=ABCMeta):
+    ...
+
+
+class TerrainForest(TerrainKind, metaclass=ABCMeta):
+    ...
+
+
+class TerrainSwamp(TerrainKind, metaclass=ABCMeta):
+    ...
+
+
+class TerrainDesert(TerrainKind, metaclass=ABCMeta):
     ...
 
 

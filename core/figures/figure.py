@@ -8,7 +8,8 @@ from core import protocols as proto
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
-    PreventsAnnexations, Private, Transforms, CanGradAttack, CannotBeAttacked
+    PreventsAnnexations, Private, Transforms, CanGradAttack, CannotBeAttacked, TerrainMountain, TerrainForest, \
+    TerrainSwamp, TerrainDesert
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
@@ -74,6 +75,7 @@ class Mountain(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
+                      TerrainMountain(),
                       CannotBeAttacked())
     MOVES_BUDGET = 0
 
@@ -90,6 +92,7 @@ class Forest(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
+                      TerrainForest(),
                       CannotBeAttacked())
     MOVES_BUDGET = 0
 
@@ -106,6 +109,7 @@ class Swamp(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
+                      TerrainSwamp(),
                       CannotBeAttacked())
     MOVES_BUDGET = 0
 
@@ -122,6 +126,7 @@ class Desert(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
+                      TerrainDesert(),
                       CannotBeAttacked())
     MOVES_BUDGET = 0
 

@@ -27,12 +27,6 @@ from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
-# Заброшки +
-# Администрации +-
-# САУшки +
-# Частники +
-# Аннексии
-
 _ATTACKING = 0
 _BUILDING = 1
 _PULLING = 2

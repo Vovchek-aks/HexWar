@@ -64,6 +64,38 @@ class AtWater(proto.AtWater):
     EXCLUDES = {proto.OnLand}
 
 
+class TerrainMountain(proto.TerrainMountain):
+    EXCLUDES = {
+        proto.TerrainForest,
+        proto.TerrainSwamp,
+        proto.TerrainDesert,
+    }
+
+
+class TerrainForest(proto.TerrainForest):
+    EXCLUDES = {
+        proto.TerrainMountain,
+        proto.TerrainSwamp,
+        proto.TerrainDesert,
+    }
+
+
+class TerrainSwamp(proto.TerrainSwamp):
+    EXCLUDES = {
+        proto.TerrainForest,
+        proto.TerrainMountain,
+        proto.TerrainDesert,
+    }
+
+
+class TerrainDesert(proto.TerrainDesert):
+    EXCLUDES = {
+        proto.TerrainForest,
+        proto.TerrainSwamp,
+        proto.TerrainMountain,
+    }
+
+
 @frozen
 class Static(proto.Static):
     EXCLUDES = {proto.Movable}

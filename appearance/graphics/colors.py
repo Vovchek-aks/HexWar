@@ -3,13 +3,18 @@ import colorsys
 from color import Color
 
 WHITE = Color(255, 255, 255)
+BLACK = Color(0, 0, 0)
 
 BACKGROUND = Color(111, 139, 158)
+
 SHORE = Color.from_hex_string("#5ACCCE").lerp(WHITE, .07)
 WATER = Color.from_hex_string("#4c7d9e").lerp(WHITE, .07)
 HIGHLIGHTED_WATER = WATER.lerp(SHORE.lerp(WHITE, .1), .5)
-# WATER = Color(*(min(255., max(0., cw - (ch - cw) / 2))
-#                 for cw, ch in zip(WATER.rgb, HIGHLIGHTED_WATER.rgb)))
+
+MOUNTAIN = Color(173, 173, 173)
+FOREST = Color(59, 134, 93).lerp(BLACK, .1)
+SWAMP = Color(59, 134, 93).lerp(Color(64, 106, 173), .3)
+DESERT = Color(215, 201, 60)
 
 PAUSE_MENU_BACKGROUND = Color(0, 0, 0, 150)
 

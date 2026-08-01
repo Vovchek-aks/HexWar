@@ -9,14 +9,15 @@ from PIL import Image, ImageDraw
 from attrs import define, field
 import arcade as arc
 
-from appearance.graphics.colors import WHITE
-from appearance.graphics.colors import WATER, SHORE
+import appearance.graphics.colors as colors
+from appearance.graphics.colors import WHITE, WATER, SHORE
 from appearance import protocols as proto
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import SPRITES_SCALE_RATIO
 from appearance.graphics.sprites import Sprite, SpritesLoader
 from color import Color
 from core.distant_neighbors_getter import DistantNeighborsGetter
-from core.protocols import Board, Cells, AtWater
+from core.protocols import Board, Cells, AtWater, TerrainKind
+from core.figures.figures_flags import TerrainMountain, TerrainForest, TerrainSwamp, TerrainDesert
 from mathematics.hex_geometry import Neighbor, neighbors_vertexes, NEIGHBORS, neighbor_square_deltas, \
     OPPOSITE_NEIGHBOR, get_world_position, DISTANCE_BETWEEN_CENTERS
 from mathematics.vector import Vector2Int, Vector2
@@ -38,6 +39,14 @@ MAJOR_COLOR_VARIATION_FREQUENCY = 0.05
 
 SPRITE_SIZE_MULTIPLIER = 500
 SIZE_RATIO = 2 / SPRITES_SCALE_RATIO
+
+TERRAIN_COLOR_VISIBILITY_RATIO = .2
+TERRAIN_COLOR_FOR: dict[type[TerrainKind], Color] = {
+    TerrainMountain: colors.MOUNTAIN,
+    TerrainForest: colors.FOREST,
+    TerrainSwamp: colors.SWAMP,
+    TerrainDesert: colors.DESERT,
+}
 
 
 @define
@@ -236,7 +245,7 @@ class BoardDrawer(proto.BoardDrawer):
     @staticmethod
     def _get_hex_color(coord: Vector2Int, board: Board) -> Color:
         figure = board[coord].figure
-        hex_color = (board[coord].owner.data.color
+        hex_color = (BoardDrawer._get_land_color(coord, board)
                      if figure.is_on_land() else
                      BoardDrawer._get_water_color(coord, board))
         state = random.getstate()
@@ -248,6 +257,17 @@ class BoardDrawer(proto.BoardDrawer):
         )
         random.setstate(state)
         return color
+
+    @staticmethod
+    def _get_land_color(coord: Vector2Int, board: Board) -> Color:
+        color = board[coord].owner.data.color
+
+        terrain_colors = [TERRAIN_COLOR_FOR[terrain_kind]
+                          for terrain_kind in board[coord].terrain_kinds(board)]
+        if not terrain_colors:
+            return color
+
+        return color.lerp(Color.average(*terrain_colors), TERRAIN_COLOR_VISIBILITY_RATIO)
 
     @staticmethod
     def _get_water_color(coord: Vector2Int, board: Board) -> Color:
