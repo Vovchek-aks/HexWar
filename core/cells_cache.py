@@ -119,7 +119,6 @@ class CellsCache(proto.CellsCache):
             return
 
         if flag is not MISSING:
-            assert flag.can_prevent(..., ..., ...)
             self._control_zone_of[cell] = (DistantNeighborsGetter(cell, self._board)
                                            .get_all_not_farther_than(flag.distance, include_cell=True))
 
