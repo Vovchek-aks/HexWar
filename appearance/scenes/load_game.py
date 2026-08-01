@@ -126,6 +126,7 @@ def load_game(window: Window,
 
     yield language.get_ui_making_message()
     end_turn_button_was_clicked = Event[None]()
+    turn_start_preparations_had_finished = Event[None]()
     game_ui_layer_maker = GameUiLayerMaker(UiDrawer(),
                                            screen_shape,
                                            session,
@@ -133,6 +134,7 @@ def load_game(window: Window,
                                            mouse_movement_observer,
                                            button_press_action_happened,
                                            moves_maker,
+                                           turn_start_preparations_had_finished.subscriber,
                                            actions_reader)
     ui_layer = (game_ui_layer_maker.make_for_multibot()
                 if is_multibot else
@@ -158,45 +160,22 @@ def load_game(window: Window,
     in_game_time = InGameTime()
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
-    # bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
-    #                                            in_game_time, speed_multiplier=float('inf'), volume_multiplier=.2)
     bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                in_game_time, speed_multiplier=3, volume_multiplier=.2)
     animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     annexation_map_updater = AnnexationMapUpdater.make(session, moves_maker, AnnexationMap(session))
-    game_rules_applier = GameRulesApplier.with_default_rules(session,
-                                                             annexation_map_updater,
-                                                             board_drawer.not_updating_cells,
-                                                             cell_changed_owner.invoke)
     hatching_map_updater = AnnexationHatchingMapUpdater.make(session, hatching_map, board_drawer,
                                                              annexation_map_updater)
 
     turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session,
                                           hatching_map_updater, annexation_map_updater)
 
-    # def aboba() -> Iterator[None]:
-    #     from appearance.graphics.sprites.sprites_loader import SpritesLoader
-    #     from color import Color
-    #     import itertools
-    #     import random
-    #     from mathematics.hex_geometry import get_world_position
-    #     from statuses import MISSING
-    #
-    #     idx = on_board_sprites_drawer.add_sprite(SpritesLoader.from_meta().load_twitch(), Vector2Int.zero())
-    #     sprite = on_board_sprites_drawer.get_sprite(idx)
-    #
-    #     while True:
-    #         yield
-    #         mouse_position = mouse_movement_observer.mouse_position
-    #         coord = hovered_cell_getter.get_coord(mouse_position)
-    #         if coord is MISSING:
-    #             continue
-    #         position = get_world_position(coord)
-    #         sprite.position = position
-    #         sprite.visible = not sprite.visible
-    #
-    # test = aboba()
+    game_rules_applier = GameRulesApplier.with_default_rules(session,
+                                                             annexation_map_updater,
+                                                             board_drawer.not_updating_cells,
+                                                             cell_changed_owner.invoke)
+    game_rules_applier.turn_start_preparations_had_finished.subscribe(turn_start_preparations_had_finished.invoke)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
                            mouse_movement_observer, layers,

@@ -378,6 +378,11 @@ class GameRule(ABC):
 
 
 class GameRulesApplier(ABC):
+    @property
+    @abstractmethod
+    def turn_start_preparations_had_finished(self) -> OnEventSubscriber[None]:
+        ...
+
     @abstractmethod
     def on_turn_start(self) -> Iterator[None]:
         ...

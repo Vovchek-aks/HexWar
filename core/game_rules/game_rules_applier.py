@@ -1,10 +1,11 @@
 from typing import Iterator, Callable
 
-from attrs import frozen
+from attrs import frozen, field
 
 from core import protocols as proto
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
+from observer import Event, OnEventSubscriber
 from . import Annexer, FiguresTransformer, PrivateFiguresSpawner, FiguresUpdateFlagCaller
 from .abandonments_spreader import AbandonmentsSpreader
 
@@ -31,9 +32,17 @@ class GameRulesApplier(proto.GameRulesApplier):
     _session: proto.GameSession
     _game_rules: list[proto.GameRule]
 
+    _turn_start_preparations_had_finished: Event[None] = field(init=False, factory=Event)
+
+    @property
+    def turn_start_preparations_had_finished(self) -> OnEventSubscriber[None]:
+        return self._turn_start_preparations_had_finished.subscriber
+
     def on_turn_start(self) -> Iterator[None]:
         for game_rule in self._game_rules:
             yield from game_rule.on_turn_start(self._session)
+
+        self._turn_start_preparations_had_finished.invoke()
 
     def on_turn_end(self) -> Iterator[None]:
         for game_rule in self._game_rules:

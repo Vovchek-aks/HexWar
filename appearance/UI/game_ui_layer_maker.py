@@ -35,7 +35,7 @@ from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figure as fig
-from observer import Event
+from observer import Event, OnEventSubscriber
 from statuses import MISSING, Status
 
 
@@ -48,6 +48,7 @@ class GameUiLayerMaker:
     _mouse_movement_observer: MouseMovementObserver
     _button_press_action_happened: Event[ButtonPressAction, None]
     _moves_maker: MovesMaker
+    _turn_start_preparations_had_finished: OnEventSubscriber[None]
     _actions_reader: InputActionsReader
 
     _language: Language = Factory(Language.from_meta)
@@ -215,8 +216,8 @@ class GameUiLayerMaker:
             HeavyIndustryProducts,
         ])
 
-        for player in self._session.master.players:
-            player.resources.has_changed.subscribe(lambda _: update_resources())
+        self._moves_maker.current_player_resources_flow_could_have_changed.subscribe(update_resources)
+        self._turn_start_preparations_had_finished.subscribe(update_resources)
 
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
