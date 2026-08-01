@@ -8,7 +8,7 @@ from core import protocols as proto
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
-    PreventsAnnexations, Private, Transforms, CanGradAttack
+    PreventsAnnexations, Private, Transforms, CanGradAttack, CannotBeAttacked
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
@@ -59,6 +59,70 @@ class Land(_Figure):
                       Empty(),
                       Static(),
                       Capturable())
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class Mountain(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      CannotBeAttacked())
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class Forest(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      CannotBeAttacked())
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class Swamp(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      CannotBeAttacked())
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
+class Desert(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      CannotBeAttacked())
     MOVES_BUDGET = 0
 
     @classmethod
@@ -619,6 +683,10 @@ Capital = TierOneCapital | TallCapital | WideCapital
 def get_figures() -> list[type[_Figure]]:
     return [
         Land,
+        Mountain,
+        Forest,
+        Swamp,
+        Desert,
         Water,
         Town,
         LightFactory,

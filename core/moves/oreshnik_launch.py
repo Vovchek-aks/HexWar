@@ -2,6 +2,7 @@ import random
 
 from attrs import frozen
 
+from my_random import temporarily_seed
 import core.protocols as proto
 from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
@@ -18,16 +19,15 @@ class OreshnikLaunch(proto.Move):
     def get_target_cells(self, session: proto.GameSession) -> Cells:
         board = session.board
         launcher = board[self.from_coord].figure.FLAGS.get(proto.CanLaunchOreshnik)
-        random_state = random.getstate()
-        random.seed(str(self.to_coord.tuple))
 
-        targets = {board[self.to_coord]}
-        for distance in range(1, launcher.spread_radius):
-            layer = DistantNeighborsGetter(board[self.to_coord], board).get_as_far_as(distance)
-            targets.update(random.sample(list(layer.as_set()), min(len(layer.as_set()), launcher.targets_per_layer)))
+        cell = board[self.to_coord]
+        targets = {cell}
+        with temporarily_seed(str(self.to_coord)):
+            for distance in range(1, launcher.spread_radius):
+                layer = DistantNeighborsGetter(cell, board).get_as_far_as(distance)
+                targets.update(random.sample(layer.as_list(), min(len(layer), launcher.targets_per_layer)))
 
-        random.setstate(random_state)
-        return Cells(targets)
+        return Cells(targets).filter(lambda cell: proto.CannotBeAttacked not in cell.figure.FLAGS)
 
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
         board = session.board

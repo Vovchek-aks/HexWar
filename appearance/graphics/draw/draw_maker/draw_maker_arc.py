@@ -1,4 +1,7 @@
+from typing import Callable
+
 from attrs import frozen
+import arcade as arc
 
 from core.protocols import Board, CellsChangesObserver
 import appearance.protocols as proto
@@ -12,7 +15,6 @@ from appearance.graphics.draw.drawers.drawers_arc.figures_drawer import FiguresS
 import core.figures.figure as fig
 from ..drawers.drawers_arc.sprites_pool import SpritesPool
 from ..drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
-from ..drawers.drawers_arc.waves_drawer import WavesDrawer
 
 T = tuple[Draw, FiguresDrawer, BoardDrawer, proto.OnBoardSpritesDrawer]
 
@@ -29,11 +31,13 @@ class DrawMaker:
              camera_orientation: proto.ReadonlyCameraOrientation,
              hatching_map: proto.HatchingMap,
              cells_change_observer: CellsChangesObserver,
+             make_water_animator: Callable[[dict[Vector2Int, arc.Sprite]], proto.WaterAnimator],
              draw_event_finished: OnEventSubscriber[None]) -> T:
         sprites_loader = SpritesLoader.from_meta()
         board_drawer = BoardDrawer.make(board, hatching_map, sprites_loader,
                                         OnBoardSpritesDrawer.make(camera_orientation, SpritesPool()),
-                                        draw_event_finished, cells_change_observer.cell_changed_owner)
+                                        make_water_animator, draw_event_finished,
+                                        cells_change_observer.cell_changed_owner)
 
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
         figures_sprites = figures_sprites_loader.load(fig.get_figures(), self._on_no_figure_sprite)

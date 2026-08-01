@@ -2,7 +2,7 @@ import math
 import random
 from collections import defaultdict
 from contextlib import contextmanager
-from typing import Iterator
+from typing import Iterator, Callable
 from time import time
 
 from PIL import Image, ImageDraw
@@ -23,7 +23,6 @@ from mathematics.vector import Vector2Int, Vector2
 from observer import OnEventSubscriber
 from statuses import MISSING
 from .shape_list import ShapeList
-from .water_animator import WaterAnimator
 
 Shape = arc.shape_list.Shape
 
@@ -49,6 +48,7 @@ class BoardDrawer(proto.BoardDrawer):
              hatching_map: proto.HatchingMap,
              sprites_loader: SpritesLoader,
              on_board_sprites_drawer: proto.OnBoardSpritesDrawer,
+             make_water_animator: Callable[[dict[Vector2Int, arc.Sprite]], proto.WaterAnimator],
              draw_event_finished: OnEventSubscriber[None],
              cell_changed_owner: OnEventSubscriber[Vector2Int, None]) -> "BoardDrawer":
         background_sprites = [
@@ -71,7 +71,7 @@ class BoardDrawer(proto.BoardDrawer):
                  for coord, sprite in backgrounds.items()
                  if AtWater in board[coord].figure.FLAGS}
 
-        self = cls(board, hatching_map, on_board_sprites_drawer, WaterAnimator.make(water),
+        self = cls(board, hatching_map, on_board_sprites_drawer, make_water_animator(water),
                    backgrounds, cell_changed_owner, draw_event_finished)
         cell_changed_owner.subscribe(self.update_cell)
 
@@ -92,7 +92,7 @@ class BoardDrawer(proto.BoardDrawer):
     _board: Board
     _hatching_map: proto.HatchingMap
     _on_board_sprites_drawer: proto.OnBoardSpritesDrawer
-    _water_animator: WaterAnimator
+    _water_animator: proto.WaterAnimator
     _backgrounds: dict[Vector2Int, arc.Sprite]
     _cell_changed_owner: OnEventSubscriber[Vector2Int, None]
     _draw_event_finished: OnEventSubscriber[None]

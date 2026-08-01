@@ -8,6 +8,7 @@ from appearance.graphics.colors import HIGHLIGHTED_WATER
 from color import Color
 from mathematics.vector import Vector2Int
 from my_random import temporarily_seed
+import appearance.protocols as proto
 
 # https://www.desmos.com/calculator/ks2vewqatg
 
@@ -17,9 +18,9 @@ AMPLITUDE_RANGE = .5, 1
 
 
 @frozen
-class WaterAnimator:
+class WaterAnimator(proto.WaterAnimator):
     @classmethod
-    def make(cls, sprites: dict[Vector2Int, arc.Sprite]) -> "WaterAnimator":
+    def make(cls, sprites: dict[Vector2Int, arc.Sprite]) -> proto.WaterAnimator:
         base_color_at = dict[Vector2Int, Color]()
         periods_at = dict[Vector2Int, tuple[float, float]]()
         amplitude_at = dict[Vector2Int, float]()
@@ -62,3 +63,15 @@ class WaterAnimator:
 
         s = math.sin(f2 * time + p) + 1
         return a * s * math.sin(f1 * time) + 2 * a
+
+
+class NoWaterAnimator(proto.WaterAnimator):
+    @classmethod
+    def make(cls, _: dict[Vector2Int, arc.Sprite]) -> proto.WaterAnimator:
+        return cls()
+
+    def update_all(self, time: float) -> None:
+        pass
+
+    def update_cell_at(self, coord: Vector2Int, time: float) -> None:
+        pass

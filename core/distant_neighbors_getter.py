@@ -26,4 +26,4 @@ class DistantNeighborsGetter:
         return cells
 
     def get_as_far_as(self, distance: int) -> proto.Cells:
-        return self.get_all_not_farther_than(distance - 1, include_cell=False).at_outer_boundry(self.board)
+        return self.get_all_not_farther_than(distance - 1, include_cell=True).at_outer_boundry(self.board)

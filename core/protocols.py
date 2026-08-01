@@ -607,6 +607,10 @@ class CanAttack(Flag, metaclass=ABCMeta):
         ...
 
 
+class CannotBeAttacked(Flag, metaclass=ABCMeta):
+    ...
+
+
 class StartsWithBudgetSpend(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod

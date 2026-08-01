@@ -4,13 +4,13 @@
   },
   "audio": {
     "music": {
-      "VOLUME": 0.2
+      "VOLUME": 0
     },
     "voice": {
-      "VOLUME": 0.6
+      "VOLUME": 0
     },
     "effects": {
-      "VOLUME": 0.4
+      "VOLUME": 0
     }
   },
   "graphics": {

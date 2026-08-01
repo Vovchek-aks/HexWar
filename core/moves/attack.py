@@ -24,6 +24,9 @@ class Attack(proto.Move):
         if to_cell.is_empty:
             return INVALID
 
+        if proto.CannotBeAttacked in to_cell.figure.FLAGS:
+            return INVALID
+
         if (can_attack := figure.FLAGS.get(proto.CanAttack)) is MISSING:
             return INVALID
 

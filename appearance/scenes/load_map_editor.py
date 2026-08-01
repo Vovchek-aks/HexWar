@@ -7,8 +7,8 @@ from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.water_animator import NoWaterAnimator
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
-from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.map_editor_board_drawable_layer import MapEditorBoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.input.keyboard_camera_mover import KeyboardCameraMover
@@ -69,12 +69,14 @@ def load_map_editor(window: Window) -> Iterator[proto.Scene | Status]:
     cells_change_observer.cell_changed_owner.subscribe(lambda coord: session.cells.update(session.board[coord]))
 
     yield language.get_sprite_loading_message()
-    on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
-    draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
-                                                          on_board_sprites_drawer,
-                                                          session.board,
-                                                          HatchingMap(),
-                                                          cells_change_observer)
+    hatching_map = HatchingMap()
+    draw, figures_drawer, board_drawer, on_board_sprites_drawer = DrawMaker().make(screen_shape,
+                                                                                   session.board,
+                                                                                   camera.orientation,
+                                                                                   hatching_map,
+                                                                                   cells_change_observer,
+                                                                                   NoWaterAnimator.make,
+                                                                                   window.draw_event_finished)
 
     map_editor = MapEditor.make(input_state,
                                 session,

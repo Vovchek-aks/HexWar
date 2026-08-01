@@ -32,6 +32,10 @@ class MapEditor:
 
         transforms.append(("water", lambda coord: self._change_owner_to(coord, MISSING)))
         transforms.append(("empty land", lambda coord: self._change_figure(coord, fig.Land)))
+        transforms.append(("mountain", lambda coord: self._change_figure(coord, fig.Mountain)))
+        transforms.append(("forest", lambda coord: self._change_figure(coord, fig.Forest)))
+        transforms.append(("swamp", lambda coord: self._change_figure(coord, fig.Swamp)))
+        transforms.append(("desert", lambda coord: self._change_figure(coord, fig.Desert)))
         transforms.append(("town", lambda coord: self._change_figure(coord, fig.Town)))
         transforms.append(("light factory", lambda coord: self._change_figure(coord, fig.LightFactory)))
         transforms.append(("heavy factory", lambda coord: self._change_figure(coord, fig.HeavyFactory)))
@@ -40,6 +44,7 @@ class MapEditor:
         transforms.append(("silo", lambda coord: self._change_figure(coord, fig.MissileSilo)))
         transforms.append(("artillery", lambda coord: self._change_figure(coord, fig.Artillery)))
         transforms.append(("howitzer", lambda coord: self._change_figure(coord, fig.Howitzer)))
+        transforms.append(("grad", lambda coord: self._change_figure(coord, fig.Grad)))
         transforms.append(("infantry", lambda coord: self._change_figure(coord, fig.Infantry)))
         transforms.append(("motorization", lambda coord: self._change_figure(coord, fig.Motorization)))
         transforms.append(("tank", lambda coord: self._change_figure(coord, fig.Tank)))

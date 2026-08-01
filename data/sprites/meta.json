@@ -14,6 +14,34 @@
         420
       ]
     },
+    "Mountain": {
+      "file": "figures/mountain.png",
+      "pivot": [
+        300,
+        420
+      ]
+    },
+    "Forest": {
+      "file": "figures/forest.png",
+      "pivot": [
+        300,
+        420
+      ]
+    },
+    "Swamp": {
+      "file": "figures/swamp.png",
+      "pivot": [
+        300,
+        420
+      ]
+    },
+    "Desert": {
+      "file": "figures/desert.png",
+      "pivot": [
+        300,
+        420
+      ]
+    },
     "Abandonment": {
       "file": "figures/abandonment2.png",
       "pivot": [

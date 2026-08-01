@@ -231,6 +231,16 @@ class BoardDrawer(ABC):
         ...
 
 
+class WaterAnimator(ABC):
+    @abstractmethod
+    def update_all(self, time: float) -> None:
+        ...
+
+    @abstractmethod
+    def update_cell_at(self, coord: Vector2Int, time: float) -> None:
+        ...
+
+
 class HatchingMap(ABC):
     @abstractmethod
     def color_at(self, coord: Vector2Int) -> Color | Status:

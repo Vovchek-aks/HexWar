@@ -22,7 +22,8 @@ class GradAttack(proto.Move):
         with temporarily_seed(str(self.to_coord)):
             return Cells(random.sample(board.get_neighbors(board[self.to_coord],
                                                            include_cell=attacker.is_attacking_center).as_list(),
-                                       attacker.targets_count))
+                                       attacker.targets_count)
+                         ).filter(lambda cell: proto.CannotBeAttacked not in cell.figure.FLAGS)
 
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
         board = session.board

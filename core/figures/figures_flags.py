@@ -131,6 +131,11 @@ class CanAttack(proto.CanAttack):
 
 
 @frozen
+class CannotBeAttacked(proto.CannotBeAttacked):
+    EXCLUDES = set[type[Flag]]()
+
+
+@frozen
 class StartsWithBudgetSpend(proto.StartsWithBudgetSpend):
     EXCLUDES = set[type[Flag]]()
 
