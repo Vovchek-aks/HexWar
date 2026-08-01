@@ -32,7 +32,7 @@ class AnnexationMap(proto.AnnexationMap):
         front = player_cells & cells.at_front
         yield
 
-        with_flag = cells.not_empty().with_flag(proto.PreventsAnnexations)
+        with_flag = cells.with_flag(proto.PreventsAnnexations)
         yield
 
         to_annex = set[proto.Cell]()

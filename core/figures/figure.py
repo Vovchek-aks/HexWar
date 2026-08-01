@@ -294,7 +294,9 @@ class TierOneCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
-                      PreventsAnnexations(distance=10),
+                      PreventsAnnexations(distance=10,
+                                          can_prevent=lambda coord, session, region:
+                                          TierOneCapital.can_prevent(coord, session, region)),
                       Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_500)),
                       TriesTakeResourcesElseDies.make(Dollars(800_000)),
                       BuffsNearbyResourceAdders(additional_ratio=1))
@@ -308,12 +310,18 @@ class TierOneCapital(_Figure):
     def get_cost_of(cls, move: proto.Move) -> int:
         return 1
 
+    @classmethod
+    def can_prevent(cls, _: Vector2Int, __: proto.GameSession, region: proto.Cells) -> bool:
+        return len(region) > 1
+
 
 class TallCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
-                      PreventsAnnexations(distance=15),
+                      PreventsAnnexations(distance=15,
+                                          can_prevent=lambda coord, session, region:
+                                          TierOneCapital.can_prevent(coord, session, region)),
                       TriesTakeResourcesElseDies.make(Dollars(1_000_000),
                                                       LightIndustryProducts(1_000),
                                                       HeavyIndustryProducts(200)),
@@ -333,7 +341,9 @@ class WideCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
                       Capturable(),
-                      PreventsAnnexations(distance=20),
+                      PreventsAnnexations(distance=20,
+                                          can_prevent=lambda coord, session, region:
+                                          TierOneCapital.can_prevent(coord, session, region)),
                       TriesTakeResourcesElseDies.make(Dollars(1_000_000),
                                                       LightIndustryProducts(1_000),
                                                       HeavyIndustryProducts(200)),
