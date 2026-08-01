@@ -51,16 +51,41 @@ class MovableBuilder:
         return self
 
     def set_can_relocate(self, can_relocate: Callable[[Vector2Int, Vector2Int, proto.Board], bool]) -> "MovableBuilder":
-        self._can_relocate = can_relocate
-        return self
+        assert self._can_relocate is MISSING
+
+        return self._set_can_relocate(can_relocate)
 
     def always_can_move(self) -> "MovableBuilder":
-        return self.set_can_relocate(lambda from_coord, to_coord, board: True)
+        assert self._can_relocate is MISSING
+
+        return self._set_can_relocate(lambda from_coord, to_coord, board: True)
 
     def can_move_to_neighbor(self) -> "MovableBuilder":
+        assert self._can_relocate is MISSING
+
         def can_relocate(from_coord: Vector2Int, to_coord: Vector2Int, board: Board) -> bool:
             from_cell = board[from_coord]
             to_cell = board[to_coord]
             return to_cell in board.get_neighbors(from_cell, include_cell=False).with_flag(proto.OnLand)
 
-        return self.set_can_relocate(can_relocate)
+        return self._set_can_relocate(can_relocate)
+
+    def restrict_territories(self, *territories: type[proto.TerrainKind]) -> "MovableBuilder":
+        assert self._can_relocate is not MISSING
+
+        territories_set = set(territories)
+        assert len(territories) == len(territories_set)
+
+        current_can_relocate = self._can_relocate
+
+        def can_relocate(from_coord: Vector2Int, to_coord: Vector2Int, board: Board) -> bool:
+            if board[to_coord].terrain_kinds(board) & territories_set:
+                return False
+            return current_can_relocate(from_coord, to_coord, board)
+
+        return self._set_can_relocate(can_relocate)
+
+    def _set_can_relocate(self,
+                          can_relocate: Callable[[Vector2Int, Vector2Int, proto.Board], bool]) -> "MovableBuilder":
+        self._can_relocate = can_relocate
+        return self

@@ -16,12 +16,12 @@ Flag = proto.Flag
 class Flags(proto.Flags):
     @classmethod
     def new(cls, *flags: Flag) -> proto.Flags:
-        return cls(set(flags))
+        return cls(list(flags))
 
-    _flags: set[Flag] = field()
+    _flags: list[Flag] = field()
 
     @_flags.validator
-    def _validate_flags(self, _, flags: set[Flag]) -> None:
+    def _validate_flags(self, _, flags: list[Flag]) -> None:
         if len(self.flag_types) != len(flags):
             raise ValueError("Certain flag type can only once be added")
 
@@ -117,6 +117,8 @@ class DontHaveOwner(proto.DontHaveOwner):
 @frozen
 class Pullable(proto.Pullable):
     EXCLUDES = {proto.Static}
+
+    restricted_territories: set[type[proto.TerrainKind]] = field(factory=set)
 
 
 @frozen

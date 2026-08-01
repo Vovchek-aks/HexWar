@@ -710,7 +710,10 @@ class Movable(Flag, metaclass=ABCMeta):
 
 
 class Pullable(Flag, metaclass=ABCMeta):
-    ...
+    @property
+    @abstractmethod
+    def restricted_territories(self) -> set[type[TerrainKind]]:
+        ...
 
 
 class CanPull(Flag, metaclass=ABCMeta):

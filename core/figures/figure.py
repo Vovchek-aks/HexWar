@@ -359,6 +359,25 @@ class WideCapital(_Figure):
         return 0
 
 
+Capital = TierOneCapital | TallCapital | WideCapital
+
+
+class Abandonment(_Figure):
+    FLAGS = Flags.new(OnLand(),
+                      Static(),
+                      Capturable(),
+                      AddsResourcesIndefinably.make(Dollars(-25_000)))
+    MOVES_BUDGET = 0
+
+    @classmethod
+    def base_hardness(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_cost_of(cls, move: proto.Move) -> int:
+        return 0
+
+
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
@@ -425,28 +444,12 @@ class MissileSilo(_Figure):
                 raise NotSupportedMove(move)
 
 
-class Abandonment(_Figure):
-    FLAGS = Flags.new(OnLand(),
-                      Static(),
-                      Capturable(),
-                      AddsResourcesIndefinably.make(Dollars(-25_000)))
-    MOVES_BUDGET = 0
-
-    @classmethod
-    def base_hardness(cls) -> int:
-        return 0
-
-    @classmethod
-    def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
-
-
 class Infantry(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      (MovableBuilder()
-                       .can_move_to_neighbor()
-                       .set_base_strength(3)
-                       .build()),
+                      MovableBuilder()
+                      .can_move_to_neighbor()
+                      .set_base_strength(3)
+                      .build(),
                       CanPull(),
                       PreventsAnnexations(distance=3,
                                           can_prevent=lambda coord, session, region:
@@ -509,10 +512,11 @@ class Infantry(_Figure):
 
 class Motorization(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      (MovableBuilder()
-                       .can_move_to_neighbor()
-                       .set_base_strength(3)
-                       .build()),
+                      MovableBuilder()
+                      .can_move_to_neighbor()
+                      .restrict_territories(TerrainDesert, TerrainMountain, TerrainSwamp)
+                      .set_base_strength(3)
+                      .build(),
                       CanPull(),
                       PreventsAnnexations(distance=Infantry.FLAGS.get(PreventsAnnexations).distance,
                                           can_prevent=lambda coord, session, region:
@@ -542,11 +546,12 @@ class Motorization(_Figure):
 
 class Tank(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      (MovableBuilder()
-                       .can_move_to_neighbor()
-                       .set_base_strength(4)
-                       .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
-                       .build()),
+                      MovableBuilder()
+                      .can_move_to_neighbor()
+                      .restrict_territories(TerrainMountain, TerrainSwamp)
+                      .set_base_strength(4)
+                      .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
+                      .build(),
                       Creatable.make(Dollars(750_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_500)),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(250_000),
@@ -601,7 +606,7 @@ class Artillery(_Figure):
                       .set_base_strength(25)
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
-                      Pullable(),
+                      Pullable(restricted_territories={TerrainDesert, TerrainSwamp, TerrainForest}),
                       Creatable.make(Dollars(200_000), LightIndustryProducts(3_000)),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(100_000),
@@ -635,6 +640,7 @@ class Howitzer(_Figure):
                       MovableBuilder()
                       .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
                       .can_move_to_neighbor()
+                      .restrict_territories(TerrainMountain, TerrainSwamp, TerrainForest)
                       .build(),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(300_000),
@@ -665,6 +671,7 @@ class Grad(_Figure):
                       MovableBuilder()
                       .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
                       .can_move_to_neighbor()
+                      .restrict_territories(TerrainMountain, TerrainDesert, TerrainSwamp, TerrainForest)
                       .build(),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(200_000),
@@ -692,9 +699,6 @@ class Grad(_Figure):
                 raise NotSupportedMove(move)
 
 
-Capital = TierOneCapital | TallCapital | WideCapital
-
-
 def get_figures() -> list[type[_Figure]]:
     return [
         Land,
@@ -712,9 +716,9 @@ def get_figures() -> list[type[_Figure]]:
         TierOneCapital,
         TallCapital,
         WideCapital,
+        Abandonment,
         Bunker,
         MissileSilo,
-        Abandonment,
         Infantry,
         Motorization,
         Tank,

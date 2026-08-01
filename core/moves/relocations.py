@@ -84,6 +84,10 @@ class Assault(FiguresRelocation):
                                                     pullable.get_cost_of(Relocation(self.from_coord, self.to_coord))):
                 return INVALID
 
+            if pullable.FLAGS.get(proto.Pullable).restricted_territories & (
+                    from_cell.terrain_kinds(board) | to_cell.terrain_kinds(board)):
+                return INVALID
+
         return ValidMove(self)
 
 
@@ -123,6 +127,10 @@ class Relocation(FiguresRelocation):
             pullable = session.pulling_connections.get_pullable(figure)
             if not session.figures_budget.can_spend(pullable,
                                                     pullable.get_cost_of(Relocation(self.from_coord, self.to_coord))):
+                return INVALID
+
+            if pullable.FLAGS.get(proto.Pullable).restricted_territories & (
+                    from_cell.terrain_kinds(board) | to_cell.terrain_kinds(board)):
                 return INVALID
 
         return ValidMove(self)
