@@ -9,7 +9,7 @@ from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
     PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
     PreventsAnnexations, Private, Transforms, CanGradAttack, CannotBeAttacked, TerrainMountain, TerrainForest, \
-    TerrainSwamp, TerrainDesert
+    TerrainSwamp, TerrainDesert, ALL_TERRAINS
 from core.figures.movable_flag import MovableBuilder
 from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsResourcesIndefinably, \
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
@@ -158,7 +158,8 @@ class Water(_Figure):
 class Town(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(700_000), LightIndustryProducts(1_000)),
+                      Creatable.make(Dollars(700_000), LightIndustryProducts(1_000),
+                                     restricted_terrains=ALL_TERRAINS - {TerrainForest}),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(250_000)))
     MOVES_BUDGET = 198
@@ -175,7 +176,8 @@ class Town(_Figure):
 class LightFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(1_500_000)),
+                      Creatable.make(Dollars(1_500_000),
+                                     restricted_terrains=ALL_TERRAINS - {TerrainForest}),
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(100_000)),
                                                      ResourcesGroup.make(LightIndustryProducts(1_000))))
@@ -193,7 +195,8 @@ class LightFactory(_Figure):
 class HeavyFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(3_000_000), LightIndustryProducts(15_000)),
+                      Creatable.make(Dollars(3_000_000), LightIndustryProducts(15_000),
+                                     restricted_terrains=ALL_TERRAINS - {TerrainForest, TerrainMountain}),
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(500_000),
                                                                          LightIndustryProducts(3_000)),
@@ -297,7 +300,8 @@ class TierOneCapital(_Figure):
                       PreventsAnnexations(distance=10,
                                           can_prevent=lambda coord, session, region:
                                           TierOneCapital.can_prevent(coord, session, region)),
-                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_500)),
+                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_500),
+                                     restricted_terrains=ALL_TERRAINS),
                       TriesTakeResourcesElseDies.make(Dollars(800_000)),
                       BuffsNearbyResourceAdders(additional_ratio=1))
     MOVES_BUDGET = 1
@@ -383,7 +387,8 @@ class Bunker(_Figure):
                       Static(),
                       PreventsCaptures(),
                       Transforms(lambda coord, session: Bunker.get_target(coord, session)),
-                      Creatable.make(Dollars(150_000), LightIndustryProducts(250)))
+                      Creatable.make(Dollars(150_000), LightIndustryProducts(250),
+                                     restricted_terrains=ALL_TERRAINS - {TerrainForest, TerrainMountain}))
     MOVES_BUDGET = 0
 
     _FROM_FRONT_MAX_DISTANCE = 3
@@ -417,7 +422,8 @@ class Bunker(_Figure):
 class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
                       Static(),
-                      Creatable.make(Dollars(1_500_000), LightIndustryProducts(10_000), HeavyIndustryProducts(5_000)),
+                      Creatable.make(Dollars(1_500_000), LightIndustryProducts(10_000), HeavyIndustryProducts(5_000),
+                                     restricted_terrains=ALL_TERRAINS),
                       Capturable(),
                       StartsWithBudgetSpend(1),
                       TriesTakeResourcesElseDies.make(Dollars(25_000),
@@ -454,7 +460,8 @@ class Infantry(_Figure):
                       PreventsAnnexations(distance=3,
                                           can_prevent=lambda coord, session, region:
                                           Infantry.can_prevent(coord, session, region)),
-                      Creatable.make(Dollars(200_000)),
+                      Creatable.make(Dollars(200_000),
+                                     restricted_terrains=ALL_TERRAINS - {TerrainForest}),
                       CanCapture(),
                       PreventsCaptures(),
                       TriesTakeResourcesElseDies.make(Dollars(50_000)))
@@ -514,7 +521,7 @@ class Motorization(_Figure):
     FLAGS = Flags.new(OnLand(),
                       MovableBuilder()
                       .can_move_to_neighbor()
-                      .restrict_territories(TerrainDesert, TerrainMountain, TerrainSwamp)
+                      .restrict_terrains(TerrainDesert, TerrainMountain, TerrainSwamp)
                       .set_base_strength(3)
                       .build(),
                       CanPull(),
@@ -548,11 +555,12 @@ class Tank(_Figure):
     FLAGS = Flags.new(OnLand(),
                       MovableBuilder()
                       .can_move_to_neighbor()
-                      .restrict_territories(TerrainMountain, TerrainSwamp)
+                      .restrict_terrains(TerrainMountain, TerrainSwamp)
                       .set_base_strength(4)
                       .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
                       .build(),
-                      Creatable.make(Dollars(750_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_500)),
+                      Creatable.make(Dollars(750_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_500),
+                                     restricted_terrains=ALL_TERRAINS),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(250_000),
                                                       LightIndustryProducts(1_000),
@@ -606,8 +614,9 @@ class Artillery(_Figure):
                       .set_base_strength(25)
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
-                      Pullable(restricted_territories={TerrainDesert, TerrainSwamp, TerrainForest}),
-                      Creatable.make(Dollars(200_000), LightIndustryProducts(3_000)),
+                      Pullable(restricted_terrains={TerrainDesert, TerrainSwamp, TerrainForest}),
+                      Creatable.make(Dollars(200_000), LightIndustryProducts(3_000),
+                                     restricted_terrains=ALL_TERRAINS),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(100_000),
                                                       LightIndustryProducts(750)),
@@ -640,7 +649,7 @@ class Howitzer(_Figure):
                       MovableBuilder()
                       .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
                       .can_move_to_neighbor()
-                      .restrict_territories(TerrainMountain, TerrainSwamp, TerrainForest)
+                      .restrict_terrains(TerrainMountain, TerrainSwamp, TerrainForest)
                       .build(),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(300_000),
@@ -671,7 +680,7 @@ class Grad(_Figure):
                       MovableBuilder()
                       .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
                       .can_move_to_neighbor()
-                      .restrict_territories(TerrainMountain, TerrainDesert, TerrainSwamp, TerrainForest)
+                      .restrict_terrains(TerrainMountain, TerrainDesert, TerrainSwamp, TerrainForest)
                       .build(),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(200_000),

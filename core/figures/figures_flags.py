@@ -96,6 +96,9 @@ class TerrainDesert(proto.TerrainDesert):
     }
 
 
+ALL_TERRAINS = {TerrainMountain, TerrainForest, TerrainSwamp, TerrainDesert}
+
+
 @frozen
 class Static(proto.Static):
     EXCLUDES = {proto.Movable}
@@ -118,7 +121,7 @@ class DontHaveOwner(proto.DontHaveOwner):
 class Pullable(proto.Pullable):
     EXCLUDES = {proto.Static}
 
-    restricted_territories: set[type[proto.TerrainKind]] = field(factory=set)
+    restricted_terrains: set[type[proto.TerrainKind]] = field(factory=set)
 
 
 @frozen
@@ -136,10 +139,13 @@ class Creatable(proto.Creatable):
     EXCLUDES = set[type[Flag]]()
 
     @classmethod
-    def make(cls, *resources: proto.Resource) -> proto.Creatable:
-        return cls(ResourcesGroup.make(*resources))
+    def make(cls,
+             *resources: proto.Resource,
+             restricted_terrains: set[type[proto.TerrainKind]] | None = None) -> proto.Creatable:
+        return cls(ResourcesGroup.make(*resources), restricted_terrains or set())
 
     cost: proto.ResourcesGroup
+    restricted_terrains: set[type[proto.TerrainKind]] = field(factory=set)
 
 
 @frozen

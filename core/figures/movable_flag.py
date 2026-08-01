@@ -70,7 +70,7 @@ class MovableBuilder:
 
         return self._set_can_relocate(can_relocate)
 
-    def restrict_territories(self, *territories: type[proto.TerrainKind]) -> "MovableBuilder":
+    def restrict_terrains(self, *territories: type[proto.TerrainKind]) -> "MovableBuilder":
         assert self._can_relocate is not MISSING
 
         territories_set = set(territories)

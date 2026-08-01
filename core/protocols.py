@@ -712,7 +712,7 @@ class Movable(Flag, metaclass=ABCMeta):
 class Pullable(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def restricted_territories(self) -> set[type[TerrainKind]]:
+    def restricted_terrains(self) -> set[type[TerrainKind]]:
         ...
 
 
@@ -728,6 +728,11 @@ class Creatable(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
     def cost(self) -> "ResourcesGroup":
+        ...
+
+    @property
+    @abstractmethod
+    def restricted_terrains(self) -> set[type[TerrainKind]]:
         ...
 
 
