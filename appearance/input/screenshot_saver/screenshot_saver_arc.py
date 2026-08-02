@@ -16,7 +16,7 @@ class ScreenshotSaver:
             return
 
         date = datetime.now()
-        image = arc.get_image()
-        pil_image = Image.frombytes("RGBA", image.size, image.tobytes())
+        image = arc.get_image(components=3)
+        pil_image = Image.frombytes("RGB", image.size, image.tobytes())
         filename = f"{date.day}_{date.month}_{date.year} {date.hour}_{date.minute}_{date.second}.png"
         pil_image.save(SCREENSHOTS_FOLDER / filename)
