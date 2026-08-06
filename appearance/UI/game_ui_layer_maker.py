@@ -606,7 +606,7 @@ class GameUiLayerMaker:
                                   self._sprites_loader.load_background_3_to_2())
 
         title_height = background.rectangle.shape.y / 6
-        title_margin = Vector2(15, background.rectangle.shape.y - 10 - title_height)
+        title_margin = Vector2(20, background.rectangle.shape.y - 15 - title_height)
         title = TextUi.make(self._drawer,
                             RectangleBuilder(self._screen_shape)
                             .move(background.rectangle.position + title_margin)
@@ -619,9 +619,9 @@ class GameUiLayerMaker:
                             .black_colored()
                             .build())
 
-        layout_margin = Vector2(15, 15)
+        layout_margin = Vector2(20, 20)
         buttons_position = background_margin + layout_margin
-        buttons_width = background.rectangle.shape.x - layout_margin.x * 2
+        buttons_width = background.rectangle.shape.x - layout_margin.x * 2 - 5
         buttons_height = background.rectangle.shape.y / 4
         buttons_layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
                                             .from_left_bottom()
@@ -638,7 +638,7 @@ class GameUiLayerMaker:
         stats_position = Vector2(title.rectangle.position.x, title_bottom - stats_margin - stats_height)
         stats_and_flow_rectangle = (RectangleBuilder(self._screen_shape)
                                     .move(stats_position)
-                                    .set_shape(Vector2(background.rectangle.shape.x - title_margin.x * 2,
+                                    .set_shape(Vector2(buttons_width,
                                                        stats_height))
                                     .adjust_for_shape()
                                     .build())
