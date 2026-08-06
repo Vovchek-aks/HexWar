@@ -65,6 +65,9 @@ class Conversion(proto.Move):
         if (conversion := (type(cell.figure), self.target)) not in self._conversions:
             return INVALID
 
+        if cell.figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(cell, board=session.board):
+            return INVALID
+
         resources_cost, figure_budget_cost = self._conversions[conversion]
         if not player.resources.can_take(resources_cost):
             return INVALID

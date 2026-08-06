@@ -48,6 +48,12 @@ class Combination(proto.Move):
         if (combination := (type(first_cell.figure), type(second_cell.figure), self.target)) not in self._combinations:
             return INVALID
 
+        if first_cell.figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(first_cell, board=board):
+            return INVALID
+
+        if second_cell.figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(second_cell, board=board):
+            return INVALID
+
         resources_cost, figure_budget_cost = self._combinations[combination]
         if not player.resources.can_take(resources_cost):
             return INVALID

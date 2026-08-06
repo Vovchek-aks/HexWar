@@ -30,6 +30,9 @@ class Capture(proto.Move):
         if proto.Capturable not in to_cell.figure.FLAGS:
             return INVALID
 
+        if figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, to_cell, board=board):
+            return INVALID
+
         if from_cell not in (neighbors := board.get_neighbors(to_cell, include_cell=False).with_flag(proto.OnLand)):
             return INVALID
 

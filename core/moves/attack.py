@@ -30,6 +30,9 @@ class Attack(proto.Move):
         if (can_attack := figure.FLAGS.get(proto.CanAttack)) is MISSING:
             return INVALID
 
+        if figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, board=board):
+            return INVALID
+
         if from_cell not in (DistantNeighborsGetter(to_cell, board)
                 .get_all_not_farther_than(can_attack.max_distance, include_cell=False)):
             return INVALID

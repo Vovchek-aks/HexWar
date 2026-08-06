@@ -47,6 +47,9 @@ class OreshnikLaunch(proto.Move):
         if (launcher := figure.FLAGS.get(proto.CanLaunchOreshnik)) is MISSING:
             return INVALID
 
+        if figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, board=board):
+            return INVALID
+
         if from_cell in (DistantNeighborsGetter(to_cell, board)
                 .get_all_not_farther_than(launcher.min_distance, include_cell=False)):
             return INVALID
