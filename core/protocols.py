@@ -612,6 +612,17 @@ class TerrainDesert(TerrainKind, metaclass=ABCMeta):
     ...
 
 
+class WithRestrictedTerrainKinds(Flag, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def terrain_kinds(self) -> set[type[TerrainKind]]:
+        ...
+
+    @abstractmethod
+    def contains_in(self, *cells: Cell, board: Board) -> bool:
+        ...
+
+
 class CanCapture(Flag, metaclass=ABCMeta):
     ...
 
@@ -710,10 +721,7 @@ class Movable(Flag, metaclass=ABCMeta):
 
 
 class Pullable(Flag, metaclass=ABCMeta):
-    @property
-    @abstractmethod
-    def restricted_terrains(self) -> set[type[TerrainKind]]:
-        ...
+    ...
 
 
 class CanPull(Flag, metaclass=ABCMeta):
@@ -728,11 +736,6 @@ class Creatable(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
     def cost(self) -> "ResourcesGroup":
-        ...
-
-    @property
-    @abstractmethod
-    def restricted_terrains(self) -> set[type[TerrainKind]]:
         ...
 
 

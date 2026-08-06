@@ -4,7 +4,7 @@ from typing import Callable
 from attrs import field, frozen
 
 from core import protocols as proto
-from core.protocols import Board
+from core.protocols import Board, TerrainKind
 from core.resources import ResourcesGroup
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING
@@ -100,6 +100,19 @@ ALL_TERRAINS = {TerrainMountain, TerrainForest, TerrainSwamp, TerrainDesert}
 
 
 @frozen
+class WithRestrictedTerrainKinds(proto.WithRestrictedTerrainKinds):
+    EXCLUDES = {proto.Empty, proto.TerrainKind}
+
+    terrain_kinds: set[type[TerrainKind]] = field(factory=set)
+
+    def contains_in(self, *cells: proto.Cell, board: proto.Board) -> bool:
+        for cell in cells:
+            if cell.terrain_kinds(board) & self.terrain_kinds:
+                return True
+        return False
+
+
+@frozen
 class Static(proto.Static):
     EXCLUDES = {proto.Movable}
 
@@ -121,8 +134,6 @@ class DontHaveOwner(proto.DontHaveOwner):
 class Pullable(proto.Pullable):
     EXCLUDES = {proto.Static}
 
-    restricted_terrains: set[type[proto.TerrainKind]] = field(factory=set)
-
 
 @frozen
 class CanPull(proto.CanPull):
@@ -139,13 +150,10 @@ class Creatable(proto.Creatable):
     EXCLUDES = set[type[Flag]]()
 
     @classmethod
-    def make(cls,
-             *resources: proto.Resource,
-             restricted_terrains: set[type[proto.TerrainKind]] | None = None) -> proto.Creatable:
-        return cls(ResourcesGroup.make(*resources), restricted_terrains or set())
+    def make(cls, *resources: proto.Resource) -> proto.Creatable:
+        return cls(ResourcesGroup.make(*resources))
 
     cost: proto.ResourcesGroup
-    restricted_terrains: set[type[proto.TerrainKind]] = field(factory=set)
 
 
 @frozen

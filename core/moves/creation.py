@@ -28,7 +28,7 @@ class Creation(proto.Move):
         if (creatable := self.figure_type.FLAGS.get(Creatable)) is MISSING:
             return INVALID
 
-        if creatable.restricted_terrains & to_cell.terrain_kinds(board):
+        if self.figure_type.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds & to_cell.terrain_kinds(board):
             return INVALID
 
         if not session.master.current_player.resources.can_take(creatable.cost):

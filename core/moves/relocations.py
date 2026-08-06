@@ -35,14 +35,26 @@ class FiguresRelocation(proto.Move, metaclass=ABCMeta):
         pullable_cell = self.pullable_cell(session)
         figure = from_cell.figure
 
-        session.figures_budget.add(figure, figure.get_cost_of(self))
+        is_in_restricted_terrains = figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, to_cell,
+                                                                                                   board=board)
+        budget_to_take = (figure.MOVES_BUDGET - session.figures_budget.of(figure)
+                          if is_in_restricted_terrains else
+                          figure.get_cost_of(self))
+
+        session.figures_budget.add(figure, budget_to_take)
         if not to_cell.is_empty:
             session.figures.remove(to_cell.figure)
         session.figures.move(figure, self.to_coord)
 
         if pullable_cell is not MISSING:
             pullable = pullable_cell.figure
-            session.figures_budget.add(pullable, pullable.get_cost_of(Relocation(self.from_coord, self.to_coord)))
+            is_in_restricted_terrains = pullable.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell,
+                                                                                                         pullable_cell,
+                                                                                                         board=board)
+            budget_to_take = (pullable.MOVES_BUDGET - session.figures_budget.of(pullable)
+                              if is_in_restricted_terrains else
+                              pullable.get_cost_of(Relocation(board.coordinates_of(pullable_cell), self.from_coord)))
+            session.figures_budget.add(pullable, budget_to_take)
             session.figures.move(pullable, self.from_coord)
 
 
@@ -61,6 +73,10 @@ class Assault(FiguresRelocation):
             return INVALID
 
         if to_cell.figure.is_on_land() != from_cell.figure.is_on_land():
+            return INVALID
+
+        if (figure.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds &
+                (from_cell.terrain_kinds(board) | to_cell.terrain_kinds(board))):
             return INVALID
 
         if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
@@ -84,8 +100,8 @@ class Assault(FiguresRelocation):
                                                     pullable.get_cost_of(Relocation(self.from_coord, self.to_coord))):
                 return INVALID
 
-            if pullable.FLAGS.get(proto.Pullable).restricted_terrains & (
-                    from_cell.terrain_kinds(board) | to_cell.terrain_kinds(board)):
+            if pullable.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, to_cell,
+                                                                                board=board):
                 return INVALID
 
         return ValidMove(self)
@@ -127,10 +143,6 @@ class Relocation(FiguresRelocation):
             pullable = session.pulling_connections.get_pullable(figure)
             if not session.figures_budget.can_spend(pullable,
                                                     pullable.get_cost_of(Relocation(self.from_coord, self.to_coord))):
-                return INVALID
-
-            if pullable.FLAGS.get(proto.Pullable).restricted_terrains & (
-                    from_cell.terrain_kinds(board) | to_cell.terrain_kinds(board)):
                 return INVALID
 
         return ValidMove(self)
