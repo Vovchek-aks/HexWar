@@ -55,6 +55,9 @@ class MapRandomizer:
 
     def _remove_all_figures(self) -> None:
         for cell in self._session.cells.not_empty():
+            if proto.TerrainKind in cell.figure.FLAGS:
+                continue
+
             self._session.figures.remove(cell.figure)
 
     def _fill_with_one_player(self) -> proto.Player:
@@ -67,7 +70,7 @@ class MapRandomizer:
 
     def _add_random_players(self, player: proto.Player, players_count: int) -> list[proto.Player]:
         names: list[str] = random.sample(read_random_bot_names(), players_count)
-        cells = random.sample(self._session.cells.with_owner(player).as_list(), players_count)
+        cells = random.sample(self._session.cells.with_figure(fig.Land).as_list(), players_count)
         coords = map(self._session.board.coordinates_of, cells)
         colors = get_colors(players_count, lightness=.7, deepness=.6)
 
