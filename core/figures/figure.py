@@ -25,6 +25,7 @@ from exceptions import NotSupportedMove
 from mathematics.vector import Vector2Int
 from core.protocols import Figure, Board
 from my_random import temporarily_seed
+from statuses import MISSING
 
 
 # it's here because of python stupidity
@@ -46,6 +47,10 @@ class _Figure(Figure, metaclass=ABCMeta):
 
     @classmethod
     def hardness(cls, coord: Vector2Int, board: Board) -> int:
+        terrains = cls.FLAGS.get(WithRestrictedTerrainKinds)
+        if terrains is not MISSING and terrains.contains_in(board[coord], board=board):
+            return 0
+
         return cls.base_hardness() + cls.additional_hardness(coord, board)
 
     @classmethod

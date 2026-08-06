@@ -723,7 +723,7 @@ class GameUiLayerMaker:
 
         def update_hardness(figure: fig.Figure, coord: Vector2Int) -> None:
             board = self._session.board
-            base = figure.base_hardness()
+            base = min(figure.hardness(coord, board), figure.base_hardness())
             additional = board[coord].hardness(board) - base
 
             hardness.set_text(self._language.get_hardness_message(base, additional))
