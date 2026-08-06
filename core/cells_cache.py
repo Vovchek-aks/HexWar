@@ -24,6 +24,8 @@ class CellsCache(proto.CellsCache):
 
     _cells_of: dict[proto.Player, set[proto.Cell]] = field(init=False, factory=lambda: defaultdict(set))
     _cells_with: dict[type[proto.Figure], set[proto.Cell]] = field(init=False, factory=lambda: defaultdict(set))
+    _cells_at: dict[type[proto.TerrainKind], set[proto.Cell]] = field(init=False, factory=lambda: defaultdict(set))
+    _cells_at_only: dict[type[proto.TerrainKind], set[proto.Cell]] = field(init=False, factory=lambda: defaultdict(set))
     _owner_of: dict[proto.Cell, proto.Player] = field(init=False, factory=dict)
     _figure_of: dict[proto.Cell, type[proto.Figure]] = field(init=False, factory=dict)
     _front: set[proto.Cell] = field(init=False, factory=set)
@@ -51,6 +53,10 @@ class CellsCache(proto.CellsCache):
     def with_owner(self, player: proto.Player) -> Cells:
         return Cells(self._cells_of[player])
 
+    def at_terrain(self, terrain: type[proto.TerrainKind], *, include_multiple_terrain_cells: bool = True) -> Cells:
+        dictionary = self._cells_at if include_multiple_terrain_cells else self._cells_at_only
+        return Cells(dictionary[terrain])
+
     def with_figure(self, figure: type[proto.Figure] | UnionType) -> Cells:
         if not isinstance(figure, UnionType):
             return Cells(self._cells_with[figure])
@@ -77,6 +83,7 @@ class CellsCache(proto.CellsCache):
     def update_fully(self) -> None:
         for cell in self._board.cells:
             self.update(cell)
+            self._update_terrains_of(cell)
 
     def update(self, cell: proto.Cell) -> None:
         if not cell.figure.is_on_land():
@@ -132,3 +139,11 @@ class CellsCache(proto.CellsCache):
                 self._front.add(cell)
             else:
                 self._front.discard(cell)
+
+    def _update_terrains_of(self, cell: proto.Cell) -> None:
+        terrain_kinds = cell.terrain_kinds(self._board)
+        for terrain in terrain_kinds:
+            self._cells_at[terrain].add(cell)
+
+        if len(terrain_kinds) == 1:
+            self._cells_at_only[terrain_kinds.pop()].add(cell)
