@@ -28,7 +28,13 @@ class Creation(proto.Move):
         if (creatable := self.figure_type.FLAGS.get(Creatable)) is MISSING:
             return INVALID
 
-        if self.figure_type.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds & to_cell.terrain_kinds(board):
+        if creatable.necessary_neighbor is not MISSING:
+            creators = board.get_neighbors(to_cell).with_figure(creatable.necessary_neighbor)
+            if not creators.filter(lambda creator:
+                                   session.figures_budget.can_spend(creator.figure, creator.figure.get_cost_of(self))):
+                return INVALID
+
+        if self.figure_type.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(to_cell, board=board):
             return INVALID
 
         if not session.master.current_player.resources.can_take(creatable.cost):
@@ -38,10 +44,22 @@ class Creation(proto.Move):
 
     def execute(self, session: proto.GameSession) -> None:
         board = session.board
+        to_cell = board[self.to_coord]
 
         session.figures.add(self.figure_type, self.to_coord)
-        figure = board[self.to_coord].figure
+        figure = to_cell.figure
         if (spend_budget := figure.FLAGS.get(proto.StartsWithBudgetSpend)) is not MISSING:
             session.figures_budget.add(figure, spend_budget.amount)
 
         session.master.current_player.resources.take(figure.FLAGS.get(Creatable).cost)
+
+        creatable = self.figure_type.FLAGS.get(proto.Creatable)
+        if creatable.necessary_neighbor is MISSING:
+            return
+
+        creator = (board
+                   .get_neighbors(to_cell)
+                   .with_figure(creatable.necessary_neighbor)
+                   .filter(lambda cell: session.figures_budget.can_spend(cell.figure, cell.figure.get_cost_of(self)))
+                   .any.figure)
+        session.figures_budget.add(creator, creator.get_cost_of(self))

@@ -15,6 +15,7 @@ from core.figures.resources_flow_flags import TriesTakeResourcesElseDies, AddsRe
     BuffsNearbyResourceAdders, TransformsResourcesIndefinably
 from core.moves.attack import Attack
 from core.moves.capture import Capture
+from core.moves.creation import Creation
 from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation, PullingTermination
@@ -170,7 +171,11 @@ class Town(_Figure):
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+        match move:
+            case Creation():
+                return cls.MOVES_BUDGET
+            case _:
+                raise NotSupportedMove(move)
 
 
 class LightFactory(_Figure):
@@ -181,7 +186,7 @@ class LightFactory(_Figure):
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(100_000)),
                                                      ResourcesGroup.make(LightIndustryProducts(1_000))))
-    MOVES_BUDGET = 0
+    MOVES_BUDGET = 1
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -189,7 +194,11 @@ class LightFactory(_Figure):
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+        match move:
+            case Creation():
+                return cls.MOVES_BUDGET
+            case _:
+                raise NotSupportedMove(move)
 
 
 class HeavyFactory(_Figure):
@@ -202,7 +211,7 @@ class HeavyFactory(_Figure):
                                                                          LightIndustryProducts(3_000)),
                                                      ResourcesGroup.make(HeavyIndustryProducts(1_000)),
                                                      priority=_get_transformer_of(LightFactory).priority + 1))
-    MOVES_BUDGET = 0
+    MOVES_BUDGET = 1
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -210,7 +219,11 @@ class HeavyFactory(_Figure):
 
     @classmethod
     def get_cost_of(cls, move: proto.Move) -> int:
-        return 0
+        match move:
+            case Creation():
+                return cls.MOVES_BUDGET
+            case _:
+                raise NotSupportedMove(move)
 
 
 class Settlement(_Figure):
@@ -467,7 +480,7 @@ class Infantry(_Figure):
                       PreventsAnnexations(distance=3,
                                           can_prevent=lambda coord, session, region:
                                           Infantry.can_prevent(coord, session, region)),
-                      Creatable.make(Dollars(200_000)),
+                      Creatable.make(Dollars(200_000), necessary_neighbor=Town),
                       CanCapture(),
                       PreventsCaptures(),
                       TriesTakeResourcesElseDies.make(Dollars(50_000)))
@@ -565,7 +578,8 @@ class Tank(_Figure):
                       .set_base_strength(4)
                       .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
                       .build(),
-                      Creatable.make(Dollars(750_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_500)),
+                      Creatable.make(Dollars(750_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_500),
+                                     necessary_neighbor=HeavyFactory),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(250_000),
                                                       LightIndustryProducts(1_000),
@@ -621,7 +635,8 @@ class Artillery(_Figure):
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
                       .build(),
                       Pullable(),
-                      Creatable.make(Dollars(200_000), LightIndustryProducts(3_000)),
+                      Creatable.make(Dollars(200_000), LightIndustryProducts(3_000),
+                                     necessary_neighbor=LightFactory),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(100_000),
                                                       LightIndustryProducts(750)),

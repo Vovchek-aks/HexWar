@@ -150,10 +150,13 @@ class Creatable(proto.Creatable):
     EXCLUDES = set[type[Flag]]()
 
     @classmethod
-    def make(cls, *resources: proto.Resource) -> proto.Creatable:
-        return cls(ResourcesGroup.make(*resources))
+    def make(cls,
+             *resources: proto.Resource,
+             necessary_neighbor: type[proto.Figure] | Status = MISSING) -> proto.Creatable:
+        return cls(ResourcesGroup.make(*resources), necessary_neighbor)
 
     cost: proto.ResourcesGroup
+    necessary_neighbor: type[proto.Figure] | Status
 
 
 @frozen

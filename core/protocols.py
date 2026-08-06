@@ -738,6 +738,11 @@ class Creatable(Flag, metaclass=ABCMeta):
     def cost(self) -> "ResourcesGroup":
         ...
 
+    @property
+    @abstractmethod
+    def necessary_neighbor(self) -> "type[Figure] | Status":
+        ...
+
 
 class PreventsAnnexations(Flag, metaclass=ABCMeta):
     @property
