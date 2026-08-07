@@ -163,7 +163,7 @@ class BotIgor(proto.Bot):
                 return
 
             if artillery_count == 0:
-                yield from self._try_spawn_and_connect_artillery(1)
+                yield from self._try_spawn_artillery(1)
                 # print("_try_spawn_and_connect_artillery")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
@@ -246,8 +246,8 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            yield from self._try_spawn_and_connect_artillery(math.ceil((infantry_count + motorization_count) * .3) -
-                                                             artillery_count)
+            yield from self._try_spawn_artillery(math.ceil((infantry_count + motorization_count) * .3) -
+                                                 artillery_count)
             # print("_try_spawn_and_connect_artillery")
             if self._moves_to_make:
                 # print(self._moves_to_make)
@@ -692,69 +692,72 @@ class BotIgor(proto.Bot):
             if converted >= amount:
                 return
 
-    def _try_spawn_and_connect_artillery(self, amount: int) -> Iterator[None]:
+    def _try_spawn_artillery(self, amount: int) -> Iterator[None]:
         if amount <= 0:
             return
 
         cells = self._session.cells
-        infantries = (cells.with_owner(self._player) &
-                      cells.with_figure(fig.Infantry) &
-                      cells.at_front)
-        if not infantries:
+        creatable = fig.Artillery.FLAGS.get(proto.Creatable)
+
+        targets = ((cells.with_owner(self._player) &
+                    cells.with_figure(creatable.necessary_neighbor))
+                   .filter(lambda cell: self._session.figures_budget
+                           .can_spend(cell.figure,
+                                      cell.figure.get_cost_of(Creation(fig.Artillery, Vector2Int.zero()))))
+                   .filter(lambda cell: bool(self._board
+                                             .get_neighbors(cell, include_cell=False)
+                                             .with_figure(fig.Land))))
+        if not targets:
             return
-        yield
 
-        not_puller = {infantry for infantry in infantries
-                      if not self._session.pulling_connections.is_puller(infantry.figure)}
-        if not not_puller:
-            return
-        yield
-
-        added = 0
-        for cell in not_puller:
-            places = self._board.get_neighbors(cell).with_owner(self._player).with_figure(fig.Land)
-            if not places:
-                yield
-                continue
-
-            place = random.choice(list(places.as_set()))
+        for cell, _ in zip(targets, range(amount)):
+            yield
+            place = (self._board
+                     .get_neighbors(cell, include_cell=False)
+                     .with_figure(fig.Land)
+                     .any)
             make = Creation(fig.Artillery, self._board.coordinates_of(place))
-            connect = PullingInitiation(self._board.coordinates_of(place), self._board.coordinates_of(cell))
             if (valid_move := make.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
-                self._moves_to_make.append(ValidMove(connect))
-                added += 1
-                if added >= amount:
-                    return
-            yield
 
     def _try_connect_pullerless_artillery(self) -> Iterator[None]:
         cells = self._session.cells
+        connections = self._session.pulling_connections
+
         artilleries = (cells.with_owner(self._player) &
                        cells.with_figure(fig.Artillery))
         if not artilleries:
             return
         yield
 
+        infantries = ((cells.with_owner(self._player) &
+                       cells.with_figure(fig.Infantry))
+                      .filter(lambda cell: not connections.is_puller(cell.figure)))
+        if not infantries:
+            return
+        yield
+
         not_pullable = {artillery for artillery in artilleries
-                        if not self._session.pulling_connections.is_pullable(artillery.figure)}
+                        if not connections.is_pullable(artillery.figure)}
         if not not_pullable:
             return
         yield
 
         for cell in not_pullable:
+            yield
             places = self._board.get_neighbors(cell).with_owner(self._player).with_figure(fig.Land)
             if not places:
-                yield
                 continue
 
-            place = random.choice(list(places.as_set()))
-            make = Creation(fig.Infantry, self._board.coordinates_of(place))
+            infantry = self._get_nearest_to(cell, infantries)
+            place = self._get_nearest_to(infantry, places)
+            length = len(self._moves_to_make)
+            yield from self._add_distant_relocation_moves(infantry, place)
+            if len(self._moves_to_make) <= length:
+                continue
+
             connect = PullingInitiation(self._board.coordinates_of(cell), self._board.coordinates_of(place))
-            if (valid_move := make.validate(self._session)) is not INVALID:
-                self._moves_to_make.append(valid_move)
-                self._moves_to_make.append(ValidMove(connect))
-            yield
+            self._moves_to_make.append(ValidMove(connect))
 
     def _get_target_enemy(self, cell: proto.Cell, *, save_tanks: bool = True) -> proto.Cell | Status:
         neighbors = self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
@@ -762,6 +765,7 @@ class BotIgor(proto.Bot):
             return MISSING
 
         targets = neighbors - neighbors.with_owner(self._player)
+        targets -= targets.with_flag(proto.CannotBeDestroyed)
         if isinstance(cell.figure, fig.Tank) and save_tanks:
             targets = Cells({cell for cell in targets
                              if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
@@ -824,9 +828,9 @@ class BotIgor(proto.Bot):
 
         path = list[Vector2Int]()
         for path in path_searcher.search_process_from(cell):
+            yield
             if path is not None:
                 break
-            yield
 
         if len(path) < 2:
             return
@@ -985,6 +989,7 @@ class BotIgor(proto.Bot):
             neighbors = self._board.get_neighbors(tank, include_cell=False).with_flag(proto.OnLand)
             neighbors -= neighbors.with_owner(self._player)
             neighbors -= neighbors.with_figure(fig.Land)
+            neighbors -= neighbors.with_flag(proto.CannotBeDestroyed)
             if not neighbors:
                 yield
                 continue
@@ -1024,6 +1029,7 @@ class BotIgor(proto.Bot):
 
             neighbors -= cells.with_owner(self._player)
             neighbors -= cells.with_figure(fig.Land | fig.Abandonment)
+            neighbors -= neighbors.with_flag(proto.CannotBeDestroyed)
             if not neighbors:
                 continue
 
@@ -1080,8 +1086,28 @@ class BotIgor(proto.Bot):
         return move.validate(self._session)
 
     def _try_create(self, figure: type[fig.Figure]) -> None:
+        assert (creatable := figure.FLAGS.get(proto.Creatable)) is not MISSING
+
         if (cell := self._get_cell_for(figure)) is MISSING:
             return
+
+        cells = self._session.cells
+        if creatable.necessary_neighbor is not MISSING:
+            targets = ((cells.with_owner(self._player) &
+                        cells.with_figure(creatable.necessary_neighbor))
+                       .filter(lambda cell: self._session.figures_budget
+                               .can_spend(cell.figure,
+                                          cell.figure.get_cost_of(Creation(figure, Vector2Int.zero()))))
+                       .filter(lambda cell: bool(self._board
+                                                 .get_neighbors(cell, include_cell=False)
+                                                 .with_figure(fig.Land))))
+            if not targets:
+                return
+
+            cell = (self._board
+                    .get_neighbors(self._get_nearest_to(cell, targets), include_cell=False)
+                    .with_figure(fig.Land)
+                    .any)
 
         if not self._can_create(figure, cell):
             return
@@ -1094,6 +1120,12 @@ class BotIgor(proto.Bot):
         res = len((cells.with_owner(self._player) &
                    cells.with_figure(figure)).as_set())
         return res
+
+    def _get_nearest_to(self, target: proto.Cell, candidates: proto.Cells) -> proto.Cell:
+        assert candidates
+
+        coord_of = self._board.coordinates_of
+        return min(candidates, key=lambda cell: get_distance(coord_of(target), coord_of(cell)))
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:
         coord_of = self._board.coordinates_of

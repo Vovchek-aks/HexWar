@@ -311,6 +311,13 @@ class CellsCache(ABC):
         ...
 
     @abstractmethod
+    def at_terrain(self,
+                   terrain: "type[TerrainKind] | UnionType",
+                   *,
+                   include_multiple_terrain_cells: bool = True) -> "Cells":
+        ...
+
+    @abstractmethod
     def with_figure(self, figure: type["Figure"] | UnionType) -> "Cells":
         ...
 
@@ -642,7 +649,7 @@ class CanAttack(Flag, metaclass=ABCMeta):
         ...
 
 
-class CannotBeAttacked(Flag, metaclass=ABCMeta):
+class CannotBeDestroyed(Flag, metaclass=ABCMeta):
     ...
 
 

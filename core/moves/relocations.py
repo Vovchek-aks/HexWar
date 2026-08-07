@@ -75,6 +75,9 @@ class Assault(FiguresRelocation):
         if to_cell.figure.is_on_land() != from_cell.figure.is_on_land():
             return INVALID
 
+        if proto.CannotBeDestroyed in to_cell.figure.FLAGS:
+            return INVALID
+
         if (figure.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds &
                 (from_cell.terrain_kinds(board) | to_cell.terrain_kinds(board))):
             return INVALID

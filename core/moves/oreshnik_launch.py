@@ -27,7 +27,7 @@ class OreshnikLaunch(proto.Move):
                 layer = DistantNeighborsGetter(cell, board).get_as_far_as(distance)
                 targets.update(random.sample(layer.as_list(), min(len(layer), launcher.targets_per_layer)))
 
-        return Cells(targets).filter(lambda cell: proto.CannotBeAttacked not in cell.figure.FLAGS)
+        return Cells(targets).filter(lambda cell: proto.CannotBeDestroyed not in cell.figure.FLAGS)
 
     def validate(self, session: proto.GameSession) -> proto.ValidMove | Status:
         board = session.board

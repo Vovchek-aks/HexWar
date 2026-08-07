@@ -6,6 +6,7 @@ from attrs import frozen
 
 import core.protocols as proto
 from appearance.graphics.colors import get_colors, Color
+from core.figures.figures_flags import Terrain
 from core.game_rules import Annexer
 from core.game_session import GameSession
 from core.master import Master
@@ -70,7 +71,9 @@ class MapRandomizer:
 
     def _add_random_players(self, player: proto.Player, players_count: int) -> list[proto.Player]:
         names: list[str] = random.sample(read_random_bot_names(), players_count)
-        cells = random.sample(self._session.cells.with_figure(fig.Land).as_list(), players_count)
+        cells_cache = self._session.cells
+        cells = random.sample((cells_cache.with_figure(fig.Land) -
+                               cells_cache.at_terrain(Terrain)).as_list(), players_count)
         coords = map(self._session.board.coordinates_of, cells)
         colors = get_colors(players_count, lightness=.7, deepness=.6)
 

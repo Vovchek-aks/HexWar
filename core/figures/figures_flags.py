@@ -97,6 +97,7 @@ class TerrainDesert(proto.TerrainDesert):
 
 
 ALL_TERRAINS = {TerrainMountain, TerrainForest, TerrainSwamp, TerrainDesert}
+Terrain = TerrainMountain | TerrainForest | TerrainDesert | TerrainSwamp
 
 
 @frozen
@@ -182,7 +183,7 @@ class CanAttack(proto.CanAttack):
 
 
 @frozen
-class CannotBeAttacked(proto.CannotBeAttacked):
+class CannotBeDestroyed(proto.CannotBeDestroyed):
     EXCLUDES = set[type[Flag]]()
 
 
