@@ -6,7 +6,7 @@ from attrs import frozen
 
 import core.protocols as proto
 from appearance.graphics.colors import get_colors, Color
-from core.figures.figures_flags import Terrain
+from core.figures.figures_flags import Terrain, ALL_TERRAINS
 from core.game_rules import Annexer
 from core.game_session import GameSession
 from core.master import Master
@@ -73,7 +73,7 @@ class MapRandomizer:
         names: list[str] = random.sample(read_random_bot_names(), players_count)
         cells_cache = self._session.cells
         cells = random.sample((cells_cache.with_figure(fig.Land) -
-                               cells_cache.at_terrain(Terrain)).as_list(), players_count)
+                               cells_cache.at_terrain(*ALL_TERRAINS)).as_list(), players_count)
         coords = map(self._session.board.coordinates_of, cells)
         colors = get_colors(players_count, lightness=.7, deepness=.6)
 
@@ -95,10 +95,13 @@ class MapRandomizer:
                                        players: list[proto.Player],
                                        town_per_player: int,
                                        start_resources: proto.ResourcesGroup) -> None:
+        cells_cache = self._session.cells
+        not_allowed = (cells_cache.not_empty()
+                       + cells_cache.at_terrain(*fig.Town.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds))
         for player in players:
             player.resources.add(start_resources)
 
-            cells = self._session.cells.with_owner(player) - self._session.cells.not_empty()
+            cells = cells_cache.with_owner(player) - not_allowed
             if not cells:
                 continue
 

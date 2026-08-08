@@ -35,7 +35,8 @@ class FiguresRelocation(proto.Move, metaclass=ABCMeta):
         pullable_cell = self.pullable_cell(session)
         figure = from_cell.figure
 
-        is_in_restricted_terrains = figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, to_cell,
+        is_in_restricted_terrains = figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell,
+                                                                                                   to_cell,
                                                                                                    board=board)
         budget_to_take = (figure.MOVES_BUDGET - session.figures_budget.of(figure)
                           if is_in_restricted_terrains else

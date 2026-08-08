@@ -22,8 +22,9 @@ from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
 from core.protocols import Capturable, CanCapture
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, Resource, ResourcesGroup
-from mathematics.a_star_path_searcher import AStarPathSearcher as PathSearcher
+from mathematics.path_searcers.a_star_path_searcher import AStarPathSearcher as PathSearcher
 from mathematics.hex_geometry import get_distance
+from mathematics.path_searcers.sequence_path_searcher import SequencePathSearcher
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
@@ -339,6 +340,7 @@ class BotIgor(proto.Bot):
         cells = self._session.cells
         own_cells = cells.with_owner(self._player)
         empties = own_cells & cells.with_figure(fig.Land)
+        empties -= cells.at_terrain(*figure.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds)
         if not empties:
             return MISSING
 
@@ -783,7 +785,7 @@ class BotIgor(proto.Bot):
     def _try_pull_forces_to_front(self) -> Iterator[None]:
         cells = self._session.cells
         to_pull = (cells.with_owner(self._player) &
-                   cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank | fig.Howitzer))
+                   cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank | fig.Howitzer | fig.Grad))
 
         to_pull = Cells(set(filter(lambda cell: self._session
                                    .figures_budget
@@ -820,11 +822,22 @@ class BotIgor(proto.Bot):
 
     def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> Iterator[None]:
         cells = self._session.cells
-        path_searcher = PathSearcher(self._board,
-                                     cells.with_owner(self._player) -
-                                     (cells.not_empty() - cells.at_front) +
-                                     Cells({cell, target}),
-                                     target)
+        bad_terrains = cells.at_terrain(*cell.figure.FLAGS
+                                        .get(proto.WithRestrictedTerrainKinds)
+                                        .terrain_kinds)
+
+        allowed_with_movables = cells.with_owner(self._player) - cells.with_flag(proto.Static)
+        allowed = allowed_with_movables - (cells.with_flag(proto.Movable) - cells.at_front)
+
+        good_allowed = allowed - bad_terrains
+        good_allowed_with_movables = allowed_with_movables - bad_terrains
+
+        path_searcher = SequencePathSearcher([
+            PathSearcher(self._board, good_allowed + Cells({cell, target}), target),
+            PathSearcher(self._board, good_allowed_with_movables + Cells({cell, target}), target),
+            PathSearcher(self._board, allowed + Cells({cell, target}), target),
+            PathSearcher(self._board, allowed_with_movables + Cells({cell, target}), target),
+        ])
 
         path = list[Vector2Int]()
         for path in path_searcher.search_process_from(cell):
@@ -845,10 +858,12 @@ class BotIgor(proto.Bot):
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
 
     def _get_pull_not_tanks_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        assert isinstance(cell.figure, fig.Infantry | fig.Motorization | fig.Howitzer)
+        assert isinstance(cell.figure, fig.Infantry | fig.Motorization | fig.Howitzer | fig.Grad)
 
         cells = self._session.cells
-        front = cells.at_front & cells.with_owner(self._player)
+        front = self._get_good_front_for(cell)
+        if not front:
+            return MISSING
 
         if cell in front:
             return MISSING
@@ -868,7 +883,7 @@ class BotIgor(proto.Bot):
             assert False
 
         cells = self._session.cells
-        front = cells.at_front & cells.with_owner(self._player)
+        front = self._get_good_front_for(cell)
         if not front:
             return MISSING
 
@@ -890,9 +905,17 @@ class BotIgor(proto.Bot):
                                                                self._board.coordinates_of(front_cell)))
         return target_front
 
+    def _get_good_front_for(self, cell: proto.Cell) -> Cells:
+        cells = self._session.cells
+        front = cells.at_front & cells.with_owner(self._player)
+        good_front = front - cells.at_terrain(*cell.figure.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds)
+        front = good_front or front
+        return front
+
     def _try_convert_infantry_to_motorization(self, target_ratio: float) -> Iterator[None]:
         cells = self._session.cells
         infantries = cells.with_owner(self._player) & cells.with_figure(fig.Infantry)
+        infantries -= cells.at_terrain(*fig.Motorization.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds)
         if not infantries:
             return
         yield
@@ -1104,10 +1127,10 @@ class BotIgor(proto.Bot):
             if not targets:
                 return
 
-            cell = (self._board
-                    .get_neighbors(self._get_nearest_to(cell, targets), include_cell=False)
-                    .with_figure(fig.Land)
-                    .any)
+            target = self._get_nearest_to(cell, targets)
+            cell = self._get_nearest_to(target, (self._board
+                                                 .get_neighbors(target, include_cell=False)
+                                                 .with_figure(fig.Land)))
 
         if not self._can_create(figure, cell):
             return

@@ -6,13 +6,11 @@ import core.protocols as proto
 from core.cells import Cells
 from core.protocols import Cell
 from mathematics.hex_geometry import get_distance
-from mathematics.vector import Vector2Int
-
-Path = list[Vector2Int]
+from mathematics.path_searcers.path_searcher import PathSearcher, Path
 
 
 @frozen
-class AStarPathSearcher:
+class AStarPathSearcher(PathSearcher):
     _board: proto.Board
     _allowed: proto.Cells
     _target: Cell
@@ -22,7 +20,7 @@ class AStarPathSearcher:
             if path is not None:
                 return path
 
-    def search_process_from(self, start_cell: Cell) -> Iterator[None | Path]:
+    def search_process_from(self, start_cell: Cell) -> Iterator[Path | None]:
         allowed = self._allowed
         if self._target not in allowed:
             yield []

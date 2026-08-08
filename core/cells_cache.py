@@ -53,10 +53,10 @@ class CellsCache(proto.CellsCache):
     def with_owner(self, player: proto.Player) -> Cells:
         return Cells(self._cells_of[player])
 
-    def at_terrain(self, terrain: type[proto.TerrainKind] | UnionType, *,
+    def at_terrain(self,
+                   *terrains: type[proto.TerrainKind],
                    include_multiple_terrain_cells: bool = True) -> Cells:
         dictionary = self._cells_at if include_multiple_terrain_cells else self._cells_at_only
-        terrains = (terrain,) if not isinstance(terrain, UnionType) else get_args(terrain)
 
         result = set[proto.Cell]()
         for concrete_terrain in terrains:
