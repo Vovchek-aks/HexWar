@@ -177,6 +177,69 @@
         0
       ]
     },
+    "make_art": {
+      "file": "ui/make_art.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_bunker": {
+      "file": "ui/make_bunker.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_capital": {
+      "file": "ui/make_capital.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_hf": {
+      "file": "ui/make_hf.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_lf": {
+      "file": "ui/make_lf.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_inf": {
+      "file": "ui/make_inf.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_silo": {
+      "file": "ui/make_silo.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_tank": {
+      "file": "ui/make_tank.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "make_town": {
+      "file": "ui/make_town.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
     "background_3_to_2": {
       "file": "ui/bck_1500_1000.png",
       "pivot": [

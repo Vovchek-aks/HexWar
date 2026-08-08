@@ -311,59 +311,93 @@ class GameUiLayerMaker:
         return button
 
     def _make_figures_creation_menu(self) -> Layer:
-        hint_box = BoxUi(Rectangle(Vector2.zero(), Vector2(200, 200)))
+        shape = Vector2Int(4, 5)
+        height = 400
+        rectangle = (RectangleBuilder(self._screen_shape)
+                     .from_left_bottom()
+                     .move(Vector2(20, 20))
+                     .set_shape(Vector2(height * shape.x / shape.y, height))
+                     .adjust_for_shape()
+                     .build())
 
-        rectangle = self._get_figures_creation_buttons_rectangle()
-        buttons = BoxUi(Rectangle.zero())
-
+        hint_margin_ratio = 0.03
         layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
                                     .from_left_bottom()
                                     .move(Vector2(20, 20))
-                                    .set_shape(Vector2(500, rectangle.shape.y))
+                                    .set_shape(Vector2(rectangle.shape.x * 2 / (1 - hint_margin_ratio),
+                                                       rectangle.shape.y))
                                     .adjust_for_shape()
                                     .build(),
+                                    margin_ratio=hint_margin_ratio,
                                     reserved=2)
+
+        buttons = StretcherUi(Rectangle.zero())
+        hint_box = BoxUi(Rectangle(Vector2.zero(), rectangle.shape))
         layout.append(buttons)
         layout.append(hint_box)
 
         synchroniser = TextSizeSynchroniser()
-        buttons.append(self._make_figures_creation_buttons(synchroniser, hint_box))
+        buttons.append(self._make_figures_creation_buttons(synchroniser, hint_box, shape, rectangle))
         synchroniser.synchronise()
+        buttons.append(ImageUi.make(self._drawer, rectangle, self._sprites_loader.load_background_2_to_3()))
 
         self._bind_layer_to_cell_with_figure_selection(layout.layer, fig.Land)
 
         return layout.layer
 
-    def _make_figures_creation_buttons(self, synchroniser: TextSizeSynchroniser, hint_box: BoxUi) -> LayoutUi:
-        layout = VerticalLayoutUi(self._get_figures_creation_buttons_rectangle(), margin_ratio=.2, reserved=6)
+    def _make_figures_creation_buttons(self,
+                                       synchroniser: TextSizeSynchroniser,
+                                       hint_box: BoxUi,
+                                       shape: Vector2Int,
+                                       outer_rectangle: Rectangle) -> LayoutUi:
+        margin = outer_rectangle.shape.y * .06
+        rectangle = Rectangle(outer_rectangle.position + Vector2.ones() * margin,
+                              outer_rectangle.shape - Vector2.ones() * margin * 2)
 
-        self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.Bunker, fig.Artillery, hint_box)
-        layout.append(self._make_figure_creation_button(synchroniser, fig.MissileSilo, hint_box))
-        self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.Tank, fig.Infantry, hint_box)
-        layout.append(self._make_figure_creation_button(synchroniser, fig.TierOneCapital, hint_box))
-        self._add_two_horizontal_creation_buttons_to(synchroniser, layout, fig.LightFactory, fig.HeavyFactory, hint_box)
-        layout.append(self._make_figure_creation_button(synchroniser, fig.Town, hint_box))
+        rectangle_ratio = rectangle.shape.x / rectangle.shape.y
+        target_ratio = shape.x / shape.y
+        assert abs(rectangle_ratio - target_ratio) < 0.1, f"{rectangle_ratio:.2f} {target_ratio:.2f}"
+
+        figures = [
+            [fig.Infantry],
+            [fig.Bunker],
+            [fig.Artillery],
+            [fig.Tank, fig.MissileSilo],
+            [fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory]
+        ]
+
+        assert len(figures) <= shape.y
+        assert len(figures[0]) <= shape.x
+
+        height_margin_ratio = 0.05
+        button_size = rectangle.shape.y * (1 - height_margin_ratio) / shape.y
+        width_margin_ratio = 1 - button_size * shape.x / rectangle.shape.x
+
+        layout = VerticalLayoutUi(rectangle, height_margin_ratio, reserved=shape.y)
+        for row in figures:
+            self._add_row_of_creation_buttons_with(layout, synchroniser, hint_box, shape.x, width_margin_ratio, *row)
 
         return layout
 
-    def _add_two_horizontal_creation_buttons_to(self,
-                                                synchroniser: TextSizeSynchroniser,
-                                                layout: VerticalLayoutUi,
-                                                left: type[fig.Figure],
-                                                right: type[fig.Figure],
-                                                hint_box: BoxUi) -> None:
-        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio=.03, reserved=2)
+    def _add_row_of_creation_buttons_with(self,
+                                          layout: VerticalLayoutUi,
+                                          synchroniser: TextSizeSynchroniser,
+                                          hint_box: BoxUi,
+                                          width: int,
+                                          margin_ratio: float,
+                                          *figures: type[fig.Figure]) -> None:
+        horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio, reserved=width)
         layout.append(horizontal_layout)
-        horizontal_layout.append(self._make_figure_creation_button(synchroniser, left, hint_box))
-        horizontal_layout.append(self._make_figure_creation_button(synchroniser, right, hint_box))
+        for figure in figures:
+            horizontal_layout.append(self._make_figure_creation_button(synchroniser, figure, hint_box))
 
     def _make_figure_creation_button(self,
                                      synchroniser: TextSizeSynchroniser,
                                      figure: type[fig.Figure],
                                      hint_box: BoxUi) -> ButtonUi:
-        background = self._sprites_loader.load_button_3_to_2()
+        background = self._sprites_loader.load_make_button_for(figure)
 
-        text = TextData.for_button(self._language.get_figure_name(figure))
+        text = TextData.for_button(" ")
         position = Vector2.zero()
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(Rectangle.with_center_at(position, text.shape)),
@@ -394,14 +428,6 @@ class GameUiLayerMaker:
         hint = self._make_button_hint(synchroniser, title, content, button)
 
         return hint
-
-    def _get_figures_creation_buttons_rectangle(self) -> Rectangle:
-        return (RectangleBuilder(self._screen_shape)
-                .from_left_bottom()
-                .move(Vector2(20, 20))
-                .set_shape(Vector2(200, 300))
-                .adjust_for_shape()
-                .build())
 
     def _make_infantry_menu(self) -> Layer:
         to_motorize = self._make_null_button(Language.from_meta().get_to_motorize_message())

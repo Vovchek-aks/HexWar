@@ -6,7 +6,7 @@ from attrs import frozen
 
 import core.protocols as proto
 from appearance.graphics.colors import get_colors, Color
-from core.figures.figures_flags import Terrain, ALL_TERRAINS
+from core.figures.figures_flags import ALL_TERRAINS
 from core.game_rules import Annexer
 from core.game_session import GameSession
 from core.master import Master

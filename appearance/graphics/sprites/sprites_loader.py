@@ -2,7 +2,7 @@ from pathlib import Path
 
 from attrs import frozen
 
-from core.protocols import Figure
+import core.figures.figure as fig
 from mathematics.vector import Vector2Int
 from .sprite import Sprite
 from files import read_meta
@@ -33,6 +33,18 @@ _GITHUB = "github"
 _TELEGRAM = "telegram"
 _TWITCH = "twitch"
 _ITCH = "itch"
+
+_MAKE_BUTTONS_FOR: dict[type[fig.Figure], str] = {
+    fig.Artillery: "make_art",
+    fig.Bunker: "make_bunker",
+    fig.TierOneCapital: "make_capital",
+    fig.HeavyFactory: "make_hf",
+    fig.LightFactory: "make_lf",
+    fig.Infantry: "make_inf",
+    fig.MissileSilo: "make_silo",
+    fig.Tank: "make_tank",
+    fig.Town: "make_town",
+}
 
 _EFFECTS = "effects"
 _EXPLOSION = "explosion"
@@ -75,13 +87,13 @@ class SpritesLoader:
         sprite_info = self._meta[_NO_SPRITE]
         return self._load_sprite(sprite_info)
 
-    def load_figure_sprite(self, figure: type[Figure]) -> Sprite:
+    def load_figure_sprite(self, figure: type[fig.Figure]) -> Sprite:
         assert self.has_figure(figure)
 
         sprite_info = self._figures[figure.__name__]
         return self._load_sprite(sprite_info)
 
-    def has_figure(self, figure: type[Figure]) -> bool:
+    def has_figure(self, figure: type[fig.Figure]) -> bool:
         return figure.__name__ in self._figures
 
     def load_button_3_to_2(self) -> Sprite:
@@ -90,6 +102,10 @@ class SpritesLoader:
 
     def load_button_3_to_2_active(self) -> Sprite:
         sprite_info = self._ui[_BUTTON_3_TO_2_ACTIVE]
+        return self._load_sprite(sprite_info)
+
+    def load_make_button_for(self, figure: type[fig.Figure]) -> Sprite:
+        sprite_info = self._ui[_MAKE_BUTTONS_FOR[figure]]
         return self._load_sprite(sprite_info)
 
     def load_background_3_to_2(self) -> Sprite:

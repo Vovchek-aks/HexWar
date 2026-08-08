@@ -36,6 +36,9 @@ class StretcherUi(proto.ElementUi):
             self.append(element)
 
     def _reshape_all(self, old_rectangle: Rectangle) -> None:
+        if not self._elements:
+            return
+
         delta = self._rectangle.position - old_rectangle.position
         ratios = Vector2(self._rectangle.shape.x / old_rectangle.shape.x,
                          self._rectangle.shape.y / old_rectangle.shape.y)
