@@ -11,7 +11,7 @@ from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.stretcher import StretcherUi
 from appearance.UI.text import TextUi, TextData, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
-from appearance.graphics.sprites import SpritesLoader
+from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.UI.drawer import UiDrawer
 from appearance.input.clicks_catcher.click import Click, MouseButtons
 from appearance.input.mouse_movement_observer import MouseMovementObserver
@@ -312,7 +312,7 @@ class GameUiLayerMaker:
 
     def _make_figures_creation_menu(self) -> Layer:
         shape = Vector2Int(4, 5)
-        height = 400
+        height = self._screen_shape.y * 0.37
         rectangle = (RectangleBuilder(self._screen_shape)
                      .from_left_bottom()
                      .move(Vector2(20, 20))
@@ -341,7 +341,8 @@ class GameUiLayerMaker:
         synchroniser.synchronise()
         buttons.append(ImageUi.make(self._drawer, rectangle, self._sprites_loader.load_background_2_to_3()))
 
-        self._bind_layer_to_cell_with_figure_selection(layout.layer, fig.Land)
+        self._cell_selector.cell_was_selected.subscribe(lambda _: layout.layer.set_activity(False))
+        self._cell_selector.cell_was_unselected.subscribe(lambda: layout.layer.set_activity(True))
 
         return layout.layer
 
@@ -358,7 +359,7 @@ class GameUiLayerMaker:
         target_ratio = shape.x / shape.y
         assert abs(rectangle_ratio - target_ratio) < 0.1, f"{rectangle_ratio:.2f} {target_ratio:.2f}"
 
-        figures = [
+        table = [
             [fig.Infantry],
             [fig.Bunker],
             [fig.Artillery],
@@ -366,15 +367,15 @@ class GameUiLayerMaker:
             [fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory]
         ]
 
-        assert len(figures) <= shape.y
-        assert len(figures[0]) <= shape.x
+        assert len(table) <= shape.y
+        assert len(table[0]) <= shape.x
 
         height_margin_ratio = 0.05
         button_size = rectangle.shape.y * (1 - height_margin_ratio) / shape.y
         width_margin_ratio = 1 - button_size * shape.x / rectangle.shape.x
 
         layout = VerticalLayoutUi(rectangle, height_margin_ratio, reserved=shape.y)
-        for row in figures:
+        for row in table:
             self._add_row_of_creation_buttons_with(layout, synchroniser, hint_box, shape.x, width_margin_ratio, *row)
 
         return layout
@@ -395,7 +396,7 @@ class GameUiLayerMaker:
                                      synchroniser: TextSizeSynchroniser,
                                      figure: type[fig.Figure],
                                      hint_box: BoxUi) -> ButtonUi:
-        background = self._sprites_loader.load_make_button_for(figure)
+        background = self._sprites_loader.load_figure_creation_button_for(figure)
 
         text = TextData.for_button(" ")
         position = Vector2.zero()
@@ -405,9 +406,10 @@ class GameUiLayerMaker:
                                text)
         synchroniser.append(button.text)
 
-        button.was_clicked.subscribe(lambda:
-                                     self._button_press_action_happened
-                                     .invoke(CreationButtonPressAction(self._cell_selector.get_coord(), figure)))
+        self._make_button_activatable(button, self._sprites_loader.load_button_3_to_2_active(),
+                                      lambda: CreationButtonPressAction(self._cell_selector.get_coord(), figure),
+                                      lambda action: isinstance(action, CreationButtonPressAction) and
+                                                     action.figure == figure)
 
         hint_synchroniser = TextSizeSynchroniser()
         hint_box.append(self._make_figure_creation_button_hint(hint_synchroniser, figure, button))
@@ -435,8 +437,8 @@ class GameUiLayerMaker:
                                           .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                               fig.Motorization)))
 
-        capture = self._make_activatable_button(self._language.get_capture_message(),
-                                                lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
+        capture = self._make_activatable_text_button(self._language.get_capture_message(),
+                                                     lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Infantry, [to_motorize, capture],
                                       [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE])
@@ -445,8 +447,8 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Infantry, [], [])
 
     def _make_infantry_menu_tutorial_2(self) -> Layer:
-        capture = self._make_activatable_button(self._language.get_capture_message(),
-                                                lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
+        capture = self._make_activatable_text_button(self._language.get_capture_message(),
+                                                     lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Infantry, [capture], [INFANTRY_CAPTURE])
 
@@ -455,8 +457,9 @@ class GameUiLayerMaker:
         to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
                                           .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                               fig.Infantry)))
-        combine = self._make_activatable_button(self._language.get_combine_message(),
-                                                lambda: CombinationButtonPressAction(self._cell_selector.get_coord(),
+        combine = self._make_activatable_text_button(self._language.get_combine_message(),
+                                                     lambda: CombinationButtonPressAction(
+                                                         self._cell_selector.get_coord(),
                                                                                      fig.Grad))
 
         return self._make_figure_menu(fig.Motorization,
@@ -524,27 +527,28 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Abandonment, [], [])
 
     def _make_missile_silo_menu(self) -> Layer:
-        launch_oreshnik = self._make_activatable_button(self._language.get_launch_oreshnik_message(),
-                                                        lambda: OreshnikLaunchButtonPressAction(
+        launch_oreshnik = self._make_activatable_text_button(self._language.get_launch_oreshnik_message(),
+                                                             lambda: OreshnikLaunchButtonPressAction(
                                                             self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.MissileSilo, [launch_oreshnik], [LAUNCH_ORESHNIK])
 
     def _make_tank_menu(self) -> Layer:
-        attack = self._make_activatable_button(self._language.get_attack_message(),
-                                               lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
-        combine = self._make_activatable_button(self._language.get_combine_message(),
-                                                lambda: CombinationButtonPressAction(self._cell_selector.get_coord(),
+        attack = self._make_activatable_text_button(self._language.get_attack_message(),
+                                                    lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
+        combine = self._make_activatable_text_button(self._language.get_combine_message(),
+                                                     lambda: CombinationButtonPressAction(
+                                                         self._cell_selector.get_coord(),
                                                                                      fig.Howitzer))
 
         return self._make_figure_menu(fig.Tank, [attack, combine], [TANK_ATTACK, TANK_AND_ARTILLERY_TO_HOWITZER])
 
     def _make_artillery_menu(self) -> Layer:
-        attack = self._make_activatable_button(self._language.get_attack_message(),
-                                               lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
+        attack = self._make_activatable_text_button(self._language.get_attack_message(),
+                                                    lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
-        attach = self._make_activatable_button(self._language.get_initiate_pulling_message(),
-                                               lambda: PullingInitiationButtonPressAction(
+        attach = self._make_activatable_text_button(self._language.get_initiate_pulling_message(),
+                                                    lambda: PullingInitiationButtonPressAction(
                                                    self._cell_selector.get_coord()))
 
         detach = self._make_null_button(self._language.get_terminate_pulling_message())
@@ -576,14 +580,15 @@ class GameUiLayerMaker:
                                       [ARTILLERY_ATTACK, (ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING)])
 
     def _make_howitzer_menu(self) -> Layer:
-        attack = self._make_activatable_button(self._language.get_attack_message(),
-                                               lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
+        attack = self._make_activatable_text_button(self._language.get_attack_message(),
+                                                    lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Howitzer, [attack], [HOWITZER_ATTACK])
 
     def _make_grad_menu(self) -> Layer:
-        attack = self._make_activatable_button(self._language.get_attack_message(),
-                                               lambda: GradAttackButtonPressAction(self._cell_selector.get_coord()))
+        attack = self._make_activatable_text_button(self._language.get_attack_message(),
+                                                    lambda: GradAttackButtonPressAction(
+                                                        self._cell_selector.get_coord()))
 
         return self._make_figure_menu(fig.Grad, [attack], [GRAD_ATTACK])
 
@@ -941,30 +946,37 @@ class GameUiLayerMaker:
 
         self._moves_maker.board_move_was_made.subscribe(on_board_move_was_made)
 
-    def _make_activatable_button(self,
-                                 text: str,
-                                 action_maker: Callable[[], ButtonPressAction]) -> ButtonUi:
+    def _make_activatable_text_button(self,
+                                      text: str,
+                                      action_maker: Callable[[], ButtonPressAction]) -> ButtonUi:
         button = self._make_null_button(text)
+        active = self._sprites_loader.load_button_3_to_2_active()
+        self._make_button_activatable(button, active, action_maker,
+                                      lambda action: isinstance(action, type(action_maker())))
+        return button
+
+    def _make_button_activatable(self,
+                                 button: ButtonUi,
+                                 active: Sprite,
+                                 action_maker: Callable[[], ButtonPressAction],
+                                 is_target_action: Callable[[InputAction], bool]) -> None:
         image = button.image
         not_active = image.sprite
-        active = self._sprites_loader.load_button_3_to_2_active()
 
         def set_active() -> None:
             image.set_sprite(active)
             self._button_press_action_happened.invoke(action_maker())
 
-        def set_not_active(action: InputAction, is_last: bool) -> None:
-            if not isinstance(action, type(action_maker())):
+        def set_not_active(action: InputAction, _: bool) -> None:
+            if not is_target_action(action):
                 return
-            if not is_last:
+            if any(map(is_target_action, self._actions_reader.actions)):
                 return
 
             image.set_sprite(not_active)
 
         button.was_clicked.subscribe(set_active)
         self._actions_reader.action_was_removed.subscribe(set_not_active)
-
-        return button
 
     def _make_null_button(self, text: str) -> ButtonUi:
         background = self._sprites_loader.load_button_3_to_2()

@@ -69,11 +69,17 @@ class MoveReaders:
 
     def _try_read_creation_move(self, actions: list[InputAction]) -> ValidMove | Status:
         match actions:
-            case [CreationButtonPressAction(figure=figure)]:
-                if (coord := self._cell_selector.get_coord()) is MISSING:
-                    return INVALID
+            case [CreationButtonPressAction(figure=figure),
+                  CellClickAction(coord=to_coord,
+                                  buttons=MouseButtons(is_right=True))]:
+                move = Creation(figure, to_coord).validate(self._session)
+                if move is INVALID:
+                    return ABORT_NEEDED
 
-                return Creation(figure, coord).validate(self._session)
+                return move
+
+            case [CreationButtonPressAction()]:
+                return CAN_BECOME_CORRECT
 
             case _:
                 return INVALID

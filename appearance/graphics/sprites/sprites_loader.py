@@ -104,7 +104,7 @@ class SpritesLoader:
         sprite_info = self._ui[_BUTTON_3_TO_2_ACTIVE]
         return self._load_sprite(sprite_info)
 
-    def load_make_button_for(self, figure: type[fig.Figure]) -> Sprite:
+    def load_figure_creation_button_for(self, figure: type[fig.Figure]) -> Sprite:
         sprite_info = self._ui[_MAKE_BUTTONS_FOR[figure]]
         return self._load_sprite(sprite_info)
 
