@@ -65,7 +65,8 @@ _ARTILLERY_PRIORITY_LIST = [
     fig.Figure,
 ]
 
-_MAX_ARMY = 150.
+_MAX_ARMY = 25.
+_MIN_EMPTIES_RATIO = .4
 
 _CAPITALS_RATIO = 2
 
@@ -134,6 +135,7 @@ class BotIgor(proto.Bot):
 
     def _add_moves(self, cells_count: int, *, _is_inner=False) -> Iterator[None]:
         cells = self._session.cells
+        empties_count = self._count_of(fig.Land)
         town_count = self._count_of(fig.Town)
         lf_count = self._count_of(fig.LightFactory)
         hf_count = self._count_of(fig.HeavyFactory)
@@ -143,9 +145,9 @@ class BotIgor(proto.Bot):
         bunkers_count = len((cells.with_owner(self._player) &
                              cells.with_figure(fig.Bunker) &
                              cells.at_front).as_set())
-        empty_front_length = len((cells.with_owner(self._player) &
+        empty_front_length = len(cells.with_owner(self._player) &
                                   cells.at_front &
-                                  cells.with_figure(fig.Land)).as_set())
+                                 cells.with_figure(fig.Land))
         tanks_count = self._count_of(fig.Tank)
         howitzers_count = self._count_of(fig.Howitzer)
         silos_count = self._count_of(fig.MissileSilo)
@@ -205,9 +207,10 @@ class BotIgor(proto.Bot):
 
         if self._state == _BUILDING:
             has_developed = hf_count > 0
+            is_allowed_to_build = empties_count > cells_count * _MIN_EMPTIES_RATIO
 
             bunker_ratio = 0.25
-            if bunkers_count < empty_front_length * bunker_ratio:
+            if is_allowed_to_build and bunkers_count < empty_front_length * bunker_ratio:
                 self._try_create(fig.Bunker)
                 # print("_try_create(fig.Bunker)")
                 if self._moves_to_make:
@@ -268,20 +271,21 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            yield from self._try_align_resources_flow(cells_count)
-            # print("_try_align_resources_flow")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
+            if is_allowed_to_build:
+                yield from self._try_align_resources_flow(cells_count)
+                # print("_try_align_resources_flow")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
 
-            if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
-                figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
-                if figure_to_create is not MISSING:
-                    self._try_create(figure_to_create)
-                    # print(f"_try_create({figure_to_create})")
-                    if self._moves_to_make:
-                        # print(self._moves_to_make)
-                        return
+                if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
+                    figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
+                    if figure_to_create is not MISSING:
+                        self._try_create(figure_to_create)
+                        # print(f"_try_create({figure_to_create})")
+                        if self._moves_to_make:
+                            # print(self._moves_to_make)
+                            return
 
             self._state = _ATTACKING
 
@@ -834,9 +838,9 @@ class BotIgor(proto.Bot):
 
         path_searcher = SequencePathSearcher([
             PathSearcher(self._board, good_allowed + Cells({cell, target}), target),
-            PathSearcher(self._board, good_allowed_with_movables + Cells({cell, target}), target),
+            # PathSearcher(self._board, good_allowed_with_movables + Cells({cell, target}), target),
             PathSearcher(self._board, allowed + Cells({cell, target}), target),
-            PathSearcher(self._board, allowed_with_movables + Cells({cell, target}), target),
+            # PathSearcher(self._board, allowed_with_movables + Cells({cell, target}), target),
         ])
 
         path = list[Vector2Int]()
@@ -1140,15 +1144,19 @@ class BotIgor(proto.Bot):
 
     def _count_of(self, figure: type[fig.Figure]) -> int:
         cells = self._session.cells
-        res = len((cells.with_owner(self._player) &
-                   cells.with_figure(figure)).as_set())
-        return res
+        return len(cells.with_owner(self._player) & cells.with_figure(figure))
 
     def _get_nearest_to(self, target: proto.Cell, candidates: proto.Cells) -> proto.Cell:
         assert candidates
 
         coord_of = self._board.coordinates_of
         return min(candidates, key=lambda cell: get_distance(coord_of(target), coord_of(cell)))
+
+    def _sort_by_distance_to(self, target: proto.Cell, candidates: proto.Cells) -> list[proto.Cell]:
+        assert candidates
+
+        coord_of = self._board.coordinates_of
+        return sorted(candidates, key=lambda cell: get_distance(coord_of(target), coord_of(cell)))
 
     def _min_sqrt_distance_cell(self, candidates: proto.Cells, targets: proto.Cells) -> proto.Cell:
         coord_of = self._board.coordinates_of

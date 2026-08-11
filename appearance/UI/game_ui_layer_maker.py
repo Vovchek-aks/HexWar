@@ -406,7 +406,7 @@ class GameUiLayerMaker:
                                text)
         synchroniser.append(button.text)
 
-        self._make_button_activatable(button, self._sprites_loader.load_button_3_to_2_active(),
+        self._make_button_activatable(button, background,
                                       lambda: CreationButtonPressAction(self._cell_selector.get_coord(), figure),
                                       lambda action: isinstance(action, CreationButtonPressAction) and
                                                      action.figure == figure)
