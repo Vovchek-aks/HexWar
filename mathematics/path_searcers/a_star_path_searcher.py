@@ -8,11 +8,25 @@ from core.protocols import Cell
 from mathematics.hex_geometry import get_distance
 from mathematics.path_searcers.path_searcher import PathSearcher, Path
 
+Cost = float
 
 @frozen
 class AStarPathSearcher(PathSearcher):
+    @classmethod
+    def make(cls, board: proto.Board, target: Cell, *same_cost_cells: type[proto.Cells, Cost]) -> "AStarPathSearcher":
+        return cls(board, cls.get_cost_of_from(*same_cost_cells), target)
+
+    @classmethod
+    def get_cost_of_from(cls, *same_cost_cells: type[proto.Cells, Cost]) -> dict[proto.Cell, Cost]:
+        cost_of = dict[proto.Cell, Cost]()
+        for cells, cost in same_cost_cells:
+            for cell in cells:
+                if cell not in cost_of:
+                    cost_of[cell] = cost
+        return cost_of
+
     _board: proto.Board
-    _allowed: proto.Cells
+    _cost_of: dict[proto.Cell, Cost]
     _target: Cell
 
     def search_from(self, start_cell: Cell) -> Path:
@@ -21,16 +35,15 @@ class AStarPathSearcher(PathSearcher):
                 return path
 
     def search_process_from(self, start_cell: Cell) -> Iterator[Path | None]:
-        allowed = self._allowed
-        if self._target not in allowed:
+        if self._target not in self._cost_of:
             yield []
 
-        neighbors = self._board.get_neighbors(start_cell) & allowed
-        root_of = {neighbor: (start_cell, 1) for neighbor in neighbors}
+        neighbors = self._get_neighbors_of(start_cell)
+        root_of = {neighbor: (start_cell, self._cost_of[neighbor]) for neighbor in neighbors}
         leafs = set(root_of)
         processed = {start_cell}
 
-        yield from self._fill_process(root_of, leafs, processed, allowed)
+        yield from self._fill_process(root_of, leafs, processed)
 
         if self._target not in root_of:
             yield []
@@ -40,24 +53,27 @@ class AStarPathSearcher(PathSearcher):
         yield path
 
     def _fill_process(self,
-                      root_of: dict[Cell, tuple[Cell, int]],
+                      root_of: dict[Cell, tuple[Cell, Cost]],
                       leafs: set[Cell],
-                      processed: set[Cell],
-                      allowed: Cells) -> Iterator[None]:
+                      processed: set[Cell]) -> Iterator[None]:
         while leafs and self._target not in root_of:
             yield
             cell = self._pop_from(leafs, root_of)
             processed.add(cell)
-            distance_to_start = root_of[cell][1]
-            neighbors = self._board.get_neighbors(cell) & allowed - Cells(processed)
+            accumulated_cost = root_of[cell][1]
+            neighbors = self._get_neighbors_of(cell) - Cells(processed)
             for neighbor in neighbors:
-                if neighbor in root_of and root_of[neighbor][1] <= distance_to_start + 1:
+                neighbor_cost = accumulated_cost + self._cost_of[neighbor]
+                if neighbor in root_of and root_of[neighbor][1] <= neighbor_cost:
                     continue
 
-                root_of[neighbor] = cell, distance_to_start + 1
+                root_of[neighbor] = cell, neighbor_cost
                 leafs.add(neighbor)
 
-    def _pop_from(self, leafs: set[Cell], root_of: dict[Cell, tuple[Cell, int]]) -> Cell:
+    def _get_neighbors_of(self, target_cell: proto.Cell) -> proto.Cells:
+        return self._board.get_neighbors(target_cell).filter(lambda cell: cell in self._cost_of)
+
+    def _pop_from(self, leafs: set[Cell], root_of: dict[Cell, tuple[Cell, Cost]]) -> Cell:
         def key(cell: Cell) -> float:
             return (root_of[cell][1] +
                     self._distance_to_target(cell))
@@ -71,7 +87,10 @@ class AStarPathSearcher(PathSearcher):
         target_coord = self._board.coordinates_of(self._target)
         return get_distance(target_coord, coord)
 
-    def _fill_path_process(self, path: Path, root_of: dict[Cell, tuple[Cell, int]], start_cell: Cell) -> Iterator[None]:
+    def _fill_path_process(self,
+                           path: Path,
+                           root_of: dict[Cell, tuple[Cell, Cost]],
+                           start_cell: Cell) -> Iterator[None]:
         cell = self._target
         while cell != start_cell:
             yield

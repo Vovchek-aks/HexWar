@@ -24,9 +24,14 @@ from core.protocols import Capturable, CanCapture
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, Resource, ResourcesGroup
 from mathematics.path_searcers.a_star_path_searcher import AStarPathSearcher as PathSearcher
 from mathematics.hex_geometry import get_distance
-from mathematics.path_searcers.sequence_path_searcher import SequencePathSearcher
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
+
+# Path finding +
+# Front filtering
+# Abandonments destruction
+# Random wiggles
+
 
 _ATTACKING = 0
 _BUILDING = 1
@@ -146,7 +151,7 @@ class BotIgor(proto.Bot):
                              cells.with_figure(fig.Bunker) &
                              cells.at_front).as_set())
         empty_front_length = len(cells.with_owner(self._player) &
-                                  cells.at_front &
+                                 cells.at_front &
                                  cells.with_figure(fig.Land))
         tanks_count = self._count_of(fig.Tank)
         howitzers_count = self._count_of(fig.Howitzer)
@@ -826,22 +831,26 @@ class BotIgor(proto.Bot):
 
     def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> Iterator[None]:
         cells = self._session.cells
-        bad_terrains = cells.at_terrain(*cell.figure.FLAGS
-                                        .get(proto.WithRestrictedTerrainKinds)
-                                        .terrain_kinds)
+        bad_terrains = cells.at_terrain(*self._get_bad_terrain_kinds_of(cell))
 
-        allowed_with_movables = cells.with_owner(self._player) - cells.with_flag(proto.Static)
-        allowed = allowed_with_movables - (cells.with_flag(proto.Movable) - cells.at_front)
+        our_cells = cells.with_owner(self._player)
+        empties = our_cells & cells.with_figure(fig.Land)
+        movables = our_cells.with_flag(proto.Movable) - cells.at_front - self._board.get_neighbors(cell)
 
-        good_allowed = allowed - bad_terrains
-        good_allowed_with_movables = allowed_with_movables - bad_terrains
+        good_and_empty = empties - bad_terrains
+        good_with_movables = movables - bad_terrains
+        bad_and_empty = empties & bad_terrains
+        bad_with_movables = movables & bad_terrains
 
-        path_searcher = SequencePathSearcher([
-            PathSearcher(self._board, good_allowed + Cells({cell, target}), target),
-            # PathSearcher(self._board, good_allowed_with_movables + Cells({cell, target}), target),
-            PathSearcher(self._board, allowed + Cells({cell, target}), target),
-            # PathSearcher(self._board, allowed_with_movables + Cells({cell, target}), target),
-        ])
+        possible_moves_count = (cell.figure.MOVES_BUDGET /
+                                cell.figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
+        path_searcher = PathSearcher.make(self._board, target,
+                                          (Cells({cell, target}), 0),
+                                          (good_and_empty, 1),
+                                          (bad_and_empty, possible_moves_count),
+                                          (good_with_movables, random.randint(10, 100)),
+                                          (bad_with_movables, 100)
+                                          )
 
         path = list[Vector2Int]()
         for path in path_searcher.search_process_from(cell):
@@ -860,6 +869,12 @@ class BotIgor(proto.Bot):
                 break
 
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
+
+    @staticmethod
+    def _get_bad_terrain_kinds_of(cell: proto.Cell) -> set[type[proto.TerrainKind]]:
+        return (cell.figure.FLAGS
+                .get(proto.WithRestrictedTerrainKinds)
+                .terrain_kinds)
 
     def _get_pull_not_tanks_cell(self, cell: proto.Cell) -> proto.Cell | Status:
         assert isinstance(cell.figure, fig.Infantry | fig.Motorization | fig.Howitzer | fig.Grad)
