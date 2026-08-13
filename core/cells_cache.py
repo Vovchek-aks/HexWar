@@ -12,6 +12,7 @@ from my_types import union
 from statuses import MISSING
 import core.figures.figure as fig
 
+
 @frozen
 class CellsCache(proto.CellsCache):
     @classmethod
@@ -29,11 +30,16 @@ class CellsCache(proto.CellsCache):
     _owner_of: dict[proto.Cell, proto.Player] = field(init=False, factory=dict)
     _figure_of: dict[proto.Cell, type[proto.Figure]] = field(init=False, factory=dict)
     _front: set[proto.Cell] = field(init=False, factory=set)
+    _changeable_front: set[proto.Cell] = field(init=False, factory=set)
     _control_zone_of: dict[proto.Cell, Cells] = field(init=False, factory=dict)
 
     @property
     def at_front(self) -> Cells:
         return Cells(self._front)
+
+    @property
+    def at_changeable_front(self) -> Cells:
+        return Cells(self._changeable_front)
 
     def with_flag(self, flag: type[proto.Flag] | UnionType) -> Cells:
         return self.not_empty().with_flag(flag)
@@ -137,14 +143,20 @@ class CellsCache(proto.CellsCache):
 
     def _update_front(self, changed_cell: proto.Cell) -> None:
         for cell in self._board.get_neighbors(changed_cell, include_cell=True).with_flag(proto.OnLand):
-            at_front = any(neighbor.owner is not cell.owner
-                           for neighbor in self._board
-                           .get_neighbors(cell, include_cell=False)
-                           .with_flag(proto.OnLand))
+            at_front = (self._board
+                        .get_neighbors(cell, include_cell=False)
+                        .with_flag(proto.OnLand)
+                        .filter(lambda neighbor: neighbor.owner is not cell.owner))
             if at_front:
                 self._front.add(cell)
             else:
                 self._front.discard(cell)
+
+            at_changeable_front = at_front - at_front.with_flag(proto.CannotBeDestroyed)
+            if at_changeable_front:
+                self._changeable_front.add(cell)
+            else:
+                self._changeable_front.discard(cell)
 
     def _update_terrains_of(self, cell: proto.Cell) -> None:
         terrain_kinds = cell.terrain_kinds(self._board)

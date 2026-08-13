@@ -625,11 +625,11 @@ class Tank(_Figure):
 
         return int(per_infantry_ratio *
                    sum(map(lambda infantry_cell: infantry_cell.strength(board),
-                           board.get_neighbors(cell, include_cell=False)
+                           board
+                           .get_neighbors(cell, include_cell=False)
                            .with_flag(proto.OnLand)
                            .with_owner(cell.owner)
-                           .with_figure(Infantry | Motorization)
-                           .as_set())))
+                           .with_figure(Infantry | Motorization))))
 
 
 class Artillery(_Figure):

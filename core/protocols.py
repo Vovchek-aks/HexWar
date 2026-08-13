@@ -294,6 +294,11 @@ class CellsCache(ABC):
     def at_front(self) -> "Cells":
         ...
 
+    @property
+    @abstractmethod
+    def at_changeable_front(self) -> "Cells":
+        ...
+
     @abstractmethod
     def with_flag(self, flag: "type[Flag] | UnionType") -> "Cells":
         ...
@@ -480,6 +485,10 @@ class Cells(ABC):
 
     @abstractmethod
     def with_flag(self, target: type["Flag"] | UnionType) -> "Cells":
+        ...
+
+    @abstractmethod
+    def at_terrain(self, *terrains: "type[TerrainKind]", board: Board) -> "Cells":
         ...
 
     @abstractmethod

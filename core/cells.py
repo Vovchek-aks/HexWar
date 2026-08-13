@@ -45,6 +45,10 @@ class Cells(proto.Cells):
     def with_flag(self, target: type[proto.Flag] | UnionType) -> "Cells":
         return Cells({cell for cell in self._cells if target in cell.figure.FLAGS})
 
+    def at_terrain(self, *terrains: type[proto.TerrainKind], board: proto.Board) -> "Cells":
+        return Cells({cell for cell in self._cells
+                      if set(terrains) & cell.terrain_kinds(board)})
+
     def filter(self, function: Callable[[proto.Cell], bool]) -> "Cells":
         return Cells({cell for cell in self._cells if function(cell)})
 

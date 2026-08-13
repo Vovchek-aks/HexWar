@@ -10,6 +10,7 @@ from core import protocols as proto
 from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures import figure as fig
+from core.figures.figures_flags import ALL_TERRAINS
 from core.figures.resources_flow_flags import getting_resources_flow_process
 from core.moves.attack import Attack
 from core.moves.capture import Capture
@@ -28,10 +29,10 @@ from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 # Path finding +
-# Front filtering
+# Front filtering +
 # Abandonments destruction
 # Random wiggles
-
+# Leave empty spots near buildings
 
 _ATTACKING = 0
 _BUILDING = 1
@@ -149,9 +150,9 @@ class BotIgor(proto.Bot):
         motorization_count = self._count_of(fig.Motorization)
         bunkers_count = len((cells.with_owner(self._player) &
                              cells.with_figure(fig.Bunker) &
-                             cells.at_front).as_set())
+                             cells.at_changeable_front).as_set())
         empty_front_length = len(cells.with_owner(self._player) &
-                                 cells.at_front &
+                                 cells.at_changeable_front &
                                  cells.with_figure(fig.Land))
         tanks_count = self._count_of(fig.Tank)
         howitzers_count = self._count_of(fig.Howitzer)
@@ -192,7 +193,7 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            initial_army_size = min(_MAX_ARMY, .2 * len(cells.with_owner(self._player) & cells.at_front))
+            initial_army_size = min(_MAX_ARMY, .2 * len(cells.with_owner(self._player) & cells.at_changeable_front))
 
             if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
                 self._try_create(fig.Tank)
@@ -353,7 +354,7 @@ class BotIgor(proto.Bot):
         if not empties:
             return MISSING
 
-        front = empties & cells.at_front
+        front = empties & cells.at_changeable_front
         back = empties - front
         production = own_cells & cells.with_figure(PRODUCTION)
         critical = own_cells & cells.with_figure(CRITICAL)
@@ -636,7 +637,7 @@ class BotIgor(proto.Bot):
                 continue
 
             to_player_front = Cells()
-            for front in cells.at_front & cells.with_owner(player):
+            for front in cells.at_changeable_front & cells.with_owner(player):
                 to_player_front += self._board.get_neighbors(front)
             if not cells.with_owner(self._player) & to_player_front:
                 continue
@@ -796,46 +797,97 @@ class BotIgor(proto.Bot):
         to_pull = (cells.with_owner(self._player) &
                    cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank | fig.Howitzer | fig.Grad))
 
-        to_pull = Cells(set(filter(lambda cell: self._session
-                                   .figures_budget
-                                   .can_spend(cell.figure,
-                                              cell.figure
-                                              .get_cost_of(Relocation(Vector2Int.zero(),
-                                                                      Vector2Int.zero()))),
-                                   to_pull)))
+        to_pull = to_pull.filter(lambda cell: self._session.figures_budget
+                                 .can_spend(cell.figure,
+                                            cell.figure
+                                            .get_cost_of(Relocation(Vector2Int.zero(),
+                                                                    Vector2Int.zero()))))
         if not to_pull:
             return
 
-        tanks = to_pull.with_figure(fig.Tank)
-        not_tanks = to_pull - tanks
+        front_of: dict[type[fig.Figure] | tuple[type[fig.Figure], type[fig.Figure]], proto.Cells] = {
+            figure: self._get_good_front_for(figure)
+            for figure in (fig.Infantry, fig.Motorization, fig.Tank, fig.Howitzer, fig.Grad)
+        }
+        for figure in (fig.Infantry, fig.Motorization):
+            front_of[figure, fig.Artillery] = self._get_good_front_for(figure, fig.Artillery)
 
-        for cell in not_tanks:
+        connections = self._session.pulling_connections
+        pullers = (to_pull
+                   .with_figure(fig.Infantry | fig.Motorization)
+                   .filter(lambda cell: connections.is_puller(cell.figure)))
+
+        for cell in to_pull:
             yield
-            target = self._get_pull_not_tanks_cell(cell)
-            if target is MISSING:
+            front = front_of[type(cell.figure)] if cell not in pullers else front_of[type(cell.figure), fig.Artillery]
+            targets = self._get_pull_cells(cell, front)
+            if not targets:
                 continue
-
+            target = targets[0]  # todo
             yield from self._add_distant_relocation_moves(cell, target)
-            if self._moves_to_make:
-                return
 
-        for cell in tanks:
-            yield
-            target = self._get_pull_tank_cell(cell)
-            if target is MISSING:
-                continue
+    def _get_pull_cells(self, cell: proto.Cell, front: proto.Cells) -> list[proto.Cell]:
+        cells = self._session.cells
+        if not front:
+            return []
 
-            yield from self._add_distant_relocation_moves(cell, target)
-            if self._moves_to_make:
-                return
+        if cell in front:
+            return []
+
+        empty_front = front & cells.with_figure(fig.Land)
+        # if not empty_front:
+        #     empty_front = front
+
+        return sorted(empty_front,
+                      key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
+                                                          self._board.coordinates_of(front_cell)))
+
+    def _get_good_front_for(self, *figures: type[fig.Figure]) -> Cells:
+        cells = self._session.cells
+        front = cells.at_changeable_front & cells.with_owner(self._player)
+
+        allowed_terrain_kinds = ALL_TERRAINS.copy()
+        for figure in figures:
+            allowed_terrain_kinds -= self._get_bad_terrain_kinds_of(figure)
+        bad_terrain_kinds = ALL_TERRAINS - allowed_terrain_kinds
+        front -= cells.at_terrain(*bad_terrain_kinds)
+
+        good_terrain_front = set[proto.Cell]()
+        for cell in front:
+            neighbors = self._board.get_neighbors(cell) - cells.with_owner(self._player)
+            neighbors -= neighbors.with_flag(proto.CannotBeDestroyed)
+            neighbors -= neighbors.at_terrain(*bad_terrain_kinds, board=self._board)
+            if neighbors:
+                good_terrain_front.add(cell)
+        front = Cells(good_terrain_front)
+
+        movables = [figure.FLAGS.get(proto.Movable)
+                    for figure in figures
+                    if proto.Movable in figure.FLAGS]
+
+        weaker_front = set[proto.Cell]()
+        for cell in front:
+            strength = max(movable.strength(self._board.coordinates_of(cell), self._board)
+                           for movable in movables)
+            neighbors = self._board.get_neighbors(cell) - cells.with_owner(self._player)
+            neighbors -= neighbors.with_flag(proto.CannotBeDestroyed)
+            hardness = min(neighbor.hardness(self._board)
+                           for neighbor in neighbors)
+            if strength >= hardness:
+                weaker_front.add(cell)
+
+        if weaker_front:
+            front = Cells(weaker_front)
+
+        return front
 
     def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> Iterator[None]:
         cells = self._session.cells
-        bad_terrains = cells.at_terrain(*self._get_bad_terrain_kinds_of(cell))
+        bad_terrains = cells.at_terrain(*self._get_bad_terrain_kinds_of(cell.figure))
 
         our_cells = cells.with_owner(self._player)
         empties = our_cells & cells.with_figure(fig.Land)
-        movables = our_cells.with_flag(proto.Movable) - cells.at_front - self._board.get_neighbors(cell)
+        movables = our_cells.with_flag(proto.Movable) - cells.at_changeable_front - self._board.get_neighbors(cell)
 
         good_and_empty = empties - bad_terrains
         good_with_movables = movables - bad_terrains
@@ -871,65 +923,10 @@ class BotIgor(proto.Bot):
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
 
     @staticmethod
-    def _get_bad_terrain_kinds_of(cell: proto.Cell) -> set[type[proto.TerrainKind]]:
-        return (cell.figure.FLAGS
+    def _get_bad_terrain_kinds_of(figure: fig.Figure | type[fig.Figure]) -> set[type[proto.TerrainKind]]:
+        return (figure.FLAGS
                 .get(proto.WithRestrictedTerrainKinds)
                 .terrain_kinds)
-
-    def _get_pull_not_tanks_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        assert isinstance(cell.figure, fig.Infantry | fig.Motorization | fig.Howitzer | fig.Grad)
-
-        cells = self._session.cells
-        front = self._get_good_front_for(cell)
-        if not front:
-            return MISSING
-
-        if cell in front:
-            return MISSING
-
-        empty_front = front & cells.with_figure(fig.Land)
-        if not empty_front:
-            empty_front = front
-
-        target_front = min(empty_front.as_set(),
-                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
-                                                               self._board.coordinates_of(front_cell)))
-
-        return target_front
-
-    def _get_pull_tank_cell(self, cell: proto.Cell) -> proto.Cell | Status:
-        if not isinstance(cell.figure, fig.Tank):
-            assert False
-
-        cells = self._session.cells
-        front = self._get_good_front_for(cell)
-        if not front:
-            return MISSING
-
-        is_safe = bool(self._session.board
-                       .get_neighbors(cell)
-                       .with_owner(self._player)
-                       .with_figure(fig.Infantry | fig.Motorization))
-        if cell in front and is_safe:
-            return MISSING
-
-        front = Cells({cell for cell in front & cells.with_figure(fig.Land)
-                       if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
-                      .with_owner(self._player).with_figure(fig.Infantry | fig.Motorization)})
-        if not front:
-            return MISSING
-
-        target_front = min(front.as_set(),
-                           key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
-                                                               self._board.coordinates_of(front_cell)))
-        return target_front
-
-    def _get_good_front_for(self, cell: proto.Cell) -> Cells:
-        cells = self._session.cells
-        front = cells.at_front & cells.with_owner(self._player)
-        good_front = front - cells.at_terrain(*cell.figure.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds)
-        front = good_front or front
-        return front
 
     def _try_convert_infantry_to_motorization(self, target_ratio: float) -> Iterator[None]:
         cells = self._session.cells
@@ -959,7 +956,7 @@ class BotIgor(proto.Bot):
             return
         yield
 
-        armed_front = all_armed & cells.at_front
+        armed_front = all_armed & cells.at_changeable_front
         if not armed_front:
             return
         yield
@@ -985,7 +982,7 @@ class BotIgor(proto.Bot):
         cells = self._session.cells
         tanks = (cells.with_owner(self._player) &
                  cells.with_figure(fig.Tank) &
-                 cells.at_front)
+                 cells.at_changeable_front)
         if not tanks:
             return
         yield
@@ -1027,7 +1024,7 @@ class BotIgor(proto.Bot):
             return
         yield
 
-        for tank in tanks.at_front(self._board):
+        for tank in tanks & self._session.cells.at_changeable_front:
             neighbors = self._board.get_neighbors(tank, include_cell=False).with_flag(proto.OnLand)
             neighbors -= neighbors.with_owner(self._player)
             neighbors -= neighbors.with_figure(fig.Land)
@@ -1094,7 +1091,7 @@ class BotIgor(proto.Bot):
             return
         yield
 
-        for infantry in infantries & self._session.cells.at_front:
+        for infantry in infantries & self._session.cells.at_changeable_front:
             neighbors = (self._board.get_neighbors(infantry, include_cell=False)
                          .with_flag(Capturable)
                          .with_flag(proto.OnLand))
