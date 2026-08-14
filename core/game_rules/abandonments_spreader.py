@@ -50,7 +50,6 @@ class AbandonmentsSpreader(GameRule):
             return
 
         to_spawn = self.get_to_spawn(len(abandonments), session)
-        print(to_spawn)
 
         with temporarily_seed(session.master.current_turn):
             shuffled = abandonments.as_list()

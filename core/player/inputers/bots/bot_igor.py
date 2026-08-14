@@ -28,8 +28,8 @@ from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
-# Path finding +
-# Front filtering +
+# Path finding +- (movables without move budget)
+# Front filtering +- (tanks)
 # Abandonments destruction
 # Random wiggles
 # Leave empty spots near buildings
@@ -820,27 +820,26 @@ class BotIgor(proto.Bot):
         for cell in to_pull:
             yield
             front = front_of[type(cell.figure)] if cell not in pullers else front_of[type(cell.figure), fig.Artillery]
-            targets = self._get_pull_cells(cell, front)
-            if not targets:
+            target = self._get_pull_cells(cell, front)
+            if target is MISSING:
                 continue
-            target = targets[0]  # todo
             yield from self._add_distant_relocation_moves(cell, target)
 
-    def _get_pull_cells(self, cell: proto.Cell, front: proto.Cells) -> list[proto.Cell]:
+    def _get_pull_cells(self, cell: proto.Cell, front: proto.Cells) -> proto.Cell | Status:
         cells = self._session.cells
         if not front:
-            return []
+            return MISSING
 
         if cell in front:
-            return []
+            return MISSING
 
         empty_front = front & cells.with_figure(fig.Land)
-        # if not empty_front:
-        #     empty_front = front
+        if not empty_front:
+            return MISSING
 
-        return sorted(empty_front,
-                      key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
-                                                          self._board.coordinates_of(front_cell)))
+        return min(empty_front,
+                   key=lambda front_cell: get_distance(self._board.coordinates_of(cell),
+                                                       self._board.coordinates_of(front_cell)))
 
     def _get_good_front_for(self, *figures: type[fig.Figure]) -> Cells:
         cells = self._session.cells
@@ -876,7 +875,7 @@ class BotIgor(proto.Bot):
             if strength >= hardness:
                 weaker_front.add(cell)
 
-        if weaker_front:
+        if Cells(weaker_front) & cells.with_figure(fig.Land):
             front = Cells(weaker_front)
 
         return front

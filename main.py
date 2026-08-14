@@ -85,16 +85,16 @@ def _make_multibot_loading_scene(window: Window) -> Scene:
     # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
     #     lambda: MapRandomizer.make(GameSessionLoader.make("Balkans.json", UPS).load(),
     #                                lambda: BotPlayerInputer(BotIgor(), UPS))
-    #     .get_randomized(len(read_random_bot_names()) // 2, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
-
-    # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-    #     lambda: MapRandomizer.make(GameSessionLoader.make("Balkans.json", UPS).load(),
-    #                                lambda: BotPlayerInputer(BotIgor(), UPS))
-    #     .get_randomized(10, ResourcesGroup.make(Dollars(30_000_000)), 10, UPS))
+    #     .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 
     return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-        lambda: GameSessionLoader.make("_edit_map.json", UPS).load()
-    )
+        lambda: MapRandomizer.make(GameSessionLoader.make("Balkans.json", UPS).load(),
+                                   lambda: BotPlayerInputer(BotIgor(), UPS))
+        .get_randomized(len(read_random_bot_names()) // 2, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
+
+    # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
+    #     lambda: GameSessionLoader.make("_edit_map.json", UPS).load()
+    # )
 
 
 if __name__ == '__main__':
