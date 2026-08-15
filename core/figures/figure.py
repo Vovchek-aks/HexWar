@@ -776,5 +776,8 @@ def __init__() -> None:
             continue
         assert WithRestrictedTerrainKinds in figure.FLAGS, figure
 
+        assert (proto.Movable not in figure.FLAGS or
+                figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())) > 0)
+
 
 __init__()

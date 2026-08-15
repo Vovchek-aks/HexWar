@@ -93,7 +93,7 @@ class Conversion(proto.Move):
                                            session: proto.GameSession) -> None:
         budget = session.figures_budget
         resources_cost, figure_budget_cost = self._conversions[type(old_figure), self.target]
-        session.figures_budget.add(old_figure, figure_budget_cost)
+        budget.add(old_figure, figure_budget_cost)
         old_bill = budget.pop(old_figure)
         bill = ceil(figure.MOVES_BUDGET * (old_bill / old_figure.MOVES_BUDGET))
         if not budget.can_spend(figure, bill):

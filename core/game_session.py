@@ -1,5 +1,3 @@
-import random
-
 from attrs import frozen
 
 import core.protocols as proto
@@ -7,9 +5,7 @@ from core.cells_cache import CellsCache
 from core.figures.figures import Figures
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
-from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from core.pulling_connections import PullingConnections
-from core.resources import Dollars
 from mathematics.vector import Vector2Int
 from appearance.graphics import colors
 from core.board import Board
@@ -63,11 +59,11 @@ def empty_map(*, board_size: int, player_names: list[str]) -> GameSession:
                for index, name in enumerate(player_names)]
 
     board = Board.from_maker(Vector2Int.ones() * board_size, lambda coord: Cell(MISSING, fig.Water()))
-    figures = Figures(board)
+    budget = FiguresRelocationBudget()
+    figures = Figures(board, budget)
     pulling_connections = PullingConnections.make(figures)
     cells = CellsCache(board)
     for cell in board.cells:
         cells.update(cell)
 
-    return GameSession(Master(players), board, FiguresRelocationBudget(), pulling_connections, cells, figures)
-
+    return GameSession(Master(players), board, budget, pulling_connections, cells, figures)

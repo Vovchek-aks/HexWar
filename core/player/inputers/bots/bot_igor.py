@@ -927,7 +927,7 @@ class BotIgor(proto.Bot):
         bad_and_empty = empties & bad_terrains
         bad_with_movables = movables & bad_terrains
 
-        possible_moves_count = (cell.figure.MOVES_BUDGET /
+        possible_moves_count = (cell.figure.MOVES_BUDGET //
                                 cell.figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
         path_searcher = PathSearcher.make(self._board, target,
                                           (Cells({cell, target}), 0),

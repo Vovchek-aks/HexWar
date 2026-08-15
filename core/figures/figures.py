@@ -10,6 +10,7 @@ import core.figures.figure as fig
 @frozen
 class Figures(proto.Figures):
     _board: proto.Board
+    _budget: proto.FiguresRelocationBudget
     _coord_of: dict[fig.Figure, Vector2Int] = field(init=False, factory=dict)
 
     _figure_was_added: Event[fig.Figure, Vector2Int, None] = field(init=False, factory=Event)
@@ -63,6 +64,7 @@ class Figures(proto.Figures):
 
         self._coord_of.pop(figure)
         cell.pop()
+        self._budget.pop(figure)
 
         self._figure_was_removed.invoke(figure, coord)
 

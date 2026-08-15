@@ -170,9 +170,10 @@ class GameSessionLoader:
     def load(self) -> GameSession:
         master = self._load_master()
         board = self._load_board(master)
-        figures = self._load_figures(board)
+        budget = FiguresRelocationBudget()
+        figures = self._load_figures(board, budget)
         pulling_connections = self._load_pulling_connections(board, figures)
-        budget = self._load_figures_budget(board)
+        self._load_figures_budget(budget, board)
         cells = CellsCache.make(board)
 
         return GameSession(master, board, budget, pulling_connections, cells, figures)
@@ -220,8 +221,8 @@ class GameSessionLoader:
 
         return Cell(master.players[code], fig.Land())
 
-    def _load_figures(self, board: Board) -> Figures:
-        figures = Figures(board)
+    def _load_figures(self, board: Board, budget: FiguresRelocationBudget) -> Figures:
+        figures = Figures(board, budget)
         figures_info: FIGURES_DICT = self._json[_FIGURES]
         for figure_name, keys in figures_info.items():
             figure = FIGURES[figure_name]
@@ -238,12 +239,10 @@ class GameSessionLoader:
                                  board[self._coord_from(pullable_key)].figure)
         return connections
 
-    def _load_figures_budget(self, board: Board) -> FiguresRelocationBudget:
-        budget = FiguresRelocationBudget()
+    def _load_figures_budget(self, budget: FiguresRelocationBudget, board: Board) -> None:
         bill_of: BUDGET_DICT = self._json[_BUDGET]
         for key, bill in bill_of.items():
             budget.add(board[self._coord_from(key)].figure, bill)
-        return budget
 
     @staticmethod
     def _coord_from(key: str) -> Vector2Int:
