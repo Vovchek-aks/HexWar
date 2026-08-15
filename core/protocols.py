@@ -317,8 +317,7 @@ class CellsCache(ABC):
 
     @abstractmethod
     def at_terrain(self,
-                   terrain: "type[TerrainKind] | UnionType",
-                   *,
+                   *terrains: "type[TerrainKind]",
                    include_multiple_terrain_cells: bool = True) -> "Cells":
         ...
 

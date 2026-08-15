@@ -8,6 +8,7 @@ from attrs import frozen, field
 import core.protocols as proto
 from core.cells import Cells
 from core.distant_neighbors_getter import DistantNeighborsGetter
+from core.figures.figures_flags import ALL_TERRAINS
 from my_types import union
 from statuses import MISSING
 import core.figures.figure as fig
@@ -65,8 +66,9 @@ class CellsCache(proto.CellsCache):
         dictionary = self._cells_at if include_multiple_terrain_cells else self._cells_at_only
 
         result = set[proto.Cell]()
-        for concrete_terrain in terrains:
-            result |= dictionary[concrete_terrain]
+        for terrain in ALL_TERRAINS:
+            if issubclass(terrain, terrains):
+                result |= dictionary[terrain]
         return Cells(result)
 
     def with_figure(self, figure: type[proto.Figure] | UnionType) -> Cells:

@@ -30,7 +30,7 @@ from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 # Path finding +
 # Front filtering +
-# Abandonments destruction
+# Abandonments destruction +
 # Random wiggles
 # Leave empty spots near buildings
 
@@ -296,7 +296,12 @@ class BotIgor(proto.Bot):
             self._state = _ATTACKING
 
         if self._state == _ATTACKING:
-            yield from self._try_destroy_abandonments()
+            yield from self._try_destroy_abandonments_with_artillery()
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
+            yield from self._try_destroy_abandonments_with_tanks()
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
@@ -566,13 +571,16 @@ class BotIgor(proto.Bot):
             if (valid_move := move.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
 
-    def _try_destroy_abandonments(self) -> Iterator[None]:
+    def _try_destroy_abandonments_with_artillery(self) -> Iterator[None]:
         connections = self._session.pulling_connections
         cells = self._session.cells
         board = self._session.board
         our_cells = cells.with_owner(self._player)
 
         abandonments = our_cells & cells.with_figure(fig.Abandonment)
+        abandonments -= abandonments.filter(lambda cell: bool(board.get_neighbors(cell, include_cell=True)
+                                                              & cells.at_terrain(proto.TerrainForest)))
+
         if not abandonments:
             return
         yield
@@ -592,14 +600,12 @@ class BotIgor(proto.Bot):
 
             if not infantries:
                 break
-            infantry = min(infantries, key=lambda cell: get_distance(board.coordinates_of(cell),
-                                                                     board.coordinates_of(abandonment)))
+            infantry = self._get_nearest_to(abandonment, infantries)
             infantries = infantries.without(infantry)
             artillery = board[self._session.figures.locate(connections.get_pullable(infantry.figure))]
             yield
 
-            target = min(abandonments, key=lambda cell: get_distance(board.coordinates_of(cell),
-                                                                     board.coordinates_of(infantry)))
+            target = self._get_nearest_to(infantry, abandonments)
             yield
 
             move = Attack(board.coordinates_of(artillery),
@@ -610,6 +616,42 @@ class BotIgor(proto.Bot):
                 continue
 
             yield from self._add_distant_relocation_moves(infantry, target)
+
+    def _try_destroy_abandonments_with_tanks(self) -> Iterator[None]:
+        cells = self._session.cells
+        board = self._session.board
+        our_cells = cells.with_owner(self._player)
+
+        abandonments = our_cells & cells.with_figure(fig.Abandonment)
+        if not abandonments:
+            return
+        yield
+        abandonment = abandonments.any
+
+        tanks = our_cells & cells.with_figure(fig.Tank)
+
+        is_catastrophy = len(abandonments) >= _CATASTROPHY_ABANDONMENTS_COUNT
+
+        for _ in range(1 if not is_catastrophy else min(len(tanks), len(abandonments))):
+            yield
+            if not tanks:
+                break
+            tank = self._get_nearest_to(abandonment, tanks)
+            tanks = tanks.without(tank)
+
+            yield
+
+            target = self._get_nearest_to(tank, abandonments)
+            yield
+
+            move = Attack(board.coordinates_of(tank),
+                          board.coordinates_of(target))
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+                abandonments = abandonments.without(target)
+                continue
+
+            yield from self._add_distant_relocation_moves(tank, target)
 
     def _try_buy_out_private_figures(self) -> Iterator[None]:
         cells = self._session.cells
