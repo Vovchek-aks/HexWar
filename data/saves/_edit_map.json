@@ -11,7 +11,7 @@
         "Dollars": 3000000,
         "Oil": 0,
         "LightIndustryProducts": 5000,
-        "HeavyIndustryProducts": 0
+        "HeavyIndustryProducts": 5000
       }
     },
     {
@@ -32,32 +32,18 @@
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {
-    "Mountain": [
-      "7 6"
-    ],
-    "Forest": [
-      "7 7",
-      "0 0",
-      "9 9",
-      "8 8",
-      "5 5",
-      "1 1",
-      "2 2"
-    ],
     "Town": [
+      "0 8",
       "0 9",
       "8 0",
-      "0 8",
       "9 0"
     ],
     "TierOneCapital": [
       "9 1",
       "1 9"
     ],
-    "Motorization": [
-      "6 8",
-      "6 9",
-      "7 9"
+    "Tank": [
+      "8 9"
     ]
   },
   "BOARD_SHAPE": "10 10",

@@ -29,7 +29,7 @@ from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 # Path finding +- (movables without move budget)
-# Front filtering +- (tanks)
+# Front filtering +
 # Abandonments destruction
 # Random wiggles
 # Leave empty spots near buildings
@@ -336,6 +336,12 @@ class BotIgor(proto.Bot):
         if self._state == _PULLING:
             yield from self._try_pull_forces_to_front()
             # print(f"_try_pull_forces_to_front {_is_inner}")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
+            yield from self.move_infantryless_tanks_away_from_front()
+            # print(f"move_infantryless_tanks_away_from_front {_is_inner}")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
@@ -792,6 +798,29 @@ class BotIgor(proto.Bot):
 
         return random.choice(list(targets.as_set()))
 
+    def move_infantryless_tanks_away_from_front(self) -> Iterator[None]:
+        cells = self._session.cells
+        our_cells = cells.with_owner(self._player)
+        front = cells.at_changeable_front & our_cells
+        tanks = front & cells.with_figure(fig.Tank)
+
+        for tank in tanks:
+            yield
+            neighbors = self._board.get_neighbors(tank) & our_cells
+            if neighbors.with_figure(fig.Infantry):
+                continue
+
+            targets = neighbors.with_figure(fig.Land) - front
+            if not targets:
+                continue
+
+            target = targets.any
+            move = Relocation(self._board.coordinates_of(tank),
+                              self._board.coordinates_of(target))
+            if (valid_move := move.validate(self._session)) is not INVALID:
+                self._moves_to_make.append(valid_move)
+
+
     def _try_pull_forces_to_front(self) -> Iterator[None]:
         cells = self._session.cells
         to_pull = (cells.with_owner(self._player) &
@@ -877,6 +906,11 @@ class BotIgor(proto.Bot):
 
         if Cells(weaker_front) & cells.with_figure(fig.Land):
             front = Cells(weaker_front)
+
+        if fig.Tank in figures:
+            assert len(figures) == 1
+            front = front.filter(lambda cell: bool((self._board.get_neighbors(cell) & cells.with_owner(self._player))
+                                                   .with_figure(fig.Infantry)))
 
         return front
 
