@@ -8,9 +8,9 @@
         "BotIgor"
       ],
       "RESOURCES": {
-        "Dollars": 3000000,
+        "Dollars": 1600000,
         "Oil": 0,
-        "LightIndustryProducts": 5000,
+        "LightIndustryProducts": 500,
         "HeavyIndustryProducts": 5000
       }
     },
@@ -29,21 +29,46 @@
       }
     }
   ],
-  "BUDGET": {},
+  "BUDGET": {
+    "3 5": 198,
+    "4 7": 198
+  },
   "PULLABLE_OF": {},
   "FIGURES": {
+    "Forest": [
+      "2 4",
+      "4 5",
+      "3 6",
+      "6 7",
+      "0 1",
+      "4 6",
+      "1 4",
+      "3 7",
+      "7 8",
+      "5 9",
+      "1 2",
+      "1 5",
+      "6 8",
+      "8 9",
+      "2 3",
+      "5 8"
+    ],
     "Town": [
+      "8 0",
       "0 8",
       "0 9",
-      "8 0",
       "9 0"
     ],
     "TierOneCapital": [
       "9 1",
       "1 9"
     ],
-    "Tank": [
-      "8 9"
+    "Infantry": [
+      "3 5",
+      "4 7"
+    ],
+    "Motorization": [
+      "2 7"
     ]
   },
   "BOARD_SHAPE": "10 10",

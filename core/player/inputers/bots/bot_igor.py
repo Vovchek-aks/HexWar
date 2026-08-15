@@ -28,7 +28,7 @@ from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
-# Path finding +- (movables without move budget)
+# Path finding +
 # Front filtering +
 # Abandonments destruction
 # Random wiggles
@@ -933,8 +933,8 @@ class BotIgor(proto.Bot):
                                           (Cells({cell, target}), 0),
                                           (good_and_empty, 1),
                                           (bad_and_empty, possible_moves_count),
-                                          (good_with_movables, random.randint(10, 100)),
-                                          (bad_with_movables, 100)
+                                          (good_with_movables, 100),
+                                          (bad_with_movables, 100 * possible_moves_count)
                                           )
 
         path = list[Vector2Int]()
