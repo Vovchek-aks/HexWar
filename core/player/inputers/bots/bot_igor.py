@@ -991,11 +991,14 @@ class BotIgor(proto.Bot):
         if Relocation(path[0], path[1]).validate(self._session) is INVALID:
             return
 
-        for previous, new in zip(path[:-1], path[1:]):
+        moves_count = ((cell.figure.MOVES_BUDGET - self._session.figures_budget.of(cell.figure)) //
+                       cell.figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
+        for previous, new, _ in zip(path[:-1], path[1:], range(moves_count - 1)):
             if not self._board[new].is_empty:
-                break
-
+                continue
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
+            if not self._board[previous].is_empty:
+                break
 
     @staticmethod
     def _get_bad_terrain_kinds_of(figure: fig.Figure | type[fig.Figure]) -> set[type[proto.TerrainKind]]:
