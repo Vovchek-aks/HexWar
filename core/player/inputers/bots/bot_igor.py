@@ -32,7 +32,7 @@ from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 # Front filtering +
 # Abandonments destruction +
 # Random wiggles
-# Leave empty spots near buildings
+# Leave empty spots near buildings +
 
 _ATTACKING = 0
 _BUILDING = 1
@@ -424,12 +424,31 @@ class BotIgor(proto.Bot):
 
             case fig.Town | fig.LightFactory | fig.HeavyFactory:
                 for capital in capitals:
-                    neighbors = self._board.get_neighbors(capital).with_owner(self._player).with_figure(fig.Land)
+                    neighbors = (self._board
+                                 .get_neighbors(capital)
+                                 .with_owner(self._player)
+                                 .with_figure(fig.Land))
                     if neighbors:
                         return random.choice(neighbors.as_list())
 
                 candidates = back or empties
-                return random.choice(candidates.as_list())
+
+                # min_neighbors_count_cell = candidates[0]
+                # min_neighbors_count = float("inf")
+                # for candidate in candidates:
+                #     neighbors_count = len((self._board
+                #                            .get_neighbors(candidate)
+                #                            .with_owner(self._player)
+                #                            .with_figure(fig.Land)))
+                #     if neighbors_count == 6:
+                #         return candidate
+                #     if neighbors_count < min_neighbors_count:
+                #         min_neighbors_count = neighbors_count
+
+                return max(candidates, key=lambda cell: len(self._board
+                                                            .get_neighbors(cell)
+                                                            .with_owner(self._player)
+                                                            .with_figure(fig.Land)))
 
             case fig.MissileSilo:
                 candidates = back or empties
@@ -849,7 +868,7 @@ class BotIgor(proto.Bot):
         for tank in tanks:
             yield
             neighbors = self._board.get_neighbors(tank) & our_cells
-            if neighbors.with_figure(fig.Infantry):
+            if neighbors.with_figure(fig.Infantry | fig.Motorization):
                 continue
 
             targets = neighbors.with_figure(fig.Land) - front
@@ -952,7 +971,7 @@ class BotIgor(proto.Bot):
         if fig.Tank in figures:
             assert len(figures) == 1
             front = front.filter(lambda cell: bool((self._board.get_neighbors(cell) & cells.with_owner(self._player))
-                                                   .with_figure(fig.Infantry)))
+                                                   .with_figure(fig.Infantry | fig.Motorization)))
 
         return front
 
