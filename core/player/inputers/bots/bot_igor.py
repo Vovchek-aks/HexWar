@@ -1,7 +1,7 @@
 import math
 import random
 from itertools import islice
-from typing import Iterator
+from typing import Iterator, Callable
 from time import time
 
 from attrs import define, field
@@ -530,6 +530,7 @@ class BotIgor(proto.Bot):
                 yield
                 if result is not MISSING:
                     flow += ResourcesGroup.make(resource(result))
+                    break
 
         target_reserve = _TARGET_RESERVE_RATIO_OF * cells_count ** .25
         current_reserv = self._player.resources.as_group
@@ -537,10 +538,10 @@ class BotIgor(proto.Bot):
 
         iterations = 0
         while (pair := self._get_resource_with_max_unfilled_demand(resources, flow, target_flow))[-1] > 1:
+            yield
             iterations += 1
             if iterations > max_iterations:
                 return
-            yield
 
             resource, _ = pair
             figure = _PRODUCER_OF[resource]
@@ -1010,14 +1011,11 @@ class BotIgor(proto.Bot):
         if Relocation(path[0], path[1]).validate(self._session) is INVALID:
             return
 
-        moves_count = ((cell.figure.MOVES_BUDGET - self._session.figures_budget.of(cell.figure)) //
-                       cell.figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
-        for previous, new, _ in zip(path[:-1], path[1:], range(moves_count - 1)):
+        for previous, new in zip(path[:-1], path[1:]):
             if not self._board[new].is_empty:
-                continue
-            self._moves_to_make.append(ValidMove(Relocation(previous, new)))
-            if not self._board[previous].is_empty:
                 break
+
+            self._moves_to_make.append(ValidMove(Relocation(previous, new)))
 
     @staticmethod
     def _get_bad_terrain_kinds_of(figure: fig.Figure | type[fig.Figure]) -> set[type[proto.TerrainKind]]:
