@@ -432,19 +432,6 @@ class BotIgor(proto.Bot):
                         return random.choice(neighbors.as_list())
 
                 candidates = back or empties
-
-                # min_neighbors_count_cell = candidates[0]
-                # min_neighbors_count = float("inf")
-                # for candidate in candidates:
-                #     neighbors_count = len((self._board
-                #                            .get_neighbors(candidate)
-                #                            .with_owner(self._player)
-                #                            .with_figure(fig.Land)))
-                #     if neighbors_count == 6:
-                #         return candidate
-                #     if neighbors_count < min_neighbors_count:
-                #         min_neighbors_count = neighbors_count
-
                 return max(candidates, key=lambda cell: len(self._board
                                                             .get_neighbors(cell)
                                                             .with_owner(self._player)
@@ -598,8 +585,10 @@ class BotIgor(proto.Bot):
         our_cells = cells.with_owner(self._player)
 
         abandonments = our_cells & cells.with_figure(fig.Abandonment)
-        abandonments -= abandonments.filter(lambda cell: bool(board.get_neighbors(cell, include_cell=True)
-                                                              & cells.at_terrain(proto.TerrainForest)))
+        abandonments -= abandonments.filter(lambda cell: bool(
+            board.get_neighbors(cell, include_cell=True)
+            & cells.at_terrain(*self._get_bad_terrain_kinds_of(fig.Artillery))
+        ))
 
         if not abandonments:
             return
@@ -643,6 +632,11 @@ class BotIgor(proto.Bot):
         our_cells = cells.with_owner(self._player)
 
         abandonments = our_cells & cells.with_figure(fig.Abandonment)
+        abandonments -= abandonments.filter(lambda cell: bool(
+            board.get_neighbors(cell, include_cell=True)
+            & cells.at_terrain(*self._get_bad_terrain_kinds_of(fig.Tank))
+        ))
+
         if not abandonments:
             return
         yield
@@ -872,7 +866,9 @@ class BotIgor(proto.Bot):
             if neighbors.with_figure(fig.Infantry | fig.Motorization):
                 continue
 
-            targets = neighbors.with_figure(fig.Land) - front
+            targets = (neighbors.with_figure(fig.Land)
+                       - front
+                       - cells.at_terrain(*self._get_bad_terrain_kinds_of(fig.Tank)))
             if not targets:
                 continue
 
@@ -881,7 +877,6 @@ class BotIgor(proto.Bot):
                               self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
-
 
     def _try_pull_forces_to_front(self) -> Iterator[None]:
         cells = self._session.cells
@@ -969,7 +964,7 @@ class BotIgor(proto.Bot):
         if Cells(weaker_front) & cells.with_figure(fig.Land):
             front = Cells(weaker_front)
 
-        if fig.Tank in figures:
+        if issubclass(fig.Tank, figures):
             assert len(figures) == 1
             front = front.filter(lambda cell: bool((self._board.get_neighbors(cell) & cells.with_owner(self._player))
                                                    .with_figure(fig.Infantry | fig.Motorization)))
