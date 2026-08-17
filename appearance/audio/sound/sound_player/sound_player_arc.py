@@ -44,6 +44,7 @@ class Sound(proto.SoundPlayer):
     def _was_stopped(self) -> bool:
         return self._player is MISSING
 
+    # OpenAL Exception [40963: b'Invalid Value']: Failed to create source.
     def play(self, speed: float = 1) -> None:
         self.stop()
         try:

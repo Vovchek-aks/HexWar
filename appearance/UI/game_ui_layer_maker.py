@@ -398,6 +398,16 @@ class GameUiLayerMaker:
                                      hint_box: BoxUi) -> ButtonUi:
         background = self._sprites_loader.load_figure_creation_button_for(figure)
 
+        # from PIL import Image
+        # from color import Color
+        # img = background.get().image
+        # r, g, b, a = img.split()
+        # tint_rgb = Color.from_hex_string("#8B6244")
+        # r = r.point(lambda i: i * round(tint_rgb.r) // 255)
+        # g = g.point(lambda i: i * round(tint_rgb.g) // 255)
+        # b = b.point(lambda i: i * round(tint_rgb.b) // 255)
+        # background.get().image = Image.merge("RGBA", (r, g, b, a))
+
         text = TextData.for_button(" ")
         position = Vector2.zero()
         button = ButtonUi.make(self._drawer,
