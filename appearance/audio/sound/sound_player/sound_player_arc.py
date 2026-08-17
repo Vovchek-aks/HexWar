@@ -46,8 +46,11 @@ class Sound(proto.SoundPlayer):
 
     def play(self, speed: float = 1) -> None:
         self.stop()
-        self._time = time()
-        self._player = self._sound.play(self._volume, 0, self._is_looped, speed)
+        try:
+            self._player = self._sound.play(self._volume, 0, self._is_looped, speed)
+            self._time = time()
+        except Exception as exception:
+            print(f"Fuck arcade because of: {exception}")
 
     def stop(self) -> None:
         if self._was_stopped:
