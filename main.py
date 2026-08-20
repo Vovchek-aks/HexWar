@@ -72,25 +72,25 @@ def _make_main_menu_loading_scene(window: Window) -> Scene:
 
 
 def _make_multibot_loading_scene(window: Window) -> Scene:
-    # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-    #     lambda: MapRandomizer.make(GameSessionLoader.make(random.choice([
-    #         # "Round Cross.json",
-    #         "SVO.json",
-    #         "Middle East.json",
-    #         "Finnish Gulf.json",
-    #         "Balkans.json"
-    #     ]), UPS).load(), lambda: BotPlayerInputer(BotIgor(), UPS))
-    #     .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
+    return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
+        lambda: MapRandomizer.make(GameSessionLoader.make(random.choice([
+            # "Round Cross.json",
+            "SVO.json",
+            "Middle East.json",
+            "Finnish Gulf.json",
+            "Balkans.json"
+        ]), UPS).load(), lambda: BotPlayerInputer(BotIgor(), UPS))
+        .get_randomized(len(read_random_bot_names()) // 2, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 
     # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
     #     lambda: MapRandomizer.make(GameSessionLoader.make("Balkans.json", UPS).load(),
     #                                lambda: BotPlayerInputer(BotIgor(), UPS))
     #     .get_randomized(len(read_random_bot_names()), ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
-
-    return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-        lambda: MapRandomizer.make(GameSessionLoader.make("Balkans.json", UPS).load(),
-                                   lambda: BotPlayerInputer(BotIgor(), UPS))
-        .get_randomized(len(read_random_bot_names()) // 2, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
+    #
+    # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
+    #     lambda: MapRandomizer.make(GameSessionLoader.make("Balkans.json", UPS).load(),
+    #                                lambda: BotPlayerInputer(BotIgor(), UPS))
+    #     .get_randomized(len(read_random_bot_names()) // 2, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 
     # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
     #     lambda: GameSessionLoader.make("_edit_map.json", UPS).load()
