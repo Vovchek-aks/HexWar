@@ -840,6 +840,8 @@ class BotIgor(proto.Bot):
 
         targets = neighbors - neighbors.with_owner(self._player)
         targets -= targets.with_flag(proto.CannotBeDestroyed)
+        targets -= self._session.cells.at_terrain(*self._get_bad_terrain_kinds_of(cell.figure,
+                                                                                  need_to_consider_pullable=True))
         if isinstance(cell.figure, fig.Tank) and save_tanks:
             targets = Cells({cell for cell in targets
                              if self._board.get_neighbors(cell, include_cell=False).with_flag(proto.OnLand)
@@ -852,7 +854,7 @@ class BotIgor(proto.Bot):
         not_empty_targets = targets - empty_targets
         targets = not_empty_targets or empty_targets
 
-        return random.choice(list(targets.as_set()))
+        return random.choice(targets.as_list())
 
     def move_infantryless_tanks_away_from_front(self) -> Iterator[None]:
         cells = self._session.cells
@@ -973,7 +975,8 @@ class BotIgor(proto.Bot):
 
     def _add_distant_relocation_moves(self, cell: proto.Cell, target: proto.Cell) -> Iterator[None]:
         cells = self._session.cells
-        bad_terrains = cells.at_terrain(*self._get_bad_terrain_kinds_of(cell.figure))
+        bad_terrains = cells.at_terrain(*self._get_bad_terrain_kinds_of(cell.figure,
+                                                                        need_to_consider_pullable=True))
 
         our_cells = cells.with_owner(self._player)
         empties = our_cells & cells.with_figure(fig.Land)
@@ -1012,11 +1015,19 @@ class BotIgor(proto.Bot):
 
             self._moves_to_make.append(ValidMove(Relocation(previous, new)))
 
-    @staticmethod
-    def _get_bad_terrain_kinds_of(figure: fig.Figure | type[fig.Figure]) -> set[type[proto.TerrainKind]]:
-        return (figure.FLAGS
-                .get(proto.WithRestrictedTerrainKinds)
-                .terrain_kinds)
+    def _get_bad_terrain_kinds_of(self,
+                                  figure: fig.Figure | type[fig.Figure],
+                                  *,
+                                  need_to_consider_pullable: bool = False) -> set[type[proto.TerrainKind]]:
+        assert proto.CanPull in figure.FLAGS and isinstance(figure, fig.Figure) or not need_to_consider_pullable
+        result = (figure.FLAGS
+                  .get(proto.WithRestrictedTerrainKinds)
+                  .terrain_kinds)
+
+        if need_to_consider_pullable and self._session.pulling_connections.is_puller(figure):
+            result -= self._get_bad_terrain_kinds_of(self._session.pulling_connections.get_pullable(figure))
+
+        return result
 
     def _try_convert_infantry_to_motorization(self, target_ratio: float) -> Iterator[None]:
         cells = self._session.cells
