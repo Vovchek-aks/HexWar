@@ -66,6 +66,7 @@ class Sprite:
         r = r.point(lambda i: i * round(color.r) // 255)
         g = g.point(lambda i: i * round(color.g) // 255)
         b = b.point(lambda i: i * round(color.b) // 255)
+        a = a.point(lambda i: i * round(color.a) // 255)
         texture = arc.Texture(Image.merge("RGBA", (r, g, b, a)))
 
         return Sprite(texture, self._shape, self._pivot)

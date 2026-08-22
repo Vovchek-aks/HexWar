@@ -12,7 +12,7 @@ from appearance.UI.stretcher import StretcherUi
 from appearance.UI.text import TextUi, TextData, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.game_engine.game_engine_arc.window import Window
-from appearance.graphics.colors import DEFAULT_BUTTON, ACTIVE_BUTTON
+from appearance.graphics.colors import DEFAULT_BUTTON, ACTIVE_BUTTON, INVALID_BUTTON
 from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.UI.drawer import UiDrawer
 from appearance.input.clicks_catcher.click import Click, MouseButtons
@@ -339,18 +339,31 @@ class GameUiLayerMaker:
         layout.append(buttons)
         layout.append(hint_box)
 
-        buttons.append(self._make_figures_creation_buttons(hint_box, shape, rectangle))
+        buttons_availability_setters = list[Callable[[], None]]()
+        buttons.append(self._make_figures_creation_buttons(hint_box, shape, rectangle, buttons_availability_setters))
         buttons.append(ImageUi.make(self._drawer, rectangle, self._sprites_loader.load_background_2_to_3()))
 
+        def set_buttons_availability() -> None:
+            if not layout.layer.is_active:
+                return
+
+            for setter in buttons_availability_setters:
+                setter()
+
+        layout.layer.set_activity(True)
         self._cell_selector.cell_was_selected.subscribe(lambda _: layout.layer.set_activity(False))
-        self._cell_selector.cell_was_unselected.subscribe(lambda: layout.layer.set_activity(True))
+        self._cell_selector.cell_was_selected.subscribe(lambda _: layout.layer.set_activity(True))
+        self._cell_selector.cell_was_unselected.subscribe(set_buttons_availability)
+        self._moves_maker.move_was_made.subscribe(lambda *_: set_buttons_availability())
+        set_buttons_availability()
 
         return layout.layer
 
     def _make_figures_creation_buttons(self,
                                        hint_box: BoxUi,
                                        shape: Vector2Int,
-                                       outer_rectangle: Rectangle) -> LayoutUi:
+                                       outer_rectangle: Rectangle,
+                                       buttons_availability_setters: list[Callable[[], None]]) -> LayoutUi:
         margin = outer_rectangle.shape.y * .06
         rectangle = Rectangle(outer_rectangle.position + Vector2.ones() * margin,
                               outer_rectangle.shape - Vector2.ones() * margin * 2)
@@ -376,7 +389,8 @@ class GameUiLayerMaker:
 
         layout = VerticalLayoutUi(rectangle, height_margin_ratio, reserved=shape.y)
         for row in table:
-            self._add_row_of_creation_buttons_with(layout, hint_box, shape.x, width_margin_ratio, *row)
+            self._add_row_of_creation_buttons_with(layout, hint_box, shape.x, width_margin_ratio,
+                                                   buttons_availability_setters, *row)
 
         return layout
 
@@ -385,18 +399,21 @@ class GameUiLayerMaker:
                                           hint_box: BoxUi,
                                           width: int,
                                           margin_ratio: float,
+                                          buttons_availability_setters: list[Callable[[], None]],
                                           *figures: type[fig.Figure]) -> None:
         horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio, reserved=width)
         layout.append(horizontal_layout)
         for figure in figures:
-            horizontal_layout.append(self._make_figure_creation_button(figure, hint_box))
+            horizontal_layout.append(self._make_figure_creation_button(figure, hint_box, buttons_availability_setters))
 
     def _make_figure_creation_button(self,
                                      figure: type[fig.Figure],
-                                     hint_box: BoxUi) -> ButtonUi:
+                                     hint_box: BoxUi,
+                                     buttons_availability_setters: list[Callable[[], None]]) -> ButtonUi:
         white_background = self._sprites_loader.load_figure_creation_button_for(figure)
         background = white_background.colored_in(DEFAULT_BUTTON)
         background_active = white_background.colored_in(ACTIVE_BUTTON)
+        background_invalid = white_background.colored_in(INVALID_BUTTON)
 
         button = ButtonUi.make(self._drawer, Rectangle.ones(), background)
 
@@ -404,22 +421,31 @@ class GameUiLayerMaker:
         hint_box.append(self._make_figure_creation_button_hint(hint_synchroniser, figure, button))
         hint_synchroniser.synchronise()
 
+        def is_available() -> bool:
+            return self._session.master.current_player.resources.can_take(figure.FLAGS.get(Creatable).cost)
+
+        def set_availability() -> None:
+            if not is_available():
+                button.image.set_sprite(background_invalid)
+                return
+
+            button.image.set_sprite(background
+                                    if button.image.sprite == background_invalid else
+                                    button.image.sprite)
+
+        buttons_availability_setters.append(set_availability)
+
         # DO NOT TOUCH ANYTHING BELOW
         event_to_subscribe_on = self._window.update_finished
         self._cell_selector.cell_was_selected.subscribe(lambda *_:
                                                         event_to_subscribe_on.unsubscribe(on_move_was_made,
                                                                                           is_strict=False))
 
-        def on_button_was_set_not_active(action: InputAction, is_last: bool) -> None:
+        def on_button_was_set_not_active(_: InputAction, is_last: bool) -> None:
+            set_availability()
             event_to_subscribe_on.unsubscribe(on_move_was_made, is_strict=False)
 
             if not is_last:
-                return
-
-            if not isinstance(action, CreationButtonPressAction):
-                return
-
-            if figure is not action.figure:
                 return
 
             if self._cell_selector.get_coord() is not MISSING:
@@ -432,6 +458,7 @@ class GameUiLayerMaker:
                                                                                       figure),
                                                     lambda action: isinstance(action, CreationButtonPressAction) and
                                                                    action.figure == figure,
+                                                    is_available,
                                                     on_button_was_set_not_active)
 
         def on_move_was_made(*_: ...) -> None:
@@ -983,12 +1010,16 @@ class GameUiLayerMaker:
                                  active: Sprite,
                                  action_maker: Callable[[], ButtonPressAction],
                                  is_target_action: Callable[[InputAction], bool],
+                                 is_available: Callable[[], bool] = lambda *_: True,
                                  on_button_was_set_not_active: Callable[[InputAction, bool], None] = lambda *_: None
                                  ) -> Callable[[], None]:
         image = button.image
         not_active = image.sprite
 
         def set_active() -> None:
+            if not is_available():
+                return
+
             image.set_sprite(active)
             self._button_press_action_happened.invoke(action_maker())
 
