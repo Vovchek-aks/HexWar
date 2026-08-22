@@ -18,6 +18,9 @@ DESERT = Color(215, 201, 60)
 
 PAUSE_MENU_BACKGROUND = Color(0, 0, 0, 150)
 
+DEFAULT_BUTTON = Color.from_hex_string("#8B6244")
+ACTIVE_BUTTON = Color(134, 177, 18)
+
 PLAYERS = [
     Color(173, 82, 64),
     Color(64, 106, 173),

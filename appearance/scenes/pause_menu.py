@@ -3,7 +3,7 @@ from attrs import define
 import appearance.protocols as proto
 from appearance.graphics.layer_drawers.layers_drawer import LayersDrawer
 from appearance.input.clicks_catcher import ClicksCatcher
-from appearance.input.pause_menu_opener import PauseMenuOpener
+from appearance.input.pause_menu_opener import EscapePressHandler
 from appearance.input.screenshot_saver import ScreenshotSaver
 
 
@@ -14,7 +14,7 @@ class PauseMenu:
              screenshot_saver: ScreenshotSaver,
              input_state: proto.InputState,
              layers: list[proto.LayerHolder],
-             pause_menu_opener: PauseMenuOpener) -> "PauseMenu":
+             pause_menu_opener: EscapePressHandler) -> "PauseMenu":
         assert layers
         return cls(screenshot_saver, ClicksCatcher(layers), input_state, LayersDrawer(layers[::-1]), pause_menu_opener)
 
@@ -22,7 +22,7 @@ class PauseMenu:
     _clicks_catcher: ClicksCatcher
     _input_state: proto.InputState
     _layers: LayersDrawer
-    _pause_menu_opener: PauseMenuOpener
+    _pause_menu_opener: EscapePressHandler
 
     def update(self) -> None:
         self._screenshot_saver.update(self._input_state.pressed_keys)

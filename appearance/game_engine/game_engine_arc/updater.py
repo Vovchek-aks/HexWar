@@ -6,7 +6,7 @@ from appearance.camera_mover import CameraMover
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.input.clicks_catcher import ClicksCatcher
-from appearance.input.pause_menu_opener import PauseMenuOpener
+from appearance.input.pause_menu_opener import EscapePressHandler
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.layer import Layer
 import appearance.protocols as proto
@@ -19,7 +19,7 @@ class Updater(proto.Updater):
              camera_mover: CameraMover,
              camera_orientation: proto.CameraOrientation,
              screenshot_saver: ScreenshotSaver,
-             pause_manu_opener: PauseMenuOpener,
+             pause_manu_opener: EscapePressHandler,
              mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[Layer],
              player_turner: Iterator[None],
@@ -39,7 +39,7 @@ class Updater(proto.Updater):
     _camera_mover: CameraMover
     _camera_orientation: proto.CameraOrientation
     _screenshot_saver: ScreenshotSaver
-    _pause_menu_opener: PauseMenuOpener
+    _escape_press_handler: EscapePressHandler
     _mouse_movement_observer: proto.MouseMovementObserver
     _clicks_catcher: ClicksCatcher
     _player_turner: Iterator[None]
@@ -52,7 +52,7 @@ class Updater(proto.Updater):
                                   input_state.dt)
         self._camera_orientation.update()
         self._screenshot_saver.update(input_state.pressed_keys)
-        self._pause_menu_opener.update(input_state.pressed_keys)
+        self._escape_press_handler.update(input_state.pressed_keys)
         self._mouse_movement_observer.update(input_state.mouse_position)
         self._clicks_catcher.update(input_state.last_frame_clicks)
         self._in_game_time.update(input_state.dt)

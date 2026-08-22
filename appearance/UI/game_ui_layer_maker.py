@@ -11,6 +11,8 @@ from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.stretcher import StretcherUi
 from appearance.UI.text import TextUi, TextData, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
+from appearance.game_engine.game_engine_arc.window import Window
+from appearance.graphics.colors import DEFAULT_BUTTON, ACTIVE_BUTTON
 from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.UI.drawer import UiDrawer
 from appearance.input.clicks_catcher.click import Click, MouseButtons
@@ -41,6 +43,7 @@ from statuses import MISSING, Status
 
 @frozen
 class GameUiLayerMaker:
+    _window: Window
     _drawer: UiDrawer
     _screen_shape: Vector2Int
     _session: GameSession
@@ -396,17 +399,9 @@ class GameUiLayerMaker:
                                      synchroniser: TextSizeSynchroniser,
                                      figure: type[fig.Figure],
                                      hint_box: BoxUi) -> ButtonUi:
-        background = self._sprites_loader.load_figure_creation_button_for(figure)
-
-        # from PIL import Image
-        # from color import Color
-        # img = background.get().image
-        # r, g, b, a = img.split()
-        # tint_rgb = Color.from_hex_string("#8B6244")
-        # r = r.point(lambda i: i * round(tint_rgb.r) // 255)
-        # g = g.point(lambda i: i * round(tint_rgb.g) // 255)
-        # b = b.point(lambda i: i * round(tint_rgb.b) // 255)
-        # background.get().image = Image.merge("RGBA", (r, g, b, a))
+        white_background = self._sprites_loader.load_figure_creation_button_for(figure)
+        background = white_background.colored_in(DEFAULT_BUTTON)
+        background_active = white_background.colored_in(ACTIVE_BUTTON)
 
         text = TextData.for_button(" ")
         position = Vector2.zero()
@@ -416,10 +411,38 @@ class GameUiLayerMaker:
                                text)
         synchroniser.append(button.text)
 
-        self._make_button_activatable(button, background,
-                                      lambda: CreationButtonPressAction(self._cell_selector.get_coord(), figure),
-                                      lambda action: isinstance(action, CreationButtonPressAction) and
-                                                     action.figure == figure)
+        event_to_subscribe_on = self._window.update_finished
+        self._cell_selector.cell_was_selected.subscribe(lambda *_:
+                                                        event_to_subscribe_on.unsubscribe(on_move_was_made,
+                                                                                          is_strict=False))
+
+        def on_button_was_set_not_active(action: InputAction, is_last: bool) -> None:
+            event_to_subscribe_on.unsubscribe(on_move_was_made, is_strict=False)
+
+            if not is_last:
+                return
+
+            if not isinstance(action, CreationButtonPressAction):
+                return
+
+            if figure is not action.figure:
+                return
+
+            if self._cell_selector.get_coord() is not MISSING:
+                return
+
+            event_to_subscribe_on.subscribe(on_move_was_made)
+
+        make_active = self._make_button_activatable(button, background_active,
+                                                    lambda: CreationButtonPressAction(self._cell_selector.get_coord(),
+                                                                                      figure),
+                                                    lambda action: isinstance(action, CreationButtonPressAction) and
+                                                                   action.figure == figure,
+                                                    on_button_was_set_not_active)
+
+        def on_move_was_made(*_: ...) -> None:
+            event_to_subscribe_on.unsubscribe(on_move_was_made)
+            make_active()
 
         hint_synchroniser = TextSizeSynchroniser()
         hint_box.append(self._make_figure_creation_button_hint(hint_synchroniser, figure, button))
@@ -969,7 +992,9 @@ class GameUiLayerMaker:
                                  button: ButtonUi,
                                  active: Sprite,
                                  action_maker: Callable[[], ButtonPressAction],
-                                 is_target_action: Callable[[InputAction], bool]) -> None:
+                                 is_target_action: Callable[[InputAction], bool],
+                                 on_button_was_set_not_active: Callable[[InputAction, bool], None] = lambda *_: None
+                                 ) -> Callable[[], None]:
         image = button.image
         not_active = image.sprite
 
@@ -977,16 +1002,19 @@ class GameUiLayerMaker:
             image.set_sprite(active)
             self._button_press_action_happened.invoke(action_maker())
 
-        def set_not_active(action: InputAction, _: bool) -> None:
+        def set_not_active(action: InputAction, is_last: bool) -> None:
             if not is_target_action(action):
                 return
             if any(map(is_target_action, self._actions_reader.actions)):
                 return
 
             image.set_sprite(not_active)
+            on_button_was_set_not_active(action, is_last)
 
         button.was_clicked.subscribe(set_active)
         self._actions_reader.action_was_removed.subscribe(set_not_active)
+
+        return set_active
 
     def _make_null_button(self, text: str) -> ButtonUi:
         background = self._sprites_loader.load_button_3_to_2()

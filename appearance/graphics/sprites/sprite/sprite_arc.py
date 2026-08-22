@@ -1,9 +1,11 @@
 from pathlib import Path
 
 import arcade as arc
+from PIL import Image
 from attrs import frozen
 
 from mathematics.vector import Vector2Int, Vector2
+from color import Color
 
 
 @frozen
@@ -58,3 +60,12 @@ class Sprite:
     def resize(self, ratio: float) -> "Sprite":
         shape = self.shape.scale_rounded(ratio)
         return self.reshape(shape)
+
+    def colored_in(self, color: Color) -> "Sprite":
+        r, g, b, a = self._image.image.split()
+        r = r.point(lambda i: i * round(color.r) // 255)
+        g = g.point(lambda i: i * round(color.g) // 255)
+        b = b.point(lambda i: i * round(color.b) // 255)
+        texture = arc.Texture(Image.merge("RGBA", (r, g, b, a)))
+
+        return Sprite(texture, self._shape, self._pivot)

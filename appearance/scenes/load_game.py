@@ -37,7 +37,7 @@ from appearance.input.moves_inputer import MovesInputer
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.moves_inputer.multiple_relocations_reader import MultipleRelocationsReader
-from appearance.input.pause_menu_opener import PauseMenuOpener
+from appearance.input.pause_menu_opener import EscapePressHandler
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
@@ -61,7 +61,7 @@ from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
-from statuses import Status
+from statuses import Status, MISSING
 from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 
@@ -120,15 +120,22 @@ def load_game(window: Window,
     multiple_relocations_reader = MultipleRelocationsReader(session, cell_selector, input_state)
     moves_inputer = MovesInputer.make(actions_reader, multiple_relocations_reader, session, cell_selector)
 
+    def prepare_pause_menu_opening() -> bool:
+        need_to_open = cell_selector.get_coord() is MISSING
+        cell_selector.unselect_cell()
+        actions_reader.clear()
+        return need_to_open
+
     pause_menu_open_requested = Event[None]()
-    pause_menu_opener = PauseMenuOpener(pause_menu_open_requested.invoke)
+    escape_press_handler = EscapePressHandler(prepare_pause_menu_opening, pause_menu_open_requested.invoke)
 
     mouse_movement_observer = MouseMovementObserver()
 
     yield language.get_ui_making_message()
     end_turn_button_was_clicked = Event[None]()
     turn_start_preparations_had_finished = Event[None]()
-    game_ui_layer_maker = GameUiLayerMaker(UiDrawer(),
+    game_ui_layer_maker = GameUiLayerMaker(window,
+                                           UiDrawer(),
                                            screen_shape,
                                            session,
                                            cell_selector,
@@ -179,7 +186,7 @@ def load_game(window: Window,
                                                              cell_changed_owner.invoke)
     game_rules_applier.turn_start_preparations_had_finished.subscribe(turn_start_preparations_had_finished.invoke)
 
-    updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
+    updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, escape_press_handler,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, game_rules_applier,
                                                lambda move: animators_switcher.get().get_animation(move),
@@ -220,7 +227,7 @@ def load_game(window: Window,
         for _ in game_rules_applier.on_turn_start():
             ...
     else:
-        pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)
+        pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, escape_press_handler)
         scene = GameWithPauseScene(game, pause_menu)
 
         user_inputer_builder = EventPlayerInputerBuilder()

@@ -43,12 +43,20 @@ class CellSelector(proto.CellSelector):
     def get_coord(self) -> Vector2Int | Status:
         return self._cell_coord
 
+    def select_cell(self, coord: Vector2Int) -> None:
+        self._cell_coord = coord
+        self._cell_was_selected.invoke(coord)
+
+    def unselect_cell(self) -> None:
+        self._cell_coord = MISSING
+        self._cell_was_unselected.invoke()
+
     def _on_action_was_read(self, action: InputAction, _: bool) -> None:
         match action:
             case CellClickAction(buttons=MouseButtons(is_left=True), coord=coord):
-                self._select_cell(coord)
+                self.select_cell(coord)
             case NullClickAction():
-                self._unselect_cell()
+                self.unselect_cell()
 
     def _on_board_move_was_made(self, move: ValidMove) -> None:
         if not self._master.current_player.need_ui:
@@ -56,12 +64,4 @@ class CellSelector(proto.CellSelector):
 
         match move.move:
             case Relocation(to_coord=coord) | Assault(to_coord=coord):
-                self._select_cell(coord)
-
-    def _select_cell(self, coord: Vector2Int) -> None:
-        self._cell_coord = coord
-        self._cell_was_selected.invoke(coord)
-
-    def _unselect_cell(self) -> None:
-        self._cell_coord = MISSING
-        self._cell_was_unselected.invoke()
+                self.select_cell(coord)

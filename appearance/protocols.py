@@ -341,6 +341,14 @@ class CellSelector(ABC):
     def get_coord(self) -> Vector2Int | Status:
         ...
 
+    @abstractmethod
+    def select_cell(self, coord: Vector2Int) -> None:
+        ...
+
+    @abstractmethod
+    def unselect_cell(self) -> None:
+        ...
+
 
 class MouseButtons(ABC):
     @property

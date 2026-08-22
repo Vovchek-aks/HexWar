@@ -35,7 +35,7 @@ from appearance.input.moves_inputer import MovesInputer
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.moves_inputer.multiple_relocations_reader import MultipleRelocationsReader
-from appearance.input.pause_menu_opener import PauseMenuOpener
+from appearance.input.pause_menu_opener import EscapePressHandler
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
@@ -117,7 +117,7 @@ def load_tutorial(window: Window,
     moves_inputer = MovesInputer.make(actions_reader, multiple_relocations_reader, session, cell_selector)
 
     pause_menu_open_requested = Event[None]()
-    pause_menu_opener = PauseMenuOpener(pause_menu_open_requested.invoke)
+    pause_menu_opener = EscapePressHandler(pause_menu_open_requested.invoke)
 
     mouse_movement_observer = MouseMovementObserver()
 
