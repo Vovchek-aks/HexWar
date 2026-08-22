@@ -11,6 +11,10 @@ class Rectangle:
         return cls(Vector2.zero(), Vector2.zero())
 
     @classmethod
+    def ones(cls) -> "Rectangle":
+        return cls(Vector2.zero(), Vector2.ones())
+
+    @classmethod
     def with_center_at(cls, center: Vector2, shape: Vector2) -> "Rectangle":
         position = center - shape / 2
         return cls(position, shape)

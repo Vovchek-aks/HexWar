@@ -339,9 +339,7 @@ class GameUiLayerMaker:
         layout.append(buttons)
         layout.append(hint_box)
 
-        synchroniser = TextSizeSynchroniser()
-        buttons.append(self._make_figures_creation_buttons(synchroniser, hint_box, shape, rectangle))
-        synchroniser.synchronise()
+        buttons.append(self._make_figures_creation_buttons(hint_box, shape, rectangle))
         buttons.append(ImageUi.make(self._drawer, rectangle, self._sprites_loader.load_background_2_to_3()))
 
         self._cell_selector.cell_was_selected.subscribe(lambda _: layout.layer.set_activity(False))
@@ -350,7 +348,6 @@ class GameUiLayerMaker:
         return layout.layer
 
     def _make_figures_creation_buttons(self,
-                                       synchroniser: TextSizeSynchroniser,
                                        hint_box: BoxUi,
                                        shape: Vector2Int,
                                        outer_rectangle: Rectangle) -> LayoutUi:
@@ -379,13 +376,12 @@ class GameUiLayerMaker:
 
         layout = VerticalLayoutUi(rectangle, height_margin_ratio, reserved=shape.y)
         for row in table:
-            self._add_row_of_creation_buttons_with(layout, synchroniser, hint_box, shape.x, width_margin_ratio, *row)
+            self._add_row_of_creation_buttons_with(layout, hint_box, shape.x, width_margin_ratio, *row)
 
         return layout
 
     def _add_row_of_creation_buttons_with(self,
                                           layout: VerticalLayoutUi,
-                                          synchroniser: TextSizeSynchroniser,
                                           hint_box: BoxUi,
                                           width: int,
                                           margin_ratio: float,
@@ -393,24 +389,22 @@ class GameUiLayerMaker:
         horizontal_layout = HorizontalLayoutUi(Rectangle.zero(), margin_ratio, reserved=width)
         layout.append(horizontal_layout)
         for figure in figures:
-            horizontal_layout.append(self._make_figure_creation_button(synchroniser, figure, hint_box))
+            horizontal_layout.append(self._make_figure_creation_button(figure, hint_box))
 
     def _make_figure_creation_button(self,
-                                     synchroniser: TextSizeSynchroniser,
                                      figure: type[fig.Figure],
                                      hint_box: BoxUi) -> ButtonUi:
         white_background = self._sprites_loader.load_figure_creation_button_for(figure)
         background = white_background.colored_in(DEFAULT_BUTTON)
         background_active = white_background.colored_in(ACTIVE_BUTTON)
 
-        text = TextData.for_button(" ")
-        position = Vector2.zero()
-        button = ButtonUi.make(self._drawer,
-                               get_image_rectangle(Rectangle.with_center_at(position, text.shape)),
-                               background,
-                               text)
-        synchroniser.append(button.text)
+        button = ButtonUi.make(self._drawer, Rectangle.ones(), background)
 
+        hint_synchroniser = TextSizeSynchroniser()
+        hint_box.append(self._make_figure_creation_button_hint(hint_synchroniser, figure, button))
+        hint_synchroniser.synchronise()
+
+        # DO NOT TOUCH ANYTHING BELOW
         event_to_subscribe_on = self._window.update_finished
         self._cell_selector.cell_was_selected.subscribe(lambda *_:
                                                         event_to_subscribe_on.unsubscribe(on_move_was_made,
@@ -443,10 +437,6 @@ class GameUiLayerMaker:
         def on_move_was_made(*_: ...) -> None:
             event_to_subscribe_on.unsubscribe(on_move_was_made)
             make_active()
-
-        hint_synchroniser = TextSizeSynchroniser()
-        hint_box.append(self._make_figure_creation_button_hint(hint_synchroniser, figure, button))
-        hint_synchroniser.synchronise()
 
         return button
 
