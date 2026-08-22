@@ -352,7 +352,7 @@ class GameUiLayerMaker:
 
         layout.layer.set_activity(True)
         self._cell_selector.cell_was_selected.subscribe(lambda _: layout.layer.set_activity(False))
-        self._cell_selector.cell_was_selected.subscribe(lambda _: layout.layer.set_activity(True))
+        self._cell_selector.cell_was_unselected.subscribe(lambda: layout.layer.set_activity(True))
         self._cell_selector.cell_was_unselected.subscribe(set_buttons_availability)
         self._moves_maker.move_was_made.subscribe(lambda *_: set_buttons_availability())
         set_buttons_availability()
@@ -934,7 +934,7 @@ class GameUiLayerMaker:
                                   Rectangle(Vector2.zero(), shape),
                                   self._sprites_loader.load_background_2_to_3())
 
-        title_margin = Vector2(15, 10)
+        title_margin = Vector2(18, 18)
         title_height = shape.y / 10
         title_ui = TextUi.make(self._drawer,
                                RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
