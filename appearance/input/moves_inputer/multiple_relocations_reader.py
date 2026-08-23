@@ -6,10 +6,10 @@ from appearance.input.moves_inputer.input_actions import CellClickAction
 from core.cells import Cells
 from core.moves.relocations import Relocation, Assault
 from core.moves.valid_move import ValidMove
-from core.protocols import GameSession, Player, Movable, WithRestrictedTerrainKinds, CannotBeDestroyed
+from core.protocols import GameSession, Player, Movable, WithRestrictedTerrainKinds, CannotBeDestroyed, CanPull, \
+    TerrainKind
 from mathematics.path_searcers.a_star_path_searcher import AStarPathSearcher as PathSearcher
 import core.figures.figure as fig
-from mathematics.path_searcers.sequence_path_searcher import SequencePathSearcher
 from mathematics.vector import Vector2Int
 from statuses import MISSING
 
@@ -65,17 +65,30 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
 
         player = self._session.master.current_player
         strength = movable.strength(from_coord, board)
-        allowed = self._get_allowed(player, target.owner, strength)
-        good_allowed = (allowed
-                        - cells.at_terrain(*cell.figure.FLAGS.get(WithRestrictedTerrainKinds).terrain_kinds)
-                        + Cells({cell, target}))
+        allowed = self._get_allowed(player, target.owner, strength, cell.figure)
+        bad_terrains = cells.at_terrain(*self._get_bad_terrain_kinds_of(cell.figure))
 
-        path_searcher = SequencePathSearcher([PathSearcher(board, good_allowed, target),
-                                              PathSearcher(board, allowed, target)])
+        empties = allowed & cells.with_figure(fig.Land)
+        movables = allowed.with_flag(Movable) - cells.at_changeable_front - board.get_neighbors(cell)
+
+        good_and_empty = empties - bad_terrains
+        good_with_movables = movables - bad_terrains
+        bad_and_empty = empties & bad_terrains
+        bad_with_movables = movables & bad_terrains
+
+        possible_moves_count = (cell.figure.MOVES_BUDGET //
+                                cell.figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
+        path_searcher = PathSearcher.make(board, target,
+                                          (Cells({cell, target}), 0),
+                                          (good_and_empty, 1),
+                                          (bad_and_empty, possible_moves_count),
+                                          (good_with_movables, 100),
+                                          (bad_with_movables, 100 * possible_moves_count)
+                                          )
         path = path_searcher.search_from(cell)
         return path
 
-    def _get_allowed(self, from_player: Player, to_player: Player, strength: int) -> Cells:
+    def _get_allowed(self, from_player: Player, to_player: Player, strength: int, figure: fig.Figure) -> Cells:
         cells = self._session.cells
         allowed = (cells.with_owner(from_player) &
                    cells.with_figure(fig.Land))
@@ -85,6 +98,17 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
 
         allowed += (cells.with_owner(to_player)
                     .filter(lambda cell: cell.hardness(self._session.board) <= strength)
-                    .filter(lambda cell: CannotBeDestroyed not in cell.figure.FLAGS))
+                    .filter(lambda cell: CannotBeDestroyed not in cell.figure.FLAGS)
+                    - cells.at_terrain(*self._get_bad_terrain_kinds_of(figure)))
 
         return allowed
+
+    def _get_bad_terrain_kinds_of(self, figure: fig.Figure | type[fig.Figure]) -> set[type[TerrainKind]]:
+        result = (figure.FLAGS
+                  .get(WithRestrictedTerrainKinds)
+                  .terrain_kinds)
+
+        if CanPull in figure.FLAGS and self._session.pulling_connections.is_puller(figure):
+            result -= self._get_bad_terrain_kinds_of(self._session.pulling_connections.get_pullable(figure))
+
+        return result

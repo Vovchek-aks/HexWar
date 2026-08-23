@@ -7,6 +7,7 @@ from attrs import frozen
 from .game_rule import GameRule
 import core.protocols as proto
 import core.figures.figure as fig
+from ..figures.figures_flags import ALL_TERRAINS
 
 PRIVATES_FLAT_COUNT = 10
 PRIVATES_RATIO = .1
@@ -26,7 +27,7 @@ class PrivateFiguresSpawner(GameRule):
         cells = session.cells
         player_cells = cells.with_owner(player)
 
-        empties = player_cells - cells.not_empty()
+        empties = player_cells - cells.not_empty() - cells.at_terrain(*ALL_TERRAINS)
         privates = player_cells.with_flag(proto.Private)
 
         target_count = (PRIVATES_FLAT_COUNT +
@@ -36,7 +37,7 @@ class PrivateFiguresSpawner(GameRule):
             return
         yield
         progress = len(privates) / target_count
-        to_spawn = math.ceil(target_count * (1 - progress) * PRIVATES_SPAWN_SPEED_MULTIPLIER)
+        to_spawn = math.floor(target_count * (1 - progress) * PRIVATES_SPAWN_SPEED_MULTIPLIER)
         to_spawn = max(0, min(to_spawn, len(empties)))
 
         private_figures, weights = zip(*PRIVATES_WEIGHTS.items())  # Jaxx22

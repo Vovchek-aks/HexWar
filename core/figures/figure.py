@@ -210,7 +210,7 @@ class HeavyFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
                       WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest, TerrainMountain}),
                       Static(),
-                      Creatable.make(Dollars(3_000_000), LightIndustryProducts(15_000)),
+                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_000)),
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(500_000),
                                                                          LightIndustryProducts(3_000)),

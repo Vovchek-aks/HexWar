@@ -167,10 +167,6 @@ class BotIgor(proto.Bot):
                         # print(self._moves_to_make)
                         return
 
-            if lf_count == 0:
-                self._ran_out_of_moves = True
-                return
-
             if artillery_count == 0:
                 yield from self._try_spawn_artillery(1)
                 # print("_try_spawn_and_connect_artillery")
@@ -1019,12 +1015,15 @@ class BotIgor(proto.Bot):
                                   figure: fig.Figure | type[fig.Figure],
                                   *,
                                   need_to_consider_pullable: bool = False) -> set[type[proto.TerrainKind]]:
-        assert proto.CanPull in figure.FLAGS and isinstance(figure, fig.Figure) or not need_to_consider_pullable
+        assert isinstance(figure, fig.Figure) or not need_to_consider_pullable
+
         result = (figure.FLAGS
                   .get(proto.WithRestrictedTerrainKinds)
                   .terrain_kinds)
 
-        if need_to_consider_pullable and self._session.pulling_connections.is_puller(figure):
+        if (need_to_consider_pullable
+                and proto.CanPull in figure.FLAGS
+                and self._session.pulling_connections.is_puller(figure)):
             result -= self._get_bad_terrain_kinds_of(self._session.pulling_connections.get_pullable(figure))
 
         return result

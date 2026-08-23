@@ -79,8 +79,7 @@ class Assault(FiguresRelocation):
         if proto.CannotBeDestroyed in to_cell.figure.FLAGS:
             return INVALID
 
-        if (figure.FLAGS.get(proto.WithRestrictedTerrainKinds).terrain_kinds &
-                (from_cell.terrain_kinds(board) | to_cell.terrain_kinds(board))):
+        if figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, to_cell, board=board):
             return INVALID
 
         if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
