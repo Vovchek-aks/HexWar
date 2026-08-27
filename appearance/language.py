@@ -8,7 +8,7 @@ from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRA
     ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
     CAPITAL_TO_WIDE_CAPITAL, TANK_AND_ARTILLERY_TO_HOWITZER, MOTORIZATION_AND_ARTILLERY_TO_GRAD, PURCHASE_SETTLEMENT, \
     PURCHASE_PRIVATE_LIGHT_FACTORY, PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK
+    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, CONVERSIONS, COMBINATIONS
 from appearance.settings import Settings
 from core.moves.attack import Attack
 from core.moves.capture import Capture
@@ -53,22 +53,6 @@ _MOVE_OF_TAG = {
     LAUNCH_ORESHNIK: lambda: OreshnikLaunch(Vector2Int.zero(), Vector2Int.zero())
 }
 
-_CONVERSIONS = {
-    INFANTRY_TO_MOTORIZATION: (fig.Infantry, fig.Motorization),
-    MOTORIZATION_TO_INFANTRY: (fig.Motorization, fig.Infantry),
-    CAPITAL_TO_TALL_CAPITAL: (fig.TierOneCapital, fig.TallCapital),
-    CAPITAL_TO_WIDE_CAPITAL: (fig.TierOneCapital, fig.WideCapital),
-    PURCHASE_SETTLEMENT: (fig.Settlement, fig.Town),
-    PURCHASE_PRIVATE_LIGHT_FACTORY: (fig.PrivateLightFactory, fig.LightFactory),
-    PURCHASE_PRIVATE_HEAVY_FACTORY: (fig.PrivateHeavyFactory, fig.HeavyFactory),
-    MOBILISE_TOWN: (fig.Town, fig.Infantry),
-}
-
-_COMBINATIONS = {
-    TANK_AND_ARTILLERY_TO_HOWITZER: (fig.Tank, fig.Artillery, fig.Howitzer),
-    MOTORIZATION_AND_ARTILLERY_TO_GRAD: (fig.Motorization, fig.Artillery, fig.Grad)
-}
-
 _FLAG_OF_RESOURCE_TAKER = {
     LAUNCH_ORESHNIK: CanLaunchOreshnik,
     GRAD_ATTACK: CanGradAttack,
@@ -103,7 +87,6 @@ _STRENGTH = "STRENGTH"
 _HARDNESS = "HARDNESS"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
-_FLOW = "FLOW"
 _PAGE = "PAGE"
 _NEXT = "NEXT"
 _PLAYERS_TOP = "PLAYERS_TOP"
@@ -156,7 +139,7 @@ _LANGUAGE_TAG_FOR = {
     GRAD_ATTACK: _ATTACK,
     TANK_ATTACK: _ATTACK,
     ARTILLERY_INITIATE_PULLING: _INITIATE_PULLING,
-    ARTILLERY_TERMINATE_PULLING: _INITIATE_PULLING,
+    ARTILLERY_TERMINATE_PULLING: _TERMINATE_PULLING,
     MOTORIZATION_TO_INFANTRY: _TO_INFANTRY,
     CAPITAL_TO_TALL_CAPITAL: _TO_TALL_CAPITAL,
     CAPITAL_TO_WIDE_CAPITAL: _TO_WIDE_CAPITAL,
@@ -277,42 +260,6 @@ class Language:
     def get_name_of_figures_action(self, action_tag: str) -> str:
         return self._ui[_LANGUAGE_TAG_FOR[action_tag]]
 
-    def get_to_motorize_message(self) -> str:
-        return self._ui[_TO_MOTORIZATION]
-
-    def get_to_infantry_message(self) -> str:
-        return self._ui[_TO_INFANTRY]
-
-    def get_to_tall_capital_message(self) -> str:
-        return self._ui[_TO_TALL_CAPITAL]
-
-    def get_to_wide_capital_message(self) -> str:
-        return self._ui[_TO_WIDE_CAPITAL]
-
-    def get_purchase_message(self) -> str:
-        return self._ui[_PURCHASE]
-
-    def get_mobilise_message(self) -> str:
-        return self._ui[_MOBILISE]
-
-    def get_combine_message(self) -> str:
-        return self._ui[_COMBINE]
-
-    def get_capture_message(self) -> str:
-        return self._ui[_CAPTURE]
-
-    def get_attack_message(self) -> str:
-        return self._ui[_ATTACK]
-
-    def get_initiate_pulling_message(self) -> str:
-        return self._ui[_INITIATE_PULLING]
-
-    def get_terminate_pulling_message(self) -> str:
-        return self._ui[_TERMINATE_PULLING]
-
-    def get_launch_oreshnik_message(self) -> str:
-        return self._ui[_LAUNCH_ORESHNIK]
-
     def get_message_from_resource(self, resource: Resource) -> str:
         amount = NumberShortener.shorten(resource.amount)
         return f"{self.get_resource_name(type(resource))}: {amount}"
@@ -326,9 +273,6 @@ class Language:
                         if resource.amount != 0])
 
         return message
-
-    def get_flow_message(self) -> str:
-        return self._ui[_FLOW]
 
     def get_page_message(self, page_index: int) -> str:
         return f"{self._ui[_PAGE]} {page_index + 1}"
@@ -403,27 +347,27 @@ class Language:
     def get_creation_hint(self, figure: type[Figure]) -> list[str]:
         return self._hints[_CREATION][figure.__name__]
 
-    def get_figure_menu_hint_for(self, tag: str) -> list[str]:
-        message = self._hints[_FIGURES_MENU][tag]
+    def get_figure_menu_hint_for(self, action_tag: str) -> list[str]:
+        message = self._hints[_FIGURES_MENU][action_tag]
         message.append("")
         combat_ability_index = len(message)
 
-        if tag in _CONVERSIONS:
-            conversion = _CONVERSIONS[tag]
+        if action_tag in CONVERSIONS:
+            conversion = CONVERSIONS[action_tag]
             resources, move_cost = Conversion.conversions()[conversion]
             budget = conversion[0].MOVES_BUDGET
-        elif tag in _COMBINATIONS:
-            combination = _COMBINATIONS[tag]
+        elif action_tag in COMBINATIONS:
+            combination = COMBINATIONS[action_tag]
             resources, move_cost = Combination.combinations()[combination]
             budget = combination[0].MOVES_BUDGET
-        elif tag in _FLAG_OF_RESOURCE_TAKER:
-            resources = _FIGURE_OF_TAG[tag].FLAGS.get(_FLAG_OF_RESOURCE_TAKER[tag]).cost
-            move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())
-            budget = _FIGURE_OF_TAG[tag].MOVES_BUDGET
+        elif action_tag in _FLAG_OF_RESOURCE_TAKER:
+            resources = _FIGURE_OF_TAG[action_tag].FLAGS.get(_FLAG_OF_RESOURCE_TAKER[action_tag]).cost
+            move_cost = _FIGURE_OF_TAG[action_tag].get_cost_of(_MOVE_OF_TAG[action_tag]())
+            budget = _FIGURE_OF_TAG[action_tag].MOVES_BUDGET
         else:
             resources = ResourcesGroup()
-            move_cost = _FIGURE_OF_TAG[tag].get_cost_of(_MOVE_OF_TAG[tag]())
-            budget = _FIGURE_OF_TAG[tag].MOVES_BUDGET
+            move_cost = _FIGURE_OF_TAG[action_tag].get_cost_of(_MOVE_OF_TAG[action_tag]())
+            budget = _FIGURE_OF_TAG[action_tag].MOVES_BUDGET
 
         if resources:
             message.append("")

@@ -1,3 +1,5 @@
+import core.figures.figure as fig
+
 ARTILLERY_ATTACK = "ARTILLERY_ATTACK"
 HOWITZER_ATTACK = "HOWITZER_ATTACK"
 GRAD_ATTACK = "GRAD_ATTACK"
@@ -16,3 +18,34 @@ MOBILISE_TOWN = "MOBILISE_TOWN"
 INFANTRY_CAPTURE = "INFANTRY_CAPTURE"
 INFANTRY_TO_MOTORIZATION = "INFANTRY_TO_MOTORIZATION"
 LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
+
+CONVERSIONS = {
+    INFANTRY_TO_MOTORIZATION: (fig.Infantry, fig.Motorization),
+    MOTORIZATION_TO_INFANTRY: (fig.Motorization, fig.Infantry),
+    CAPITAL_TO_TALL_CAPITAL: (fig.TierOneCapital, fig.TallCapital),
+    CAPITAL_TO_WIDE_CAPITAL: (fig.TierOneCapital, fig.WideCapital),
+    PURCHASE_SETTLEMENT: (fig.Settlement, fig.Town),
+    PURCHASE_PRIVATE_LIGHT_FACTORY: (fig.PrivateLightFactory, fig.LightFactory),
+    PURCHASE_PRIVATE_HEAVY_FACTORY: (fig.PrivateHeavyFactory, fig.HeavyFactory),
+    MOBILISE_TOWN: (fig.Town, fig.Infantry),
+}
+
+COMBINATIONS = {
+    TANK_AND_ARTILLERY_TO_HOWITZER: (fig.Tank, fig.Artillery, fig.Howitzer),
+    MOTORIZATION_AND_ARTILLERY_TO_GRAD: (fig.Motorization, fig.Artillery, fig.Grad)
+}
+
+TAGS_OF: dict[type[fig.Figure], tuple[str]] = {
+    fig.Town: (MOBILISE_TOWN,),
+    fig.Settlement: (PURCHASE_SETTLEMENT,),
+    fig.PrivateLightFactory: (PURCHASE_PRIVATE_LIGHT_FACTORY,),
+    fig.PrivateHeavyFactory: (PURCHASE_PRIVATE_HEAVY_FACTORY,),
+    fig.TierOneCapital: (CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL),
+    fig.MissileSilo: (LAUNCH_ORESHNIK,),
+    fig.Infantry: (INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE),
+    fig.Motorization: (MOTORIZATION_TO_INFANTRY, MOTORIZATION_AND_ARTILLERY_TO_GRAD),
+    fig.Tank: (TANK_ATTACK, TANK_AND_ARTILLERY_TO_HOWITZER),
+    fig.Artillery: (ARTILLERY_ATTACK, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING),
+    fig.Howitzer: (HOWITZER_ATTACK,),
+    fig.Grad: (GRAD_ATTACK,),
+}

@@ -27,13 +27,19 @@ from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRA
     ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
     CAPITAL_TO_WIDE_CAPITAL, TANK_AND_ARTILLERY_TO_HOWITZER, MOTORIZATION_AND_ARTILLERY_TO_GRAD, PURCHASE_SETTLEMENT, \
     PURCHASE_PRIVATE_LIGHT_FACTORY, PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK
+    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, CONVERSIONS, COMBINATIONS, TAGS_OF
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
+from core.moves.attack import Attack
+from core.moves.capture import Capture
+from core.moves.comnination import Combination
+from core.moves.conversion import Conversion
+from core.moves.grad_attack import GradAttack
+from core.moves.oreshnik_launch import OreshnikLaunch
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable, ResourcesChanger, \
-    ResourcesTaker, ResourcesAdder
+    ResourcesTaker, ResourcesAdder, CanLaunchOreshnik, CanPull
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, ResourcesGroup
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
@@ -356,6 +362,7 @@ class GameUiLayerMaker:
         self._cell_selector.cell_was_unselected.subscribe(lambda: layout.layer.set_activity(True))
         self._cell_selector.cell_was_unselected.subscribe(set_buttons_availability)
         self._moves_maker.move_was_made.subscribe(lambda *_: set_buttons_availability())
+        self._session.master.turn_had_started.subscribe(lambda *_: set_buttons_availability())
         set_buttons_availability()
 
         return layout.layer
@@ -431,7 +438,7 @@ class GameUiLayerMaker:
                 return
 
             button.image.set_sprite(background
-                                    if button.image.sprite == background_invalid else
+                                    if button.image.sprite.get() is background_invalid.get() else
                                     button.image.sprite)
 
         buttons_availability_setters.append(set_availability)
@@ -1071,7 +1078,75 @@ class GameUiLayerMaker:
     def _make_figure_action_button(self, action_tag: str) -> tuple[ButtonUi, Sprite]:
         white = self._sprites_loader.load_action_button_for(action_tag)
         default = white.colored_in(DEFAULT_BUTTON)
-        return self._make_image_button(default), white
+        invalid = white.colored_in(INVALID_BUTTON)
+        button = self._make_image_button(default)
+
+        def set_validness(coord: Vector2Int | Status) -> None:
+            if coord is MISSING:
+                return
+
+            if action_tag not in TAGS_OF.get(type(self._session.board[coord].figure), []):
+                return
+
+            if not self._validate_figure_action(action_tag):
+                button.image.set_sprite(invalid)
+                return
+
+            button.image.set_sprite(default
+                                    if button.image.sprite.get() is invalid.get() else
+                                    button.image.sprite)
+
+        self._cell_selector.cell_was_selected.subscribe(set_validness)
+        self._moves_maker.move_was_made.subscribe(lambda *_: set_validness(self._cell_selector.get_coord()))
+
+        return button, white
+
+    def _validate_figure_action(self, action_tag: str) -> bool:
+        coord = self._cell_selector.get_coord()
+        assert coord
+
+        player = self._session.master.current_player
+        connections = self._session.pulling_connections
+        resources = player.resources
+        figures_budget = self._session.figures_budget
+        cell = self._session.board[coord]
+        figure = cell.figure
+        flags = figure.FLAGS
+
+        if action_tag in (ARTILLERY_ATTACK, HOWITZER_ATTACK, TANK_ATTACK):
+            return figures_budget.can_spend(figure, figure.get_cost_of(Attack(Vector2Int.zero(),
+                                                                              Vector2Int.zero())))
+
+        if action_tag == GRAD_ATTACK:
+            return figures_budget.can_spend(figure, figure.get_cost_of(GradAttack(Vector2Int.zero(),
+                                                                                  Vector2Int.zero())))
+
+        if action_tag == ARTILLERY_INITIATE_PULLING:
+            return bool(self._session.board
+                        .get_neighbors(cell)
+                        .with_owner(player)
+                        .with_flag(CanPull)
+                        .filter(lambda cell: not connections.is_puller(cell.figure)))
+
+        if action_tag == ARTILLERY_TERMINATE_PULLING:
+            return connections.is_pullable(figure)
+
+        if action_tag in CONVERSIONS:
+            res, budged = Conversion.conversions()[CONVERSIONS[action_tag]]
+            return resources.can_take(res) and figures_budget.can_spend(figure, budged)
+
+        if action_tag in COMBINATIONS:
+            res, budged = Combination.combinations()[COMBINATIONS[action_tag]]
+            return resources.can_take(res) and figures_budget.can_spend(figure, budged)
+
+        if action_tag == INFANTRY_CAPTURE:
+            return figures_budget.can_spend(figure, figure.get_cost_of(Capture(Vector2Int.zero(),
+                                                                               Vector2Int.zero())))
+
+        if action_tag == LAUNCH_ORESHNIK:
+            return (resources.can_take(flags.get(CanLaunchOreshnik).cost) and
+                    figures_budget.can_spend(figure, figure.get_cost_of(OreshnikLaunch(Vector2Int.zero(),
+                                                                                       Vector2Int.zero()))))
 
     def _is_ui_needed(self, cell_coord: Vector2Int, figure: type[fig.Figure]) -> bool:
         cell = self._session.board[cell_coord]
