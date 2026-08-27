@@ -22,11 +22,12 @@ from appearance.input.moves_inputer.input_actions import ButtonPressAction, Crea
     ConversionButtonPressAction, CaptureButtonPressAction, AttackButtonPressAction, PullingInitiationButtonPressAction, \
     PullingTerminationButtonPressAction, OreshnikLaunchButtonPressAction, CombinationButtonPressAction, \
     GradAttackButtonPressAction
-from appearance.language import Language, ARTILLERY_ATTACK, TANK_ATTACK, MOTORIZATION_TO_INFANTRY, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, LAUNCH_ORESHNIK, \
-    CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL, PURCHASE_SETTLEMENT, PURCHASE_PRIVATE_LIGHT_FACTORY, \
-    PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, TANK_AND_ARTILLERY_TO_HOWITZER, HOWITZER_ATTACK, \
-    MOTORIZATION_AND_ARTILLERY_TO_GRAD, GRAD_ATTACK
+from appearance.language import Language
+from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRAD_ATTACK, TANK_ATTACK, \
+    ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
+    CAPITAL_TO_WIDE_CAPITAL, TANK_AND_ARTILLERY_TO_HOWITZER, MOTORIZATION_AND_ARTILLERY_TO_GRAD, PURCHASE_SETTLEMENT, \
+    PURCHASE_PRIVATE_LIGHT_FACTORY, PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, INFANTRY_CAPTURE, \
+    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
@@ -438,12 +439,12 @@ class GameUiLayerMaker:
         # DO NOT TOUCH ANYTHING BELOW
         event_to_subscribe_on = self._window.update_finished
         self._cell_selector.cell_was_selected.subscribe(lambda *_:
-                                                        event_to_subscribe_on.unsubscribe(on_move_was_made,
+                                                        event_to_subscribe_on.unsubscribe(on_event_had_happened,
                                                                                           is_strict=False))
 
         def on_button_was_set_not_active(_: InputAction, is_last: bool) -> None:
             set_availability()
-            event_to_subscribe_on.unsubscribe(on_move_was_made, is_strict=False)
+            event_to_subscribe_on.unsubscribe(on_event_had_happened, is_strict=False)
 
             if not is_last:
                 return
@@ -451,7 +452,7 @@ class GameUiLayerMaker:
             if self._cell_selector.get_coord() is not MISSING:
                 return
 
-            event_to_subscribe_on.subscribe(on_move_was_made)
+            event_to_subscribe_on.subscribe(on_event_had_happened)
 
         make_active = self._make_button_activatable(button, background_active,
                                                     lambda: CreationButtonPressAction(self._cell_selector.get_coord(),
@@ -461,8 +462,8 @@ class GameUiLayerMaker:
                                                     is_available,
                                                     on_button_was_set_not_active)
 
-        def on_move_was_made(*_: ...) -> None:
-            event_to_subscribe_on.unsubscribe(on_move_was_made)
+        def on_event_had_happened(*_: ...) -> None:
+            event_to_subscribe_on.unsubscribe(on_event_had_happened)
             make_active()
 
         return button

@@ -6,6 +6,11 @@ import core.figures.figure as fig
 from mathematics.vector import Vector2Int
 from .sprite import Sprite
 from files import read_meta
+from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRAD_ATTACK, TANK_ATTACK, \
+    ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
+    CAPITAL_TO_WIDE_CAPITAL, TANK_AND_ARTILLERY_TO_HOWITZER, MOTORIZATION_AND_ARTILLERY_TO_GRAD, PURCHASE_SETTLEMENT, \
+    PURCHASE_PRIVATE_LIGHT_FACTORY, PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, INFANTRY_CAPTURE, \
+    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK
 
 SPRITES_FOLDER = Path("data/sprites")
 
@@ -44,6 +49,27 @@ _MAKE_BUTTONS_FOR: dict[type[fig.Figure], str] = {
     fig.MissileSilo: "make_silo",
     fig.Tank: "make_tank",
     fig.Town: "make_town",
+}
+
+_ACTION_BUTTON_FOR = {
+    ARTILLERY_ATTACK: "btn_attack",
+    HOWITZER_ATTACK: "btn_attack",
+    GRAD_ATTACK: "btn_attack",
+    TANK_ATTACK: "btn_attack",
+    ARTILLERY_INITIATE_PULLING: "btn_connect",
+    ARTILLERY_TERMINATE_PULLING: "btn_disconnect",
+    MOTORIZATION_TO_INFANTRY: "btn_moto_to_inf",
+    CAPITAL_TO_TALL_CAPITAL: "btn_capital_to_tall_capital",
+    CAPITAL_TO_WIDE_CAPITAL: "btn_capital_to_WIDE_capital",
+    TANK_AND_ARTILLERY_TO_HOWITZER: "btn_combine_with_art",
+    MOTORIZATION_AND_ARTILLERY_TO_GRAD: "btn_combine_with_art",
+    PURCHASE_SETTLEMENT: "btn_purchase",
+    PURCHASE_PRIVATE_LIGHT_FACTORY: "btn_purchase",
+    PURCHASE_PRIVATE_HEAVY_FACTORY: "btn_purchase",
+    MOBILISE_TOWN: "btn_mobilise",
+    INFANTRY_CAPTURE: "btn_inf_capture",
+    INFANTRY_TO_MOTORIZATION: "btn_inf_to_moto",
+    LAUNCH_ORESHNIK: "btn_launch_oreshnik",
 }
 
 _EFFECTS = "effects"
@@ -106,6 +132,10 @@ class SpritesLoader:
 
     def load_figure_creation_button_for(self, figure: type[fig.Figure]) -> Sprite:
         sprite_info = self._ui[_MAKE_BUTTONS_FOR[figure]]
+        return self._load_sprite(sprite_info)
+
+    def load_action_button_for(self, action_tag: str) -> Sprite:
+        sprite_info = self._ui[_ACTION_BUTTON_FOR[action_tag]]
         return self._load_sprite(sprite_info)
 
     def load_background_3_to_2(self) -> Sprite:

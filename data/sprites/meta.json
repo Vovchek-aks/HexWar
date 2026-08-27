@@ -240,6 +240,97 @@
         0
       ]
     },
+    "btn_attack": {
+      "file": "ui/btn_attack.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_capital_to_tall_capital": {
+      "file": "ui/btn_capital_to_tall_capital.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_capital_to_wide_capital": {
+      "file": "ui/btn_capital_to_wide_capital.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_combine_with_art": {
+      "file": "ui/btn_combine_with_art.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_connect": {
+      "file": "ui/btn_connect.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_disconnect": {
+      "file": "ui/btn_disconnect.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_inf_capture": {
+      "file": "ui/btn_inf_capture.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_inf_settle": {
+      "file": "ui/btn_inf_settle.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_inf_to_moto": {
+      "file": "ui/btn_inf_to_moto.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_mobilise": {
+      "file": "ui/btn_mobilise.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_moto_to_inf": {
+      "file": "ui/btn_moto_to_inf.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_oreshnik_launch": {
+      "file": "ui/btn_oreshnik_launch.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "btn_purchase": {
+      "file": "ui/btn_purchase.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
     "background_3_to_2": {
       "file": "ui/bck_1500_1000.png",
       "pivot": [
