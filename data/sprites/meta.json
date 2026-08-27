@@ -317,8 +317,8 @@
         0
       ]
     },
-    "btn_oreshnik_launch": {
-      "file": "ui/btn_oreshnik_launch.png",
+    "btn_launch_oreshnik": {
+      "file": "ui/btn_launch_oreshnik.png",
       "pivot": [
         0,
         0

@@ -60,7 +60,7 @@ _ACTION_BUTTON_FOR = {
     ARTILLERY_TERMINATE_PULLING: "btn_disconnect",
     MOTORIZATION_TO_INFANTRY: "btn_moto_to_inf",
     CAPITAL_TO_TALL_CAPITAL: "btn_capital_to_tall_capital",
-    CAPITAL_TO_WIDE_CAPITAL: "btn_capital_to_WIDE_capital",
+    CAPITAL_TO_WIDE_CAPITAL: "btn_capital_to_wide_capital",
     TANK_AND_ARTILLERY_TO_HOWITZER: "btn_combine_with_art",
     MOTORIZATION_AND_ARTILLERY_TO_GRAD: "btn_combine_with_art",
     PURCHASE_SETTLEMENT: "btn_purchase",

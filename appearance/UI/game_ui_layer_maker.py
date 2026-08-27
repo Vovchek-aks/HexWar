@@ -483,42 +483,35 @@ class GameUiLayerMaker:
         return hint
 
     def _make_infantry_menu(self) -> Layer:
-        to_motorize = self._make_null_button(Language.from_meta().get_to_motorize_message())
+        to_motorize, _ = self._make_figure_action_button(INFANTRY_TO_MOTORIZATION)
         to_motorize.was_clicked.subscribe(lambda: self._button_press_action_happened
                                           .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                               fig.Motorization)))
 
-        capture = self._make_activatable_text_button(self._language.get_capture_message(),
-                                                     lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
+        capture = self._make_activatable_figure_action_button(INFANTRY_CAPTURE,
+                                                              lambda: CaptureButtonPressAction(
+                                                                  self._cell_selector.get_coord()
+                                                              ))
 
         return self._make_figure_menu(fig.Infantry, [to_motorize, capture],
                                       [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE])
 
-    def _make_infantry_menu_tutorial_1(self) -> Layer:
-        return self._make_figure_menu(fig.Infantry, [], [])
-
-    def _make_infantry_menu_tutorial_2(self) -> Layer:
-        capture = self._make_activatable_text_button(self._language.get_capture_message(),
-                                                     lambda: CaptureButtonPressAction(self._cell_selector.get_coord()))
-
-        return self._make_figure_menu(fig.Infantry, [capture], [INFANTRY_CAPTURE])
-
     def _make_motorization_menu(self) -> Layer:
-        to_infantry = self._make_null_button(Language.from_meta().get_to_infantry_message())
+        to_infantry, _ = self._make_figure_action_button(MOTORIZATION_TO_INFANTRY)
         to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
                                           .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                               fig.Infantry)))
-        combine = self._make_activatable_text_button(self._language.get_combine_message(),
-                                                     lambda: CombinationButtonPressAction(
-                                                         self._cell_selector.get_coord(),
-                                                                                     fig.Grad))
+        combine = self._make_activatable_figure_action_button(MOTORIZATION_AND_ARTILLERY_TO_GRAD,
+                                                              lambda: CombinationButtonPressAction(
+                                                                  self._cell_selector.get_coord(), fig.Grad
+                                                              ))
 
         return self._make_figure_menu(fig.Motorization,
                                       [to_infantry, combine],
                                       [MOTORIZATION_TO_INFANTRY, MOTORIZATION_AND_ARTILLERY_TO_GRAD])
 
     def _make_town_menu(self) -> Layer:
-        mobilise = self._make_null_button(Language.from_meta().get_mobilise_message())
+        mobilise, _ = self._make_figure_action_button(MOBILISE_TOWN)
         mobilise.was_clicked.subscribe(lambda: self._button_press_action_happened
                                        .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                            fig.Infantry)))
@@ -531,7 +524,7 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.HeavyFactory, [], [])
 
     def _make_settlement_menu(self) -> Layer:
-        purchase = self._make_null_button(Language.from_meta().get_purchase_message())
+        purchase, _ = self._make_figure_action_button(PURCHASE_SETTLEMENT)
         purchase.was_clicked.subscribe(lambda: self._button_press_action_happened
                                        .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                            fig.Town)))
@@ -539,26 +532,26 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Settlement, [purchase], [PURCHASE_SETTLEMENT])
 
     def _make_private_light_factory_menu(self) -> Layer:
-        purchase = self._make_null_button(Language.from_meta().get_purchase_message())
+        purchase, _ = self._make_figure_action_button(PURCHASE_PRIVATE_LIGHT_FACTORY)
         purchase.was_clicked.subscribe(lambda: self._button_press_action_happened
                                        .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                            fig.LightFactory)))
         return self._make_figure_menu(fig.PrivateLightFactory, [purchase], [PURCHASE_PRIVATE_LIGHT_FACTORY])
 
     def _make_private_heavy_factory_menu(self) -> Layer:
-        purchase = self._make_null_button(Language.from_meta().get_purchase_message())
+        purchase, _ = self._make_figure_action_button(PURCHASE_PRIVATE_HEAVY_FACTORY)
         purchase.was_clicked.subscribe(lambda: self._button_press_action_happened
                                        .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                            fig.HeavyFactory)))
         return self._make_figure_menu(fig.PrivateHeavyFactory, [purchase], [PURCHASE_PRIVATE_HEAVY_FACTORY])
 
     def _make_capital_menu(self) -> Layer:
-        to_tall_capital = self._make_null_button(Language.from_meta().get_to_tall_capital_message())
+        to_tall_capital, _ = self._make_figure_action_button(CAPITAL_TO_TALL_CAPITAL)
         to_tall_capital.was_clicked.subscribe(lambda: self._button_press_action_happened
                                               .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                                   fig.TallCapital)))
 
-        to_wide_capital = self._make_null_button(Language.from_meta().get_to_wide_capital_message())
+        to_wide_capital, _ = self._make_figure_action_button(CAPITAL_TO_WIDE_CAPITAL)
         to_wide_capital.was_clicked.subscribe(lambda: self._button_press_action_happened
                                               .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                                   fig.WideCapital)))
@@ -578,31 +571,37 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Abandonment, [], [])
 
     def _make_missile_silo_menu(self) -> Layer:
-        launch_oreshnik = self._make_activatable_text_button(self._language.get_launch_oreshnik_message(),
-                                                             lambda: OreshnikLaunchButtonPressAction(
-                                                            self._cell_selector.get_coord()))
+        launch_oreshnik = self._make_activatable_figure_action_button(LAUNCH_ORESHNIK,
+                                                                      lambda: OreshnikLaunchButtonPressAction(
+                                                                          self._cell_selector.get_coord()
+                                                                      ))
 
         return self._make_figure_menu(fig.MissileSilo, [launch_oreshnik], [LAUNCH_ORESHNIK])
 
     def _make_tank_menu(self) -> Layer:
-        attack = self._make_activatable_text_button(self._language.get_attack_message(),
-                                                    lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
-        combine = self._make_activatable_text_button(self._language.get_combine_message(),
-                                                     lambda: CombinationButtonPressAction(
-                                                         self._cell_selector.get_coord(),
-                                                                                     fig.Howitzer))
+        attack = self._make_activatable_figure_action_button(TANK_ATTACK,
+                                                             lambda: AttackButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
+        combine = self._make_activatable_figure_action_button(TANK_AND_ARTILLERY_TO_HOWITZER,
+                                                              lambda: CombinationButtonPressAction(
+                                                                  self._cell_selector.get_coord(), fig.Howitzer
+                                                              ))
 
         return self._make_figure_menu(fig.Tank, [attack, combine], [TANK_ATTACK, TANK_AND_ARTILLERY_TO_HOWITZER])
 
     def _make_artillery_menu(self) -> Layer:
-        attack = self._make_activatable_text_button(self._language.get_attack_message(),
-                                                    lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
+        attack = self._make_activatable_figure_action_button(ARTILLERY_ATTACK,
+                                                             lambda: AttackButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
 
-        attach = self._make_activatable_text_button(self._language.get_initiate_pulling_message(),
-                                                    lambda: PullingInitiationButtonPressAction(
-                                                   self._cell_selector.get_coord()))
+        attach = self._make_activatable_figure_action_button(ARTILLERY_INITIATE_PULLING,
+                                                             lambda: PullingInitiationButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
 
-        detach = self._make_null_button(self._language.get_terminate_pulling_message())
+        detach, _ = self._make_figure_action_button(ARTILLERY_TERMINATE_PULLING)
         detach.was_clicked.subscribe(lambda: self._button_press_action_happened
                                      .invoke(PullingTerminationButtonPressAction(self._cell_selector.get_coord())))
 
@@ -631,15 +630,18 @@ class GameUiLayerMaker:
                                       [ARTILLERY_ATTACK, (ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING)])
 
     def _make_howitzer_menu(self) -> Layer:
-        attack = self._make_activatable_text_button(self._language.get_attack_message(),
-                                                    lambda: AttackButtonPressAction(self._cell_selector.get_coord()))
+        attack = self._make_activatable_figure_action_button(HOWITZER_ATTACK,
+                                                             lambda: AttackButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
 
         return self._make_figure_menu(fig.Howitzer, [attack], [HOWITZER_ATTACK])
 
     def _make_grad_menu(self) -> Layer:
-        attack = self._make_activatable_text_button(self._language.get_attack_message(),
-                                                    lambda: GradAttackButtonPressAction(
-                                                        self._cell_selector.get_coord()))
+        attack = self._make_activatable_figure_action_button(GRAD_ATTACK,
+                                                             lambda: GradAttackButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
 
         return self._make_figure_menu(fig.Grad, [attack], [GRAD_ATTACK])
 
@@ -665,7 +667,6 @@ class GameUiLayerMaker:
                 hint_box.append(self._make_figure_menu_button_hint(synchroniser, button_, tag_))
                 synchroniser.synchronise()
 
-
         layer = Layer.as_multiple([
             menu,
             hint_box,
@@ -677,6 +678,9 @@ class GameUiLayerMaker:
     def _make_figure_menu_without_hints(self,
                                         figure_type: type[fig.Figure],
                                         buttons: list[ButtonUi | SwitchButtonUi]) -> StretcherUi:
+        BUTTONS_COUNT = 5
+        assert len(buttons) <= BUTTONS_COUNT
+
         background_margin = Vector2(20, 20)
         background = ImageUi.make(self._drawer,
                                   RectangleBuilder(self._screen_shape)
@@ -705,13 +709,16 @@ class GameUiLayerMaker:
         buttons_position = background_margin + layout_margin
         buttons_width = background.rectangle.shape.x - layout_margin.x * 2 - 5
         buttons_height = background.rectangle.shape.y / 4
+
+        margin_ratio = 1 - BUTTONS_COUNT / (buttons_width / buttons_height)
         buttons_layout = HorizontalLayoutUi(RectangleBuilder(self._screen_shape)
                                             .from_left_bottom()
                                             .move(buttons_position)
                                             .set_shape(Vector2(buttons_width, buttons_height))
                                             .adjust_for_shape()
                                             .build(),
-                                            reserved=len(buttons))
+                                            reserved=BUTTONS_COUNT,
+                                            margin_ratio=margin_ratio)
         buttons_layout.extend(buttons)
 
         title_bottom = title.rectangle.position.y
@@ -855,7 +862,9 @@ class GameUiLayerMaker:
                                       synchroniser: TextSizeSynchroniser,
                                       button: ButtonUi,
                                       tag: str) -> StretcherUi:
-        return self._make_button_hint(synchroniser, button.text.text, self._language.get_figure_menu_hint_for(tag),
+        return self._make_button_hint(synchroniser,
+                                      self._language.get_name_of_figures_action(tag),
+                                      self._language.get_figure_menu_hint_for(tag),
                                       button, Vector2(200, 220))
 
     def _make_button_hint(self,
@@ -1006,6 +1015,15 @@ class GameUiLayerMaker:
                                       lambda action: isinstance(action, type(action_maker())))
         return button
 
+    def _make_activatable_figure_action_button(self,
+                                               action_tag: str,
+                                               action_maker: Callable[[], ButtonPressAction]) -> ButtonUi:
+        button, white = self._make_figure_action_button(action_tag)
+        active = white.colored_in(ACTIVE_BUTTON)
+        self._make_button_activatable(button, active, action_maker,
+                                      lambda action: isinstance(action, type(action_maker())))
+        return button
+
     def _make_button_activatable(self,
                                  button: ButtonUi,
                                  active: Sprite,
@@ -1042,10 +1060,18 @@ class GameUiLayerMaker:
         background = self._sprites_loader.load_button_3_to_2()
         text_data = TextData.for_button(text)
         button = ButtonUi.make(self._drawer,
-                               Rectangle(Vector2.zero(), text_data.shape),
+                               Rectangle.ones(),
                                background,
                                text_data)
         return button
+
+    def _make_image_button(self, sprite: Sprite) -> ButtonUi:
+        return ButtonUi.make(self._drawer, Rectangle.ones(), sprite)
+
+    def _make_figure_action_button(self, action_tag: str) -> tuple[ButtonUi, Sprite]:
+        white = self._sprites_loader.load_action_button_for(action_tag)
+        default = white.colored_in(DEFAULT_BUTTON)
+        return self._make_image_button(default), white
 
     def _is_ui_needed(self, cell_coord: Vector2Int, figure: type[fig.Figure]) -> bool:
         cell = self._session.board[cell_coord]
