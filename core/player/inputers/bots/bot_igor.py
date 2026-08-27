@@ -159,7 +159,7 @@ class BotIgor(proto.Bot):
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _CATASTROPHY_PREVENTION:
-            for figure in fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory:
+            for figure in fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory, fig.Tank:
                 if self._count_of(figure) == 0:
                     self._try_create(figure)
                     # print(f"_try_create({figure})")

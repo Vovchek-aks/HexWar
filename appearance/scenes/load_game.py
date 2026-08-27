@@ -219,7 +219,7 @@ def load_game(window: Window,
         scene = MultibotScene(game)
 
         def on_player_turn_started(player: Player) -> None:
-            ratio_to_win = .7
+            ratio_to_win = .5
             if max(session.cells.get_territories_and_production_ratios_of(player)) >= ratio_to_win:
                 scene.on_reload(make_next_scene_loading())
 
