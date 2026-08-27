@@ -39,7 +39,7 @@ from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable, ResourcesChanger, \
-    ResourcesTaker, ResourcesAdder, CanLaunchOreshnik, CanPull
+    ResourcesTaker, ResourcesAdder, CanLaunchOreshnik, CanPull, WithRestrictedTerrainKinds
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, ResourcesGroup
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
@@ -119,7 +119,7 @@ class GameUiLayerMaker:
 
     def _make_current_turn_ui_tutorial_0(self, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
-            self._make_infantry_menu_tutorial_1(),
+            # self._make_infantry_menu_tutorial_1(),
             end_turn_button,
         ])
         self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
@@ -127,7 +127,7 @@ class GameUiLayerMaker:
 
     def _make_current_turn_ui_tutorial_1(self, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
-            self._make_infantry_menu_tutorial_2(),
+            # self._make_infantry_menu_tutorial_2(),
             self._make_artillery_menu(),
             end_turn_button,
         ])
@@ -1028,7 +1028,8 @@ class GameUiLayerMaker:
         button, white = self._make_figure_action_button(action_tag)
         active = white.colored_in(ACTIVE_BUTTON)
         self._make_button_activatable(button, active, action_maker,
-                                      lambda action: isinstance(action, type(action_maker())))
+                                      lambda action: isinstance(action, type(action_maker())),
+                                      lambda: self._validate_figure_action(action_tag))
         return button
 
     def _make_button_activatable(self,
@@ -1113,14 +1114,6 @@ class GameUiLayerMaker:
         figure = cell.figure
         flags = figure.FLAGS
 
-        if action_tag in (ARTILLERY_ATTACK, HOWITZER_ATTACK, TANK_ATTACK):
-            return figures_budget.can_spend(figure, figure.get_cost_of(Attack(Vector2Int.zero(),
-                                                                              Vector2Int.zero())))
-
-        if action_tag == GRAD_ATTACK:
-            return figures_budget.can_spend(figure, figure.get_cost_of(GradAttack(Vector2Int.zero(),
-                                                                                  Vector2Int.zero())))
-
         if action_tag == ARTILLERY_INITIATE_PULLING:
             return bool(self._session.board
                         .get_neighbors(cell)
@@ -1130,6 +1123,17 @@ class GameUiLayerMaker:
 
         if action_tag == ARTILLERY_TERMINATE_PULLING:
             return connections.is_pullable(figure)
+
+        if flags.get(WithRestrictedTerrainKinds).contains_in(cell, board=self._session.board):
+            return False
+
+        if action_tag in (ARTILLERY_ATTACK, HOWITZER_ATTACK, TANK_ATTACK):
+            return figures_budget.can_spend(figure, figure.get_cost_of(Attack(Vector2Int.zero(),
+                                                                              Vector2Int.zero())))
+
+        if action_tag == GRAD_ATTACK:
+            return figures_budget.can_spend(figure, figure.get_cost_of(GradAttack(Vector2Int.zero(),
+                                                                                  Vector2Int.zero())))
 
         if action_tag in CONVERSIONS:
             res, budged = Conversion.conversions()[CONVERSIONS[action_tag]]
