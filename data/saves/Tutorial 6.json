@@ -11,7 +11,8 @@
         "Oil": 0,
         "LightIndustryProducts": 0,
         "HeavyIndustryProducts": 0
-      }
+      },
+      "TURN": 1
     },
     {
       "NAME": "Kaschtan1",
@@ -25,7 +26,8 @@
         "Oil": 0,
         "LightIndustryProducts": 0,
         "HeavyIndustryProducts": 0
-      }
+      },
+      "TURN": 1
     },
     {
       "NAME": "BigPampersBoss",
@@ -39,30 +41,31 @@
         "Oil": 0,
         "LightIndustryProducts": 0,
         "HeavyIndustryProducts": 0
-      }
+      },
+      "TURN": 1
     }
   ],
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {
     "Town": [
-      "16 21",
-      "4 16",
-      "22 23",
-      "17 18",
-      "22 7",
       "12 11",
-      "23 15",
-      "17 10",
-      "23 23",
-      "5 17",
-      "6 17",
-      "22 8",
-      "20 6",
-      "21 6",
-      "11 16",
+      "16 21",
+      "17 18",
       "21 22",
-      "17 27"
+      "4 16",
+      "17 27",
+      "22 23",
+      "23 23",
+      "17 10",
+      "11 16",
+      "23 15",
+      "22 7",
+      "6 17",
+      "21 6",
+      "5 17",
+      "20 6",
+      "22 8"
     ],
     "TierOneCapital": [
       "22 22",

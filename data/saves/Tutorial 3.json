@@ -11,41 +11,43 @@
         "Oil": 10000000000000,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
-      }
+      },
+      "TURN": 1
     },
     {
       "NAME": "Xibsy",
       "COLOR": "#406aad",
       "INPUTER": [
         "PassPlayerInputer",
-        1
+        1.0
       ],
       "RESOURCES": {
         "Dollars": 10000000000000,
         "Oil": 10000000000000,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
-      }
+      },
+      "TURN": 1
     }
   ],
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {
     "Town": [
-      "15 19",
-      "14 20",
+      "23 18",
       "4 14",
-      "15 20",
       "5 14",
-      "23 18"
+      "15 19",
+      "15 20",
+      "14 20"
     ],
     "LightFactory": [
       "13 19",
       "14 4"
     ],
     "HeavyFactory": [
-      "5 20",
-      "14 15"
+      "14 15",
+      "5 20"
     ],
     "TierOneCapital": [
       "5 15",
@@ -53,8 +55,8 @@
     ],
     "Infantry": [
       "5 17",
-      "19 13",
-      "10 13"
+      "10 13",
+      "19 13"
     ]
   },
   "BOARD_SHAPE": "30 30",

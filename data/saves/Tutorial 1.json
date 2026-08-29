@@ -11,7 +11,8 @@
         "Oil": 10000000000000,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
-      }
+      },
+      "TURN": 1
     },
     {
       "NAME": "v1_cool_guy",
@@ -25,7 +26,8 @@
         "Oil": 10000000000000,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
-      }
+      },
+      "TURN": 1
     }
   ],
   "BUDGET": {},

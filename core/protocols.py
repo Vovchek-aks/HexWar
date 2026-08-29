@@ -35,6 +35,10 @@ class Master(ABC):
         ...
 
     @abstractmethod
+    def turn_of(self, player: "Player") -> int:
+        ...
+
+    @abstractmethod
     def get_next_player(self, session: "GameSession") -> "Player":
         ...
 

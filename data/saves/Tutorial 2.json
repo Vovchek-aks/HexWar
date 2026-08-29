@@ -11,7 +11,8 @@
         "Oil": 10000000000000,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
-      }
+      },
+      "TURN": 1
     },
     {
       "NAME": "aaaplayer",
@@ -25,7 +26,8 @@
         "Oil": 10000000000000,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
-      }
+      },
+      "TURN": 1
     },
     {
       "NAME": "K\u00f6enig Segg",
@@ -39,15 +41,16 @@
         "Oil": 10000000000000,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
-      }
+      },
+      "TURN": 1
     }
   ],
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {
     "Town": [
-      "4 2",
-      "5 2"
+      "5 2",
+      "4 2"
     ],
     "LightFactory": [
       "9 16"
@@ -56,19 +59,19 @@
       "5 3"
     ],
     "Bunker": [
-      "7 6",
       "8 14",
+      "7 6",
       "5 11"
     ],
     "Infantry": [
-      "9 11",
+      "11 9",
       "9 14",
-      "4 10",
-      "11 9"
+      "9 11",
+      "4 10"
     ],
     "Artillery": [
-      "10 7",
-      "11 13"
+      "11 13",
+      "10 7"
     ]
   },
   "BOARD_SHAPE": "20 20",

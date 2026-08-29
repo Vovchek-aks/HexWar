@@ -47,6 +47,7 @@ _NAME = "NAME"
 _COLOR = "COLOR"
 _INPUTER = "INPUTER"
 _RESOURCES = "RESOURCES"
+_TURN = "TURN"
 
 _BUDGET = "BUDGET"
 
@@ -86,7 +87,8 @@ class GameSessionSaver:
                 _NAME: player.data.name,
                 _COLOR: player.data.color.hex(),
                 _INPUTER: self._get_player_inputer_list(player.inputer),
-                _RESOURCES: self._get_player_resources_dict(player.resources)
+                _RESOURCES: self._get_player_resources_dict(player.resources),
+                _TURN: self._session.master.turn_of(player),
             })
         return players
 
@@ -180,13 +182,16 @@ class GameSessionLoader:
 
     def _load_master(self) -> Master:
         players = list[proto.Player]()
+        turn_of = dict[proto.Player, int]()
         for player_info in self._json[_PLAYERS]:
             name = player_info[_NAME]
             color = Color.from_hex_string(player_info[_COLOR])
             inputer = self._load_inputer(player_info[_INPUTER])
             resources = self._load_resources(player_info[_RESOURCES])
-            players.append(Player(PlayerData(color, name), inputer, resources))
-        return Master(players)
+            player = Player(PlayerData(color, name), inputer, resources)
+            turn_of[player] = player_info[_TURN]
+            players.append(player)
+        return Master(players, turn_of)
 
     def _load_inputer(self, inputer_info: list[str]) -> proto.PlayerInputer:
         match inputer_info[0]:

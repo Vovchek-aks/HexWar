@@ -9,8 +9,7 @@ from observer import Event, OnEventSubscriber
 @frozen
 class Master(proto.Master):
     _players: list[proto.Player]
-
-    _turn_of: dict[proto.Player, int] = field(init=False, factory=lambda: defaultdict(lambda: 1))
+    _turn_of: dict[proto.Player, int] = field(factory=lambda: defaultdict(lambda: 1))
 
     _turn_had_started: Event[proto.Player, None] = field(init=False, factory=Event)
     _turn_has_passed: Event[proto.Player, None] = field(init=False, factory=Event)
@@ -34,6 +33,9 @@ class Master(proto.Master):
     @property
     def turn_has_passed(self) -> OnEventSubscriber[proto.Player, None]:
         return self._turn_has_passed.subscriber
+
+    def turn_of(self, player: proto.Player) -> int:
+        return self._turn_of[player]
 
     def get_next_player(self, session: proto.GameSession) -> proto.Player:
         self._remove_empty_players(session)
