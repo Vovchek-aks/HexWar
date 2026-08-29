@@ -48,8 +48,7 @@ class Creation(proto.Move):
 
         session.figures.add(self.figure_type, self.to_coord)
         figure = to_cell.figure
-        if (spend_budget := figure.FLAGS.get(proto.StartsWithBudgetSpend)) is not MISSING:
-            session.figures_budget.add(figure, spend_budget.amount)
+        session.figures_budget.add(figure, figure.FLAGS.get(proto.Creatable).initially_spend_budget)
 
         session.master.current_player.resources.take(figure.FLAGS.get(Creatable).cost)
 

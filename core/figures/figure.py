@@ -7,7 +7,7 @@ from attrs import define, field
 from core import protocols as proto
 from core.distant_neighbors_getter import DistantNeighborsGetter
 from core.figures.figures_flags import Flags, Static, Creatable, CanCapture, Capturable, CanAttack, Pullable, \
-    PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, StartsWithBudgetSpend, \
+    PreventsCaptures, CanPull, OnLand, AtWater, Empty, DontHaveOwner, CanLaunchOreshnik, \
     PreventsAnnexations, Private, Transforms, CanGradAttack, CannotBeDestroyed, TerrainMountain, TerrainForest, \
     TerrainSwamp, TerrainDesert, ALL_TERRAINS, WithRestrictedTerrainKinds
 from core.figures.movable_flag import MovableBuilder
@@ -165,7 +165,8 @@ class Town(_Figure):
     FLAGS = Flags.new(OnLand(),
                       WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest}),
                       Static(),
-                      Creatable.make(Dollars(700_000), LightIndustryProducts(1_000)),
+                      Creatable.make(Dollars(700_000), LightIndustryProducts(1_000),
+                                     initially_spend_budget=198),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(250_000)))
     MOVES_BUDGET = 198
@@ -187,7 +188,8 @@ class LightFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
                       WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest}),
                       Static(),
-                      Creatable.make(Dollars(1_500_000)),
+                      Creatable.make(Dollars(1_500_000),
+                                     initially_spend_budget=1),
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(100_000)),
                                                      ResourcesGroup.make(LightIndustryProducts(1_000))))
@@ -210,7 +212,8 @@ class HeavyFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
                       WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest, TerrainMountain}),
                       Static(),
-                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_000)),
+                      Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_000),
+                                     initially_spend_budget=1),
                       Capturable(),
                       TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(500_000),
                                                                          LightIndustryProducts(3_000)),
@@ -238,7 +241,7 @@ class Settlement(_Figure):
                       Private(),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(100_000)))
-    MOVES_BUDGET = 1
+    MOVES_BUDGET = 198
 
     @classmethod
     def base_hardness(cls) -> int:
@@ -447,9 +450,9 @@ class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
                       WithRestrictedTerrainKinds(ALL_TERRAINS),
                       Static(),
-                      Creatable.make(Dollars(1_500_000), LightIndustryProducts(10_000), HeavyIndustryProducts(5_000)),
+                      Creatable.make(Dollars(1_500_000), LightIndustryProducts(10_000), HeavyIndustryProducts(5_000),
+                                     initially_spend_budget=1),
                       Capturable(),
-                      StartsWithBudgetSpend(1),
                       TriesTakeResourcesElseDies.make(Dollars(25_000),
                                                       LightIndustryProducts(1_000),
                                                       HeavyIndustryProducts(500)),

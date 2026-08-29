@@ -661,13 +661,6 @@ class CannotBeDestroyed(Flag, metaclass=ABCMeta):
     ...
 
 
-class StartsWithBudgetSpend(Flag, metaclass=ABCMeta):
-    @property
-    @abstractmethod
-    def amount(self) -> int:
-        ...
-
-
 class CanLaunchOreshnik(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
@@ -756,6 +749,11 @@ class Creatable(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
     def necessary_neighbor(self) -> "type[Figure] | Status":
+        ...
+
+    @property
+    @abstractmethod
+    def initially_spend_budget(self) -> int:
         ...
 
 

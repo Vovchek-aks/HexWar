@@ -153,11 +153,13 @@ class Creatable(proto.Creatable):
     @classmethod
     def make(cls,
              *resources: proto.Resource,
-             necessary_neighbor: type[proto.Figure] | Status = MISSING) -> proto.Creatable:
-        return cls(ResourcesGroup.make(*resources), necessary_neighbor)
+             necessary_neighbor: type[proto.Figure] | Status = MISSING,
+             initially_spend_budget: int = 0) -> proto.Creatable:
+        return cls(ResourcesGroup.make(*resources), initially_spend_budget, necessary_neighbor)
 
     cost: proto.ResourcesGroup
-    necessary_neighbor: type[proto.Figure] | Status
+    initially_spend_budget: int = 0
+    necessary_neighbor: type[proto.Figure] | Status = MISSING
 
 
 @frozen
@@ -185,13 +187,6 @@ class CanAttack(proto.CanAttack):
 @frozen
 class CannotBeDestroyed(proto.CannotBeDestroyed):
     EXCLUDES = set[type[Flag]]()
-
-
-@frozen
-class StartsWithBudgetSpend(proto.StartsWithBudgetSpend):
-    EXCLUDES = set[type[Flag]]()
-
-    amount: int
 
 
 @frozen
