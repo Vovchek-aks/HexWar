@@ -46,6 +46,10 @@ class Conversion(proto.Move):
                                                       fig.PrivateHeavyFactory.MOVES_BUDGET),
 
         (fig.Town, fig.Infantry): (ResourcesGroup(), 1),
+
+        (fig.Settlement, fig.Infantry): (ResourcesGroup(), 1),
+
+        (fig.Infantry, fig.Settlement): (ResourcesGroup(), 1),
     }
 
     @classmethod

@@ -27,7 +27,7 @@ from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRA
     ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
     CAPITAL_TO_WIDE_CAPITAL, TANK_AND_ARTILLERY_TO_HOWITZER, MOTORIZATION_AND_ARTILLERY_TO_GRAD, PURCHASE_SETTLEMENT, \
     PURCHASE_PRIVATE_LIGHT_FACTORY, PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, CONVERSIONS, COMBINATIONS, TAGS_OF
+    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, CONVERSIONS, COMBINATIONS, TAGS_OF, MOBILISE_SETTLEMENT, INFANTRY_SETTLE
 from appearance.layer import Layer
 from appearance.protocols import CellSelector, InputAction
 from core.figures.resources_flow_flags import get_resource_flow
@@ -500,8 +500,13 @@ class GameUiLayerMaker:
                                                                   self._cell_selector.get_coord()
                                                               ))
 
-        return self._make_figure_menu(fig.Infantry, [to_motorize, capture],
-                                      [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE])
+        settle, _ = self._make_figure_action_button(INFANTRY_SETTLE)
+        settle.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                     .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                         fig.Settlement)))
+
+        return self._make_figure_menu(fig.Infantry, [to_motorize, capture, settle],
+                                      [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE, INFANTRY_SETTLE])
 
     def _make_motorization_menu(self) -> Layer:
         to_infantry, _ = self._make_figure_action_button(MOTORIZATION_TO_INFANTRY)
@@ -536,7 +541,12 @@ class GameUiLayerMaker:
                                        .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
                                                                            fig.Town)))
 
-        return self._make_figure_menu(fig.Settlement, [purchase], [PURCHASE_SETTLEMENT])
+        mobilise, _ = self._make_figure_action_button(MOBILISE_SETTLEMENT)
+        mobilise.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                       .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                           fig.Infantry)))
+
+        return self._make_figure_menu(fig.Settlement, [purchase, mobilise], [PURCHASE_SETTLEMENT, MOBILISE_SETTLEMENT])
 
     def _make_private_light_factory_menu(self) -> Layer:
         purchase, _ = self._make_figure_action_button(PURCHASE_PRIVATE_LIGHT_FACTORY)

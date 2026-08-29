@@ -36,6 +36,7 @@
     "TO_WIDE_CAPITAL": "Расшириться",
     "PURCHASE": "Выкупить",
     "MOBILISE": "Мобилизовать",
+    "SETTLE": "Осесть",
     "COMBINE": "Соединиться",
     "LAUNCH_ORESHNIK": "Запустить \"Орешник\"",
     "COMBAT_ABILITY": "БС:  {combat_ability}",
@@ -189,6 +190,14 @@
       "MOBILISE_TOWN": [
         "Превращает эту фигуру",
         "в пехоту."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Превращает эту фигуру",
+        "в пехоту."
+      ],
+      "INFANTRY_SETTLE": [
+        "Превращает эту фигуру",
+        "в поселение."
       ],
       "INFANTRY_CAPTURE": [
         "Захватывает более слабую",
