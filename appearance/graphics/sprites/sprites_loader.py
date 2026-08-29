@@ -54,7 +54,7 @@ _MAKE_BUTTONS_FOR: dict[type[fig.Figure], str] = {
 _ACTION_BUTTON_FOR = {
     ARTILLERY_ATTACK: "btn_attack",
     HOWITZER_ATTACK: "btn_attack",
-    GRAD_ATTACK: "btn_attack",
+    GRAD_ATTACK: "btn_grad_attack",
     TANK_ATTACK: "btn_attack",
     ARTILLERY_INITIATE_PULLING: "btn_connect",
     ARTILLERY_TERMINATE_PULLING: "btn_disconnect",

@@ -282,6 +282,13 @@
         0
       ]
     },
+    "btn_grad_attack": {
+      "file": "ui/btn_grad_attack.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
     "btn_inf_capture": {
       "file": "ui/btn_inf_capture.png",
       "pivot": [
