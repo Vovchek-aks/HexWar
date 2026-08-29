@@ -5,6 +5,10 @@ import arcade as arc
 
 class Color(arc.color.Color):
     @classmethod
+    def make(cls, color: arc.color.Color) -> "Color":
+        return cls(color.r, color.g, color.b, color.a)
+
+    @classmethod
     def zero(cls) -> "Color":
         return cls(0, 0, 0, 0)
 
@@ -28,6 +32,10 @@ class Color(arc.color.Color):
     @property
     def tuple4(self) -> tuple[int, int, int, int]:
         return self.r, self.g, self.b, self.a
+
+    @property
+    def brightness(self) -> int:
+        return sum(self.tuple4) - self.a
 
     def hex(self) -> str:
         return f"#{hex(self.r)[2:]}{hex(self.g)[2:]}{hex(self.b)[2:]}"

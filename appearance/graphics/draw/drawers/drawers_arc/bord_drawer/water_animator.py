@@ -4,7 +4,7 @@ from attrs import frozen
 import arcade as arc
 import random
 
-from appearance.graphics.colors import HIGHLIGHTED_WATER
+from appearance.graphics.colors import HIGHLIGHTED_WATER, WATER, SHORE
 from color import Color
 from mathematics.vector import Vector2Int
 from my_random import temporarily_seed
@@ -22,11 +22,15 @@ class WaterAnimator(proto.WaterAnimator):
     @classmethod
     def make(cls, sprites: dict[Vector2Int, arc.Sprite]) -> proto.WaterAnimator:
         base_color_at = dict[Vector2Int, Color]()
+        highlighted_color_at = dict[Vector2Int, Color]()
         periods_at = dict[Vector2Int, tuple[float, float]]()
         amplitude_at = dict[Vector2Int, float]()
         phase_at = dict[Vector2Int, float]()
         for coord, sprite in sprites.items():
             base_color_at[coord] = sprite.color
+            highlighted_color_at[coord] = (WATER.lerp(SHORE, .3)
+                                           if Color.make(sprite.color).brightness > WATER.brightness * 1.1 else
+                                           HIGHLIGHTED_WATER)
             with temporarily_seed(str(coord)):
                 amplitude_at[coord] = random.uniform(*AMPLITUDE_RANGE)
                 period_1 = random.uniform(*PERIOD_1_RANGE)
@@ -34,10 +38,11 @@ class WaterAnimator(proto.WaterAnimator):
                 periods_at[coord] = period_1, period_2
                 phase_at[coord] = random.uniform(0, 1)
 
-        return cls(sprites, base_color_at, periods_at, amplitude_at, phase_at)
+        return cls(sprites, base_color_at, highlighted_color_at, periods_at, amplitude_at, phase_at)
 
     _sprite_at: dict[Vector2Int, arc.Sprite]
     _base_color_at: dict[Vector2Int, Color]
+    _highlighted_color_at: dict[Vector2Int, Color]
     _periods_at: dict[Vector2Int, tuple[float, float]]
     _amplitude_at: dict[Vector2Int, float]
     _phase_at: dict[Vector2Int, float]
@@ -49,7 +54,7 @@ class WaterAnimator(proto.WaterAnimator):
     def update_cell_at(self, coord: Vector2Int, time: float) -> None:
         sprite = self._sprite_at[coord]
         ratio = self._get_lerp_ratio(coord, time)
-        sprite.color = Color.lerp(self._base_color_at[coord], HIGHLIGHTED_WATER, ratio)
+        sprite.color = Color.lerp(self._base_color_at[coord], self._highlighted_color_at[coord], ratio)
 
     def _get_lerp_ratio(self, coord: Vector2Int, time: float) -> float:
         amplitude = self._amplitude_at[coord]

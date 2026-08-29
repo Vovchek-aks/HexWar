@@ -274,7 +274,7 @@ class BoardDrawer(proto.BoardDrawer):
         water = board[coord]
         neighbors = DistantNeighborsGetter(water, board).get_all_not_farther_than(2, include_cell=True)
 
-        return Color.weighted_average(*((SHORE, 1)
+        return Color.weighted_average(*((SHORE, 3)
                                         if cell.figure.is_on_land() else
                                         (WATER, 1)
                                         for cell in neighbors))
