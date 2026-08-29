@@ -2,12 +2,12 @@ from attrs import frozen
 
 import appearance.protocols as proto
 from appearance.input.moves_inputer.input_actions import OreshnikLaunchButtonPressAction, AttackButtonPressAction, \
-    GradAttackButtonPressAction
+    GradAttackButtonPressAction, CreationButtonPressAction
 from core.distant_neighbors_getter import DistantNeighborsGetter
+from core.moves.creation import Creation
 from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
-from core.protocols import GameSession, CanPull, Pullable, CanAttack, CanLaunchOreshnik
-from mathematics.hex_geometry import get_distance
+from core.protocols import GameSession, CanPull, Pullable, CanAttack, Creatable
 from mathematics.vector import Vector2, Vector2Int
 from statuses import MISSING, Status, INVALID
 
@@ -37,6 +37,8 @@ class BoardDrawableLayer(proto.DrawableLayer):
                 self._draw_oreshnik_targets_if_needed(hovered_coord, selected_coord)
                 self._draw_grad_attack_targets_if_needed(hovered_coord, selected_coord)
                 self._draw_attack_targets_if_needed(hovered_coord, selected_coord)
+
+            self._draw_figure_creation_targets_if_needed()
             self._draw.under_cursor_cell(hovered_coord)
 
         if selected_coord is not MISSING:
@@ -53,6 +55,27 @@ class BoardDrawableLayer(proto.DrawableLayer):
 
         for coord in self._multiple_relocations_reader.get_path(selected_coord, hovered_coord):
             self._draw.interest_cell(coord)
+
+    def _draw_figure_creation_targets_if_needed(self) -> None:
+        last_action = self._actions_reader.last_action
+        if not isinstance(last_action, CreationButtonPressAction):
+            return
+
+        figure = last_action.figure
+        if figure.FLAGS.get(Creatable).necessary_neighbor is MISSING:
+            return
+
+        cells = self._session.cells
+        board = self._session.board
+        targets = ((cells.with_owner(self._session.master.current_player)
+                    & cells.with_figure(figure.FLAGS.get(Creatable).necessary_neighbor))
+                   .filter(lambda creator:
+                           self._session.figures_budget.can_spend(creator.figure,
+                                                                  creator.figure.get_cost_of(
+                                                                      Creation(figure, Vector2Int.zero())
+                                                                  ))))
+        for target in targets:
+            self._draw.interest_cell(board.coordinates_of(target))
 
     def _draw_oreshnik_targets_if_needed(self, hovered_coord: Vector2Int, selected_coord: Vector2Int | Status) -> None:
         if not self._is_highlighting_for_click_after_button_press_needed(hovered_coord, selected_coord,

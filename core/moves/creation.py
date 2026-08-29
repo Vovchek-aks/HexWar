@@ -29,7 +29,7 @@ class Creation(proto.Move):
             return INVALID
 
         if creatable.necessary_neighbor is not MISSING:
-            creators = board.get_neighbors(to_cell).with_figure(creatable.necessary_neighbor)
+            creators = board.get_neighbors(to_cell).with_owner(to_cell.owner).with_figure(creatable.necessary_neighbor)
             if not creators.filter(lambda creator:
                                    session.figures_budget.can_spend(creator.figure, creator.figure.get_cost_of(self))):
                 return INVALID
