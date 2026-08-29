@@ -84,7 +84,9 @@ class CellsCache(proto.CellsCache):
         return reduce(lambda a, b: a + b, (self.with_owner(player) for player in self._cells_of))
 
     def get_territories_and_production_ratios_of(self, player: proto.Player) -> tuple[float, float]:
-        production = self.with_figure(union(*fig.get_producers()))
+        production = self.with_figure(union(*(figure for figure in fig.get_figures()
+                                              if proto.ResourcesAdder in figure.FLAGS
+                                              and not isinstance(figure, fig.Abandonment))))
         player_cells = self.with_owner(player)
         player_production = player_cells & production
         try:
