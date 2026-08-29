@@ -107,6 +107,9 @@ _HEIGHT = "HEIGHT"
 _AUDIO = "AUDIO"
 _GRAPHICS = "GRAPHICS"
 _OTHER = "OTHER"
+_NEED_TO_PLAY_BOT_MOVE_ANIMATIONS = "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS"
+_ON = "ON"
+_OFF = "OFF"
 _APPLY = "APPLY"
 _PLAYERS_MODE = "PLAYERS_MODE"
 _PLAYERS_MODE_STATES = "PLAYERS_MODE_STATES"
@@ -328,6 +331,15 @@ class Language:
 
     def get_other_message(self) -> str:
         return self._ui[_OTHER]
+
+    def get_on_message(self) -> str:
+        return self._ui[_ON]
+
+    def get_off_message(self) -> str:
+        return self._ui[_OFF]
+
+    def get_need_to_play_bot_move_animations_message(self) -> str:
+        return self._ui[_NEED_TO_PLAY_BOT_MOVE_ANIMATIONS]
 
     def get_apply_message(self) -> str:
         return self._ui[_APPLY]

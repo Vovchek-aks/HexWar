@@ -762,11 +762,6 @@ def get_figures() -> list[type[_Figure]]:
     ]
 
 
-def get_producers() -> list[type[_Figure]]:
-    return [figure for figure in get_figures()
-            if proto.ResourcesAdder in figure.FLAGS]
-
-
 def __init__() -> None:
     for figure in get_figures():
         figure.FLAGS

@@ -2,6 +2,7 @@ from abc import ABCMeta
 from typing import Iterable
 
 from attrs import define, field
+from typing_extensions import ClassVar
 
 import appearance.protocols as proto
 from appearance.layer import Layer
@@ -10,8 +11,10 @@ from mathematics.rectangle import Rectangle
 
 @define
 class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
+    DEFAULT_MARGIN_RATIO: ClassVar[float] = .05
+
     _rectangle: Rectangle
-    _margin_ratio: float = .05
+    _margin_ratio: float = DEFAULT_MARGIN_RATIO
     _reserved: int = 0
     _layer: proto.Layer = field(init=False, factory=Layer.empty)
     _elements: list[proto.ElementUi] = field(init=False, factory=list)

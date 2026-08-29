@@ -7,6 +7,7 @@ from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.water_animator import WaterAnimator
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
 from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.map_editor_board_drawable_layer import MapEditorBoardDrawableLayer
@@ -80,6 +81,7 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
                                                                                    camera.orientation,
                                                                                    hatching_map,
                                                                                    cells_change_observer,
+                                                                                   WaterAnimator.make,
                                                                                    window.draw_event_finished)
 
     camera_assistant = CameraAssistant.make(camera)

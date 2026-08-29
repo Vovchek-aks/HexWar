@@ -15,7 +15,8 @@ from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
-from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT
+from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT, \
+    NEED_TO_PLAY_BOT_MOVE_ANIMATIONS
 from files import read_build_info, read_random_bot_names
 from game_session_saver import get_saved_maps, get_tutorials
 from mathematics.rectangle import Rectangle, RectangleBuilder
@@ -305,6 +306,8 @@ class MainMenuUiLayerMaker:
             settings[IS_FULLSCREEN] = value_changers[IS_FULLSCREEN].value == self._language.get_fullscreen_message()
             settings[WIDTH] = value_changers[WIDTH].value
             settings[HEIGHT] = value_changers[HEIGHT].value
+            settings[NEED_TO_PLAY_BOT_MOVE_ANIMATIONS] = (value_changers[NEED_TO_PLAY_BOT_MOVE_ANIMATIONS].value
+                                                          == self._language.get_on_message())
 
             Settings.from_keys(settings).save()
             reload()
@@ -368,6 +371,8 @@ class MainMenuUiLayerMaker:
                                            TextData.debug(self._language.get_other_message()), is_center=True))
         self._add_changer(synchroniser, layout, self._language.get_selected_language_message(), LANGUAGE, changers,
                           value_changers, rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_need_to_play_bot_move_animations_message(),
+                          NEED_TO_PLAY_BOT_MOVE_ANIMATIONS, changers, value_changers, rectangle)
 
         titles_synchroniser = TextSizeSynchroniser()
         titles_synchroniser.extend(other, audio, graphics)
@@ -423,6 +428,10 @@ class MainMenuUiLayerMaker:
         if not settings.if_fullscreen:
             screen_mods = screen_mods[::-1]
 
+        bot_animation_states = [self._language.get_on_message(), self._language.get_off_message()]
+        if not settings.need_to_play_bot_move_animations:
+            bot_animation_states = bot_animation_states[::-1]
+
         audio_changer_range = 0, _AUDIO_SETTER_STEPS, _AUDIO_SETTER_STEP
         screen_shape_changer_range = 400, 6400, 20
         return {
@@ -432,7 +441,8 @@ class MainMenuUiLayerMaker:
             WIDTH: IntChanger(settings.screen_shape.x, *screen_shape_changer_range),
             HEIGHT: IntChanger(settings.screen_shape.y, *screen_shape_changer_range),
             IS_FULLSCREEN: ListChanger(screen_mods),
-            LANGUAGE: ListChanger(languages)
+            LANGUAGE: ListChanger(languages),
+            NEED_TO_PLAY_BOT_MOVE_ANIMATIONS: ListChanger(bot_animation_states)
         }
 
     def _make_back_button(self, on_to_main_menu_was_pressed: Callable[[], None],

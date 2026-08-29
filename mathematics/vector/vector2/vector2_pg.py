@@ -7,12 +7,12 @@ class Vector2(pg.Vector2):
         return cls(0, 0)
 
     @classmethod
-    def right(cls) -> "Vector2":
-        return cls(1, 0)
+    def right(cls, length: float = 1) -> "Vector2":
+        return cls(length, 0)
 
     @classmethod
-    def up(cls) -> "Vector2":
-        return cls(0, 1)
+    def up(cls, length: float = 1) -> "Vector2":
+        return cls(0, length)
 
     @classmethod
     def ones(cls) -> "Vector2":

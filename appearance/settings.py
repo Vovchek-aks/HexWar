@@ -25,6 +25,9 @@ WIDTH = "WIDTH"
 HEIGHT = "HEIGHT"
 IS_FULLSCREEN = "IS_FULLSCREEN"
 
+ANIMATIONS = "animations"
+NEED_TO_PLAY_BOT_MOVE_ANIMATIONS = "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS"
+
 
 @frozen
 class Settings:
@@ -38,6 +41,9 @@ class Settings:
         settings = {
             LANGUAGE: {
                 SELECTED: keys[LANGUAGE]
+            },
+            ANIMATIONS: {
+                NEED_TO_PLAY_BOT_MOVE_ANIMATIONS: keys[NEED_TO_PLAY_BOT_MOVE_ANIMATIONS]
             },
             AUDIO: {
                 MUSIC: {
@@ -81,6 +87,10 @@ class Settings:
     @property
     def if_fullscreen(self) -> bool:
         return self._graphics[SCREEN][IS_FULLSCREEN]
+
+    @property
+    def need_to_play_bot_move_animations(self) -> bool:
+        return self._settings[ANIMATIONS][NEED_TO_PLAY_BOT_MOVE_ANIMATIONS]
 
     @property
     def screen_shape(self) -> Vector2Int:

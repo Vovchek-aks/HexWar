@@ -2,15 +2,18 @@
   "language": {
     "SELECTED": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439"
   },
+  "animations": {
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": true
+  },
   "audio": {
     "music": {
-      "VOLUME": 0
+      "VOLUME": 0.0
     },
     "voice": {
-      "VOLUME": 0
+      "VOLUME": 0.0
     },
     "effects": {
-      "VOLUME": 0
+      "VOLUME": 0.0
     }
   },
   "graphics": {
