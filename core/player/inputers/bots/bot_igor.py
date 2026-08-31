@@ -261,7 +261,7 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            if self._player.resources.get(Dollars).amount > 2_000_000:
+            if has_developed and self._player.resources.get(Dollars).amount > 5_000_000:
                 yield from self._try_buy_out_private_figures()
                 # print("_try_buy_out_private_figures")
                 if self._moves_to_make:
@@ -662,12 +662,14 @@ class BotIgor(proto.Bot):
         cells = self._session.cells
         privates = (cells.with_owner(self._player) &
                     cells.with_figure(fig.Settlement | fig.PrivateLightFactory | fig.PrivateHeavyFactory))
-        for private in privates:
-            yield
-            target = _NOT_PRIVATE_VERSION_OF[type(private.figure)]
-            move = Conversion(self._board.coordinates_of(private), target)
-            if (valid_move := move.validate(self._session)) is not INVALID:
-                self._moves_to_make.append(valid_move)
+        if not privates:
+            return
+        yield
+        private = privates.any
+        target = _NOT_PRIVATE_VERSION_OF[type(private.figure)]
+        move = Conversion(self._board.coordinates_of(private), target)
+        if (valid_move := move.validate(self._session)) is not INVALID:
+            self._moves_to_make.append(valid_move)
 
     def _try_launch_oreshnik(self, silo_coord: Vector2Int) -> Iterator[None]:
         silo = self._board[silo_coord]

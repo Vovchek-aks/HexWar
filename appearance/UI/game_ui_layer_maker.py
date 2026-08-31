@@ -235,7 +235,8 @@ class GameUiLayerMaker:
             current_turn.set_text(f"{self._session.master.current_turn}")
             update_resources()
 
-        self._session.master.turn_had_started.subscribe(on_turn_passed)
+        self._turn_start_preparations_had_finished.subscribe(
+            lambda: on_turn_passed(self._session.master.current_player))
 
         on_turn_passed(self._session.master.current_player)
         update_resources()
@@ -362,7 +363,7 @@ class GameUiLayerMaker:
         self._cell_selector.cell_was_unselected.subscribe(lambda: layout.layer.set_activity(True))
         self._cell_selector.cell_was_unselected.subscribe(set_buttons_availability)
         self._moves_maker.move_was_made.subscribe(lambda *_: set_buttons_availability())
-        self._session.master.turn_had_started.subscribe(lambda *_: set_buttons_availability())
+        self._turn_start_preparations_had_finished.subscribe(set_buttons_availability)
         set_buttons_availability()
 
         return layout.layer
@@ -768,8 +769,8 @@ class GameUiLayerMaker:
         self._cell_selector.cell_was_selected.subscribe(update)
         self._moves_maker.board_move_was_made.subscribe(
             lambda _: update(self._cell_selector.get_coord()))
-        self._session.master.turn_had_started.subscribe(
-            lambda _: update(self._cell_selector.get_coord()))
+        self._turn_start_preparations_had_finished.subscribe(
+            lambda: update(self._cell_selector.get_coord()))
 
         menu = StretcherUi(background.rectangle)
         menu.extend([
