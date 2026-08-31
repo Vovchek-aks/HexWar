@@ -1,7 +1,7 @@
 import math
 import random
 from itertools import islice
-from typing import Iterator, Callable
+from typing import Iterator
 from time import time
 
 from attrs import define, field
@@ -27,12 +27,6 @@ from mathematics.path_searcers.a_star_path_searcher import AStarPathSearcher as 
 from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
-
-# Path finding +
-# Front filtering +
-# Abandonments destruction +
-# Random wiggles
-# Leave empty spots near buildings +
 
 _ATTACKING = 0
 _BUILDING = 1
@@ -259,14 +253,15 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            if has_developed:
-                yield from self._try_convert_tanks_to_howitzers(math.floor(tanks_count * _HOWITZERS_TO_TANKS_RATIO) -
-                                                                howitzers_count)
+            if (math.floor(tanks_count * _HOWITZERS_TO_TANKS_RATIO) > howitzers_count
+                    or tanks_count > 1 and howitzers_count == 0):
+                yield from self._try_convert_tanks_to_howitzers()
                 # print("_try_convert_tanks_to_howitzers")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
 
+            if self._player.resources.get(Dollars).amount > 2_000_000:
                 yield from self._try_buy_out_private_figures()
                 # print("_try_buy_out_private_figures")
                 if self._moves_to_make:
@@ -737,30 +732,35 @@ class BotIgor(proto.Bot):
                                                                  cells.with_figure(fig.Land | fig.Water)).as_set()))
         self._moves_to_make.append(ValidMove(most_profitable))
 
-    def _try_convert_tanks_to_howitzers(self, amount: int) -> Iterator[None]:
-        if amount <= 0:
-            return
-
+    def _try_convert_tanks_to_howitzers(self) -> Iterator[None]:
         cells = self._session.cells
         our_cells = cells.with_owner(self._player)
 
         tanks = our_cells & cells.with_figure(fig.Tank)
-        converted = 0
-        for tank in tanks:
-            yield
-            neighbors = self._board.get_neighbors(tank) & our_cells - cells.not_empty()
-            if not neighbors:
-                continue
-            cell = neighbors.any
-            creation = Creation(fig.Artillery, self._board.coordinates_of(cell))
-            if (valid_creation := creation.validate(self._session)) is not INVALID:
-                converted += 1
-                self._moves_to_make.append(valid_creation)
-                self._moves_to_make.append(ValidMove(Combination(self._board.coordinates_of(tank),
-                                                                 self._board.coordinates_of(cell),
-                                                                 fig.Howitzer)))
-            if converted >= amount:
-                return
+        tanks = tanks - cells.at_front or tanks
+        if not tanks:
+            return
+
+        artilleries = our_cells & cells.with_figure(fig.Artillery)
+        artilleries = (artilleries.filter(lambda cell: not self._session.pulling_connections.is_pullable(cell.figure))
+                       or artilleries)
+        if not artilleries:
+            return
+        yield
+
+        tank = tanks.any
+        artillery = self._get_nearest_to(tank, artilleries)
+        tank = self._get_nearest_to(artillery, tanks)
+        if artillery not in self._board.get_neighbors(tank):
+            yield from self._add_distant_relocation_moves(tank, artillery)
+            return
+
+        move = Combination(self._board.coordinates_of(tank),
+                           self._board.coordinates_of(artillery),
+                           fig.Howitzer)
+        if (valid_move := move.validate(self._session)) is not INVALID:
+            self._moves_to_make.append(valid_move)
+            return
 
     def _try_spawn_artillery(self, amount: int) -> Iterator[None]:
         if amount <= 0:
@@ -1017,9 +1017,9 @@ class BotIgor(proto.Bot):
                                   need_to_consider_pullable: bool = False) -> set[type[proto.TerrainKind]]:
         assert isinstance(figure, fig.Figure) or not need_to_consider_pullable
 
-        result = (figure.FLAGS
-                  .get(proto.WithRestrictedTerrainKinds)
-                  .terrain_kinds)
+        result = set(figure.FLAGS
+                     .get(proto.WithRestrictedTerrainKinds)
+                     .terrain_kinds)
 
         if (need_to_consider_pullable
                 and proto.CanPull in figure.FLAGS

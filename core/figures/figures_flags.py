@@ -104,7 +104,15 @@ Terrain = TerrainMountain | TerrainForest | TerrainDesert | TerrainSwamp
 class WithRestrictedTerrainKinds(proto.WithRestrictedTerrainKinds):
     EXCLUDES = {proto.Empty, proto.TerrainKind}
 
-    terrain_kinds: set[type[TerrainKind]] = field(factory=set)
+    @classmethod
+    def make(cls, terrain_kinds: set[type[TerrainKind]]) -> "WithRestrictedTerrainKinds":
+        return cls(frozenset(terrain_kinds))
+
+    _terrain_kinds: frozenset[type[TerrainKind]] = field(factory=frozenset)
+
+    @property
+    def terrain_kinds(self) -> frozenset[type[TerrainKind]]:
+        return frozenset(self._terrain_kinds)
 
     def contains_in(self, *cells: proto.Cell, board: proto.Board) -> bool:
         for cell in cells:

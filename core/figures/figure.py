@@ -163,9 +163,9 @@ class Water(_Figure):
 
 class Town(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainForest}),
                       Static(),
-                      Creatable.make(Dollars(700_000), LightIndustryProducts(1_000),
+                      Creatable.make(LightIndustryProducts(1_500),
                                      initially_spend_budget=198),
                       Capturable(),
                       AddsResourcesIndefinably.make(Dollars(250_000)))
@@ -186,7 +186,7 @@ class Town(_Figure):
 
 class LightFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainForest}),
                       Static(),
                       Creatable.make(Dollars(1_500_000),
                                      initially_spend_budget=1),
@@ -210,7 +210,7 @@ class LightFactory(_Figure):
 
 class HeavyFactory(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest, TerrainMountain}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainForest, TerrainMountain}),
                       Static(),
                       Creatable.make(Dollars(2_000_000), LightIndustryProducts(7_000),
                                      initially_spend_budget=1),
@@ -319,7 +319,7 @@ class PrivateHeavyFactory(_Figure):
 
 class TierOneCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS),
                       Static(),
                       Capturable(),
                       PreventsAnnexations(distance=10,
@@ -345,7 +345,7 @@ class TierOneCapital(_Figure):
 
 class TallCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS),
                       Static(),
                       Capturable(),
                       PreventsAnnexations(distance=15,
@@ -368,7 +368,7 @@ class TallCapital(_Figure):
 
 class WideCapital(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS),
                       Static(),
                       Capturable(),
                       PreventsAnnexations(distance=20,
@@ -411,11 +411,11 @@ class Abandonment(_Figure):
 
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest, TerrainMountain}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainForest, TerrainMountain}),
                       Static(),
                       PreventsCaptures(),
                       Transforms(lambda coord, session: Bunker.get_target(coord, session)),
-                      Creatable.make(Dollars(150_000), LightIndustryProducts(250)))
+                      Creatable.make(LightIndustryProducts(500)))
     MOVES_BUDGET = 0
 
     _FROM_FRONT_MAX_DISTANCE = 3
@@ -448,7 +448,7 @@ class Bunker(_Figure):
 
 class MissileSilo(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS),
                       Static(),
                       Creatable.make(Dollars(1_500_000), LightIndustryProducts(10_000), HeavyIndustryProducts(5_000),
                                      initially_spend_budget=1),
@@ -457,9 +457,7 @@ class MissileSilo(_Figure):
                                                       LightIndustryProducts(1_000),
                                                       HeavyIndustryProducts(500)),
                       CanLaunchOreshnik(min_distance=10,
-                                        cost=ResourcesGroup.make(Dollars(250_000),
-                                                                 LightIndustryProducts(15_000),
-                                                                 HeavyIndustryProducts(7_500)),
+                                        cost=ResourcesGroup.make(HeavyIndustryProducts(7_500)),
                                         spread_radius=3,
                                         targets_per_layer=3))
     MOVES_BUDGET = 1
@@ -546,7 +544,7 @@ class Infantry(_Figure):
 
 class Motorization(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainForest}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainForest}),
                       MovableBuilder()
                       .can_move_to_neighbor()
                       .set_base_strength(3)
@@ -580,7 +578,7 @@ class Motorization(_Figure):
 
 class Tank(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainDesert, TerrainForest}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainDesert, TerrainForest}),
                       MovableBuilder()
                       .can_move_to_neighbor()
                       .set_base_strength(4)
@@ -637,7 +635,7 @@ class Tank(_Figure):
 
 class Artillery(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainMountain}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainMountain}),
                       MovableBuilder()
                       .set_base_strength(25)
                       .set_can_relocate(lambda from_coord, to_coord, board: False)
@@ -674,7 +672,7 @@ class Artillery(_Figure):
 
 class Howitzer(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS - {TerrainDesert}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainDesert}),
                       MovableBuilder()
                       .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
                       .can_move_to_neighbor()
@@ -705,7 +703,7 @@ class Howitzer(_Figure):
 
 class Grad(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds(ALL_TERRAINS),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS),
                       MovableBuilder()
                       .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
                       .can_move_to_neighbor()

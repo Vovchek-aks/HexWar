@@ -3,7 +3,7 @@
     "SELECTED": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439"
   },
   "animations": {
-    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": false
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": true
   },
   "audio": {
     "music": {

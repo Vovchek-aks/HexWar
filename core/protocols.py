@@ -634,7 +634,7 @@ class TerrainDesert(TerrainKind, metaclass=ABCMeta):
 class WithRestrictedTerrainKinds(Flag, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def terrain_kinds(self) -> set[type[TerrainKind]]:
+    def terrain_kinds(self) -> frozenset[type[TerrainKind]]:
         ...
 
     @abstractmethod
