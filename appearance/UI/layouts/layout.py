@@ -31,6 +31,10 @@ class LayoutUi(proto.ElementUi, metaclass=ABCMeta):
     def elements_count(self) -> int:
         return max(self._reserved, len(self._elements))
 
+    @property
+    def margin_ratio(self) -> float:
+        return self._margin_ratio
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
         self._reshape(self._elements, [], self._margin_ratio)

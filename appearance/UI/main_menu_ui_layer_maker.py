@@ -1,5 +1,6 @@
 from typing import Callable
 import webbrowser
+import subprocess
 
 from attrs import frozen, Factory
 
@@ -18,7 +19,7 @@ from appearance.layer import Layer
 from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT, \
     NEED_TO_PLAY_BOT_MOVE_ANIMATIONS
 from files import read_build_info, read_random_bot_names
-from game_session_saver import get_saved_maps, get_tutorials
+from game_session_saver import get_saved_maps, get_tutorials, SAVE_FOLDER, EDIT_MAP_FILE
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 from observer import Event
@@ -48,6 +49,7 @@ class MainMenuUiLayerMaker:
         tutorial_was_pressed = Event[None]()
         settings_was_pressed = Event[None]()
         authors_was_pressed = Event[None]()
+        map_editor_was_pressed = Event[None]()
         to_main_menu_was_pressed = Event[None]()
 
         tabs = list[Layer]()
@@ -57,15 +59,81 @@ class MainMenuUiLayerMaker:
                 tab.set_activity(False)
 
         tabs.append(self._make_label(turn_tabs_off, to_main_menu_was_pressed, play_was_pressed, tutorial_was_pressed,
-                                     settings_was_pressed, authors_was_pressed, on_exit_was_pressed))
+                                     settings_was_pressed, authors_was_pressed, map_editor_was_pressed,
+                                     on_exit_was_pressed))
         tabs.append(self._make_map_selection(turn_tabs_off, get_saved_maps(), on_map_was_selected, play_was_pressed,
                                              to_main_menu_was_pressed))
         tabs.append(self._make_map_selection(turn_tabs_off, get_tutorials(), on_map_was_selected, tutorial_was_pressed,
                                              to_main_menu_was_pressed, allow_random_players=False))
         tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
         tabs.append(self._make_authors_tab(turn_tabs_off, authors_was_pressed, to_main_menu_was_pressed))
+        tabs.append(self._make_map_editor_tab(turn_tabs_off, map_editor_was_pressed, to_main_menu_was_pressed))
 
         return Layer.as_multiple(tabs)
+
+    def _make_map_editor_tab(self,
+                             turn_tabs_off: Callable[[], None],
+                             tab_was_selected: Event[None],
+                             to_main_menu_was_pressed: Event[None]) -> Layer:
+        layers = [
+            self._make_map_editor_buttons(),
+            self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
+        ]
+        layer = Layer.as_multiple(layers)
+        layer.set_activity(False)
+        tab_was_selected.subscribe(lambda: layer.set_activity(True))
+        return layer
+
+    def _make_map_editor_buttons(self) -> LayoutUi:
+        synchroniser = TextSizeSynchroniser()
+
+        layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.15)
+        top_layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.3)
+        layout.append(top_layout)
+        bottom_layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.15)
+        layout.append(bottom_layout)
+        new_open = HorizontalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.05)
+        bottom_layout.append(new_open)
+
+        rectangle = Rectangle(Vector2.zero(),
+                              Vector2(2 * top_layout.rectangle.shape.x / top_layout.rectangle.shape.y,
+                                      (1 - top_layout.margin_ratio)) * 100)
+
+        width = self._language.get_width_message()
+        height = self._language.get_height_message()
+        changers = {
+            width: IntChanger(50, 5, 500, 5),
+            height: IntChanger(50, 5, 500, 5),
+        }
+        self._add_changer(synchroniser, top_layout, width, width, changers, {}, rectangle)
+        self._add_changer(synchroniser, top_layout, height, height, changers, {}, rectangle)
+        new_open.append(new_button := self._make_null_button(self._language.get_make_new_map_message(), lambda: None))
+        new_open.append(
+            open_button := self._make_null_button(self._language.get_load_existing_map_message(), lambda: None))
+        bottom_layout.append(open_in_explorer := self._make_null_button(
+            self._language.get_open_file_in_explorer_message(),
+            lambda: subprocess.run(['explorer', '/select,', SAVE_FOLDER / EDIT_MAP_FILE])
+        ))
+
+        synchroniser.extend(new_button.text, open_button.text, open_in_explorer.text)
+        synchroniser.synchronise()
+
+        return layout
+
+    def _get_map_editor_buttons_rectangle(self) -> Rectangle:
+        width = self._screen_shape.x / 2
+        height = self._screen_shape.y / 2
+        bottom_margin = (self._screen_shape.y - height) / 2
+
+        center_x = self._screen_shape.x / 2
+        x = center_x - width / 2
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_bottom()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(x, bottom_margin))
+                .adjust_for_shape()
+                .build())
 
     def _make_authors_tab(self,
                           turn_tabs_off: Callable[[], None],
@@ -395,7 +463,8 @@ class MainMenuUiLayerMaker:
         margin_ratio = .13
         horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio, reserved=2)
         layout.append(horizontal)
-        horizontal.append(text_ui := TextUi.make(self._drawer, Rectangle.zero(), TextData.debug(text), is_center=True))
+        horizontal.append(text_ui := TextUi.make_with_anchors(self._drawer, Rectangle.zero(), TextData.debug(text),
+                                                              anchor_x=TextUi.RIGHT, anchor_y=TextUi.CENTER))
         horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
             self._sprites_loader, self._drawer))
@@ -469,11 +538,12 @@ class MainMenuUiLayerMaker:
                     tutorial_was_pressed: Event[None],
                     settings_was_pressed: Event[None],
                     authors_was_pressed: Event[None],
+                    map_editor_was_pressed: Event[None],
                     exit_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
             self._make_buttons(play_was_pressed, tutorial_was_pressed, settings_was_pressed, authors_was_pressed,
-                               exit_was_pressed, turn_tabs_off),
+                               map_editor_was_pressed, exit_was_pressed, turn_tabs_off),
             self._make_build_info(),
         ]
 
@@ -487,6 +557,7 @@ class MainMenuUiLayerMaker:
                       tutorial_was_pressed: Event[None],
                       settings_was_pressed: Event[None],
                       authors_was_pressed: Event[None],
+                      map_editor_was_pressed: Event[None],
                       exit_was_pressed: Callable[[], None],
                       turn_tabs_off: Callable[[], None]) -> Layer:
         layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.1, reserved=3)
@@ -510,7 +581,15 @@ class MainMenuUiLayerMaker:
         synchroniser.extend(tutorial.text, settings.text, close.text, authors.text)
         synchroniser.synchronise()
 
-        return layout.layer
+        map_editor = self._make_menu_button("R", map_editor_was_pressed.invoke, turn_tabs_off)
+        map_editor.set_rectangle(RectangleBuilder(self._screen_shape)
+                                 .from_left_bottom()
+                                 .set_shape(Vector2(50, 50))
+                                 .move(Vector2(10, 10))
+                                 .adjust_for_shape()
+                                 .build())
+
+        return Layer.as_multiple([layout.layer, map_editor])
 
     def _get_buttons_rectangle(self) -> Rectangle:
         width_to_height_ratio = 1.3

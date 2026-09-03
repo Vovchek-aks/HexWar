@@ -131,6 +131,9 @@ _BACK = "BACK"
 _PAUSE = "PAUSE"
 _CONTINUE = "CONTINUE"
 _TO_MAIN_MENU = "TO_MAIN_MENU"
+_MAKE_NEW_MAP = "MAKE_NEW_MAP"
+_LOAD_EXISTING_MAP = "LOAD_EXISTING_MAP"
+_OPEN_FILE_IN_EXPLORER = "OPEN_FILE_IN_EXPLORER"
 
 _LOADING = "loading"
 _MAP_LOADING = "MAP_LOADING"
@@ -260,6 +263,15 @@ class Language:
 
     def get_to_main_menu_message(self) -> str:
         return self._ui[_TO_MAIN_MENU]
+
+    def get_make_new_map_message(self) -> str:
+        return self._ui[_MAKE_NEW_MAP]
+
+    def get_load_existing_map_message(self) -> str:
+        return self._ui[_LOAD_EXISTING_MAP]
+
+    def get_open_file_in_explorer_message(self) -> str:
+        return self._ui[_OPEN_FILE_IN_EXPLORER]
 
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]

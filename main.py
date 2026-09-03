@@ -21,8 +21,6 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from files import read_random_bot_names
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = True
-
 UPS = 60
 CAPTION = "HexWar"
 
@@ -31,13 +29,14 @@ def main() -> None:
     psutil.Process(os.getpid()).nice(psutil.HIGH_PRIORITY_CLASS)
     sys.setrecursionlimit(10_000)
 
-    make_first_scene = _make_multibot_loading_scene if IS_MULTIBOT else _make_main_menu_loading_scene
     # from game_session_saver import GameSessionSaver
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=10, player_names=["Russia", "Sweden"])).save(EDIT_MAP_FILE)
-    make_first_scene = _make_map_editor_loading_scene
+    # make_first_scene = _make_map_editor_loading_scene
     # make_first_scene = _make_test_game_loading_scene
+    # make_first_scene = _make_multibot_loading_scene
+    make_first_scene = _make_main_menu_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
@@ -93,7 +92,7 @@ def _make_multibot_loading_scene(window: Window) -> Scene:
     #     .get_randomized(len(read_random_bot_names()) // 2, ResourcesGroup.make(Dollars(3_000_000)), 10, UPS))
 
     # return LoadingScenesMaker(window, UPS).make_multibot_loading_scene(
-    #     lambda: GameSessionLoader.make("_edit_map.json", UPS).load()
+    #     lambda: GameSessionLoader.make("_map_from_redactor.json", UPS).load()
     # )
 
 

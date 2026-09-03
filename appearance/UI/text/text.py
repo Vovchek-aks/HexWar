@@ -1,5 +1,6 @@
 import arcade as arc
 from attrs import define, field
+from typing_extensions import ClassVar
 
 from appearance.layer import LayerBuilder
 from color import Color
@@ -13,15 +14,34 @@ HEIGHT_TO_WIDTH_RATIO = 1.45
 
 @define
 class TextUi(proto.ElementUi):
+    LEFT: ClassVar[str] = "left"
+    RIGHT: ClassVar[str] = "right"
+    TOP: ClassVar[str] = "top"
+    BOTTOM: ClassVar[str] = "bottom"
+    BASELINE: ClassVar[str] = "baseline"
+    CENTER: ClassVar[str] = "center"
+
     @classmethod
     def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, data: proto.TextData, *, is_center=False) -> "TextUi":
+        if is_center:
+            return cls.make_with_anchors(drawer, rectangle, data)
+
+        return cls.make_with_anchors(drawer, rectangle, data, anchor_x=cls.LEFT, anchor_y=cls.BASELINE)
+
+    @classmethod
+    def make_with_anchors(cls,
+                          drawer: proto.UiDrawer,
+                          rectangle: Rectangle,
+                          data: proto.TextData,
+                          *,
+                          anchor_x: str = CENTER,
+                          anchor_y: str = CENTER) -> "TextUi":
         text = arc.Text(data.text, *rectangle.position, color=data.color, font_size=data.font.size,
                         font_name=data.font.name, bold=data.font.is_bold, italic=data.font.is_italic)
-        if is_center:
-            text.anchor_x = 'center'
-            text.anchor_y = 'center'
+        text.anchor_x = anchor_x
+        text.anchor_y = anchor_y
 
-        self = cls(drawer, text, is_center, rectangle)
+        self = cls(drawer, text, rectangle)
 
         layer = (LayerBuilder()
                  .not_catching()
@@ -35,7 +55,6 @@ class TextUi(proto.ElementUi):
 
     _drawer: proto.UiDrawer
     _text: arc.Text
-    _is_center: bool
     _rectangle: Rectangle
     _layer: proto.Layer = field(init=False)
 
@@ -86,12 +105,22 @@ class TextUi(proto.ElementUi):
             self._size_was_changed.invoke(self)
 
     def _set_text_position(self, rectangle: Rectangle) -> None:
-        if not self._is_center:
-            self._text.position = rectangle.position
-            return
+        x = self._get_text_x_for(rectangle)
+        y = self._get_text_y_for(rectangle)
+        self._text.position = rectangle.center.with_x(x).with_y(y).tuple
 
-        y = rectangle.center.y + self._text.font_size * HEIGHT_TO_WIDTH_RATIO / 10
-        self._text.position = rectangle.center.with_y(y).tuple
+    def _get_text_x_for(self, rectangle: Rectangle) -> float:
+        left, right, *_ = rectangle.left_right_up_bottom
+        if self._text.anchor_x == self.CENTER:
+            return rectangle.center.x
+        if self._text.anchor_x == self.RIGHT:
+            return right
+        return rectangle.position.x
+
+    def _get_text_y_for(self, rectangle: Rectangle) -> float:
+        return (rectangle.position.y
+                if self._text.anchor_y != self.CENTER else
+                rectangle.center.y + self._text.font_size * HEIGHT_TO_WIDTH_RATIO / 10)
 
     def _draw(self, _: Vector2) -> None:
         self._text.draw()
