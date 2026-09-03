@@ -27,31 +27,19 @@ class MapEditor:
              on_changed_cell_owner: Callable[[Vector2Int], None],
              multiple_cells_change: Callable[[Cells], ContextManager[None]]) -> "MapEditor":
         transforms = list[Transform]()
-        self = cls(input_state, session, on_changed_cell_owner, multiple_cells_change, transforms, "water")
+        self = cls(input_state, session, on_changed_cell_owner, multiple_cells_change, transforms)
         actions_reader.action_was_read.subscribe(self._on_action_was_read)
 
-        transforms.append(("water", lambda coord: self._change_owner_to(coord, MISSING)))
-        transforms.append(("empty land", lambda coord: self._change_figure(coord, fig.Land)))
-        transforms.append(("mountain", lambda coord: self._change_figure(coord, fig.Mountain)))
-        transforms.append(("forest", lambda coord: self._change_figure(coord, fig.Forest)))
-        transforms.append(("swamp", lambda coord: self._change_figure(coord, fig.Swamp)))
-        transforms.append(("desert", lambda coord: self._change_figure(coord, fig.Desert)))
-        transforms.append(("town", lambda coord: self._change_figure(coord, fig.Town)))
-        transforms.append(("light factory", lambda coord: self._change_figure(coord, fig.LightFactory)))
-        transforms.append(("heavy factory", lambda coord: self._change_figure(coord, fig.HeavyFactory)))
-        transforms.append(("capital", lambda coord: self._change_figure(coord, fig.TierOneCapital)))
-        transforms.append(("bunker", lambda coord: self._change_figure(coord, fig.Bunker)))
-        transforms.append(("silo", lambda coord: self._change_figure(coord, fig.MissileSilo)))
-        transforms.append(("artillery", lambda coord: self._change_figure(coord, fig.Artillery)))
-        transforms.append(("howitzer", lambda coord: self._change_figure(coord, fig.Howitzer)))
-        transforms.append(("grad", lambda coord: self._change_figure(coord, fig.Grad)))
-        transforms.append(("infantry", lambda coord: self._change_figure(coord, fig.Infantry)))
-        transforms.append(("motorization", lambda coord: self._change_figure(coord, fig.Motorization)))
-        transforms.append(("tank", lambda coord: self._change_figure(coord, fig.Tank)))
-        transforms.append(("settlement", lambda coord: self._change_figure(coord, fig.Settlement)))
-        transforms.append(("plf", lambda coord: self._change_figure(coord, fig.PrivateLightFactory)))
-        transforms.append(("phf", lambda coord: self._change_figure(coord, fig.PrivateHeavyFactory)))
-        transforms.append(("abandonment", lambda coord: self._change_figure(coord, fig.Abandonment)))
+        transforms.append(("Clear", lambda coord: self._change_figure(coord, fig.Land)))
+        self._transform = "Clear"
+
+        transforms.append(("Water", lambda coord: self._change_owner_to(coord, MISSING)))
+
+        for figure in fig.get_figures():
+            if proto.Empty in figure.FLAGS:
+                continue
+
+            self._append_transform(transforms, figure)
 
         for player in session.master.players:
             transforms.append(self._make_set_player_transform(player))
@@ -64,7 +52,7 @@ class MapEditor:
     _multiple_cells_change: Callable[[Cells], ContextManager[None]]
 
     _transforms: list[Transform]
-    _transform: str
+    _transform: str = ""
 
     _process: Iterator[None] | Status = MISSING
 
@@ -151,3 +139,6 @@ class MapEditor:
 
         if proto.Empty not in target.FLAGS:
             self._session.figures.add(target, coord)
+
+    def _append_transform(self, transforms: list[Transform], figure: type[fig.Figure]) -> None:
+        transforms.append((figure.__name__, lambda coord: self._change_figure(coord, figure)))

@@ -7,13 +7,13 @@
   },
   "audio": {
     "music": {
-      "VOLUME": 0.1
+      "VOLUME": 0
     },
     "voice": {
-      "VOLUME": 0.9
+      "VOLUME": 0
     },
     "effects": {
-      "VOLUME": 0.5
+      "VOLUME": 0
     }
   },
   "graphics": {

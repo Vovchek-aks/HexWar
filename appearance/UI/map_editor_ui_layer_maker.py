@@ -6,6 +6,7 @@ import appearance.protocols as proto
 from appearance.UI.button import ButtonUi, get_image_rectangle, SwitchButtonUi
 from appearance.UI.layouts import HorizontalLayoutUi
 from appearance.UI.text import TextData
+from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ListChanger
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
@@ -24,22 +25,20 @@ class MapEditorUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self, on_exit_was_pressed: Callable[[], None]) -> Layer:
-        make_switch_transform_button = self._make_switch_transform_button()
         layers = [
             self._make_back_button(on_exit_was_pressed),
-            make_switch_transform_button,
-            self._make_switch_transform_back_button(make_switch_transform_button),
+            self._make_transform_switcher(),
         ]
 
         return Layer.as_multiple(layers)
 
     def _make_back_button(self, on_exit_was_pressed: Callable[[], None]) -> ButtonUi:
-        button = self._make_null_button(self._language.get_back_message(), on_exit_was_pressed)
+        button = self._make_null_button(self._language.get_to_main_menu_message(), on_exit_was_pressed)
         button.set_rectangle(self._get_back_button_rectangle())
         return button
 
     def _get_back_button_rectangle(self) -> Rectangle:
-        width = self._screen_shape.x / 15
+        width = self._screen_shape.x / 8
         height = self._screen_shape.y / 20
 
         return (RectangleBuilder(self._screen_shape)
@@ -49,51 +48,25 @@ class MapEditorUiLayerMaker:
                 .adjust_for_shape()
                 .build())
 
-    def _make_switch_transform_button(self) -> SwitchButtonUi:
+    def _make_transform_switcher(self) -> TwoButtonsValueChanger[str]:
         transforms = self._map_editor.transforms
-        buttons = list[ButtonUi]()
-        for name, transform in zip(transforms, transforms[1:] + [transforms[0]]):
-            buttons.append(self._make_transform_button(name, transform))
 
-        switch_button = SwitchButtonUi.make(self._get_switch_transform_button_rectangle(), *buttons)
+        transform_switcher = TwoButtonsValueChanger.make_horizontal(self._get_transform_switcher_rectangle(),
+                                                                    ListChanger(transforms),
+                                                                    self._sprites_loader,
+                                                                    self._drawer)
+        transform_switcher.value_had_changed.subscribe(lambda transform: self._map_editor.set(transform))
 
-        for button in buttons:
-            button.was_clicked.subscribe(switch_button.next)
+        return transform_switcher
 
-        return switch_button
-
-    def _make_transform_button(self, name: str, transform: str) -> ButtonUi:
-        return self._make_null_button(name, lambda: self._map_editor.set(transform))
-
-    def _get_switch_transform_button_rectangle(self) -> Rectangle:
-        width = self._screen_shape.x / 10
-        height = self._screen_shape.y / 15
+    def _get_transform_switcher_rectangle(self) -> Rectangle:
+        width = self._screen_shape.x / 4
+        height = self._screen_shape.y / 20
 
         return (RectangleBuilder(self._screen_shape)
                 .from_right_bottom()
                 .set_shape(Vector2(width, height))
-                .move(Vector2(30, 30))
-                .adjust_for_shape()
-                .build())
-
-    def _make_switch_transform_back_button(self, switch_button: SwitchButtonUi) -> ButtonUi:
-        def on_back_pressed() -> None:
-            switch_button.back()
-            # switch_button.buttons.index(switch_button.button)
-
-        back = self._make_null_button("<", on_back_pressed)
-        back.set_rectangle(self._get_switch_transform_back_button_rectangle())
-
-        return back
-
-    def _get_switch_transform_back_button_rectangle(self) -> Rectangle:
-        width = self._screen_shape.x / 20
-        height = self._screen_shape.y / 15
-
-        return (RectangleBuilder(self._screen_shape)
-                .from_right_bottom()
-                .set_shape(Vector2(width, height))
-                .move(Vector2(40 + self._screen_shape.x / 10, 30))
+                .move(Vector2(20, 20))
                 .adjust_for_shape()
                 .build())
 

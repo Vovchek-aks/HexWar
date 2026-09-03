@@ -21,7 +21,7 @@ from core.resources import Dollars, ResourcesGroup, LightIndustryProducts, Heavy
 from files import read_random_bot_names
 from game_session_saver import GameSessionLoader
 
-IS_MULTIBOT = False
+IS_MULTIBOT = True
 
 UPS = 60
 CAPTION = "HexWar"
@@ -36,7 +36,7 @@ def main() -> None:
     # from core.game_session import empty_map
     # from game_session_saver import EDIT_MAP_FILE
     # GameSessionSaver(empty_map(board_size=10, player_names=["Russia", "Sweden"])).save(EDIT_MAP_FILE)
-    # make_first_scene = _make_map_editor_loading_scene
+    make_first_scene = _make_map_editor_loading_scene
     # make_first_scene = _make_test_game_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
