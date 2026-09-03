@@ -53,8 +53,8 @@ class MapEditorScene(proto.Scene):
     def draw(self) -> None:
         self._layers.draw(self._input_state.mouse_position)
 
-    def on_exit_was_pressed(self) -> None:
-        self._next_scene = ABORT_NEEDED
+    def switch_to(self, scene: proto.Scene) -> None:
+        self._next_scene = scene
 
     def __enter__(self) -> proto.Scene:
         return self

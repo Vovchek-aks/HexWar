@@ -19,7 +19,8 @@ from appearance.layer import Layer
 from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT, \
     NEED_TO_PLAY_BOT_MOVE_ANIMATIONS
 from files import read_build_info, read_random_bot_names
-from game_session_saver import get_saved_maps, get_tutorials, SAVE_FOLDER, EDIT_MAP_FILE
+from game_session_saver import get_saved_maps, get_tutorials, SAVE_FOLDER, EDIT_MAP_FILE, GameSessionSaver
+from core.game_session import empty_map
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 from observer import Event
@@ -43,6 +44,7 @@ class MainMenuUiLayerMaker:
 
     def make(self,
              on_map_was_selected: Callable[[str, Status | int], None],
+             on_map_editor_was_requested: Callable[[], None],
              on_exit_was_pressed: Callable[[], None],
              reload: Callable[[], None]) -> Layer:
         play_was_pressed = Event[None]()
@@ -67,16 +69,18 @@ class MainMenuUiLayerMaker:
                                              to_main_menu_was_pressed, allow_random_players=False))
         tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
         tabs.append(self._make_authors_tab(turn_tabs_off, authors_was_pressed, to_main_menu_was_pressed))
-        tabs.append(self._make_map_editor_tab(turn_tabs_off, map_editor_was_pressed, to_main_menu_was_pressed))
+        tabs.append(self._make_map_editor_tab(turn_tabs_off, on_map_editor_was_requested, map_editor_was_pressed,
+                                              to_main_menu_was_pressed))
 
         return Layer.as_multiple(tabs)
 
     def _make_map_editor_tab(self,
                              turn_tabs_off: Callable[[], None],
+                             on_map_editor_was_requested: Callable[[], None],
                              tab_was_selected: Event[None],
                              to_main_menu_was_pressed: Event[None]) -> Layer:
         layers = [
-            self._make_map_editor_buttons(),
+            self._make_map_editor_buttons(on_map_editor_was_requested),
             self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
         ]
         layer = Layer.as_multiple(layers)
@@ -84,7 +88,7 @@ class MainMenuUiLayerMaker:
         tab_was_selected.subscribe(lambda: layer.set_activity(True))
         return layer
 
-    def _make_map_editor_buttons(self) -> LayoutUi:
+    def _make_map_editor_buttons(self, on_map_editor_was_requested: Callable[[], None]) -> LayoutUi:
         synchroniser = TextSizeSynchroniser()
 
         layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.15)
@@ -101,15 +105,24 @@ class MainMenuUiLayerMaker:
 
         width = self._language.get_width_message()
         height = self._language.get_height_message()
-        changers = {
+        changers: dict[str, IntChanger] = {
             width: IntChanger(50, 5, 500, 5),
             height: IntChanger(50, 5, 500, 5),
         }
         self._add_changer(synchroniser, top_layout, width, width, changers, {}, rectangle)
         self._add_changer(synchroniser, top_layout, height, height, changers, {}, rectangle)
-        new_open.append(new_button := self._make_null_button(self._language.get_make_new_map_message(), lambda: None))
-        new_open.append(
-            open_button := self._make_null_button(self._language.get_load_existing_map_message(), lambda: None))
+
+        def on_new_map_was_pressed() -> None:
+            shape = Vector2Int(changers[width].value,
+                               changers[height].value)
+            GameSessionSaver(empty_map(shape, player_names=[])).save(EDIT_MAP_FILE)
+            on_map_editor_was_requested()
+
+        new_open.append(new_button := self._make_null_button(self._language.get_make_new_map_message(),
+                                                             on_new_map_was_pressed))
+        new_open.append(open_button := self._make_null_button(self._language.get_load_existing_map_message(),
+                                                              on_map_editor_was_requested))
+
         bottom_layout.append(open_in_explorer := self._make_null_button(
             self._language.get_open_file_in_explorer_message(),
             lambda: subprocess.run(['explorer', '/select,', SAVE_FOLDER / EDIT_MAP_FILE])

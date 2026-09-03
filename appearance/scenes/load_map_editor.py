@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, Callable
 
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.map_editor_ui_layer_maker import MapEditorUiLayerMaker
@@ -20,6 +20,7 @@ from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
 from appearance.layer import Layer
+from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.map_editor_scene import MapEditorScene
 from core.cells_changes_observer import CellsChangesObserver
 from game_session_saver import GameSessionSaver, GameSessionLoader, EDIT_MAP_FILE
@@ -31,7 +32,8 @@ import appearance.protocols as proto
 from statuses import Status
 
 
-def load_map_editor(window: Window) -> Iterator[proto.Scene | Status]:
+def load_map_editor(window: Window,
+                    get_main_menu_loading_scene: Callable[[], LoadingScene]) -> Iterator[proto.Scene | Status]:
     screen_shape = Vector2Int(1280, 720)
     window.change_is_fullscreen(False)
 
@@ -99,7 +101,7 @@ def load_map_editor(window: Window) -> Iterator[proto.Scene | Status]:
 
     def on_exit_was_pressed() -> None:
         GameSessionSaver(session).save(EDIT_MAP_FILE)
-        scene.on_exit_was_pressed()
+        scene.switch_to(get_main_menu_loading_scene())
 
     exit_was_pressed.subscribe(on_exit_was_pressed)
 

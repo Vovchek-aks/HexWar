@@ -54,11 +54,11 @@ class GameSession(proto.GameSession):
         move.move.execute(self)
 
 
-def empty_map(*, board_size: int, player_names: list[str]) -> GameSession:
+def empty_map(shape: Vector2Int, *, player_names: list[str]) -> GameSession:
     players = [Player(PlayerData(colors.PLAYERS[index], name), BotPlayerInputer(BotIgor()))
                for index, name in enumerate(player_names)]
 
-    board = Board.from_maker(Vector2Int.ones() * board_size, lambda coord: Cell(MISSING, fig.Water()))
+    board = Board.from_maker(shape, lambda coord: Cell(MISSING, fig.Water()))
     budget = FiguresRelocationBudget()
     figures = Figures(board, budget)
     pulling_connections = PullingConnections.make(figures)

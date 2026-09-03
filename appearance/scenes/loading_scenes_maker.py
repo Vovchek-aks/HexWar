@@ -10,7 +10,6 @@ from appearance.scenes.load_players_selection import load_players_selection
 from appearance.scenes.load_tutorial import load_tutorial
 from appearance.scenes.loading_scene import LoadingScene
 from core.game_session import GameSession
-from mathematics.vector import Vector2Int
 
 GameSessionMaker = Callable[[], GameSession]
 
@@ -23,6 +22,7 @@ class LoadingScenesMaker:
     def make_main_menu_loading_scene(self) -> LoadingScene:
         return LoadingScene.make(load_main_menu(self._ups, self._window,
                                                 self.make_player_selection_loading_scene,
+                                                self.make_map_editor_loading_scene,
                                                 self.make_game_loading_scene,
                                                 self.make_tutorial_loading_scene_getter))
 
@@ -50,4 +50,5 @@ class LoadingScenesMaker:
                                            is_multibot=True))
 
     def make_map_editor_loading_scene(self) -> LoadingScene:
-        return LoadingScene.make(load_map_editor(self._window))
+        return LoadingScene.make(load_map_editor(self._window,
+                                                 self.make_main_menu_loading_scene))

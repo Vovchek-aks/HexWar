@@ -34,6 +34,7 @@ FromSessionMakerLoadingSceneGetter = Callable[[Callable[[], GameSession]], Loadi
 def load_main_menu(ups: int,
                    window: Window,
                    get_player_selection_loading_scene: FromSessionMakerLoadingSceneGetter,
+                   get_map_editor_loading_scene: Callable[[], LoadingScene],
                    get_game_loading_scene: FromSessionMakerLoadingSceneGetter,
                    get_tutorial_game_loading_scene_getter: Callable[[str], FromSessionMakerLoadingSceneGetter],
                    ) -> Iterator[proto.Scene | Status]:
@@ -46,13 +47,15 @@ def load_main_menu(ups: int,
     null_layer = WholeScreenLayer()
 
     map_was_selected = Event[str, Status | int, None]()
+    map_editor_was_requested = Event[None]()
     exit_was_pressed = Event[None]()
     reload_was_pressed = Event[None]()
 
     yield language.get_ui_making_message()
     drawer = UiDrawer()
     ui_layer = (MainMenuUiLayerMaker(drawer, screen_shape)
-                .make(map_was_selected.invoke, exit_was_pressed.invoke, reload_was_pressed.invoke))
+                .make(map_was_selected.invoke, map_editor_was_requested.invoke, exit_was_pressed.invoke,
+                      reload_was_pressed.invoke))
 
     yield language.get_sprite_loading_message()
     background = SpritesLoader.from_meta().load_menu_background()
@@ -98,10 +101,12 @@ def load_main_menu(ups: int,
         scene.switch_to(LoadingScene.make(load_main_menu(ups,
                                                          window,
                                                          get_player_selection_loading_scene,
+                                                         get_map_editor_loading_scene,
                                                          get_game_loading_scene,
                                                          get_tutorial_game_loading_scene_getter)))
 
     map_was_selected.subscribe(on_map_was_selected)
+    map_editor_was_requested.subscribe(lambda: scene.switch_to(get_map_editor_loading_scene()))
     exit_was_pressed.subscribe(scene.on_exit_was_pressed)
     reload_was_pressed.subscribe(reload)
 
