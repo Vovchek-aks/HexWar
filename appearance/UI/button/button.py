@@ -15,7 +15,7 @@ from appearance.UI.text import TextData
 MARGIN = Vector2(10, 10)
 
 
-@define
+@define(hash=True)
 class ButtonUi(proto.ElementUi):
     @classmethod
     def make_null(cls,
@@ -51,12 +51,16 @@ class ButtonUi(proto.ElementUi):
 
         return self
 
-    _was_clicked: Event[None] = field(init=False, factory=Event)
+    _was_clicked: Event[None] = field(init=False, factory=Event, hash=False)
 
-    _rectangle: Rectangle
-    _layer: proto.Layer
-    _text: TextUi
-    _image: ImageUi
+    _rectangle: Rectangle = field(hash=False)
+    _layer: proto.Layer = field(hash=False)
+    _text: TextUi = field(hash=False)
+    _image: ImageUi = field(hash=False)
+    _id = field(init=False, hash=True)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
 
     @property
     def was_clicked(self) -> OnEventSubscriber[None]:

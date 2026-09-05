@@ -4,9 +4,12 @@ from attrs import frozen, Factory
 
 import appearance.protocols as proto
 from appearance.UI.button import ButtonUi, get_image_rectangle, SwitchButtonUi
-from appearance.UI.layouts import HorizontalLayoutUi
-from appearance.UI.text import TextData
-from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ListChanger
+from appearance.UI.layouts import HorizontalLayoutUi, VerticalLayoutUi
+from appearance.UI.layouts.layout import LayoutUi
+from appearance.UI.text import TextData, TextUi
+from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
+from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ListChanger, ValueChanger
+from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
@@ -28,9 +31,61 @@ class MapEditorUiLayerMaker:
         layers = [
             self._make_back_button(on_exit_was_pressed),
             self._make_transform_switcher(),
+            self._make_player_adding_menu(),
         ]
 
         return Layer.as_multiple(layers)
+
+    def _make_player_adding_menu(self) -> Layer:
+        layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
+                                  .from_left_up()
+                                  .move(Vector2(20, 20))
+                                  .set_shape(Vector2(self._screen_shape.x / 5,
+                                                     self._screen_shape.y * .4))
+                                  .adjust_for_shape()
+                                  .build(),
+                                  reserved=5,
+                                  margin_ratio=.2)
+        synchroniser = TextSizeSynchroniser()
+        layout.append(self._make_null_button("aboba", lambda: None))
+        self._add_changer(synchroniser, layout, "R", IntChanger(128, 0, 255), changers_count=5, name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "G", IntChanger(128, 0, 255), changers_count=5, name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "B", IntChanger(128, 0, 255), changers_count=5, name_size_ratio=.2)
+        layout.append(add_player := self._make_null_button("aboba", lambda: None))
+        synchroniser.append(add_player.text)
+        synchroniser.synchronise()
+        return layout.layer
+
+    def _add_changer[T](self,
+                        synchroniser: TextSizeSynchroniser,
+                        layout: LayoutUi,
+                        text: str,
+                        changer: ValueChanger[T],
+                        *,
+                        changers_count: int,
+                        name_size_ratio: float = .5) -> None:
+        text = f"{text}:"
+        margin_ratio = .13
+        rectangle = Rectangle(Vector2.zero(),
+                              Vector2(changers_count * layout.rectangle.shape.x / layout.rectangle.shape.y,
+                                      1 - layout.margin_ratio) * 100)
+        horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio, reserved=2)
+        layout.append(horizontal)
+
+        # w / (w + 1) = r
+        # w = rw + r
+        # w(1 - r) = r
+        # w = r / (1 - r)
+        text_weight = name_size_ratio / (1 - name_size_ratio)
+
+        horizontal.append(text_ui := TextUi.make_with_anchors(self._drawer, Rectangle.zero(), TextData.debug(text),
+                                                              anchor_x=TextUi.RIGHT, anchor_y=TextUi.CENTER),
+                          weight=text_weight)
+        horizontal.append(TwoButtonsValueChanger.make_horizontal(
+            Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x *
+                                                             (1 - margin_ratio) / (text_weight + 1))),
+            changer, self._sprites_loader, self._drawer))
+        synchroniser.append(text_ui)
 
     def _make_back_button(self, on_exit_was_pressed: Callable[[], None]) -> ButtonUi:
         button = self._make_null_button(self._language.get_to_main_menu_message(), on_exit_was_pressed)

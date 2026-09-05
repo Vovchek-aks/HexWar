@@ -12,7 +12,7 @@ from observer import Event, OnEventSubscriber
 HEIGHT_TO_WIDTH_RATIO = 1.45
 
 
-@define
+@define(hash=True)
 class TextUi(proto.ElementUi):
     LEFT: ClassVar[str] = "left"
     RIGHT: ClassVar[str] = "right"
@@ -53,12 +53,16 @@ class TextUi(proto.ElementUi):
         self._set_text_position(rectangle)
         return self
 
-    _drawer: proto.UiDrawer
-    _text: arc.Text
-    _rectangle: Rectangle
-    _layer: proto.Layer = field(init=False)
+    _drawer: proto.UiDrawer = field(hash=False)
+    _text: arc.Text = field(hash=False)
+    _rectangle: Rectangle = field(hash=False)
+    _layer: proto.Layer = field(init=False, hash=False)
 
-    _size_was_changed: Event["TextUi", None] = field(init=False, factory=Event)
+    _size_was_changed: Event["TextUi", None] = field(init=False, factory=Event, hash=False)
+    _id = field(init=False, hash=True)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
 
     @property
     def layer(self) -> proto.Layer:

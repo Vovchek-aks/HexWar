@@ -8,11 +8,15 @@ from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
 
 
-@define
+@define(hash=True)
 class StretcherUi(proto.ElementUi):
-    _rectangle: Rectangle
-    _layer: proto.Layer = field(init=False, factory=Layer.empty)
-    _elements: list[proto.ElementUi] = field(init=False, factory=list)
+    _rectangle: Rectangle = field(hash=False)
+    _layer: proto.Layer = field(init=False, factory=Layer.empty, hash=False)
+    _elements: list[proto.ElementUi] = field(init=False, factory=list, hash=False)
+    _id = field(init=False, hash=True)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
 
     @property
     def rectangle(self) -> Rectangle:

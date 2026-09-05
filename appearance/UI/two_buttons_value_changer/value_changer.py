@@ -1,4 +1,4 @@
-from attrs import frozen, field
+from attrs import define, field
 from typing import Protocol
 
 import appearance.protocols as proto
@@ -11,7 +11,7 @@ from mathematics.vector import Vector2
 from observer import Event, OnEventSubscriber
 
 
-@frozen
+@define(hash=True)
 class TwoButtonsValueChanger[T](proto.ElementUi):
     @classmethod
     def make_horizontal(cls,
@@ -48,11 +48,16 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
 
         return self
 
-    _stretcher: StretcherUi
-    _text: TextUi
-    _changer: "ValueChanger[T]"
+    _stretcher: StretcherUi = field(hash=False)
+    _text: TextUi = field(hash=False)
+    _changer: "ValueChanger[T]" = field(hash=False)
 
-    _value_had_changed: Event[T, None] = field(init=False, factory=Event)
+    _value_had_changed: Event[T, None] = field(init=False, factory=Event, hash=False)
+
+    _id = field(init=False, hash=True)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
 
     @property
     def value(self) -> T:

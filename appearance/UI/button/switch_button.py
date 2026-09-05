@@ -1,4 +1,4 @@
-from attrs import define
+from attrs import define, field
 
 import appearance.protocols as proto
 from appearance.UI.box import BoxUi
@@ -6,7 +6,7 @@ from mathematics.rectangle import Rectangle
 from .button import ButtonUi
 
 
-@define
+@define(hash=True)
 class SwitchButtonUi(proto.ElementUi):
     @classmethod
     def make(cls, rectangle: Rectangle, *buttons: ButtonUi) -> "SwitchButtonUi":
@@ -20,9 +20,13 @@ class SwitchButtonUi(proto.ElementUi):
         self.button.layer.set_activity(True)
         return self
 
-    _box: BoxUi
-    _buttons: list[ButtonUi]
-    _index: int = 0
+    _box: BoxUi = field(hash=False)
+    _buttons: list[ButtonUi] = field(hash=False)
+    _index: int = field(hash=False, default=0)
+    _id = field(init=False, hash=True)
+
+    def __attrs_post_init__(self) -> None:
+        self._id = id(self)
 
     @property
     def button(self) -> ButtonUi:
