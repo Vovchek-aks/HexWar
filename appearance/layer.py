@@ -1,6 +1,6 @@
 from typing import Callable
 
-from attrs import frozen, define
+from attrs import define, field
 
 import appearance.protocols as proto
 from appearance.graphics.layer_drawers.function_layer_drawer import FunctionLayerDrawer
@@ -10,7 +10,7 @@ from appearance.input.clicks_catcher.layers.layers_container_layer import Layers
 from appearance.input.clicks_catcher.layers.no_catching_layer import NoCatchingLayer
 from appearance.protocols import Click
 from mathematics.vector import Vector2
-from observer import OnEventSubscriber
+from observer import OnEventSubscriber, Event
 from statuses import Status, MISSING
 
 
@@ -28,6 +28,8 @@ class Layer(proto.Layer, proto.LayerHolder):
     _drawable_layer: proto.DrawableLayer
     _clicks_catching_layer: proto.ClicksCatchingLayer
     _is_active: bool = True
+
+    _activity_was_changed: Event[bool, None] = field(init=False, factory=Event)
 
     @property
     def layer(self) -> proto.Layer:
@@ -49,8 +51,15 @@ class Layer(proto.Layer, proto.LayerHolder):
     def is_active(self) -> bool:
         return self._is_active
 
+    @property
+    def activity_was_changed(self) -> OnEventSubscriber[bool, None]:
+        return self._activity_was_changed.subscriber
+
     def set_activity(self, activity: bool) -> None:
+        previous = self._is_active
         self._is_active = activity
+        if activity != previous:
+            self._activity_was_changed.invoke(activity)
 
     def draw(self, mouse_position: Vector2) -> None:
         self._drawable_layer.draw(mouse_position)

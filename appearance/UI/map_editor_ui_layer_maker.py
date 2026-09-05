@@ -3,23 +3,27 @@ from typing import Callable
 from attrs import frozen, Factory
 
 import appearance.protocols as proto
-from appearance.UI.button import ButtonUi, get_image_rectangle, SwitchButtonUi
+from appearance.UI.button import ButtonUi, get_image_rectangle
 from appearance.UI.layouts import HorizontalLayoutUi, VerticalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
-from appearance.UI.text import TextData, TextUi
+from appearance.UI.line_edit.line_edit import LineEditUi
+from appearance.UI.text import TextData, TextUi, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ListChanger, ValueChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
+from appearance.game_engine.game_engine_arc.window import Window
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
 from map_editor import MapEditor
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
+from observer import Event, OnEventSubscriber
 
 
 @frozen
 class MapEditorUiLayerMaker:
+    _window: Window
     _drawer: proto.UiDrawer
     _screen_shape: Vector2Int
     _map_editor: MapEditor
@@ -28,15 +32,17 @@ class MapEditorUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self, on_exit_was_pressed: Callable[[], None]) -> Layer:
+        exit_was_pressed = Event[None]()
+        exit_was_pressed.subscribe(on_exit_was_pressed)
         layers = [
-            self._make_back_button(on_exit_was_pressed),
+            self._make_back_button(exit_was_pressed.invoke),
             self._make_transform_switcher(),
-            self._make_player_adding_menu(),
+            self._make_player_adding_menu(exit_was_pressed.subscriber),
         ]
 
         return Layer.as_multiple(layers)
 
-    def _make_player_adding_menu(self) -> Layer:
+    def _make_player_adding_menu(self, exit_was_pressed: OnEventSubscriber[None]) -> Layer:
         layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
                                   .from_left_up()
                                   .move(Vector2(20, 20))
@@ -47,10 +53,15 @@ class MapEditorUiLayerMaker:
                                   reserved=5,
                                   margin_ratio=.2)
         synchroniser = TextSizeSynchroniser()
-        layout.append(self._make_null_button("aboba", lambda: None))
-        self._add_changer(synchroniser, layout, "R", IntChanger(128, 0, 255), changers_count=5, name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "G", IntChanger(128, 0, 255), changers_count=5, name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "B", IntChanger(128, 0, 255), changers_count=5, name_size_ratio=.2)
+        line_edit_text_data = (TextDataBuilder()
+                               .debug_font(round(0.03 * self._screen_shape.y))
+                               .set_text("aboba")
+                               .white_colored()
+                               .build())
+        layout.append(LineEditUi.make(self._window, exit_was_pressed, Rectangle.ones(), line_edit_text_data))
+        self._add_changer(synchroniser, layout, "R", IntChanger(125, 0, 255, 5), changers_count=5, name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "G", IntChanger(125, 0, 255, 5), changers_count=5, name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "B", IntChanger(125, 0, 255, 5), changers_count=5, name_size_ratio=.2)
         layout.append(add_player := self._make_null_button("aboba", lambda: None))
         synchroniser.append(add_player.text)
         synchroniser.synchronise()

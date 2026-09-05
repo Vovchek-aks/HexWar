@@ -22,6 +22,7 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.map_editor_scene import MapEditorScene
+from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
 from game_session_saver import GameSessionSaver, GameSessionLoader, EDIT_MAP_FILE
 from map_editor import MapEditor
@@ -34,8 +35,7 @@ from statuses import Status
 
 def load_map_editor(window: Window,
                     get_main_menu_loading_scene: Callable[[], LoadingScene]) -> Iterator[proto.Scene | Status]:
-    screen_shape = Vector2Int(1280, 720)
-    window.change_is_fullscreen(False)
+    screen_shape = Settings.open().screen_shape
 
     language = Language.from_meta()
 
@@ -88,7 +88,7 @@ def load_map_editor(window: Window,
 
     yield language.get_ui_making_message()
     exit_was_pressed = Event[None]()
-    ui_layer_maker = MapEditorUiLayerMaker(UiDrawer(), screen_shape, map_editor)
+    ui_layer_maker = MapEditorUiLayerMaker(window, UiDrawer(), screen_shape, map_editor)
     ui_layer = ui_layer_maker.make(exit_was_pressed.invoke)
 
     camera_assistant = CameraAssistant.make(camera)

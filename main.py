@@ -30,8 +30,8 @@ def main() -> None:
     sys.setrecursionlimit(10_000)
     # make_first_scene = _make_test_game_loading_scene
     # make_first_scene = _make_multibot_loading_scene
-    make_first_scene = _make_map_editor_loading_scene
-    # make_first_scene = _make_main_menu_loading_scene
+    # make_first_scene = _make_map_editor_loading_scene
+    make_first_scene = _make_main_menu_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
