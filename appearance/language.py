@@ -1,4 +1,3 @@
-import math
 from pathlib import Path
 
 from attrs import frozen
@@ -8,20 +7,10 @@ from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRA
     ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
     CAPITAL_TO_WIDE_CAPITAL, TANK_AND_ARTILLERY_TO_HOWITZER, MOTORIZATION_AND_ARTILLERY_TO_GRAD, PURCHASE_SETTLEMENT, \
     PURCHASE_PRIVATE_LIGHT_FACTORY, PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, CONVERSIONS, COMBINATIONS, MOBILISE_SETTLEMENT, INFANTRY_SETTLE
+    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, MOBILISE_SETTLEMENT, INFANTRY_SETTLE
 from appearance.settings import Settings
-from core.moves.attack import Attack
-from core.moves.capture import Capture
-from core.moves.comnination import Combination
-from core.moves.conversion import Conversion
-from core.moves.grad_attack import GradAttack
-from core.moves.pulling import PullingInitiation, PullingTermination
-from core.moves.oreshnik_launch import OreshnikLaunch
-from core.moves.relocations import Relocation, Assault
-from core.protocols import Figure, Resource, Movable, CanLaunchOreshnik, CanGradAttack
+from core.protocols import Figure, Resource
 from files import read_meta, read_json
-import core.figures.figure as fig
-from mathematics.vector import Vector2Int
 from core.resources import ResourcesGroup
 
 LANGUAGES_FOLDER = Path("data/languages")
@@ -30,34 +19,6 @@ LANGUAGE_SECTION_DICT = dict[str, str | list[str]] | list[list[list[str]]]
 LANGUAGE_DICT = dict[str, LANGUAGE_SECTION_DICT | dict[str, LANGUAGE_SECTION_DICT]]
 
 LANGUAGES_META_DICT = dict[str, str]
-
-_FIGURE_OF_TAG: dict[str, type[Figure]] = {
-    INFANTRY_CAPTURE: fig.Infantry,
-    INFANTRY_SETTLE: fig.Infantry,
-    TANK_ATTACK: fig.Tank,
-    HOWITZER_ATTACK: fig.Howitzer,
-    GRAD_ATTACK: fig.Grad,
-    ARTILLERY_ATTACK: fig.Artillery,
-    ARTILLERY_INITIATE_PULLING: fig.Artillery,
-    ARTILLERY_TERMINATE_PULLING: fig.Artillery,
-    LAUNCH_ORESHNIK: fig.MissileSilo,
-}
-
-_MOVE_OF_TAG = {
-    INFANTRY_CAPTURE: lambda: Capture(Vector2Int.zero(), Vector2Int.zero()),
-    TANK_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
-    HOWITZER_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
-    GRAD_ATTACK: lambda: GradAttack(Vector2Int.zero(), Vector2Int.zero()),
-    ARTILLERY_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
-    ARTILLERY_INITIATE_PULLING: lambda: PullingInitiation(Vector2Int.zero(), Vector2Int.zero()),
-    ARTILLERY_TERMINATE_PULLING: lambda: PullingTermination(Vector2Int.zero()),
-    LAUNCH_ORESHNIK: lambda: OreshnikLaunch(Vector2Int.zero(), Vector2Int.zero())
-}
-
-_FLAG_OF_RESOURCE_TAKER = {
-    LAUNCH_ORESHNIK: CanLaunchOreshnik,
-    GRAD_ATTACK: CanGradAttack,
-}
 
 _FIGURES = "figures"
 
@@ -368,42 +329,14 @@ class Language:
     def get_count_message(self) -> str:
         return self._ui[_COUNT]
 
-    def get_combat_ability_cost_message(self, combat_ability_ratio_cost: float) -> str:
-        combat_ability_cost = f"{100 * combat_ability_ratio_cost:.0f}"
-        return self._ui[_COMBAT_ABILITY_COST].format(combat_ability_cost=combat_ability_cost)
+    def get_combat_ability_cost_message(self) -> str:
+        return self._ui[_COMBAT_ABILITY_COST]
 
     def get_creation_hint(self, figure: type[Figure]) -> list[str]:
         return self._hints[_CREATION][figure.__name__]
 
     def get_figure_menu_hint_for(self, action_tag: str) -> list[str]:
         message = self._hints[_FIGURES_MENU][action_tag]
-        message.append("")
-        combat_ability_index = len(message)
-
-        if action_tag in CONVERSIONS:
-            conversion = CONVERSIONS[action_tag]
-            resources, move_cost = Conversion.conversions()[conversion]
-            budget = conversion[0].MOVES_BUDGET
-        elif action_tag in COMBINATIONS:
-            combination = COMBINATIONS[action_tag]
-            resources, move_cost = Combination.combinations()[combination]
-            budget = combination[0].MOVES_BUDGET
-        elif action_tag in _FLAG_OF_RESOURCE_TAKER:
-            resources = _FIGURE_OF_TAG[action_tag].FLAGS.get(_FLAG_OF_RESOURCE_TAKER[action_tag]).cost
-            move_cost = _FIGURE_OF_TAG[action_tag].get_cost_of(_MOVE_OF_TAG[action_tag]())
-            budget = _FIGURE_OF_TAG[action_tag].MOVES_BUDGET
-        else:
-            resources = ResourcesGroup()
-            move_cost = _FIGURE_OF_TAG[action_tag].get_cost_of(_MOVE_OF_TAG[action_tag]())
-            budget = _FIGURE_OF_TAG[action_tag].MOVES_BUDGET
-
-        if resources:
-            message.append("")
-            message.extend(self.get_cost(resources))
-
-        combat_ability_cost_ratio = move_cost / budget
-        message.insert(combat_ability_index, self.get_combat_ability_cost_message(combat_ability_cost_ratio))
-
         return message
 
     def get_tutorial_hints(self, tutorial_index: int) -> list[list[str]]:

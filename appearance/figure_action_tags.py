@@ -1,4 +1,11 @@
 import core.figures.figure as fig
+from core.moves.attack import Attack
+from core.moves.capture import Capture
+from core.moves.grad_attack import GradAttack
+from core.moves.oreshnik_launch import OreshnikLaunch
+from core.moves.pulling import PullingInitiation, PullingTermination
+from core.protocols import CanLaunchOreshnik, CanGradAttack, Figure
+from mathematics.vector import Vector2Int
 
 ARTILLERY_ATTACK = "ARTILLERY_ATTACK"
 HOWITZER_ATTACK = "HOWITZER_ATTACK"
@@ -52,4 +59,24 @@ TAGS_OF: dict[type[fig.Figure], tuple[str]] = {
     fig.Artillery: (ARTILLERY_ATTACK, ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING),
     fig.Howitzer: (HOWITZER_ATTACK,),
     fig.Grad: (GRAD_ATTACK,),
+}
+
+FIGURE_OF_TAG: dict[str, type[Figure]] = {tag: figure
+                                          for figure in TAGS_OF
+                                          for tag in TAGS_OF[figure]}
+
+MOVE_OF_TAG = {
+    INFANTRY_CAPTURE: lambda: Capture(Vector2Int.zero(), Vector2Int.zero()),
+    TANK_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+    HOWITZER_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+    GRAD_ATTACK: lambda: GradAttack(Vector2Int.zero(), Vector2Int.zero()),
+    ARTILLERY_ATTACK: lambda: Attack(Vector2Int.zero(), Vector2Int.zero()),
+    ARTILLERY_INITIATE_PULLING: lambda: PullingInitiation(Vector2Int.zero(), Vector2Int.zero()),
+    ARTILLERY_TERMINATE_PULLING: lambda: PullingTermination(Vector2Int.zero()),
+    LAUNCH_ORESHNIK: lambda: OreshnikLaunch(Vector2Int.zero(), Vector2Int.zero())
+}
+
+FLAG_OF_RESOURCE_TAKER = {
+    LAUNCH_ORESHNIK: CanLaunchOreshnik,
+    GRAD_ATTACK: CanGradAttack,
 }

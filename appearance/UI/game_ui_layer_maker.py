@@ -28,9 +28,10 @@ from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRA
     ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
     CAPITAL_TO_WIDE_CAPITAL, TANK_AND_ARTILLERY_TO_HOWITZER, MOTORIZATION_AND_ARTILLERY_TO_GRAD, PURCHASE_SETTLEMENT, \
     PURCHASE_PRIVATE_LIGHT_FACTORY, PURCHASE_PRIVATE_HEAVY_FACTORY, MOBILISE_TOWN, INFANTRY_CAPTURE, \
-    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, CONVERSIONS, COMBINATIONS, TAGS_OF, MOBILISE_SETTLEMENT, INFANTRY_SETTLE
+    INFANTRY_TO_MOTORIZATION, LAUNCH_ORESHNIK, CONVERSIONS, COMBINATIONS, TAGS_OF, MOBILISE_SETTLEMENT, INFANTRY_SETTLE, \
+    FLAG_OF_RESOURCE_TAKER, FIGURE_OF_TAG, MOVE_OF_TAG
 from appearance.layer import Layer
-from appearance.protocols import CellSelector, InputAction
+from appearance.protocols import CellSelector, InputAction, ElementUi
 from core.figures.resources_flow_flags import get_resource_flow
 from core.moves.attack import Attack
 from core.moves.capture import Capture
@@ -504,7 +505,14 @@ class GameUiLayerMaker:
             "",
             *self._language.get_cost(figure.FLAGS.get(Creatable).cost)
         ]
-        hint = self._make_button_hint(synchroniser, title, content, button)
+
+        content_ui = [TextUi.make(self._drawer,
+                                  Rectangle.zero(),
+                                  self._get_text_data_builder_for_hint(line)
+                                  .build())
+                      for line in content]
+        synchroniser.extend(*content_ui)
+        hint = self._make_button_hint(title, content_ui, button)
 
         return hint
 
@@ -921,18 +929,77 @@ class GameUiLayerMaker:
                                       synchroniser: TextSizeSynchroniser,
                                       button: ButtonUi,
                                       tag: str) -> StretcherUi:
-        return self._make_button_hint(synchroniser,
-                                      self._language.get_name_of_figures_action(tag),
-                                      self._language.get_figure_menu_hint_for(tag),
+        return self._make_button_hint(self._language.get_name_of_figures_action(tag),
+                                      self._get_figure_menu_hint_content_for(tag, synchroniser),
                                       button, Vector2(200, 220))
 
+    def _get_figure_menu_hint_content_for(self, action_tag: str, synchroniser: TextSizeSynchroniser) -> list[ElementUi]:
+        message = self._language.get_figure_menu_hint_for(action_tag)
+        message.append("")
+        combat_ability_index = len(message)
+
+        if action_tag in CONVERSIONS:
+            conversion = CONVERSIONS[action_tag]
+            resources, move_cost = Conversion.conversions()[conversion]
+            budget = conversion[0].MOVES_BUDGET
+        elif action_tag in COMBINATIONS:
+            combination = COMBINATIONS[action_tag]
+            resources, move_cost = Combination.combinations()[combination]
+            budget = combination[0].MOVES_BUDGET
+        elif action_tag in FLAG_OF_RESOURCE_TAKER:
+            resources = FIGURE_OF_TAG[action_tag].FLAGS.get(FLAG_OF_RESOURCE_TAKER[action_tag]).cost
+            move_cost = FIGURE_OF_TAG[action_tag].get_cost_of(MOVE_OF_TAG[action_tag]())
+            budget = FIGURE_OF_TAG[action_tag].MOVES_BUDGET
+        else:
+            resources = ResourcesGroup()
+            move_cost = FIGURE_OF_TAG[action_tag].get_cost_of(MOVE_OF_TAG[action_tag]())
+            budget = FIGURE_OF_TAG[action_tag].MOVES_BUDGET
+
+        if resources:
+            message.append("")
+            message.extend(self._language.get_cost(resources))
+
+        content_ui: list[ElementUi] = [TextUi.make_with_anchors(self._drawer,
+                                                                Rectangle.zero(),
+                                                                self._get_text_data_builder_for_hint(line)
+                                                                .build(),
+                                                                anchor_x=TextUi.LEFT)
+                                       for line in message]
+
+        combat_ability = HorizontalLayoutUi(Rectangle(Vector2.zero(), Vector2(100, 10)), reserved=2, margin_ratio=.01)
+        content_ui.insert(combat_ability_index, combat_ability)
+        combat_ability.append(
+            combat_ability_cost_message := TextUi.make_with_anchors(self._drawer,
+                                                                    Rectangle.zero(),
+                                                                    self._get_text_data_builder_for_hint(
+                                                                        self._language.get_combat_ability_cost_message(),
+                                                                        need_to_adjust_length=False
+                                                                    ).build(),
+                                                                    anchor_x=TextUi.LEFT
+                                                                    ),
+            weight=.7
+        )
+        synchroniser.append(combat_ability_cost_message)
+
+        combat_ability_cost_ratio = move_cost / budget
+        synchroniser.append(
+            self._append_square_image_and_text_to(
+                combat_ability,
+                self._sprites_loader.load_combat_ability_icon(),
+                self._get_text_data_builder_for_hint(f":  {100 * combat_ability_cost_ratio:.0f}%",
+                                                     need_to_adjust_length=False).build
+            )
+        )
+        synchroniser.extend(*(element for element in content_ui
+                              if isinstance(element, TextUi)))
+        return content_ui
+
     def _make_button_hint(self,
-                          synchroniser: TextSizeSynchroniser,
                           title: str,
-                          content: list[str],
+                          content: list[ElementUi],
                           button: ButtonUi,
                           shape: Vector2 = Vector2(200, 300)) -> StretcherUi:
-        hint = self._make_null_hint(synchroniser, title, content, shape)
+        hint = self._make_null_hint(title, content, shape)
 
         def get_hint_activity() -> bool:
             if not button.layer.is_active:
@@ -967,7 +1034,13 @@ class GameUiLayerMaker:
                             synchroniser: TextSizeSynchroniser,
                             content_index: int,
                             content: list[str]) -> StretcherUi:
-        hint = self._make_null_hint(synchroniser, self._language.get_page_message(content_index), content)
+        content_ui = [TextUi.make(self._drawer,
+                                  Rectangle.zero(),
+                                  self._get_text_data_builder_for_hint(line)
+                                  .build())
+                      for line in content]
+        synchroniser.extend(*content_ui)
+        hint = self._make_null_hint(self._language.get_page_message(content_index), content_ui)
         rectangle = hint.rectangle
         position = rectangle.position
         shape = rectangle.shape
@@ -992,12 +1065,10 @@ class GameUiLayerMaker:
         return stretcher
 
     def _make_null_hint(self,
-                        synchroniser: TextSizeSynchroniser,
                         title: str,
-                        content: list[str],
+                        content: list[ElementUi],
                         shape: Vector2 = Vector2(200, 300)) -> StretcherUi:
         MIN_LINES_COUNT = 8
-        MAX_LINE_LENGTH = 25
 
         background = ImageUi.make(self._drawer,
                                   Rectangle(Vector2.zero(), shape),
@@ -1019,8 +1090,12 @@ class GameUiLayerMaker:
                                .black_colored()
                                .build())
 
-        white_spaces = [" "] * (MIN_LINES_COUNT - len(content))
-        content = white_spaces[:len(white_spaces) // 2] + content + white_spaces[len(white_spaces) // 2:]
+        blank_lines = [TextUi.make(self._drawer,
+                                   Rectangle.zero(),
+                                   self._get_text_data_builder_for_hint(" ")
+                                   .build())
+                       ] * (MIN_LINES_COUNT - len(content))
+        content = blank_lines[:len(blank_lines) // 2] + content + blank_lines[len(blank_lines) // 2:]
         content_margin = Vector2(title_margin.x, 10 + title_margin.y + title_height)
         bottom_margin = 30
         content_ui = VerticalLayoutUi(RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
@@ -1033,21 +1108,21 @@ class GameUiLayerMaker:
                                       reserved=len(content))
 
         for line in content:
-            line_ui = TextUi.make(self._drawer,
-                                  Rectangle.zero(),
-                                  TextDataBuilder()
-                                  .set_text(line.ljust(MAX_LINE_LENGTH, " "))
-                                  .hints_font()
-                                  .black_colored()
-                                  .build())
-            content_ui.append(line_ui)
-            synchroniser.append(line_ui)
+            content_ui.append(line)
 
         stretcher = StretcherUi(background.rectangle)
         stretcher.append(title_ui)
         stretcher.append(content_ui)
         stretcher.append(background)
         return stretcher
+
+    @staticmethod
+    def _get_text_data_builder_for_hint(line: str, *, need_to_adjust_length: bool = True) -> TextDataBuilder:
+        MAX_LINE_LENGTH = 25
+        return (TextDataBuilder()
+                .set_text(line.ljust(MAX_LINE_LENGTH, " ") if need_to_adjust_length else line)
+                .hints_font()
+                .black_colored())
 
     def _bind_layer_to_cell_with_figure_selection(self, layer: Layer, figure: type[fig.Figure]) -> None:
         layer.set_activity(False)
