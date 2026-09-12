@@ -249,7 +249,7 @@ class GameUiLayerMaker:
     def _make_resources(self, resources: list[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
         layout = VerticalLayoutUi((RectangleBuilder(self._screen_shape)
                                    .from_left_up()
-                                   .move(Vector2(10, 10))
+                                   .move(Vector2(20, 10))
                                    .set_shape(Vector2(self._screen_shape.x / 6,
                                                       self._screen_shape.y / 5))
                                    .adjust_for_shape()
@@ -503,7 +503,6 @@ class GameUiLayerMaker:
         content = [
             *self._language.get_creation_hint(figure),
             "",
-            *self._language.get_cost(figure.FLAGS.get(Creatable).cost)
         ]
 
         content_ui = [TextUi.make(self._drawer,
@@ -512,6 +511,8 @@ class GameUiLayerMaker:
                                   .build())
                       for line in content]
         synchroniser.extend(*content_ui)
+
+        self._append_resources(synchroniser, content_ui, figure.FLAGS.get(Creatable).cost)
         hint = self._make_button_hint(title, content_ui, button)
 
         return hint
@@ -726,11 +727,12 @@ class GameUiLayerMaker:
         assert len(buttons) <= BUTTONS_COUNT
 
         background_margin = Vector2(20, 20)
+        background_shape = Vector2(375, 250) * self._screen_shape.y / 720
         background = ImageUi.make(self._drawer,
                                   RectangleBuilder(self._screen_shape)
                                   .from_left_bottom()
                                   .move(background_margin)
-                                  .set_shape(Vector2(375, 250))
+                                  .set_shape(background_shape)
                                   .adjust_for_shape()
                                   .build(),
                                   self._sprites_loader.load_background_3_to_2())
@@ -766,7 +768,7 @@ class GameUiLayerMaker:
         buttons_layout.extend(buttons)
 
         title_bottom = title.rectangle.position.y
-        stats_margin = 10
+        stats_margin = 15
         stats_height = title_bottom - buttons_position.y - buttons_height - stats_margin * 2
         stats_position = Vector2(title.rectangle.position.x, title_bottom - stats_margin - stats_height)
         stats_and_flow_rectangle = (RectangleBuilder(self._screen_shape)
@@ -778,7 +780,7 @@ class GameUiLayerMaker:
 
         stats = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.05, reserved=3)
         flow = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.05, reserved=3)
-        stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle, margin_ratio=0.1, reserved=2)
+        stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle, margin_ratio=0.07, reserved=2)
         stats_and_flow.extend([stats, flow])
 
         text_data = TextDataBuilder().set_text("...").hints_font().black_colored()
@@ -955,10 +957,6 @@ class GameUiLayerMaker:
             move_cost = FIGURE_OF_TAG[action_tag].get_cost_of(MOVE_OF_TAG[action_tag]())
             budget = FIGURE_OF_TAG[action_tag].MOVES_BUDGET
 
-        if resources:
-            message.append("")
-            message.extend(self._language.get_cost(resources))
-
         content_ui: list[ElementUi] = [TextUi.make_with_anchors(self._drawer,
                                                                 Rectangle.zero(),
                                                                 self._get_text_data_builder_for_hint(line)
@@ -966,8 +964,26 @@ class GameUiLayerMaker:
                                                                 anchor_x=TextUi.LEFT)
                                        for line in message]
 
+        if resources:
+            content_ui.append(TextUi.make_with_anchors(self._drawer,
+                                                       Rectangle.zero(),
+                                                       self._get_text_data_builder_for_hint("").build(),
+                                                       anchor_x=TextUi.LEFT))
+            self._append_resources(synchroniser, content_ui, resources)
+
+        self._insert_combat_ability(synchroniser, content_ui, combat_ability_index, budget, move_cost)
+        synchroniser.extend(*(element for element in content_ui
+                              if isinstance(element, TextUi)))
+        return content_ui
+
+    def _insert_combat_ability(self,
+                               synchroniser: TextSizeSynchroniser,
+                               content_ui: list[ElementUi],
+                               index: int,
+                               budget: int,
+                               move_cost: int) -> None:
         combat_ability = HorizontalLayoutUi(Rectangle(Vector2.zero(), Vector2(100, 10)), reserved=2, margin_ratio=.01)
-        content_ui.insert(combat_ability_index, combat_ability)
+        content_ui.insert(index, combat_ability)
         combat_ability.append(
             combat_ability_cost_message := TextUi.make_with_anchors(self._drawer,
                                                                     Rectangle.zero(),
@@ -980,7 +996,6 @@ class GameUiLayerMaker:
             weight=.7
         )
         synchroniser.append(combat_ability_cost_message)
-
         combat_ability_cost_ratio = move_cost / budget
         synchroniser.append(
             self._append_square_image_and_text_to(
@@ -990,9 +1005,33 @@ class GameUiLayerMaker:
                                                      need_to_adjust_length=False).build
             )
         )
-        synchroniser.extend(*(element for element in content_ui
-                              if isinstance(element, TextUi)))
-        return content_ui
+
+    def _append_resources(self,
+                          synchroniser: TextSizeSynchroniser,
+                          content_ui: list[ElementUi],
+                          resources: ResourcesGroup) -> None:
+        content_ui.append(cost := TextUi.make_with_anchors(self._drawer,
+                                                           Rectangle.zero(),
+                                                           self._get_text_data_builder_for_hint(
+                                                               f"{self._language.get_cost_message()}:"
+                                                           ).build(),
+                                                           anchor_x=TextUi.LEFT))
+        synchroniser.append(cost)
+        for resource in resources:
+            if not resource:
+                continue
+
+            layout = HorizontalLayoutUi(Rectangle(Vector2.zero(), Vector2(100, 10)), reserved=2)
+            content_ui.append(layout)
+            layout.append(BoxUi(Rectangle.zero()), weight=.1)
+            synchroniser.append(
+                self._append_square_image_and_text_to(
+                    layout,
+                    self._sprites_loader.load_resource_sprite(type(resource)),
+                    self._get_text_data_builder_for_hint(f":  {NumberShortener.shorten(resource.amount)}",
+                                                         need_to_adjust_length=False).build
+                )
+            )
 
     def _make_button_hint(self,
                           title: str,

@@ -18,9 +18,9 @@
   },
   "graphics": {
     "screen": {
-      "WIDTH": 1280,
-      "HEIGHT": 720,
-      "IS_FULLSCREEN": false
+      "WIDTH": 1920,
+      "HEIGHT": 1080,
+      "IS_FULLSCREEN": true
     }
   }
 }

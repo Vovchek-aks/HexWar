@@ -244,6 +244,9 @@ class Language:
         amount = NumberShortener.shorten(resource.amount)
         return f"{self.get_resource_name(type(resource))}: {amount}"
 
+    def get_cost_message(self) -> str:
+        return self._ui[_COST]
+
     def get_cost(self, resources: ResourcesGroup) -> list[str]:
         assert resources
 
