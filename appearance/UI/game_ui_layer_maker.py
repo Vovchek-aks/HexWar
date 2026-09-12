@@ -1,3 +1,4 @@
+import math
 from typing import Callable
 
 from attrs import frozen, Factory
@@ -37,10 +38,11 @@ from core.moves.comnination import Combination
 from core.moves.conversion import Conversion
 from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
+from core.moves.relocations import Relocation, Assault
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable, ResourcesChanger, \
     ResourcesTaker, ResourcesAdder, CanLaunchOreshnik, CanPull, WithRestrictedTerrainKinds
-from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, ResourcesGroup
+from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, ResourcesGroup, get_resources_types
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figure as fig
@@ -247,37 +249,53 @@ class GameUiLayerMaker:
         layout = VerticalLayoutUi((RectangleBuilder(self._screen_shape)
                                    .from_left_up()
                                    .move(Vector2(10, 10))
-                                   .set_shape(Vector2(self._screen_shape.x / 4,
-                                                      self._screen_shape.y / 7))
+                                   .set_shape(Vector2(self._screen_shape.x / 6,
+                                                      self._screen_shape.y / 5))
                                    .adjust_for_shape()
                                    .build()),
-                                  margin_ratio=.2,
+                                  margin_ratio=.05,
                                   reserved=len(resources))
-        texts = list[TextUi]()
-        for _ in resources:
-            texts.append(TextUi.make(self._drawer, Rectangle.zero(), TextData.debug('...')))
-            layout.append(texts[-1])
+        text_of = dict[type[Resource], TextUi]()
+        for resource in resources:
+            text_of[resource] = self._append_square_image_and_text_to(layout,
+                                                                      self._sprites_loader
+                                                                      .load_resource_sprite(resource),
+                                                                      TextData.debug)
 
         synchroniser = TextSizeSynchroniser()
-        synchroniser.extend(*texts)
+        synchroniser.extend(*text_of.values())
 
         def update() -> None:
             player = self._session.master.current_player
 
-            for index, resource_type in enumerate(resources):
-                resource = player.resources.get(resource_type)
-                current = self._language.get_message_from_resource(resource)
-
+            for resource_type in resources:
+                amount = player.resources.get(resource_type).amount
+                line = f":  {NumberShortener.shorten(amount)}"
                 if isinstance(player.inputer, BotPlayerInputer):
-                    texts[index].set_text(f"{current}")
+                    text_of[resource_type].set_text(line)
                     continue
 
                 flow = get_resource_flow(player, resource_type, self._session)
                 sign = '+' if flow >= 0 else ''
-                texts[index].set_text(f"{current} ({sign}{NumberShortener().shorten(flow)})")
+                text_of[resource_type].set_text(f"{line} ({sign}{NumberShortener.shorten(flow)})")
             synchroniser.synchronise()
 
         return layout, update
+
+    def _append_square_image_and_text_to(self,
+                                         layout: LayoutUi,
+                                         sprite: Sprite,
+                                         get_text_data: Callable[[], TextData]) -> TextUi:
+        horizontal = HorizontalLayoutUi(Rectangle.ones(), reserved=2, margin_ratio=0.01)
+        layout.append(horizontal)
+        height = horizontal.rectangle.shape.y
+        non_empty_width = horizontal.rectangle.shape.x * (1 - horizontal.margin_ratio)
+        ratio = height / non_empty_width
+        weight = ratio / (1 - ratio)
+        horizontal.append(ImageUi.make(self._drawer, Rectangle.ones(), sprite), weight=weight)
+        text = TextUi.make_with_anchors(self._drawer, Rectangle.zero(), get_text_data(), anchor_x=TextUi.LEFT)
+        horizontal.append(text)
+        return text
 
     def _make_current_turn_ui(self, resources: VerticalLayoutUi, end_turn_button: ButtonUi) -> Layer:
         layer = Layer.as_multiple([
@@ -740,7 +758,7 @@ class GameUiLayerMaker:
         buttons_layout.extend(buttons)
 
         title_bottom = title.rectangle.position.y
-        stats_margin = 15
+        stats_margin = 10
         stats_height = title_bottom - buttons_position.y - buttons_height - stats_margin * 2
         stats_position = Vector2(title.rectangle.position.x, title_bottom - stats_margin - stats_height)
         stats_and_flow_rectangle = (RectangleBuilder(self._screen_shape)
@@ -750,9 +768,9 @@ class GameUiLayerMaker:
                                     .adjust_for_shape()
                                     .build())
 
-        stats = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2, reserved=3)
-        flow = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.2, reserved=3)
-        stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle, reserved=2)
+        stats = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.05, reserved=3)
+        flow = VerticalLayoutUi(Rectangle.zero(), margin_ratio=.05, reserved=3)
+        stats_and_flow = HorizontalLayoutUi(stats_and_flow_rectangle, margin_ratio=0.1, reserved=2)
         stats_and_flow.extend([stats, flow])
 
         text_data = TextDataBuilder().set_text("...").hints_font().black_colored()
@@ -765,6 +783,7 @@ class GameUiLayerMaker:
         def update(coord: Vector2Int | Status) -> None:
             update_stats(coord)
             update_flow(coord)
+            synchroniser.synchronise()
 
         self._cell_selector.cell_was_selected.subscribe(update)
         self._moves_maker.board_move_was_made.subscribe(
@@ -787,16 +806,20 @@ class GameUiLayerMaker:
                                 stats: VerticalLayoutUi,
                                 text_data: TextDataBuilder,
                                 figure_type: type[fig.Figure]) -> Callable[[Vector2Int | Status], None]:
-        combat_ability = TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
-        strength = TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
-        hardness = TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
-
-        stats.append(combat_ability)
-        stats.append(hardness)
-        stats.append(strength)
+        combat_ability = self._append_square_image_and_text_to(stats,
+                                                               self._sprites_loader.load_combat_ability_icon(),
+                                                               text_data.build)
         synchroniser.append(combat_ability)
+        hardness = self._append_square_image_and_text_to(stats,
+                                                         self._sprites_loader.load_hardness_icon(),
+                                                         text_data.build)
         synchroniser.append(hardness)
-        synchroniser.append(strength)
+
+        if Movable in figure_type.FLAGS:
+            strength = self._append_square_image_and_text_to(stats,
+                                                             self._sprites_loader.load_strength_icon(),
+                                                             text_data.build)
+            synchroniser.append(strength)
 
         def update_stats(coord: Vector2Int | Status) -> None:
             if coord is MISSING:
@@ -812,46 +835,64 @@ class GameUiLayerMaker:
 
         def update_combat_ability(figure: fig.Figure) -> None:
             if figure.MOVES_BUDGET == 0:
-                combat_ability.set_text('')
+                combat_ability.set_text(':  0')
                 return
 
             spent = self._session.figures_budget.of(figure)
-            combat_ability.set_text(self._language.get_combat_ability_message(figure, spent))
+            combat_ability.set_text(self._get_combat_ability_message(figure, spent))
 
         def update_strength(figure: fig.Figure, coord: Vector2Int) -> None:
             if (movable := figure.FLAGS.get(Movable)) is MISSING:
-                strength.set_text('')
                 return
 
             base = movable.base_strength
             additional = movable.strength(coord, self._session.board) - base
 
-            strength.set_text(self._language.get_strength_message(base, additional))
+            strength.set_text(f":  {base}" + (f" + {additional}" if additional > 0 else ""))
 
         def update_hardness(figure: fig.Figure, coord: Vector2Int) -> None:
             board = self._session.board
             base = min(figure.hardness(coord, board), figure.base_hardness())
             additional = board[coord].hardness(board) - base
 
-            hardness.set_text(self._language.get_hardness_message(base, additional))
+            hardness.set_text(f":  {base}" + (f" + {additional}" if additional > 0 else ""))
 
         return update_stats
 
+    @staticmethod
+    def _get_combat_ability_message(figure: fig.Figure, spent: int) -> str:
+        budget = figure.MOVES_BUDGET
+        rest = budget - spent
+
+        combat_ability_ratio = rest / budget
+        combat_ability = f":  {combat_ability_ratio:.0%}"
+        if Movable in figure.FLAGS:
+            relocations = math.floor(rest / figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
+            assaults = math.floor(rest / figure.get_cost_of(Assault(Vector2Int.zero(), Vector2Int.zero())))
+            if relocations + assaults > 0:
+                return f"{combat_ability} ({relocations}/{assaults})"
+
+        return combat_ability
+
     def _fill_figure_menu_flow(self,
                                synchroniser: TextSizeSynchroniser,
-                               flow: VerticalLayoutUi,
+                               flow: LayoutUi,
                                text_data: TextDataBuilder,
                                figure_type: type[fig.Figure]) -> Callable[[Vector2Int | Status], None]:
         if (changer := figure_type.FLAGS.get(ResourcesChanger)) is MISSING:
             return lambda _: None
 
-        text_of = {resource: TextUi.make(self._drawer, Rectangle.zero(), text_data.build())
-                   for resource in changer.changeable_resources}
+        resources = changer.changeable_resources
 
-        if len(text_of) < 2:
+        if len(resources) < 2:
             flow.append(BoxUi(Rectangle.zero()))
 
-        flow.extend(text_of.values())
+        text_of = {resource: self._append_square_image_and_text_to(flow,
+                                                                   self._sprites_loader.load_resource_sprite(resource),
+                                                                   text_data.build)
+                   for resource in get_resources_types()
+                   if resource in resources}
+
         synchroniser.extend(*text_of.values())
 
         def update(coord: Vector2Int | Status) -> None:
@@ -872,7 +913,7 @@ class GameUiLayerMaker:
                 return
 
             for resource in resources.not_zero:
-                text_of[type(resource)].set_text(self._language.get_message_from_resource(resource))
+                text_of[type(resource)].set_text(f":  {NumberShortener.shorten(resource.amount)}")
 
         return update
 

@@ -3,6 +3,7 @@ from pathlib import Path
 from attrs import frozen
 
 import core.figures.figure as fig
+from core.protocols import Resource
 from mathematics.vector import Vector2Int
 from .sprite import Sprite
 from files import read_meta
@@ -24,7 +25,13 @@ _PIVOT = "pivot"
 
 _FIGURES = "figures"
 
+_RESOURCES = "resources"
+_COMBAT_ABILITY = "COMBAT_ABILITY"
+_STRENGTH = "STRENGTH"
+_HARDNESS = "HARDNESS"
+
 _UI = "ui"
+_MAP_EDITOR = "map_editor"
 _BUTTON_3_TO_2 = "button_3_to_2"
 _BUTTON_3_TO_2_ACTIVE = "button_3_to_2_active"
 _BACKGROUND_3_TO_2 = "background_3_to_2"
@@ -104,6 +111,10 @@ class SpritesLoader:
         return self._meta[_UI]
 
     @property
+    def _resources(self) -> SPRITES_GROUP_DICT:
+        return self._meta[_RESOURCES]
+
+    @property
     def _effects(self) -> SPRITES_GROUP_DICT:
         return self._meta[_EFFECTS]
 
@@ -123,6 +134,26 @@ class SpritesLoader:
 
     def has_figure(self, figure: type[fig.Figure]) -> bool:
         return figure.__name__ in self._figures
+
+    def load_resource_sprite(self, resource: type[Resource]) -> Sprite:
+        sprite_info = self._resources[resource.__name__]
+        return self._load_sprite(sprite_info)
+
+    def load_combat_ability_icon(self) -> Sprite:
+        sprite_info = self._resources[_COMBAT_ABILITY]
+        return self._load_sprite(sprite_info)
+
+    def load_strength_icon(self) -> Sprite:
+        sprite_info = self._resources[_STRENGTH]
+        return self._load_sprite(sprite_info)
+
+    def load_hardness_icon(self) -> Sprite:
+        sprite_info = self._resources[_HARDNESS]
+        return self._load_sprite(sprite_info)
+
+    def load_map_editor_icon(self) -> Sprite:
+        sprite_info = self._ui[_MAP_EDITOR]
+        return self._load_sprite(sprite_info)
 
     def load_button_3_to_2(self) -> Sprite:
         sprite_info = self._ui[_BUTTON_3_TO_2]

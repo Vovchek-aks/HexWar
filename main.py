@@ -28,17 +28,17 @@ CAPTION = "HexWar"
 def main() -> None:
     psutil.Process(os.getpid()).nice(psutil.HIGH_PRIORITY_CLASS)
     sys.setrecursionlimit(10_000)
-    # make_first_scene = _make_test_game_loading_scene
+    make_first_scene = _make_test_game_loading_scene
     # make_first_scene = _make_multibot_loading_scene
     # make_first_scene = _make_map_editor_loading_scene
-    make_first_scene = _make_main_menu_loading_scene
+    # make_first_scene = _make_main_menu_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
 
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("SVO.json", UPS).load()
+        session = GameSessionLoader.make("Balkans.json", UPS).load()
         # player = session.master.players[10]
         player = session.master.current_player
         players_selector = PlayersSelector(session)

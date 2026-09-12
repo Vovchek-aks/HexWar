@@ -406,33 +406,6 @@ class Language:
 
         return message
 
-    def get_combat_ability_message(self, figure: fig.Figure, spent: int) -> str:
-        budget = figure.MOVES_BUDGET
-        rest = budget - spent
-
-        combat_ability_ratio = rest / budget
-        combat_ability = f"{combat_ability_ratio:.0%}"
-
-        form = self._ui[_COMBAT_ABILITY]
-        if Movable in figure.FLAGS:
-            relocations = math.floor(rest / figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
-            assaults = math.floor(rest / figure.get_cost_of(Assault(Vector2Int.zero(), Vector2Int.zero())))
-            if relocations + assaults > 0:
-                form = f"{form} ({relocations}/{assaults})"
-                return form.format(combat_ability=combat_ability,
-                                   relocations=str(relocations),
-                                   assaults=str(assaults))
-
-        return form.format(combat_ability=combat_ability)
-
-    def get_strength_message(self, base: int, additional: int) -> str:
-        return (self._ui[_STRENGTH].format(base=base) +
-                (f" + {additional}" if additional > 0 else ""))
-
-    def get_hardness_message(self, base: int, additional: int) -> str:
-        return (self._ui[_HARDNESS].format(base=base) +
-                (f" + {additional}" if additional > 0 else ""))
-
     def get_tutorial_hints(self, tutorial_index: int) -> list[list[str]]:
         return self._hints[_TUTORIALS][tutorial_index]
 

@@ -13,7 +13,7 @@ from appearance.UI.text import TextData, TextUi, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ValueChanger, ListChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
-from appearance.graphics.sprites import SpritesLoader
+from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT, \
@@ -594,11 +594,12 @@ class MainMenuUiLayerMaker:
         synchroniser.extend(tutorial.text, settings.text, close.text, authors.text)
         synchroniser.synchronise()
 
-        map_editor = self._make_menu_button("R", map_editor_was_pressed.invoke, turn_tabs_off)
+        map_editor = self._make_menu_image_button(self._sprites_loader.load_map_editor_icon(),
+                                                  map_editor_was_pressed.invoke, turn_tabs_off)
         map_editor.set_rectangle(RectangleBuilder(self._screen_shape)
                                  .from_left_bottom()
-                                 .set_shape(Vector2(50, 50))
-                                 .move(Vector2(10, 10))
+                                 .set_shape(Vector2(60, 60))  # todo
+                                 .move(Vector2(15, 15))
                                  .adjust_for_shape()
                                  .build())
 
@@ -629,8 +630,23 @@ class MainMenuUiLayerMaker:
 
         return self._make_null_button(text, new_on_button_pressed)
 
+    def _make_menu_image_button(self,
+                                sprite: Sprite,
+                                on_button_pressed: Callable[[], None],
+                                turn_tabs_off: Callable[[], None]) -> ButtonUi:
+        def new_on_button_pressed() -> None:
+            turn_tabs_off()
+            on_button_pressed()
+
+        button = self._make_image_button(sprite)
+        button.was_clicked.subscribe(new_on_button_pressed)
+        return button
+
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
         return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer)
+
+    def _make_image_button(self, sprite: Sprite) -> ButtonUi:
+        return ButtonUi.make(self._drawer, Rectangle.ones(), sprite)
 
     def _make_title(self) -> Layer:
         title = ImageUi.make(self._drawer, self._get_title_rectangle(), self._sprites_loader.load_logo())

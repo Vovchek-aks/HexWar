@@ -3,7 +3,7 @@ from typing import Callable
 from attrs import frozen
 import arcade as arc
 
-from core.protocols import Board, CellsChangesObserver
+from core.protocols import Board, CellsChangesObserver, Empty
 import appearance.protocols as proto
 from mathematics.vector import Vector2Int
 from observer import OnEventSubscriber
@@ -40,7 +40,8 @@ class DrawMaker:
                                         cells_change_observer.cell_changed_owner)
 
         figures_sprites_loader = FiguresSpritesLoader(sprites_loader)
-        figures_sprites = figures_sprites_loader.load(fig.get_figures(), self._on_no_figure_sprite)
+        figures_sprites = figures_sprites_loader.load([figure for figure in fig.get_figures()
+                                                       if Empty not in figure.FLAGS], self._on_no_figure_sprite)
 
         pool = SpritesPool.make(count_multiplier_of_sprites={
             figures_sprites.get(figure): 1

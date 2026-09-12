@@ -16,7 +16,7 @@ BLACK_COLOR = Color.from_hex_string("#272315")
 @frozen
 class TextData(proto.TextData):
     @classmethod
-    def debug(cls, text: str) -> "TextData":
+    def debug(cls, text: str = "...") -> "TextData":
         return (TextDataBuilder()
                 .set_text(text)
                 .debug_font()

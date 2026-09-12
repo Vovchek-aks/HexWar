@@ -162,6 +162,50 @@
       ]
     }
   },
+  "resources": {
+    "Dollars": {
+      "file": "resources/dollars.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "LightIndustryProducts": {
+      "file": "resources/lip.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "HeavyIndustryProducts": {
+      "file": "resources/hip.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "COMBAT_ABILITY": {
+      "file": "resources/combat_ability.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "HARDNESS": {
+      "file": "resources/hardness.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "STRENGTH": {
+      "file": "resources/strength.png",
+      "pivot": [
+        0,
+        0
+      ]
+    }
+  },
   "ui": {
     "button_3_to_2": {
       "file": "ui/btn_500_144.png",
@@ -333,6 +377,13 @@
     },
     "btn_purchase": {
       "file": "ui/btn_purchase.png",
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "map_editor": {
+      "file": "ui/map_editor.png",
       "pivot": [
         0,
         0
