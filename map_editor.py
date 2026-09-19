@@ -7,6 +7,8 @@ import core.protocols as proto
 from appearance.input.moves_inputer.input_actions import CellClickAction
 from appearance.protocols import InputAction, MouseButtons, InputActionsReader, InputState
 from core.cells import Cells
+from core.game_session import GameSession
+from core.master import Master
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
 from statuses import MISSING, Status
@@ -31,8 +33,6 @@ class MapEditor:
         actions_reader.action_was_read.subscribe(self._on_action_was_read)
 
         transforms.append(("Clear", lambda coord: self._change_figure(coord, fig.Land)))
-        self._transform = "Clear"
-
         transforms.append(("Water", lambda coord: self._change_owner_to(coord, MISSING)))
 
         for figure in fig.get_figures():
@@ -42,8 +42,9 @@ class MapEditor:
             self._append_transform(transforms, figure)
 
         for player in session.master.players:
-            transforms.append(self._make_set_player_transform(player))
+            self.append_player_transform(player)
 
+        self._transform = transforms[0][0]
         return self
 
     _input_state: InputState
@@ -60,6 +61,10 @@ class MapEditor:
     def transforms(self) -> list[str]:
         return list(map(lambda pair: pair[0], self._transforms))
 
+    @property
+    def session(self) -> proto.GameSession:
+        return self._session
+
     def set(self, transform: str) -> None:
         assert transform in dict(self._transforms).keys()
 
@@ -69,8 +74,17 @@ class MapEditor:
         if self._process is not MISSING:
             next(self._process)
 
-    def _make_set_player_transform(self, player: proto.Player) -> Transform:
-        return player.data.name, lambda coord: self._change_owner_to(coord, player)
+    def append_player_transform(self, player: proto.Player) -> None:
+        self._transforms.append((player.data.name, lambda coord: self._change_owner_to(coord, player)))
+        if player in self._session.master.players:
+            return
+
+        self._session = GameSession(Master(self._session.master.players + [player]),
+                                    self._session.board,
+                                    self._session.figures_budget,
+                                    self._session.pulling_connections,
+                                    self._session.cells,
+                                    self._session.figures)
 
     def _on_action_was_read(self, action: InputAction, _: bool) -> None:
         match action:

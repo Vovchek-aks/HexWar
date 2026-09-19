@@ -64,6 +64,10 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
         return self._changer.value
 
     @property
+    def changer(self) -> "ValueChanger[T]":
+        return self._changer
+
+    @property
     def rectangle(self) -> Rectangle:
         return self._stretcher.rectangle
 

@@ -1,29 +1,60 @@
 {
-  "PLAYERS": [],
+  "PLAYERS": [
+    {
+      "NAME": "biba",
+      "COLOR": "#7dff7d",
+      "INPUTER": [
+        "BotPlayerInputer",
+        "BotIgor"
+      ],
+      "RESOURCES": {
+        "Dollars": 0,
+        "Oil": 0,
+        "LightIndustryProducts": 0,
+        "HeavyIndustryProducts": 0
+      },
+      "TURN": 1
+    },
+    {
+      "NAME": "boba",
+      "COLOR": "#7d7d7d",
+      "INPUTER": [
+        "BotPlayerInputer",
+        "BotIgor"
+      ],
+      "RESOURCES": {
+        "Dollars": 0,
+        "Oil": 0,
+        "LightIndustryProducts": 0,
+        "HeavyIndustryProducts": 0
+      },
+      "TURN": 1
+    }
+  ],
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {},
   "BOARD_SHAPE": "5 5",
   "CELLS": [
     -1,
+    0,
+    0,
+    0,
     -1,
     -1,
+    0,
+    0,
+    0,
+    0,
+    -1,
+    0,
+    0,
+    0,
+    0,
     -1,
     -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
+    0,
+    0,
     -1,
     -1,
     -1,

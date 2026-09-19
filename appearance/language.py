@@ -72,6 +72,8 @@ _NEED_TO_PLAY_BOT_MOVE_ANIMATIONS = "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS"
 _ON = "ON"
 _OFF = "OFF"
 _APPLY = "APPLY"
+_ADD_PLAYER = "ADD_PLAYER"
+_PLAYERS_NAME = "PLAYERS_NAME"
 _PLAYERS_MODE = "PLAYERS_MODE"
 _PLAYERS_MODE_STATES = "PLAYERS_MODE_STATES"
 _PLAYERS_MODE_RANDOM = "PLAYERS_MODE_RANDOM"
@@ -319,6 +321,12 @@ class Language:
 
     def get_apply_message(self) -> str:
         return self._ui[_APPLY]
+
+    def get_players_name_message(self) -> str:
+        return self._ui[_PLAYERS_NAME]
+
+    def get_add_player_message(self) -> str:
+        return self._ui[_ADD_PLAYER]
 
     def get_players_mode_message(self) -> str:
         return self._ui[_PLAYERS_MODE]

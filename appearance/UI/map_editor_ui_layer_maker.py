@@ -15,6 +15,11 @@ from appearance.game_engine.game_engine_arc.window import Window
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
+from color import Color
+from core.player import Player, PlayerData
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
+from core.player.inputers.bots import BotIgor
+from core.resources import ResourcesStockpile
 from map_editor import MapEditor
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
@@ -36,13 +41,15 @@ class MapEditorUiLayerMaker:
         exit_was_pressed.subscribe(on_exit_was_pressed)
         layers = [
             self._make_back_button(exit_was_pressed.invoke),
-            self._make_transform_switcher(),
-            self._make_player_adding_menu(exit_was_pressed.subscriber),
+            changer := self._make_transform_switcher(),
+            self._make_player_adding_menu(changer.changer, exit_was_pressed.subscriber),
         ]
 
         return Layer.as_multiple(layers)
 
-    def _make_player_adding_menu(self, exit_was_pressed: OnEventSubscriber[None]) -> Layer:
+    def _make_player_adding_menu(self,
+                                 transforms_changer: ListChanger[str],
+                                 exit_was_pressed: OnEventSubscriber[None]) -> Layer:
         layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
                                   .from_left_up()
                                   .move(Vector2(20, 20))
@@ -52,17 +59,45 @@ class MapEditorUiLayerMaker:
                                   .build(),
                                   reserved=5,
                                   margin_ratio=.2)
+
+        def can_append_player() -> bool:
+            name = player_name.text
+            if name == self._language.get_players_name_message():
+                return False
+
+            if name in (player.data.name for player in self._map_editor.session.master.players):
+                return False
+
+            return True
+
+        def try_append_player() -> None:
+            if not can_append_player():
+                return
+
+            name = player_name.text
+            color = Color(color_r.value, color_g.value, color_b.value)
+            player = Player(PlayerData(color, name), BotPlayerInputer(BotIgor()), ResourcesStockpile())
+
+            self._map_editor.append_player_transform(player)
+            transforms_changer.insert(0, name)
+            player_name.set_text(self._language.get_players_name_message())
+
+
         synchroniser = TextSizeSynchroniser()
         line_edit_text_data = (TextDataBuilder()
                                .debug_font(round(0.03 * self._screen_shape.y))
-                               .set_text("aboba")
+                               .set_text(self._language.get_players_name_message())
                                .white_colored()
                                .build())
-        layout.append(LineEditUi.make(self._window, exit_was_pressed, Rectangle.ones(), line_edit_text_data))
-        self._add_changer(synchroniser, layout, "R", IntChanger(125, 0, 255, 5), changers_count=5, name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "G", IntChanger(125, 0, 255, 5), changers_count=5, name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "B", IntChanger(125, 0, 255, 5), changers_count=5, name_size_ratio=.2)
-        layout.append(add_player := self._make_null_button("aboba", lambda: None))
+        player_name = LineEditUi.make(self._window, exit_was_pressed, Rectangle.ones(), line_edit_text_data)
+        layout.append(player_name)
+        self._add_changer(synchroniser, layout, "R", color_r := IntChanger(125, 0, 255, 5),
+                          changers_count=5, name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "G", color_g := IntChanger(125, 0, 255, 5),
+                          changers_count=5, name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "B", color_b := IntChanger(125, 0, 255, 5),
+                          changers_count=5, name_size_ratio=.2)
+        layout.append(add_player := self._make_null_button(self._language.get_add_player_message(), try_append_player))
         synchroniser.append(add_player.text)
         synchroniser.synchronise()
         return layout.layer

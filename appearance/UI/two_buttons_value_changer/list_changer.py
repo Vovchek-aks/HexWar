@@ -14,6 +14,11 @@ class ListChanger[T]:
         assert value in self._values
         self._index = self._values.index(value)
 
+    def insert(self, index: int, value: T) -> None:
+        current = self.value
+        self._values.insert(index, value)
+        self._index = self._values.index(current)
+
     def next(self) -> None:
         self._index = (self._index + 1) % len(self._values)
 

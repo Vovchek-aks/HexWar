@@ -419,7 +419,7 @@ class Bunker(_Figure):
     MOVES_BUDGET = 0
 
     _FROM_FRONT_MAX_DISTANCE = 3
-    _TURN_PROBABILITY = .3
+    _TURN_PROBABILITY = 1
 
     @classmethod
     def base_hardness(cls) -> int:

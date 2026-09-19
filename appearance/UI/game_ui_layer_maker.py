@@ -1318,6 +1318,8 @@ class GameUiLayerMaker:
                     figures_budget.can_spend(figure, figure.get_cost_of(OreshnikLaunch(Vector2Int.zero(),
                                                                                        Vector2Int.zero()))))
 
+        assert False
+
     def _is_ui_needed(self, cell_coord: Vector2Int, figure: type[fig.Figure]) -> bool:
         cell = self._session.board[cell_coord]
         player = self._session.master.current_player

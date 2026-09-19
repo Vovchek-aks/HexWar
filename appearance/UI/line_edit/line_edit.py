@@ -64,6 +64,9 @@ class LineEditUi(proto.ElementUi):
     def text(self) -> str:
         return self._input_field.text
 
+    def set_text(self, text: str) -> None:
+        self._input_field.text = text
+
     def set_rectangle(self, rectangle: Rectangle) -> None:
         self._rectangle = rectangle
         self._input_field.center_x = rectangle.position.x

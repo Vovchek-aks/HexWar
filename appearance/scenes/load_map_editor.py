@@ -100,7 +100,7 @@ def load_map_editor(window: Window,
     scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, map_editor, layers)
 
     def on_exit_was_pressed() -> None:
-        GameSessionSaver(session).save(EDIT_MAP_FILE)
+        GameSessionSaver(map_editor.session).save(EDIT_MAP_FILE)
         scene.switch_to(get_main_menu_loading_scene())
 
     exit_was_pressed.subscribe(on_exit_was_pressed)

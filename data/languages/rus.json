@@ -65,6 +65,8 @@
     "ON": "Вкл",
     "OFF": "Выкл",
     "APPLY": "Применить",
+    "ADD_PLAYER": "Добавить игрока",
+    "PLAYERS_NAME": "Имя игрока",
     "PLAYERS_TOP": "Топ игроков",
     "TERRITORIES": "Земли",
     "ECONOMY": "Эко.",
