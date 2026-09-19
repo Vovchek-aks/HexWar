@@ -1080,6 +1080,10 @@ class ResourcesStockpile(ABC):
         ...
 
     @abstractmethod
+    def set(self, resource: Resource) -> None:
+        ...
+
+    @abstractmethod
     def can_take(self, resources_to_take: ResourcesGroup) -> bool:
         ...
 

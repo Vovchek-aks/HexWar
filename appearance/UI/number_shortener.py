@@ -22,4 +22,7 @@ class NumberShortener:
 
         assert power < len(cls._POSTFIXES)
 
+        if power == 0:
+            return f"{sign * number}"
+
         return f"{sign * number:.1f}{cls._POSTFIXES[power]}"

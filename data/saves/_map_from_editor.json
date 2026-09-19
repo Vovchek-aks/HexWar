@@ -1,32 +1,17 @@
 {
   "PLAYERS": [
     {
-      "NAME": "biba",
-      "COLOR": "#7dff7d",
+      "NAME": "aboba",
+      "COLOR": "#ff7d7d",
       "INPUTER": [
         "BotPlayerInputer",
         "BotIgor"
       ],
       "RESOURCES": {
-        "Dollars": 0,
+        "Dollars": 500000,
         "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
-      },
-      "TURN": 1
-    },
-    {
-      "NAME": "boba",
-      "COLOR": "#7d7d7d",
-      "INPUTER": [
-        "BotPlayerInputer",
-        "BotIgor"
-      ],
-      "RESOURCES": {
-        "Dollars": 0,
-        "Oil": 0,
-        "LightIndustryProducts": 0,
-        "HeavyIndustryProducts": 0
+        "LightIndustryProducts": 1000,
+        "HeavyIndustryProducts": 1000
       },
       "TURN": 1
     }

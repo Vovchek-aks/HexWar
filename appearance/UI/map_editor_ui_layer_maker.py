@@ -4,22 +4,24 @@ from attrs import frozen, Factory
 
 import appearance.protocols as proto
 from appearance.UI.button import ButtonUi, get_image_rectangle
+from appearance.UI.image import ImageUi
 from appearance.UI.layouts import HorizontalLayoutUi, VerticalLayoutUi
 from appearance.UI.layouts.layout import LayoutUi
 from appearance.UI.line_edit.line_edit import LineEditUi
+from appearance.UI.number_shortener import NumberShortener
 from appearance.UI.text import TextData, TextUi, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ListChanger, ValueChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
 from appearance.game_engine.game_engine_arc.window import Window
-from appearance.graphics.sprites import SpritesLoader
+from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.language import Language
 from appearance.layer import Layer
 from color import Color
 from core.player import Player, PlayerData
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots import BotIgor
-from core.resources import ResourcesStockpile
+from core.resources import ResourcesStockpile, Dollars, LightIndustryProducts, HeavyIndustryProducts, Resource
 from map_editor import MapEditor
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
@@ -43,9 +45,104 @@ class MapEditorUiLayerMaker:
             self._make_back_button(exit_was_pressed.invoke),
             changer := self._make_transform_switcher(),
             self._make_player_adding_menu(changer.changer, exit_was_pressed.subscriber),
+            self._make_player_edit_menu(changer),
         ]
 
         return Layer.as_multiple(layers)
+
+    def _make_player_edit_menu(self, transforms_switcher: TwoButtonsValueChanger[str]) -> Layer:
+        layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
+                                  .from_right_up()
+                                  .move(Vector2(20, 20))
+                                  .set_shape(Vector2(self._screen_shape.x / 4.5,
+                                                     self._screen_shape.y * .24))
+                                  .adjust_for_shape()
+                                  .build(),
+                                  reserved=3,
+                                  margin_ratio=.2)
+
+        def get_player() -> Player | None:
+            players = [player for player in self._map_editor.session.master.players
+                       if player.data.name == transforms_switcher.value]
+            assert len(players) < 2
+            if not players:
+                return None
+            return players[0]
+
+        def on_transform_value_had_changed(_: str) -> None:
+            player = get_player()
+            layout.layer.set_activity(bool(player))
+            if not player:
+                return
+
+            dollars.set(player.resources.get(Dollars).amount)
+            light_industry_products.set(player.resources.get(LightIndustryProducts).amount)
+            heavy_industry_products.set(player.resources.get(HeavyIndustryProducts).amount)
+
+        ((dollars := self._append_square_image_and_value_changer_to(layout,
+                                                                    self._sprites_loader.load_resource_sprite(Dollars),
+                                                                    IntChanger(0, 0, 1_000_000_000, 250_000)))
+        .value_had_changed.subscribe(
+            lambda value:
+            get_player().resources.set(Dollars(value))
+            if get_player() else None)
+        )
+        ((light_industry_products := self._append_square_image_and_value_changer_to(
+            layout,
+            self._sprites_loader.load_resource_sprite(LightIndustryProducts),
+            IntChanger(0, 0, 1_000_000_000, 1_000)
+        )).value_had_changed.subscribe(
+            lambda value:
+            get_player().resources.set(LightIndustryProducts(value))
+            if get_player() else None)
+        )
+        ((heavy_industry_products := self._append_square_image_and_value_changer_to(
+            layout,
+            self._sprites_loader.load_resource_sprite(
+                HeavyIndustryProducts),
+            IntChanger(0, 0, 1_000_000_000,
+                       1_000)
+        )).value_had_changed.subscribe(
+            lambda value:
+            get_player().resources.set(HeavyIndustryProducts(value))
+            if get_player() else None)
+        )
+
+        layout.layer.set_activity(False)
+        transforms_switcher.value_had_changed.subscribe(on_transform_value_had_changed)
+        return layout.layer
+
+    def _append_square_image_and_value_changer_to[T](self,
+                                                     layout: LayoutUi,
+                                                     sprite: Sprite,
+                                                     changer: ValueChanger[T]) -> TwoButtonsValueChanger[T]:
+        horizontal = HorizontalLayoutUi(Rectangle.ones(), reserved=2, margin_ratio=0.05)
+        layout.append(horizontal)
+        height = horizontal.rectangle.shape.y
+        non_empty_width = horizontal.rectangle.shape.x * (1 - horizontal.margin_ratio)
+        ratio = height / non_empty_width
+        weight = ratio / (1 - ratio)
+        horizontal.append(ImageUi.make(self._drawer, Rectangle.ones(), sprite), weight=weight)
+
+        rectangle = Rectangle(Vector2.zero(),
+                              Vector2(layout.elements_count * layout.rectangle.shape.x / layout.rectangle.shape.y,
+                                      1 - layout.margin_ratio) * 100)
+        horizontal.append(
+            value_changer := TwoButtonsValueChanger.make_horizontal(
+                Rectangle(
+                    Vector2.zero(),
+                    rectangle.shape.with_x(rectangle.shape.x
+                                           * (1 - horizontal.margin_ratio)
+                                           / (weight + 1))
+                ),
+                changer,
+                self._sprites_loader,
+                self._drawer,
+                get_text=NumberShortener.shorten
+            )
+        )
+
+        return value_changer
 
     def _make_player_adding_menu(self,
                                  transforms_changer: ListChanger[str],
@@ -62,10 +159,13 @@ class MapEditorUiLayerMaker:
 
         def can_append_player() -> bool:
             name = player_name.text
+            if name.isspace() or not name:
+                return False
+
             if name == self._language.get_players_name_message():
                 return False
 
-            if name in (player.data.name for player in self._map_editor.session.master.players):
+            if name in transforms_changer.values:
                 return False
 
             return True
@@ -82,7 +182,6 @@ class MapEditorUiLayerMaker:
             transforms_changer.insert(0, name)
             player_name.set_text(self._language.get_players_name_message())
 
-
         synchroniser = TextSizeSynchroniser()
         line_edit_text_data = (TextDataBuilder()
                                .debug_font(round(0.03 * self._screen_shape.y))
@@ -91,12 +190,9 @@ class MapEditorUiLayerMaker:
                                .build())
         player_name = LineEditUi.make(self._window, exit_was_pressed, Rectangle.ones(), line_edit_text_data)
         layout.append(player_name)
-        self._add_changer(synchroniser, layout, "R", color_r := IntChanger(125, 0, 255, 5),
-                          changers_count=5, name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "G", color_g := IntChanger(125, 0, 255, 5),
-                          changers_count=5, name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "B", color_b := IntChanger(125, 0, 255, 5),
-                          changers_count=5, name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "R", color_r := IntChanger(125, 0, 255, 5), name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "G", color_g := IntChanger(125, 0, 255, 5), name_size_ratio=.2)
+        self._add_changer(synchroniser, layout, "B", color_b := IntChanger(125, 0, 255, 5), name_size_ratio=.2)
         layout.append(add_player := self._make_null_button(self._language.get_add_player_message(), try_append_player))
         synchroniser.append(add_player.text)
         synchroniser.synchronise()
@@ -108,12 +204,11 @@ class MapEditorUiLayerMaker:
                         text: str,
                         changer: ValueChanger[T],
                         *,
-                        changers_count: int,
                         name_size_ratio: float = .5) -> None:
         text = f"{text}:"
         margin_ratio = .13
         rectangle = Rectangle(Vector2.zero(),
-                              Vector2(changers_count * layout.rectangle.shape.x / layout.rectangle.shape.y,
+                              Vector2(layout.elements_count * layout.rectangle.shape.x / layout.rectangle.shape.y,
                                       1 - layout.margin_ratio) * 100)
         horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio, reserved=2)
         layout.append(horizontal)

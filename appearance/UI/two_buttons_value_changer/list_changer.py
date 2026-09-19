@@ -7,6 +7,10 @@ class ListChanger[T]:
     _index: int = 0
 
     @property
+    def values(self) -> list[T]:
+        return list(self._values)
+
+    @property
     def value(self) -> T:
         return self._values[self._index]
 

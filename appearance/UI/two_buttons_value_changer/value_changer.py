@@ -1,5 +1,5 @@
 from attrs import define, field
-from typing import Protocol
+from typing import Protocol, Callable
 
 import appearance.protocols as proto
 from appearance.UI.button import ButtonUi
@@ -19,7 +19,9 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
                         changer: "ValueChanger",
                         sprites_loader: SpritesLoader,
                         drawer: proto.UiDrawer,
-                        margin_ratio: float = 0) -> "TwoButtonsValueChanger":
+                        *,
+                        margin_ratio: float = 0,
+                        get_text: Callable[[T], str] = lambda value: str(value)) -> "TwoButtonsValueChanger":
         margin = rectangle.shape.x * margin_ratio
         stretcher = StretcherUi(rectangle)
 
@@ -27,9 +29,9 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
         text = TextUi.make(drawer,
                            Rectangle(rectangle.position + (buttons_shape.x + margin) * Vector2.right(),
                                      rectangle.shape - 2 * (buttons_shape.x + margin) * Vector2.right()),
-                           TextData.debug(str(changer.value)), is_center=True)
+                           TextData.debug(get_text(changer.value)), is_center=True)
 
-        self = TwoButtonsValueChanger(stretcher, text, changer)
+        self = TwoButtonsValueChanger(stretcher, text, changer, get_text)
 
         back = ButtonUi.make(drawer,
                              Rectangle(rectangle.position, buttons_shape),
@@ -51,6 +53,7 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
     _stretcher: StretcherUi = field(hash=False)
     _text: TextUi = field(hash=False)
     _changer: "ValueChanger[T]" = field(hash=False)
+    _get_text: Callable[[T], str] = field(hash=False)
 
     _value_had_changed: Event[T, None] = field(init=False, factory=Event, hash=False)
 
@@ -102,7 +105,7 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
         self._value_had_changed.invoke(self.value)
 
     def _update_text(self) -> None:
-        self._text.set_text(str(self._changer.value))
+        self._text.set_text(self._get_text(self._changer.value))
 
 
 class ValueChanger[T](Protocol):

@@ -24,6 +24,8 @@ from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.map_editor_scene import MapEditorScene
 from appearance.settings import Settings
 from core.cells_changes_observer import CellsChangesObserver
+from core.game_session import GameSession
+from core.master import Master
 from game_session_saver import GameSessionSaver, GameSessionLoader, EDIT_MAP_FILE
 from map_editor import MapEditor
 from mathematics.vector import Vector2Int
@@ -100,7 +102,15 @@ def load_map_editor(window: Window,
     scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, map_editor, layers)
 
     def on_exit_was_pressed() -> None:
-        GameSessionSaver(map_editor.session).save(EDIT_MAP_FILE)
+        session = GameSession(Master([player
+                                      for player in map_editor.session.master.players
+                                      if map_editor.session.cells.with_owner(player)]),
+                              map_editor.session.board,
+                              map_editor.session.figures_budget,
+                              map_editor.session.pulling_connections,
+                              map_editor.session.cells,
+                              map_editor.session.figures)
+        GameSessionSaver(session).save(EDIT_MAP_FILE)
         scene.switch_to(get_main_menu_loading_scene())
 
     exit_was_pressed.subscribe(on_exit_was_pressed)

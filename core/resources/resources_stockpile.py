@@ -1,6 +1,6 @@
 from attrs import define, field
 
-from core.resources import Resource
+from core.resources import Resource, get_resources_types
 import core.protocols as proto
 from core.resources.resources_group import ResourcesGroup
 from observer import Event, OnEventSubscriber
@@ -19,6 +19,12 @@ class ResourcesStockpile(proto.ResourcesStockpile):
     @property
     def as_group(self) -> ResourcesGroup:
         return self._resources
+
+    def set(self, resource: Resource) -> None:
+        self._resources = ResourcesGroup(tuple(resource if issubclass(resource_type, type(resource))
+                                               else self.get(resource_type)
+                                               for resource_type in get_resources_types()))
+        self._has_changed.invoke(self)
 
     def get(self, target: type[Resource]) -> Resource:
         return self._resources.get(target)
