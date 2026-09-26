@@ -2,9 +2,11 @@ import math
 import random
 from typing import Iterator
 
-from attrs import frozen, define
+from attrs import frozen, define, field
 
+from mathematics.vector import Vector2Int
 from my_random import temporarily_seed
+from statuses import Status, MISSING
 from .game_rule import GameRule
 import core.protocols as proto
 import core.figures.figure as fig
@@ -14,10 +16,33 @@ from ..distant_neighbors_getter import DistantNeighborsGetter
 @define
 class AbandonmentsSpreaderState(proto.GameRuleState):
     _was_any_abandonment_destroyed: bool = False
+    _session: proto.GameSession | Status = field(init=False, default=MISSING)
 
     @property
     def was_any_abandonment_destroyed(self) -> bool:
         return self._was_any_abandonment_destroyed
+
+    def set_session(self, session: proto.GameSession) -> None:
+        assert self._session is MISSING
+        self._session = session
+        session.figures.figure_was_removed.subscribe(self._on_figure_was_removed)
+
+    def on_turn_start(self) -> None:
+        self._was_any_abandonment_destroyed = False
+
+    def _on_figure_was_removed(self, figure: fig.Figure, coord: Vector2Int) -> None:
+        assert self._session is not MISSING
+
+        if self._was_any_abandonment_destroyed:
+            return
+
+        if not isinstance(figure, fig.Abandonment):
+            return
+
+        if self._session.board[coord].owner is not self._session.master.current_player:
+            return
+
+        self._was_any_abandonment_destroyed = True
 
 
 @frozen
@@ -47,14 +72,19 @@ class AbandonmentsSpreader(GameRule):
         with temporarily_seed(session.master.current_turn):
             return rounded + (1 if random.random() < to_spawn - rounded else 0)
 
+    def on_turn_start(self, session: proto.GameSession) -> Iterator[None]:
+        session.game_rule_states.get(AbandonmentsSpreaderState).on_turn_start()
+        yield
+
     def on_turn_end(self, session: proto.GameSession) -> Iterator[None]:
         board = session.board
         player = session.master.current_player
         cells_cache = session.cells
         cells = cells_cache.with_owner(player)
         figures = session.figures
+        state = session.game_rule_states.get(AbandonmentsSpreaderState)
 
-        if session.game_rule_states.get(AbandonmentsSpreaderState).was_any_abandonment_destroyed:
+        if state.was_any_abandonment_destroyed:
             return
 
         abandonments = cells & session.cells.with_figure(fig.Abandonment)

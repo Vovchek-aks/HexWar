@@ -116,9 +116,7 @@ class MainMenuUiLayerMaker:
         def on_new_map_was_pressed() -> None:
             shape = Vector2Int(changers[width].value,
                                changers[height].value)
-            (GameSessionSaver(empty_map(shape,
-                                        game_rule_states=GameRuleStates.for_default_rules(),
-                                        player_names=[]))
+            (GameSessionSaver(empty_map(shape, player_names=[]))
              .save(EDIT_MAP_FILE))
             on_map_editor_was_requested()
 

@@ -7,7 +7,7 @@ from mathematics.vector import Vector2Int
 from my_types import ContextManager
 from observer import Event, OnEventSubscriber
 from . import Annexer, FiguresTransformer, PrivateFiguresSpawner, FiguresUpdateFlagCaller
-from .abandonments_spreader import AbandonmentsSpreader
+from .abandonments_spreader import AbandonmentsSpreader, AbandonmentsSpreaderState
 
 
 @frozen
@@ -18,6 +18,7 @@ class GameRulesApplier(proto.GameRulesApplier):
                            annexation_map: proto.AnnexationMapUpdater,
                            multiple_cells_change: Callable[[proto.Cells], ContextManager[None]],
                            on_changed_cell_owner: Callable[[Vector2Int], None]) -> proto.GameRulesApplier:
+        session.game_rule_states.get(AbandonmentsSpreaderState).set_session(session)
         return cls(session,
                    [
                        FiguresUpdateFlagCaller(),

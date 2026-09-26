@@ -3,6 +3,7 @@ from attrs import frozen
 import core.protocols as proto
 from core.cells_cache import CellsCache
 from core.figures.figures import Figures
+from core.game_rules import GameRuleStates
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
 from core.pulling_connections import PullingConnections
@@ -68,9 +69,10 @@ class GameSession(proto.GameSession):
         move.move.execute(self)
 
 
-def empty_map(shape: Vector2Int, *, game_rule_states: proto.GameRuleStates, player_names: list[str]) -> GameSession:
+def empty_map(shape: Vector2Int, *, player_names: list[str]) -> GameSession:
     players = [Player(PlayerData(colors.PLAYERS[index], name), BotPlayerInputer(BotIgor()))
                for index, name in enumerate(player_names)]
+    master = Master(players)
 
     board = Board.from_maker(shape, lambda coord: Cell(MISSING, fig.Water()))
     budget = FiguresRelocationBudget()
@@ -79,5 +81,6 @@ def empty_map(shape: Vector2Int, *, game_rule_states: proto.GameRuleStates, play
     cells = CellsCache(board)
     for cell in board.cells:
         cells.update(cell)
+    game_rule_states = GameRuleStates.for_default_rules(board, master)
 
-    return GameSession(Master(players), board, budget, pulling_connections, game_rule_states, cells, figures)
+    return GameSession(master, board, budget, pulling_connections, game_rule_states, cells, figures)

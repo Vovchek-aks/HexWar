@@ -7,9 +7,9 @@ from .abandonments_spreader import AbandonmentsSpreaderState
 @frozen
 class GameRuleStates(proto.GameRuleStates):
     @classmethod
-    def for_default_rules(cls) -> proto.GameRuleStates:
+    def for_default_rules(cls, board: proto.Board, master: proto.Master) -> proto.GameRuleStates:
         return cls({
-            AbandonmentsSpreaderState: AbandonmentsSpreaderState(),
+            AbandonmentsSpreaderState: AbandonmentsSpreaderState(board, master),
         })
 
     _states: dict[type[proto.GameRuleState], proto.GameRuleState]

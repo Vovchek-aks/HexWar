@@ -196,7 +196,8 @@ class GameSessionLoader:
         game_rule_states = self._load_game_rule_states()
         cells = CellsCache.make(board)
 
-        return GameSession(master, board, budget, pulling_connections, game_rule_states, cells, figures)
+        session = GameSession(master, board, budget, pulling_connections, game_rule_states, cells, figures)
+        return session
 
     def _load_master(self) -> Master:
         players = list[proto.Player]()

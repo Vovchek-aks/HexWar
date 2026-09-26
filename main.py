@@ -43,15 +43,14 @@ def main() -> None:
 
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("Balkans.json", UPS).load()
-        # player = session.master.players[10]
-        player = session.master.current_player
+        session = GameSessionLoader.make("_map_from_editor.json", UPS).load()
+        # player = session.master.current_player
+        player = session.master.players[1]
         players_selector = PlayersSelector(session)
         players_selector.toggle(player)
         player.resources.add(ResourcesGroup.make(Dollars(1_000_000_000),
                                                  LightIndustryProducts(1_000_000),
                                                  HeavyIndustryProducts(1_000_000)))
-        FiguresUpdateFlagCaller().on_turn_start(session)
         return session.with_master(players_selector.make_master())
 
     return LoadingScenesMaker(window, UPS).make_game_loading_scene(make_game_session)

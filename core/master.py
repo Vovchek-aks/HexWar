@@ -38,7 +38,7 @@ class Master(proto.Master):
         return self._turn_of[player]
 
     def get_next_player(self, session: proto.GameSession) -> proto.Player:
-        self._remove_empty_players(session)
+        self._remove_empty_players(session, allow_first_player_deletion=False)
 
         if len(self._players) == 1:
             return self._players[0]
@@ -48,15 +48,17 @@ class Master(proto.Master):
     def pass_turn_to_next_player(self, session: proto.GameSession) -> None:
         previous_player = self.current_player
         self._players.append(self._players.pop(0))
-        self._remove_empty_players(session)
+        self._remove_empty_players(session, allow_first_player_deletion=True)
         self._turn_of[previous_player] += 1
 
         self._turn_has_passed.invoke(previous_player)
         self._turn_had_started.invoke(self.current_player)
 
-    def _remove_empty_players(self, session: proto.GameSession) -> None:
+    def _remove_empty_players(self, session: proto.GameSession, *, allow_first_player_deletion: bool) -> None:
         to_remove = list[proto.Player]()
         for player in self._players:
+            if player is self.current_player and not allow_first_player_deletion:
+                continue
             if not session.cells.with_owner(player):
                 to_remove.append(player)
 
