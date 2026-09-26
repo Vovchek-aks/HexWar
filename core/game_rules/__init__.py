@@ -4,3 +4,4 @@ from .figures_update_flag_caller import FiguresUpdateFlagCaller
 from .private_figures_spawner import PrivateFiguresSpawner
 
 from .game_rules_applier import GameRulesApplier
+from .game_rule_states import GameRuleStates

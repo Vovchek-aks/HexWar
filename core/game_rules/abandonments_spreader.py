@@ -2,13 +2,22 @@ import math
 import random
 from typing import Iterator
 
-from attrs import frozen
+from attrs import frozen, define
 
 from my_random import temporarily_seed
 from .game_rule import GameRule
 import core.protocols as proto
 import core.figures.figure as fig
 from ..distant_neighbors_getter import DistantNeighborsGetter
+
+
+@define
+class AbandonmentsSpreaderState(proto.GameRuleState):
+    _was_any_abandonment_destroyed: bool = False
+
+    @property
+    def was_any_abandonment_destroyed(self) -> bool:
+        return self._was_any_abandonment_destroyed
 
 
 @frozen
@@ -44,6 +53,9 @@ class AbandonmentsSpreader(GameRule):
         cells_cache = session.cells
         cells = cells_cache.with_owner(player)
         figures = session.figures
+
+        if session.game_rule_states.get(AbandonmentsSpreaderState).was_any_abandonment_destroyed:
+            return
 
         abandonments = cells & session.cells.with_figure(fig.Abandonment)
         if not abandonments:

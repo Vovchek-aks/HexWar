@@ -7,7 +7,6 @@ import core.protocols as proto
 from appearance.input.moves_inputer.input_actions import CellClickAction
 from appearance.protocols import InputAction, MouseButtons, InputActionsReader, InputState
 from core.cells import Cells
-from core.game_session import GameSession
 from core.master import Master
 from mathematics.vector import Vector2Int
 from my_types import ContextManager
@@ -79,12 +78,7 @@ class MapEditor:
         if player in self._session.master.players:
             return
 
-        self._session = GameSession(Master(self._session.master.players + [player]),
-                                    self._session.board,
-                                    self._session.figures_budget,
-                                    self._session.pulling_connections,
-                                    self._session.cells,
-                                    self._session.figures)
+        self._session = self._session.with_master(Master(self._session.master.players + [player]))
 
     def _on_action_was_read(self, action: InputAction, _: bool) -> None:
         match action:

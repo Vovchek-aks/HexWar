@@ -26,11 +26,16 @@ CAPTION = "HexWar"
 
 
 def main() -> None:
+    # from game_session_saver import _get_all_maps, GameSessionSaver
+    # for file in _get_all_maps():
+    #     GameSessionSaver(GameSessionLoader.make(f"{file}.json", 60).load()).save(f"{file}.json")
+    # return
+
     psutil.Process(os.getpid()).nice(psutil.HIGH_PRIORITY_CLASS)
     sys.setrecursionlimit(10_000)
-    # make_first_scene = _make_test_game_loading_scene
+    make_first_scene = _make_test_game_loading_scene
     # make_first_scene = _make_multibot_loading_scene
-    make_first_scene = _make_map_editor_loading_scene
+    # make_first_scene = _make_map_editor_loading_scene
     # make_first_scene = _make_main_menu_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
@@ -47,12 +52,7 @@ def _make_test_game_loading_scene(window: Window) -> Scene:
                                                  LightIndustryProducts(1_000_000),
                                                  HeavyIndustryProducts(1_000_000)))
         FiguresUpdateFlagCaller().on_turn_start(session)
-        return GameSession(players_selector.make_master(),
-                           session.board,
-                           session.figures_budget,
-                           session.pulling_connections,
-                           session.cells,
-                           session.figures)
+        return session.with_master(players_selector.make_master())
 
     return LoadingScenesMaker(window, UPS).make_game_loading_scene(make_game_session)
 

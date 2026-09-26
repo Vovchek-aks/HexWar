@@ -45,12 +45,7 @@ class MapRandomizer:
         players = self._add_random_players(player, players_count)
         self._annexer.annex(self._session, self._session.cells.with_owner(player))
         self._spawn_towns_and_get_resources(players, town_per_player, start_resources)
-        session = GameSession(Master(players),
-                              self._session.board,
-                              self._session.figures_budget,
-                              self._session.pulling_connections,
-                              self._session.cells,
-                              self._session.figures)
+        session = self._session.with_master(Master(players))
         session = GameSessionLoader(GameSessionSaver(session).get_json(), ups).load()
         return session
 

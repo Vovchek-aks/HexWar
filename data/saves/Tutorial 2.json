@@ -59,22 +59,27 @@
       "5 3"
     ],
     "Bunker": [
-      "8 14",
+      "5 11",
       "7 6",
-      "5 11"
+      "8 14"
     ],
     "Infantry": [
+      "9 11",
       "11 9",
       "9 14",
-      "9 11",
       "4 10"
     ],
     "Artillery": [
-      "11 13",
-      "10 7"
+      "10 7",
+      "11 13"
     ]
   },
   "BOARD_SHAPE": "20 20",
+  "GAME_RULE_STATES": {
+    "ABANDONMENTS_SPREADER": {
+      "WAS_ANY_ABANDONMENT_DESTROYED": false
+    }
+  },
   "CELLS": [
     -1,
     -1,

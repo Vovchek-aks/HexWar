@@ -9,7 +9,6 @@ from appearance.graphics.draw import DrawMaker
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.water_animator import WaterAnimator
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
-from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.map_editor_board_drawable_layer import MapEditorBoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.input.keyboard_camera_mover import KeyboardCameraMover
@@ -97,13 +96,7 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
         if not players_selector.has_selected:
             return
 
-        new_session = GameSession(players_selector.make_master(),
-                                  session.board,
-                                  session.figures_budget,
-                                  session.pulling_connections,
-                                  session.cells,
-                                  session.figures)
-
+        new_session = session.with_master(players_selector.make_master())
         game_rules_applier = GameRulesApplier.with_default_rules(new_session,
                                                                  AnnexationMapUpdater(new_session,
                                                                                       AnnexationMap(new_session)),

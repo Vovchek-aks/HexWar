@@ -23,6 +23,7 @@ class GameSession(proto.GameSession):
     _board: proto.Board
     _figures_budget: proto.FiguresRelocationBudget
     _pulling_connections: proto.PullingConnections
+    _game_rule_states: proto.GameRuleStates
     _cells: proto.CellsCache
     _figures: proto.Figures
 
@@ -39,6 +40,10 @@ class GameSession(proto.GameSession):
         return self._pulling_connections
 
     @property
+    def game_rule_states(self) -> proto.GameRuleStates:
+        return self._game_rule_states
+
+    @property
     def board(self) -> proto.Board:
         return self._board
 
@@ -50,11 +55,20 @@ class GameSession(proto.GameSession):
     def figures(self) -> proto.Figures:
         return self._figures
 
+    def with_master(self, new_master: proto.Master) -> proto.GameSession:
+        return GameSession(new_master,
+                           self.board,
+                           self.figures_budget,
+                           self.pulling_connections,
+                           self._game_rule_states,
+                           self.cells,
+                           self.figures)
+
     def make(self, move: proto.ValidMove) -> None:
         move.move.execute(self)
 
 
-def empty_map(shape: Vector2Int, *, player_names: list[str]) -> GameSession:
+def empty_map(shape: Vector2Int, *, game_rule_states: proto.GameRuleStates, player_names: list[str]) -> GameSession:
     players = [Player(PlayerData(colors.PLAYERS[index], name), BotPlayerInputer(BotIgor()))
                for index, name in enumerate(player_names)]
 
@@ -66,4 +80,4 @@ def empty_map(shape: Vector2Int, *, player_names: list[str]) -> GameSession:
     for cell in board.cells:
         cells.update(cell)
 
-    return GameSession(Master(players), board, budget, pulling_connections, cells, figures)
+    return GameSession(Master(players), board, budget, pulling_connections, game_rule_states, cells, figures)

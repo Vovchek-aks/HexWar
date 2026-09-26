@@ -364,6 +364,11 @@ class GameSession(ABC):
 
     @property
     @abstractmethod
+    def game_rule_states(self) -> "GameRuleStates":
+        ...
+
+    @property
+    @abstractmethod
     def board(self) -> Board:
         ...
 
@@ -378,17 +383,11 @@ class GameSession(ABC):
         ...
 
     @abstractmethod
+    def with_master(self, new_master: Master) -> "GameSession":
+        ...
+
+    @abstractmethod
     def make(self, move: "ValidMove") -> None:
-        ...
-
-
-class GameRule(ABC):
-    @abstractmethod
-    def on_turn_start(self, session: GameSession) -> Iterator[None]:
-        ...
-
-    @abstractmethod
-    def on_turn_end(self, session: GameSession) -> Iterator[None]:
         ...
 
 
@@ -404,6 +403,31 @@ class GameRulesApplier(ABC):
 
     @abstractmethod
     def on_turn_end(self) -> Iterator[None]:
+        ...
+
+
+class GameRule(ABC):
+    @abstractmethod
+    def on_turn_start(self, session: GameSession) -> Iterator[None]:
+        ...
+
+    @abstractmethod
+    def on_turn_end(self, session: GameSession) -> Iterator[None]:
+        ...
+
+
+class GameRuleState(ABC):
+    ...
+
+
+class GameRuleStates:
+    _states: dict[type[GameRuleState], GameRuleState]
+
+    @property
+    def all(self) -> dict[type[GameRuleState], GameRuleState]:
+        return dict(self._states)
+
+    def get[T: GameRuleState](self, game_rule_state_type: type[T]) -> T:
         ...
 
 

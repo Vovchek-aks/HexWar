@@ -142,9 +142,7 @@ class BotIgor(proto.Bot):
         infantry_count = self._count_of(fig.Infantry)
         artillery_count = self._count_of(fig.Artillery)
         motorization_count = self._count_of(fig.Motorization)
-        bunkers_count = len((cells.with_owner(self._player) &
-                             cells.with_figure(fig.Bunker) &
-                             cells.at_changeable_front).as_set())
+        bunkers_count = self._count_of(fig.Bunker)
         empty_front_length = len(cells.with_owner(self._player) &
                                  cells.at_changeable_front &
                                  cells.with_figure(fig.Land))
@@ -903,9 +901,13 @@ class BotIgor(proto.Bot):
                    .with_figure(fig.Infantry | fig.Motorization)
                    .filter(lambda cell: connections.is_puller(cell.figure)))
 
-        for cell in to_pull:
+        shuffled = to_pull.as_list()
+        random.shuffle(shuffled)
+        for cell in shuffled:
             yield
-            front = front_of[type(cell.figure)] if cell not in pullers else front_of[type(cell.figure), fig.Artillery]
+            front = (front_of[type(cell.figure)]
+                     if cell not in pullers else
+                     front_of[type(cell.figure), fig.Artillery])
             target = self._get_pull_cells(cell, front)
             if target is MISSING:
                 continue

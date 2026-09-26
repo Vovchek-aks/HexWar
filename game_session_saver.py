@@ -11,6 +11,8 @@ from core.cell import Cell
 from core.cells_cache import CellsCache
 from core.figures.figures import Figures
 from core.figures.figures_relocation_budget import FiguresRelocationBudget
+from core.game_rules import GameRuleStates
+from core.game_rules.abandonments_spreader import AbandonmentsSpreaderState
 from core.game_session import GameSession
 from core.master import Master
 from core.player import Player, PlayerData
@@ -35,8 +37,10 @@ PLAYER_DICT = dict[str, str | list[str] | dict[str, int]]
 BUDGET_DICT = dict[str, int]
 PULLING_CONNECTIONS_DICT = dict[str, str]
 FIGURES_DICT = dict[str, list[str]]
+GAME_RULE_STATES_DICT = dict[str, dict[str, bool]]
 CELLS_LIST = list[int]
-SESSION_DICT = dict[str, list[PLAYER_DICT] | BUDGET_DICT | PULLING_CONNECTIONS_DICT | FIGURES_DICT | str | CELLS_LIST]
+SESSION_DICT = dict[str, list[PLAYER_DICT] | BUDGET_DICT | PULLING_CONNECTIONS_DICT | FIGURES_DICT
+                         | GAME_RULE_STATES_DICT | str | CELLS_LIST]
 
 BOTS = {bot.__name__: bot for bot in bots}
 RESOURCES = {resource.__name__: resource for resource in get_resources_types()}
@@ -59,6 +63,10 @@ _BOARD_SHAPE = "BOARD_SHAPE"
 
 _CELLS = "CELLS"
 
+_GAME_RULE_STATES = "GAME_RULE_STATES"
+_ABANDONMENTS_SPREADER = "ABANDONMENTS_SPREADER"
+_WAS_ANY_ABANDONMENT_DESTROYED = "WAS_ANY_ABANDONMENT_DESTROYED"
+
 _TUTORIAL_MAP_PREFIX = "Tutorial"
 
 
@@ -75,8 +83,9 @@ class GameSessionSaver:
         json[_PLAYERS] = self._get_player_dicts()
         json[_BUDGET] = self._get_budget_dict()
         json[_PULLABLE_OF] = self._get_pulling_connections_dict()
-        json[_FIGURES] = self.get_figures_dict()
+        json[_FIGURES] = self._get_figures_dict()
         json[_BOARD_SHAPE] = self._key_from(self._session.board.shape)
+        json[_GAME_RULE_STATES] = self._get_game_rule_states_dict(self._session.game_rule_states)
         json[_CELLS] = self._get_cells_list()
         return json
 
@@ -126,7 +135,7 @@ class GameSessionSaver:
             connections[self._key_from(puller_coord)] = self._key_from(pullable_coord)
         return connections
 
-    def get_figures_dict(self) -> FIGURES_DICT:
+    def _get_figures_dict(self) -> FIGURES_DICT:
         figures: FIGURES_DICT = defaultdict(list)
         for figure in fig.get_figures():
             if proto.Empty in figure.FLAGS:
@@ -141,6 +150,14 @@ class GameSessionSaver:
                 figures[figure.__name__].append(self._key_from(coord))
 
         return figures
+
+    def _get_game_rule_states_dict(self, game_rule_states: proto.GameRuleStates) -> GAME_RULE_STATES_DICT:
+        return {
+            _ABANDONMENTS_SPREADER: {
+                _WAS_ANY_ABANDONMENT_DESTROYED: game_rule_states.get(
+                    AbandonmentsSpreaderState).was_any_abandonment_destroyed
+            }
+        }
 
     def _get_cells_list(self) -> CELLS_LIST:
         cells = CELLS_LIST()
@@ -176,9 +193,10 @@ class GameSessionLoader:
         figures = self._load_figures(board, budget)
         pulling_connections = self._load_pulling_connections(board, figures)
         self._load_figures_budget(budget, board)
+        game_rule_states = self._load_game_rule_states()
         cells = CellsCache.make(board)
 
-        return GameSession(master, board, budget, pulling_connections, cells, figures)
+        return GameSession(master, board, budget, pulling_connections, game_rule_states, cells, figures)
 
     def _load_master(self) -> Master:
         players = list[proto.Player]()
@@ -248,6 +266,13 @@ class GameSessionLoader:
         bill_of: BUDGET_DICT = self._json[_BUDGET]
         for key, bill in bill_of.items():
             budget.add(board[self._coord_from(key)].figure, bill)
+
+    def _load_game_rule_states(self) -> proto.GameRuleStates:
+        game_rules: GAME_RULE_STATES_DICT = self._json[_GAME_RULE_STATES]
+        return GameRuleStates({
+            AbandonmentsSpreaderState: AbandonmentsSpreaderState(
+                game_rules[_ABANDONMENTS_SPREADER][_WAS_ANY_ABANDONMENT_DESTROYED])
+        })
 
     @staticmethod
     def _coord_from(key: str) -> Vector2Int:

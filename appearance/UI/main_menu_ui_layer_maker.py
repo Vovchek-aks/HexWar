@@ -18,6 +18,7 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT, \
     NEED_TO_PLAY_BOT_MOVE_ANIMATIONS
+from core.game_rules import GameRuleStates
 from files import read_build_info, read_random_bot_names
 from game_session_saver import get_saved_maps, get_tutorials, SAVE_FOLDER, EDIT_MAP_FILE, GameSessionSaver
 from core.game_session import empty_map
@@ -115,7 +116,10 @@ class MainMenuUiLayerMaker:
         def on_new_map_was_pressed() -> None:
             shape = Vector2Int(changers[width].value,
                                changers[height].value)
-            GameSessionSaver(empty_map(shape, player_names=[])).save(EDIT_MAP_FILE)
+            (GameSessionSaver(empty_map(shape,
+                                        game_rule_states=GameRuleStates.for_default_rules(),
+                                        player_names=[]))
+             .save(EDIT_MAP_FILE))
             on_map_editor_was_requested()
 
         new_open.append(new_button := self._make_null_button(self._language.get_make_new_map_message(),

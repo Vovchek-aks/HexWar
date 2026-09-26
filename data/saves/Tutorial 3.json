@@ -34,16 +34,16 @@
   "PULLABLE_OF": {},
   "FIGURES": {
     "Town": [
+      "15 20",
       "23 18",
       "4 14",
       "5 14",
       "15 19",
-      "15 20",
       "14 20"
     ],
     "LightFactory": [
-      "13 19",
-      "14 4"
+      "14 4",
+      "13 19"
     ],
     "HeavyFactory": [
       "14 15",
@@ -60,6 +60,11 @@
     ]
   },
   "BOARD_SHAPE": "30 30",
+  "GAME_RULE_STATES": {
+    "ABANDONMENTS_SPREADER": {
+      "WAS_ANY_ABANDONMENT_DESTROYED": false
+    }
+  },
   "CELLS": [
     -1,
     -1,

@@ -411,7 +411,7 @@ class Abandonment(_Figure):
 
 class Bunker(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainForest, TerrainMountain}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainMountain}),
                       Static(),
                       PreventsCaptures(),
                       Transforms(lambda coord, session: Bunker.get_target(coord, session)),

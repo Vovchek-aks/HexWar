@@ -37,12 +37,17 @@
       "15 8"
     ],
     "Infantry": [
-      "5 12",
       "9 13",
-      "6 9"
+      "6 9",
+      "5 12"
     ]
   },
   "BOARD_SHAPE": "20 20",
+  "GAME_RULE_STATES": {
+    "ABANDONMENTS_SPREADER": {
+      "WAS_ANY_ABANDONMENT_DESTROYED": false
+    }
+  },
   "CELLS": [
     -1,
     -1,
