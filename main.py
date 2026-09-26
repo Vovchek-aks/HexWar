@@ -12,7 +12,6 @@ from appearance.game_engine.game_engine_arc.window import Window
 from appearance.input.players_selector import PlayersSelector
 from appearance.protocols import Scene
 from appearance.scenes.loading_scenes_maker import LoadingScenesMaker
-from core.game_rules import FiguresUpdateFlagCaller
 from core.game_session import GameSession
 from core.map_randomizer import MapRandomizer
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
