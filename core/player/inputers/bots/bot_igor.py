@@ -30,7 +30,7 @@ from mathematics.vector import Vector2Int
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 _ATTACKING = 0
-_BUILDING = 1
+_SPENDING = 1
 _PULLING = 2
 _CATASTROPHY_PREVENTION = 3
 _INITIAL_STATE = _CATASTROPHY_PREVENTION
@@ -200,9 +200,9 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            self._state = _BUILDING
+            self._state = _SPENDING
 
-        if self._state == _BUILDING:
+        if self._state == _SPENDING:
             has_developed = hf_count > 0
             is_allowed_to_build = empties_count > cells_count * _MIN_EMPTIES_RATIO
 
@@ -220,6 +220,12 @@ class BotIgor(proto.Bot):
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
+
+            yield from self._try_attack_with_grads()
+            # print("_try_attack_with_artillery")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
 
             target_silos_count = max(1, hf_count // 4)
             if silos_count < target_silos_count:
@@ -318,12 +324,6 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            yield from self._try_attack_with_grads()
-            # print("_try_attack_with_artillery")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
-
             yield from self._try_breakthrough_with_tanks()
             # print("_try_breakthrough_with_tanks")
             if self._moves_to_make:
@@ -358,7 +358,7 @@ class BotIgor(proto.Bot):
                 return
 
             if not _is_inner:
-                self._state = _BUILDING
+                self._state = _SPENDING
                 yield from self._add_moves(cells_count, _is_inner=True)
             else:
                 self._ran_out_of_moves = True
@@ -1244,6 +1244,10 @@ class BotIgor(proto.Bot):
             return
         yield
 
+        our_good_cells = (cells.with_owner(self._player)
+                          - (cells.with_figure(fig.Land)
+                             + cells.with_figure(fig.Abandonment)))
+
         for grad in grads:
             yield
             neighbors = (DistantNeighborsGetter(grad, self._board)
@@ -1261,7 +1265,7 @@ class BotIgor(proto.Bot):
             moves = [move for move in moves
                      if move is not INVALID
                      and not (move.move.get_target_cells(self._session)
-                              & (cells.with_owner(self._player) - cells.with_figure(fig.Land)))]
+                              & our_good_cells)]
             if not moves:
                 continue
 
