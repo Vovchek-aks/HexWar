@@ -17,6 +17,7 @@ from core.moves.capture import Capture
 from core.moves.comnination import Combination
 from core.moves.conversion import Conversion
 from core.moves.creation import Creation
+from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingInitiation
 from core.moves.relocations import Relocation, Assault
@@ -71,6 +72,7 @@ _MIN_EMPTIES_RATIO = .4
 _CAPITALS_RATIO = 2
 
 _HOWITZERS_TO_TANKS_RATIO = .3
+_GRADS_TO_MOTORIZATION_RATIO = .3
 
 _CATASTROPHY_ABANDONMENTS_COUNT = 3
 
@@ -148,6 +150,7 @@ class BotIgor(proto.Bot):
                                  cells.with_figure(fig.Land))
         tanks_count = self._count_of(fig.Tank)
         howitzers_count = self._count_of(fig.Howitzer)
+        grads_count = self._count_of(fig.Grad)
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _CATASTROPHY_PREVENTION:
@@ -259,6 +262,14 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
+            if (math.floor(motorization_count * _GRADS_TO_MOTORIZATION_RATIO) > grads_count
+                    or motorization_count > 1 and grads_count == 0):
+                yield from self._try_convert_motorization_to_grads()
+                # print("_try_convert_tanks_to_howitzers")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
             if has_developed and self._player.resources.get(Dollars).amount > 5_000_000:
                 yield from self._try_buy_out_private_figures()
                 # print("_try_buy_out_private_figures")
@@ -301,7 +312,13 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            yield from self._try_attack_with_artillery()
+            yield from self._try_attack_with_artillery_and_howitzers()
+            # print("_try_attack_with_artillery")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
+
+            yield from self._try_attack_with_grads()
             # print("_try_attack_with_artillery")
             if self._moves_to_make:
                 # print(self._moves_to_make)
@@ -762,6 +779,36 @@ class BotIgor(proto.Bot):
             self._moves_to_make.append(valid_move)
             return
 
+    def _try_convert_motorization_to_grads(self) -> Iterator[None]:
+        cells = self._session.cells
+        our_cells = cells.with_owner(self._player)
+
+        motorizations = our_cells & cells.with_figure(fig.Motorization)
+        motorizations = motorizations - cells.at_front or motorizations
+        if not motorizations:
+            return
+
+        artilleries = our_cells & cells.with_figure(fig.Artillery)
+        artilleries = (artilleries.filter(lambda cell: not self._session.pulling_connections.is_pullable(cell.figure))
+                       or artilleries)
+        if not artilleries:
+            return
+        yield
+
+        motorization = motorizations.any
+        artillery = self._get_nearest_to(motorization, artilleries)
+        motorization = self._get_nearest_to(artillery, motorizations)
+        if artillery not in self._board.get_neighbors(motorization):
+            yield from self._add_distant_relocation_moves(motorization, artillery)
+            return
+
+        move = Combination(self._board.coordinates_of(motorization),
+                           self._board.coordinates_of(artillery),
+                           fig.Grad)
+        if (valid_move := move.validate(self._session)) is not INVALID:
+            self._moves_to_make.append(valid_move)
+            return
+
     def _try_spawn_artillery(self, amount: int) -> Iterator[None]:
         if amount <= 0:
             return
@@ -1144,7 +1191,7 @@ class BotIgor(proto.Bot):
                 self._moves_to_make.append(valid_move)
             yield
 
-    def _try_attack_with_artillery(self) -> Iterator[None]:
+    def _try_attack_with_artillery_and_howitzers(self) -> Iterator[None]:
         cells = self._session.cells
         artilleries = (cells.with_owner(self._player) &
                        cells.with_figure(fig.Artillery | fig.Howitzer))
@@ -1188,6 +1235,42 @@ class BotIgor(proto.Bot):
                           self._board.coordinates_of(target))
             if (valid_move := move.validate(self._session)) is not INVALID:
                 self._moves_to_make.append(valid_move)
+
+    def _try_attack_with_grads(self) -> Iterator[None]:
+        cells = self._session.cells
+        grads = (cells.with_owner(self._player)
+                 & cells.with_figure(fig.Grad))
+        if not grads:
+            return
+        yield
+
+        for grad in grads:
+            yield
+            neighbors = (DistantNeighborsGetter(grad, self._board)
+                         .get_all_not_farther_than(fig.Grad.FLAGS.get(proto.CanGradAttack).max_distance,
+                                                   include_cell=False)
+                         .with_flag(proto.OnLand))
+            neighbors -= cells.with_owner(self._player)
+            if not neighbors:
+                continue
+
+            moves = [GradAttack(self._board.coordinates_of(grad),
+                                self._board.coordinates_of(target))
+                     .validate(self._session)
+                     for target in neighbors]
+            moves = [move for move in moves
+                     if move is not INVALID
+                     and not (move.move.get_target_cells(self._session)
+                              & (cells.with_owner(self._player) - cells.with_figure(fig.Land)))]
+            if not moves:
+                continue
+
+            move = max(moves,
+                       key=lambda move:
+                       len(move.move.get_target_cells(self._session)
+                           & cells.with_figure(CRITICAL | fig.Bunker)))
+            self._moves_to_make.append(move)
+            return
 
     def _try_capture(self) -> Iterator[None]:
         infantries = self._session.cells.with_owner(self._player).with_flag(CanCapture)

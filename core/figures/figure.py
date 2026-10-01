@@ -714,7 +714,7 @@ class Grad(_Figure):
                       CanGradAttack(max_distance=5,
                                     targets_count=3,
                                     is_attacking_center=False,
-                                    cost=ResourcesGroup.make(LightIndustryProducts(500))))
+                                    cost=ResourcesGroup.make(LightIndustryProducts(250))))
     MOVES_BUDGET = 20
 
     @classmethod
