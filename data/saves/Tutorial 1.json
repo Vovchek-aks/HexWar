@@ -7,10 +7,10 @@
         "WantsToBeEventPlayerInputer"
       ],
       "RESOURCES": {
-        "Dollars": 10000000000000,
+        "Dollars": 1000000000,
         "Oil": 10000000000000,
-        "LightIndustryProducts": 10000000000000,
-        "HeavyIndustryProducts": 10000000000000
+        "LightIndustryProducts": 1000000000,
+        "HeavyIndustryProducts": 1000000000
       },
       "TURN": 1
     },
@@ -22,10 +22,10 @@
         1.0
       ],
       "RESOURCES": {
-        "Dollars": 10000000000000,
+        "Dollars": 1000000000,
         "Oil": 10000000000000,
-        "LightIndustryProducts": 10000000000000,
-        "HeavyIndustryProducts": 10000000000000
+        "LightIndustryProducts": 1000000000,
+        "HeavyIndustryProducts": 1000000000
       },
       "TURN": 1
     }
@@ -33,13 +33,25 @@
   "BUDGET": {},
   "PULLABLE_OF": {},
   "FIGURES": {
+    "Forest": [
+      "10 10",
+      "10 6",
+      "6 11"
+    ],
     "TierOneCapital": [
+      "5 15",
       "15 8"
     ],
     "Infantry": [
-      "9 13",
       "6 9",
-      "5 12"
+      "8 7",
+      "11 13",
+      "5 12",
+      "13 7",
+      "3 15",
+      "11 8",
+      "6 14",
+      "9 13"
     ]
   },
   "BOARD_SHAPE": "20 20",

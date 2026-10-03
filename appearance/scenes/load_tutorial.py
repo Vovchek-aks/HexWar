@@ -5,7 +5,9 @@ from attrs import frozen
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.game_ui_layer_maker import GameUiLayerMaker
 from appearance.UI.pause_menu_ui_layer_maker import PauseMenuUiLayerMaker
+from appearance.animations.moves_animators_switcher import MovesAnimatorsSwitcher
 from appearance.animations.to_target_orientation_camera_mover import ToTargetOrientationCameraMover
+from appearance.animations.turn_pass_animator import TurnPassAnimator
 from appearance.audio.music.music_player import MusicPlayer
 from appearance.audio.sound.figure_selection.figures_sounds import FiguresSounds
 from appearance.audio.sound.figure_selection.on_figure_was_clicked_sound_player import OnFigureWasClickedSoundPlayer
@@ -22,8 +24,8 @@ from appearance.graphics.draw.drawers.drawers_arc.background_drawer import Backg
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.annexation_hatching_map_updater import \
     AnnexationHatchingMapUpdater
 from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.hatching_map import HatchingMap
+from appearance.graphics.draw.drawers.drawers_arc.bord_drawer.water_animator import WaterAnimator
 from appearance.graphics.draw.drawers.drawers_arc.camera_assistant_arc import CameraAssistant
-from appearance.graphics.draw.drawers.drawers_arc.on_board_sprites_drawer import OnBoardSpritesDrawer
 from appearance.graphics.layer_drawers.board_drawable_layer import BoardDrawableLayer
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.input.keyboard_camera_mover import KeyboardCameraMover
@@ -57,7 +59,7 @@ from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
-from statuses import Status
+from statuses import Status, MISSING
 from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 
@@ -116,31 +118,41 @@ def load_tutorial(window: Window,
     multiple_relocations_reader = MultipleRelocationsReader(session, cell_selector, input_state)
     moves_inputer = MovesInputer.make(actions_reader, multiple_relocations_reader, session, cell_selector)
 
+    def prepare_pause_menu_opening() -> bool:
+        need_to_open = cell_selector.get_coord() is MISSING
+        cell_selector.unselect_cell()
+        actions_reader.clear()
+        return need_to_open
+
     pause_menu_open_requested = Event[None]()
-    pause_menu_opener = EscapePressHandler(pause_menu_open_requested.invoke)
+    escape_press_handler = EscapePressHandler(prepare_pause_menu_opening, pause_menu_open_requested.invoke)
 
     mouse_movement_observer = MouseMovementObserver()
 
     yield language.get_ui_making_message()
     end_turn_button_was_clicked = Event[None]()
-    game_ui_layer_maker = GameUiLayerMaker(UiDrawer(),
+    turn_start_preparations_had_finished = Event[None]()
+    game_ui_layer_maker = GameUiLayerMaker(window,
+                                           UiDrawer(),
                                            screen_shape,
                                            session,
                                            cell_selector,
                                            mouse_movement_observer,
                                            button_press_action_happened,
                                            moves_maker,
+                                           turn_start_preparations_had_finished.subscriber,
                                            actions_reader)
     ui_layer = game_ui_layer_maker.make_for_tutorial(tutorial_index, end_turn_button_was_clicked.invoke)
 
     yield language.get_sprite_loading_message()
-    on_board_sprites_drawer = OnBoardSpritesDrawer.make(camera.orientation)
     hatching_map = HatchingMap()
-    draw, figures_drawer, board_drawer = DrawMaker().make(screen_shape,
-                                                          on_board_sprites_drawer,
-                                                          session.board,
-                                                          hatching_map,
-                                                          cells_change_observer)
+    draw, figures_drawer, board_drawer, on_board_sprites_drawer = DrawMaker().make(screen_shape,
+                                                                                   session.board,
+                                                                                   camera.orientation,
+                                                                                   hatching_map,
+                                                                                   cells_change_observer,
+                                                                                   WaterAnimator.make,
+                                                                                   window.draw_event_finished)
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
@@ -153,21 +165,35 @@ def load_tutorial(window: Window,
     in_game_time = InGameTime()
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
+    bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
+                                               in_game_time,
+                                               speed_multiplier=(3 if Settings.open().need_to_play_bot_move_animations
+                                                                 else float("inf")),
+                                               volume_multiplier=.2)
+    animators_switcher = MovesAnimatorsSwitcher.make(session.master, players_moves_animations, bots_moves_animations)
 
     annexation_map_updater = AnnexationMapUpdater.make(session, moves_maker, AnnexationMap(session))
+    hatching_map_updater = AnnexationHatchingMapUpdater.make(session, hatching_map, board_drawer,
+                                                             annexation_map_updater)
+
+    turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session,
+                                          hatching_map_updater, annexation_map_updater)
+
     game_rules_applier = GameRulesApplier.with_default_rules(session,
                                                              annexation_map_updater,
                                                              board_drawer.not_updating_cells,
                                                              cell_changed_owner.invoke)
-    hatching_map_updater = AnnexationHatchingMapUpdater.make(session, hatching_map, board_drawer,
-                                                             annexation_map_updater)
+    game_rules_applier.turn_start_preparations_had_finished.subscribe(turn_start_preparations_had_finished.invoke)
 
-    updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, pause_menu_opener,
+    updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, escape_press_handler,
                            mouse_movement_observer, layers,
                            players_moves_maker(session, moves_maker, game_rules_applier,
-                                               lambda move: players_moves_animations.get_animation(move)),
+                                               lambda move: animators_switcher.get().get_animation(move),
+                                               turn_pass_animator.start_for_game,
+                                               turn_pass_animator.end_for_game),
                            in_game_time,
                            [
+                               # lambda: next(test),
                                annexation_map_updater.update,
                                hatching_map_updater.update,
                                music_player.update,
@@ -183,7 +209,7 @@ def load_tutorial(window: Window,
     ]
 
     game = GameScene(drawer, updater, InputState.make(window))
-    pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, pause_menu_opener)
+    pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, escape_press_handler)
     scene = GameWithPauseScene(game, pause_menu)
 
     user_inputer_builder = EventPlayerInputerBuilder()
