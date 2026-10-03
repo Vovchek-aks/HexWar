@@ -66,7 +66,8 @@ class MainMenuUiLayerMaker:
                                      on_exit_was_pressed))
         tabs.append(self._make_map_selection(turn_tabs_off, get_saved_maps(), on_map_was_selected, play_was_pressed,
                                              to_main_menu_was_pressed))
-        tabs.append(self._make_map_selection(turn_tabs_off, get_tutorials(), on_map_was_selected, tutorial_was_pressed,
+        tabs.append(self._make_map_selection(turn_tabs_off, sorted(get_tutorials(), key=lambda name: (len(name), name)),
+                                             on_map_was_selected, tutorial_was_pressed,
                                              to_main_menu_was_pressed, allow_random_players=False))
         tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
         tabs.append(self._make_authors_tab(turn_tabs_off, authors_was_pressed, to_main_menu_was_pressed))
@@ -579,12 +580,14 @@ class MainMenuUiLayerMaker:
 
         tutorial_settings = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
         layout.append(tutorial_settings)
-        tutorial_settings.append(tutorial := self._make_menu_button(self._language.get_tutorial_message(),
-                                                                    tutorial_was_pressed.invoke, turn_tabs_off))
+        tutorial_settings.append(play := self._make_menu_button(self._language.get_play_message(),
+                                                                play_was_pressed.invoke,
+                                                                turn_tabs_off))
         tutorial_settings.append(settings := self._make_menu_button(self._language.get_settings_message(),
                                                                     settings_was_pressed.invoke, turn_tabs_off))
 
-        layout.append(self._make_menu_button(self._language.get_play_message(), play_was_pressed.invoke, turn_tabs_off))
+        layout.append(self._make_menu_button(self._language.get_tutorial_message(),
+                                             tutorial_was_pressed.invoke, turn_tabs_off))
 
         authors_close = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
         layout.append(authors_close)
@@ -593,7 +596,7 @@ class MainMenuUiLayerMaker:
         authors_close.append(close := self._make_null_button(self._language.get_exit_message(), exit_was_pressed))
 
         synchroniser = TextSizeSynchroniser()
-        synchroniser.extend(tutorial.text, settings.text, close.text, authors.text)
+        synchroniser.extend(play.text, settings.text, close.text, authors.text)
         synchroniser.synchronise()
 
         map_editor = self._make_menu_image_button(self._sprites_loader.load_map_editor_icon(),

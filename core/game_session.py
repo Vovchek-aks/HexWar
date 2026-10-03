@@ -4,6 +4,7 @@ import core.protocols as proto
 from core.cells_cache import CellsCache
 from core.figures.figures import Figures
 from core.game_rules import GameRuleStates
+from core.game_rules.abandonments_spreader import AbandonmentsSpreaderState
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots.bot_igor import BotIgor
 from core.pulling_connections import PullingConnections
@@ -81,6 +82,11 @@ def empty_map(shape: Vector2Int, *, player_names: list[str]) -> GameSession:
     cells = CellsCache(board)
     for cell in board.cells:
         cells.update(cell)
-    game_rule_states = GameRuleStates.for_default_rules(board, master)
 
-    return GameSession(master, board, budget, pulling_connections, game_rule_states, cells, figures)
+    game_rule_states = GameRuleStates({
+        AbandonmentsSpreaderState: AbandonmentsSpreaderState(),
+    })
+    session = GameSession(master, board, budget, pulling_connections, game_rule_states, cells, figures)
+    game_rule_states.get(AbandonmentsSpreaderState).set_session(session)
+
+    return session
