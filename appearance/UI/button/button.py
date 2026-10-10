@@ -5,6 +5,7 @@ from attrs import define, field
 import appearance.protocols as proto
 from appearance.UI.image import ImageUi
 from appearance.UI.text import TextUi
+from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import Sprite, SpritesLoader
 from appearance.layer import Layer
 from mathematics.rectangle import Rectangle
@@ -22,8 +23,9 @@ class ButtonUi(proto.ElementUi):
                   text: str,
                   on_button_pressed: Callable[[], None],
                   sprites_loader: SpritesLoader,
-                  drawer: proto.UiDrawer) -> "ButtonUi":
-        background = sprites_loader.load_button_3_to_2()
+                  drawer: proto.UiDrawer,
+                  color=RECTANGLE_BUTTON) -> "ButtonUi":
+        background = sprites_loader.load_button_3_to_2().colored_in(color)
         button_text = TextData.for_button(text)
         self = ButtonUi.make(drawer,
                              get_image_rectangle(Rectangle(Vector2.zero(), background.shape.as_vector2)),

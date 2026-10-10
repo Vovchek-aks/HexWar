@@ -212,13 +212,12 @@
       "pivot": [
         0,
         0
-      ]
-    },
-    "button_3_to_2_active": {
-      "file": "ui/btn_216_144_active.png",
-      "pivot": [
-        0,
-        0
+      ],
+      "rectangle": [
+        10,
+        5,
+        8,
+        3
       ]
     },
     "make_art": {

@@ -26,7 +26,7 @@
         "Dollars": 8000000,
         "Oil": 0,
         "LightIndustryProducts": 10000,
-        "HeavyIndustryProducts": 0
+        "HeavyIndustryProducts": 1000
       },
       "TURN": 1
     },

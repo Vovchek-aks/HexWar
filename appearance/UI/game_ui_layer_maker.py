@@ -1179,15 +1179,6 @@ class GameUiLayerMaker:
 
         self._moves_maker.board_move_was_made.subscribe(on_board_move_was_made)
 
-    def _make_activatable_text_button(self,
-                                      text: str,
-                                      action_maker: Callable[[], ButtonPressAction]) -> ButtonUi:
-        button = self._make_null_button(text)
-        active = self._sprites_loader.load_button_3_to_2_active()
-        self._make_button_activatable(button, active, action_maker,
-                                      lambda action: isinstance(action, type(action_maker())))
-        return button
-
     def _make_activatable_figure_action_button(self,
                                                action_tag: str,
                                                action_maker: Callable[[], ButtonPressAction]) -> ButtonUi:

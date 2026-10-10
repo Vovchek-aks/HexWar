@@ -4,8 +4,9 @@ from attrs import frozen
 
 import core.figures.figure as fig
 from core.protocols import Resource
-from mathematics.vector import Vector2Int
-from .sprite import Sprite
+from mathematics.rectangle import Rectangle
+from mathematics.vector import Vector2Int, Vector2
+from .sprite import Sprite, InnerBoundrySprite
 from files import read_meta
 from appearance.figure_action_tags import ARTILLERY_ATTACK, HOWITZER_ATTACK, GRAD_ATTACK, TANK_ATTACK, \
     ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING, MOTORIZATION_TO_INFANTRY, CAPITAL_TO_TALL_CAPITAL, \
@@ -22,6 +23,7 @@ SPRITES_META_DICT = dict[str, SPRITE_DICT | SPRITES_GROUP_DICT]
 _NO_SPRITE = "no_sprite"
 _FILE = "file"
 _PIVOT = "pivot"
+_RECTANGLE = "rectangle"
 
 _FIGURES = "figures"
 
@@ -159,10 +161,6 @@ class SpritesLoader:
         sprite_info = self._ui[_BUTTON_3_TO_2]
         return self._load_sprite(sprite_info)
 
-    def load_button_3_to_2_active(self) -> Sprite:
-        sprite_info = self._ui[_BUTTON_3_TO_2_ACTIVE]
-        return self._load_sprite(sprite_info)
-
     def load_figure_creation_button_for(self, figure: type[fig.Figure]) -> Sprite:
         sprite_info = self._ui[_MAKE_BUTTONS_FOR[figure]]
         return self._load_sprite(sprite_info)
@@ -250,4 +248,13 @@ class SpritesLoader:
         assert len(pivot) == 2
 
         path = SPRITES_FOLDER / file
-        return Sprite.load_raw_image(path, Vector2Int(*pivot))
+        sprite = Sprite.load_raw_image(path, Vector2Int(*pivot))
+        if _RECTANGLE not in sprite_info:
+            return sprite
+
+        rectangle = sprite_info[_RECTANGLE]
+        assert len(rectangle) == 4
+
+        position = Vector2(*rectangle[:2])
+        shape = sprite.shape.as_vector2 - position - Vector2(*rectangle[-2:])
+        return InnerBoundrySprite.from_sprite(sprite, Rectangle(position, shape))

@@ -5,6 +5,7 @@ import appearance.protocols as proto
 from appearance.UI.button import ButtonUi
 from appearance.UI.stretcher import StretcherUi
 from appearance.UI.text import TextUi, TextData
+from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
@@ -35,14 +36,14 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
 
         back = ButtonUi.make(drawer,
                              Rectangle(rectangle.position, buttons_shape),
-                             sprites_loader.load_button_3_to_2(),
+                             sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON),
                              TextData.for_button("<"))
         back.was_clicked.subscribe(self.back)
 
         next_ = ButtonUi.make(drawer,
                               Rectangle(rectangle.position + Vector2(rectangle.shape.x - buttons_shape.x, 0),
                                         buttons_shape),
-                              sprites_loader.load_button_3_to_2(),
+                              sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON),
                               TextData.for_button(">"))
         next_.was_clicked.subscribe(self.next)
 

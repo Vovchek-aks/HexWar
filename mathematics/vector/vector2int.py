@@ -58,6 +58,9 @@ class Vector2Int:
     def with_y(self, y: int) -> "Vector2Int":
         return type(self)(self.x, y)
 
+    def __bool__(self) -> bool:
+        return bool(self.x or self.y)
+
     def __add__(self, other: "Vector2Int") -> "Vector2Int":
         return type(self)(self.x + other.x, self.y + other.y)
 

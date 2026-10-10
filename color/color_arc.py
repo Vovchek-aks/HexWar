@@ -46,3 +46,10 @@ class Color(arc.color.Color):
             min(255, round(self.g * (1 - ratio) + color.g * ratio)),
             min(255, round(self.b * (1 - ratio) + color.b * ratio))
         )
+
+    def __mul__(self, other: float) -> "Color":
+        assert other >= 0
+
+        return Color(int(self.r * other),
+                     int(self.g * other),
+                     int(self.b * other))
