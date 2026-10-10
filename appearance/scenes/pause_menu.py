@@ -13,14 +13,17 @@ class PauseMenu:
     def make(cls,
              screenshot_saver: ScreenshotSaver,
              input_state: proto.InputState,
+             mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[proto.LayerHolder],
              pause_menu_opener: EscapePressHandler) -> "PauseMenu":
         assert layers
-        return cls(screenshot_saver, ClicksCatcher(layers), input_state, LayersDrawer(layers[::-1]), pause_menu_opener)
+        return cls(screenshot_saver, ClicksCatcher(layers), input_state, mouse_movement_observer,
+                   LayersDrawer(layers[::-1]), pause_menu_opener)
 
     _screenshot_saver: ScreenshotSaver
     _clicks_catcher: ClicksCatcher
     _input_state: proto.InputState
+    _mouse_movement_observer: proto.MouseMovementObserver
     _layers: LayersDrawer
     _pause_menu_opener: EscapePressHandler
 
@@ -28,6 +31,7 @@ class PauseMenu:
         self._screenshot_saver.update(self._input_state.pressed_keys)
         self._clicks_catcher.update(self._input_state.last_frame_clicks)
         self._pause_menu_opener.update(self._input_state.pressed_keys)
+        self._mouse_movement_observer.update(self._input_state.mouse_position)
 
     def draw(self) -> None:
         self._layers.draw(self._input_state.mouse_position)

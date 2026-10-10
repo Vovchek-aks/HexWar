@@ -209,7 +209,8 @@ def load_tutorial(window: Window,
     ]
 
     game = GameScene(drawer, updater, InputState.make(window))
-    pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, escape_press_handler)
+    pause_menu = PauseMenu.make(screenshot_saver, input_state, mouse_movement_observer, pause_menu_layers,
+                                escape_press_handler)
     scene = GameWithPauseScene(game, pause_menu)
 
     user_inputer_builder = EventPlayerInputerBuilder()

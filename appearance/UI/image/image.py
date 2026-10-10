@@ -12,13 +12,7 @@ from mathematics.vector import Vector2, Vector2Int
 class ImageUi(proto.ElementUi):
     @classmethod
     def make(cls, drawer: proto.UiDrawer, rectangle: Rectangle, sprite: Sprite) -> "ImageUi":
-        sprite = cls._reshape(sprite, rectangle)
-        self = cls(drawer, sprite, rectangle)
-        self._layer = (LayerBuilder()
-                       .set_clicks_catcher(ShapeLayer(self._rectangle))
-                       .set_draw_function(self._draw)
-                       .build())
-        return self
+        return cls(drawer, cls._reshape(sprite, rectangle), rectangle)
 
     _drawer: proto.UiDrawer = field(hash=False)
     _sprite: Sprite = field(hash=False)
@@ -28,6 +22,10 @@ class ImageUi(proto.ElementUi):
 
     def __attrs_post_init__(self) -> None:
         self._id = id(self)
+        self._layer = (LayerBuilder()
+                       .set_clicks_catcher(ShapeLayer(self._rectangle))
+                       .set_draw_function(self._draw)
+                       .build())
 
     @property
     def layer(self) -> proto.Layer:
@@ -52,7 +50,7 @@ class ImageUi(proto.ElementUi):
                        .build())
 
     def _draw(self, _: Vector2) -> None:
-        self._drawer.draw_image(self._sprite, self.rectangle.position)
+        self._drawer.draw_image(self.sprite, self.rectangle.position)
 
     @staticmethod
     def _reshape(sprite: Sprite, rectangle: Rectangle) -> Sprite:

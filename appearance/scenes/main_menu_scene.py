@@ -16,10 +16,13 @@ class MainMenuScene(proto.Scene):
     def make(cls,
              screenshot_saver: ScreenshotSaver,
              input_state: proto.InputState,
+             mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[proto.LayerHolder]) -> "MainMenuScene":
-        return cls(screenshot_saver, ClicksCatcher(layers), input_state, LayersDrawer(layers[::-1]))
+        return cls(screenshot_saver, mouse_movement_observer, ClicksCatcher(layers), input_state,
+                   LayersDrawer(layers[::-1]))
 
     _screenshot_saver: ScreenshotSaver
+    _mouse_movement_observer: proto.MouseMovementObserver
     _clicks_catcher: ClicksCatcher
     _input_state: proto.InputState
     _layers: LayersDrawer
@@ -32,6 +35,7 @@ class MainMenuScene(proto.Scene):
     def update(self) -> None:
         self._screenshot_saver.update(self._input_state.pressed_keys)
         self._clicks_catcher.update(self._input_state.last_frame_clicks)
+        self._mouse_movement_observer.update(self._input_state.mouse_position)
 
     def draw(self) -> None:
         self._layers.draw(self._input_state.mouse_position)

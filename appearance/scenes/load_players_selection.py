@@ -14,6 +14,7 @@ from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeS
 from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
 from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
+from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.players_selector import PlayersSelector
@@ -66,9 +67,10 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
     players_selector = PlayersSelector.make(session, actions_reader)
 
     yield language.get_ui_making_message()
+    mouse_movement_observer = MouseMovementObserver()
     exit_was_pressed = Event[None]()
     play_was_pressed = Event[None]()
-    ui_layer_maker = PlayersSelectionUiLayerMaker(UiDrawer(), screen_shape)
+    ui_layer_maker = PlayersSelectionUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
     ui_layer = ui_layer_maker.make(exit_was_pressed.invoke,
                                    play_was_pressed.invoke,
                                    players_selector.selected_players_were_changed)
@@ -89,7 +91,8 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
         Layer(MapEditorBoardDrawableLayer(draw, hovered_cell_getter, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
-    scene = PlayersSelectionScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, layers)
+    scene = PlayersSelectionScene.make(camera_mover, mouse_movement_observer, camera_orientation, screenshot_saver,
+                                       input_state, layers)
 
 
     def on_play_was_pressed() -> None:

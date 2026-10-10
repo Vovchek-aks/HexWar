@@ -23,7 +23,10 @@ class AbandonmentsSpreaderState(proto.GameRuleState):
         return self._was_any_abandonment_destroyed
 
     def set_session(self, session: proto.GameSession) -> None:
+        if session is self._session:
+            return
         assert self._session is MISSING
+
         self._session = session
         session.figures.figure_was_removed.subscribe(self._on_figure_was_removed)
 

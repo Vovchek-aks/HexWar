@@ -9,6 +9,7 @@ from appearance.game_engine.game_engine_arc.input_state import InputState
 from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeScreenDrawableLayer
 from appearance.graphics.sprites import SpritesLoader
 from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
+from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.language import Language
 from appearance.layer import Layer
@@ -52,8 +53,9 @@ def load_main_menu(ups: int,
     reload_was_pressed = Event[None]()
 
     yield language.get_ui_making_message()
+    mouse_movement_observer = MouseMovementObserver()
     drawer = UiDrawer()
-    ui_layer = (MainMenuUiLayerMaker(drawer, screen_shape)
+    ui_layer = (MainMenuUiLayerMaker(drawer, screen_shape, mouse_movement_observer)
                 .make(map_was_selected.invoke, map_editor_was_requested.invoke, exit_was_pressed.invoke,
                       reload_was_pressed.invoke))
 
@@ -66,7 +68,7 @@ def load_main_menu(ups: int,
         Layer(WholeScreenDrawableLayer(Draw(ImageUi.make(drawer, rectangle, background))), null_layer)
     ]
 
-    scene = MainMenuScene.make(screenshot_saver, InputState.make(window), layers)
+    scene = MainMenuScene.make(screenshot_saver, InputState.make(window), mouse_movement_observer, layers)
 
     def on_map_was_selected(map_name: str, random_players_count: Status | int) -> None:
         scene_loader = scene_loader_from(map_name)

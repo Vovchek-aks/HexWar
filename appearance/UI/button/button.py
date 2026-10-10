@@ -4,16 +4,19 @@ from attrs import define, field
 
 import appearance.protocols as proto
 from appearance.UI.image import ImageUi
+from appearance.UI.image.on_mouse_cover_colored_image import OnMouseCoverColoredImageUi
 from appearance.UI.text import TextUi
-from appearance.graphics.colors import RECTANGLE_BUTTON
+from appearance.graphics.colors import RECTANGLE_BUTTON, WHITE
 from appearance.graphics.sprites import Sprite, SpritesLoader
 from appearance.layer import Layer
+from appearance.protocols import MouseMovementObserver
 from mathematics.rectangle import Rectangle
 from mathematics.vector import Vector2
 from observer import Event, OnEventSubscriber
 from appearance.UI.text import TextData
 
 MARGIN = Vector2(10, 10)
+ON_MOUSE_HOVER_DARKNESS_RATIO = .05
 
 
 @define(hash=True)
@@ -24,12 +27,14 @@ class ButtonUi(proto.ElementUi):
                   on_button_pressed: Callable[[], None],
                   sprites_loader: SpritesLoader,
                   drawer: proto.UiDrawer,
+                  mouse_movement_observer: MouseMovementObserver,
                   color=RECTANGLE_BUTTON) -> "ButtonUi":
         background = sprites_loader.load_button_3_to_2().colored_in(color)
         button_text = TextData.for_button(text)
         self = ButtonUi.make(drawer,
-                             get_image_rectangle(Rectangle(Vector2.zero(), background.shape.as_vector2)),
+                             Rectangle(Vector2.zero(), background.shape.as_vector2),
                              background,
+                             mouse_movement_observer,
                              button_text)
         self.was_clicked.subscribe(on_button_pressed)
         return self
@@ -39,8 +44,13 @@ class ButtonUi(proto.ElementUi):
              drawer: proto.UiDrawer,
              rectangle: Rectangle,
              sprite: Sprite,
-             text_data: proto.TextData = TextData.for_button(" ")) -> "ButtonUi":
+             mouse_movement_observer: MouseMovementObserver,
+             text_data: proto.TextData = TextData.for_button(" "),
+             on_mouse_hover_darkness_ratio: float = ON_MOUSE_HOVER_DARKNESS_RATIO) -> "ButtonUi":
         image = ImageUi.make(drawer, rectangle, sprite)
+        image = OnMouseCoverColoredImageUi.from_image(image,
+                                                      WHITE * (1 - on_mouse_hover_darkness_ratio),
+                                                      mouse_movement_observer)
         text = TextUi.make(drawer, get_text_rectangle(rectangle), text_data, is_center=True)
 
         layers = [
@@ -88,7 +98,7 @@ class ButtonUi(proto.ElementUi):
         self._rectangle = rectangle
         self._image.set_rectangle(rectangle)
         self._text.set_rectangle(get_text_rectangle(rectangle))
-        ...
+        ...  # ??????
 
     def _on_layer_was_clicked(self, _: proto.Click) -> None:
         self._was_clicked.invoke()

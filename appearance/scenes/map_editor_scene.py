@@ -20,6 +20,7 @@ class MapEditorScene(proto.Scene):
              screenshot_saver: ScreenshotSaver,
              input_state: proto.InputState,
              map_editor: MapEditor,
+             mouse_movement_observer: proto.MouseMovementObserver,
              layers: list[proto.LayerHolder]) -> "MapEditorScene":
         return cls(camera_mover,
                    camera_orientation,
@@ -27,6 +28,7 @@ class MapEditorScene(proto.Scene):
                    ClicksCatcher(layers),
                    input_state,
                    map_editor,
+                   mouse_movement_observer,
                    LayersDrawer(layers[::-1]))
 
     _camera_mover: KeyboardCameraMover
@@ -35,6 +37,7 @@ class MapEditorScene(proto.Scene):
     _clicks_catcher: ClicksCatcher
     _input_state: proto.InputState
     _map_editor: MapEditor
+    _mouse_movement_observer: proto.MouseMovementObserver
     _layers: LayersDrawer
     _next_scene: proto.Scene | Status = field(init=False, default=MISSING)
 
@@ -49,6 +52,7 @@ class MapEditorScene(proto.Scene):
         self._camera_orientation.update()
         self._screenshot_saver.update(self._input_state.pressed_keys)
         self._clicks_catcher.update(self._input_state.last_frame_clicks)
+        self._mouse_movement_observer.update(self._input_state.mouse_position)
 
     def draw(self) -> None:
         self._layers.draw(self._input_state.mouse_position)

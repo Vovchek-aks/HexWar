@@ -212,8 +212,8 @@ def load_game(window: Window,
     continue_was_pressed = Event[None]()
     to_main_menu_was_pressed = Event[None]()
     pause_menu_layers = [
-        PauseMenuUiLayerMaker(UiDrawer(), screen_shape).make(continue_was_pressed.invoke,
-                                                             to_main_menu_was_pressed.invoke),
+        PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
+        .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke),
         Layer(WholeScreenDrawableLayer(Draw(BackgroundDrawer(screen_shape, PAUSE_MENU_BACKGROUND))), null_layer)
     ]
 
@@ -230,7 +230,8 @@ def load_game(window: Window,
         for _ in game_rules_applier.on_turn_start():
             ...
     else:
-        pause_menu = PauseMenu.make(screenshot_saver, input_state, pause_menu_layers, escape_press_handler)
+        pause_menu = PauseMenu.make(screenshot_saver, input_state, mouse_movement_observer, pause_menu_layers,
+                                    escape_press_handler)
         scene = GameWithPauseScene(game, pause_menu)
 
         user_inputer_builder = EventPlayerInputerBuilder()

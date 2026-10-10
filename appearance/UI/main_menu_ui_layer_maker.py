@@ -18,7 +18,6 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT, \
     NEED_TO_PLAY_BOT_MOVE_ANIMATIONS
-from core.game_rules import GameRuleStates
 from files import read_build_info, read_random_bot_names
 from game_session_saver import get_saved_maps, get_tutorials, SAVE_FOLDER, EDIT_MAP_FILE, GameSessionSaver
 from core.game_session import empty_map
@@ -35,6 +34,7 @@ _AUDIO_SETTER_STEP = 5
 class MainMenuUiLayerMaker:
     _drawer: proto.UiDrawer
     _screen_shape: Vector2Int
+    _mouse_movement_observer: proto.MouseMovementObserver
 
     _language: Language = Factory(Language.from_meta)
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
@@ -203,6 +203,7 @@ class MainMenuUiLayerMaker:
         button = ButtonUi.make(self._drawer,
                                Rectangle(Vector2.zero(), sprite.shape.as_vector2),
                                sprite,
+                               self._mouse_movement_observer,
                                TextData.debug(' '))
         button.was_clicked.subscribe(lambda: webbrowser.open(url))
         return button
@@ -317,7 +318,7 @@ class MainMenuUiLayerMaker:
         layout.append(value_changer := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), Vector2(layout.rectangle.shape.x,
                                               layout.rectangle.shape.y * (1 - margin_ratio * 2) / 2)),
-            changer, self._sprites_loader, self._drawer, margin_ratio=.05
+            changer, self._sprites_loader, self._drawer, self._mouse_movement_observer, margin_ratio=.05
         ))
         synchroniser.append(value_changer.text)
 
@@ -483,7 +484,7 @@ class MainMenuUiLayerMaker:
                                                               anchor_x=TextUi.RIGHT, anchor_y=TextUi.CENTER))
         horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
-            self._sprites_loader, self._drawer))
+            self._sprites_loader, self._drawer, self._mouse_movement_observer))
         synchroniser.append(text_ui)
         value_changers[key] = value_changer
 
@@ -648,10 +649,12 @@ class MainMenuUiLayerMaker:
         return button
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer)
+        return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer,
+                                  self._mouse_movement_observer)
 
     def _make_image_button(self, sprite: Sprite) -> ButtonUi:
-        return ButtonUi.make(self._drawer, Rectangle.ones(), sprite)
+        return ButtonUi.make(self._drawer, Rectangle.ones(), sprite,
+                             self._mouse_movement_observer)
 
     def _make_title(self) -> Layer:
         title = ImageUi.make(self._drawer, self._get_title_rectangle(), self._sprites_loader.load_logo())

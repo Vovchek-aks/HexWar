@@ -13,7 +13,7 @@ from appearance.UI.stretcher import StretcherUi
 from appearance.UI.text import TextUi, TextData, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.game_engine.game_engine_arc.window import Window
-from appearance.graphics.colors import DEFAULT_BUTTON, ACTIVE_BUTTON, INVALID_BUTTON
+from appearance.graphics.colors import DEFAULT_BUTTON, ACTIVE_BUTTON, INVALID_BUTTON, RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.UI.drawer import UiDrawer
 from appearance.input.clicks_catcher.click import Click, MouseButtons
@@ -326,7 +326,7 @@ class GameUiLayerMaker:
         return layer
 
     def _make_end_turn_button(self) -> ButtonUi:
-        button_background = self._sprites_loader.load_button_3_to_2()
+        button_background = self._sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON)
         button_text = TextData.for_button(self._language.get_end_turn_message())
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(RectangleBuilder(self._screen_shape)
@@ -336,6 +336,7 @@ class GameUiLayerMaker:
                                                    .adjust_for_shape()
                                                    .build()),
                                button_background,
+                               self._mouse_movement_observer,
                                button_text)
 
         return button
@@ -443,7 +444,8 @@ class GameUiLayerMaker:
         background_active = white_background.colored_in(ACTIVE_BUTTON)
         background_invalid = white_background.colored_in(INVALID_BUTTON)
 
-        button = ButtonUi.make(self._drawer, Rectangle.ones(), background)
+        button = ButtonUi.make(self._drawer, Rectangle.ones(), background,
+                               self._mouse_movement_observer)
 
         hint_synchroniser = TextSizeSynchroniser()
         hint_box.append(self._make_figure_creation_button_hint(hint_synchroniser, figure, button))
@@ -1222,16 +1224,18 @@ class GameUiLayerMaker:
         return set_active
 
     def _make_null_button(self, text: str) -> ButtonUi:
-        background = self._sprites_loader.load_button_3_to_2()
+        background = self._sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON)
         text_data = TextData.for_button(text)
         button = ButtonUi.make(self._drawer,
                                Rectangle.ones(),
                                background,
+                               self._mouse_movement_observer,
                                text_data)
         return button
 
     def _make_image_button(self, sprite: Sprite) -> ButtonUi:
-        return ButtonUi.make(self._drawer, Rectangle.ones(), sprite)
+        return ButtonUi.make(self._drawer, Rectangle.ones(), sprite,
+                             self._mouse_movement_observer)
 
     def _make_figure_action_button(self, action_tag: str) -> tuple[ButtonUi, Sprite]:
         white = self._sprites_loader.load_action_button_for(action_tag)

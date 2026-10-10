@@ -14,6 +14,7 @@ from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ListChanger, ValueChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
 from appearance.game_engine.game_engine_arc.window import Window
+from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.language import Language
 from appearance.layer import Layer
@@ -21,7 +22,7 @@ from color import Color
 from core.player import Player, PlayerData
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.bots import BotIgor
-from core.resources import ResourcesStockpile, Dollars, LightIndustryProducts, HeavyIndustryProducts, Resource
+from core.resources import ResourcesStockpile, Dollars, LightIndustryProducts, HeavyIndustryProducts
 from map_editor import MapEditor
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
@@ -34,6 +35,7 @@ class MapEditorUiLayerMaker:
     _drawer: proto.UiDrawer
     _screen_shape: Vector2Int
     _map_editor: MapEditor
+    _mouse_movement_observer: proto.MouseMovementObserver
 
     _language: Language = Factory(Language.from_meta)
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
@@ -138,6 +140,7 @@ class MapEditorUiLayerMaker:
                 changer,
                 self._sprites_loader,
                 self._drawer,
+                self._mouse_movement_observer,
                 get_text=NumberShortener.shorten
             )
         )
@@ -225,7 +228,7 @@ class MapEditorUiLayerMaker:
         horizontal.append(TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x *
                                                              (1 - margin_ratio) / (text_weight + 1))),
-            changer, self._sprites_loader, self._drawer))
+            changer, self._sprites_loader, self._drawer, self._mouse_movement_observer))
         synchroniser.append(text_ui)
 
     def _make_back_button(self, on_exit_was_pressed: Callable[[], None]) -> ButtonUi:
@@ -250,7 +253,8 @@ class MapEditorUiLayerMaker:
         transform_switcher = TwoButtonsValueChanger.make_horizontal(self._get_transform_switcher_rectangle(),
                                                                     ListChanger(transforms),
                                                                     self._sprites_loader,
-                                                                    self._drawer)
+                                                                    self._drawer,
+                                                                    self._mouse_movement_observer)
         transform_switcher.value_had_changed.subscribe(lambda transform: self._map_editor.set(transform))
 
         return transform_switcher
@@ -267,11 +271,12 @@ class MapEditorUiLayerMaker:
                 .build())
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        button_background = self._sprites_loader.load_button_3_to_2()
+        button_background = self._sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON)
         button_text = TextData.debug(text)
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(Rectangle(Vector2.zero(), button_background.shape.as_vector2)),
                                button_background,
+                               self._mouse_movement_observer,
                                button_text)
         button.was_clicked.subscribe(on_button_pressed)
         return button

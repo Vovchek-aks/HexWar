@@ -14,6 +14,7 @@ from appearance.graphics.layer_drawers.whole_screen_drawable_layer import WholeS
 from appearance.input.keyboard_camera_mover import KeyboardCameraMover
 from appearance.input.clicks_catcher.layers.board_layer import BoardLayer
 from appearance.input.clicks_catcher.layers.whole_screen_layer import WholeScreenLayer
+from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.moves_inputer.actions_reader import InputActionsReader
 from appearance.input.moves_inputer.input_actions import ButtonPressAction
 from appearance.input.screenshot_saver import ScreenshotSaver
@@ -88,6 +89,7 @@ def load_map_editor(window: Window,
                                 board_drawer.not_updating_cells)
 
     yield language.get_ui_making_message()
+    mouse_movement_observer = MouseMovementObserver()
     exit_was_pressed = Event[None]()
     ui_layer_maker = MapEditorUiLayerMaker(window, UiDrawer(), screen_shape, map_editor)
     ui_layer = ui_layer_maker.make(exit_was_pressed.invoke)
@@ -98,7 +100,8 @@ def load_map_editor(window: Window,
         Layer(MapEditorBoardDrawableLayer(draw, hovered_cell_getter, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
-    scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, map_editor, layers)
+    scene = MapEditorScene.make(camera_mover, camera_orientation, screenshot_saver, input_state, map_editor,
+                                mouse_movement_observer, layers)
 
     def on_exit_was_pressed() -> None:
         new_session = session.with_master(Master([player

@@ -3,7 +3,7 @@ from typing import Callable
 from attrs import frozen, Factory
 
 import appearance.protocols as proto
-from appearance.UI.button import ButtonUi, get_image_rectangle
+from appearance.UI.button import ButtonUi
 from appearance.UI.text import TextData, TextUi
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
@@ -18,6 +18,7 @@ from observer import OnEventSubscriber
 class PlayersSelectionUiLayerMaker:
     _drawer: proto.UiDrawer
     _screen_shape: Vector2Int
+    _mouse_movement_observer: proto.MouseMovementObserver
 
     _language: Language = Factory(Language.from_meta)
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
@@ -89,4 +90,5 @@ class PlayersSelectionUiLayerMaker:
                 .build())
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer)
+        return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer,
+                                  self._mouse_movement_observer)

@@ -6,6 +6,7 @@ import appearance.protocols as proto
 from appearance.UI.button import ButtonUi, get_image_rectangle
 from appearance.UI.layouts import VerticalLayoutUi
 from appearance.UI.text import TextData, TextUi
+from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
@@ -17,6 +18,7 @@ from mathematics.vector import Vector2Int, Vector2
 class PauseMenuUiLayerMaker:
     _drawer: proto.UiDrawer
     _screen_shape: Vector2Int
+    _mouse_movement_observer: proto.MouseMovementObserver
 
     _language: Language = Factory(Language.from_meta)
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
@@ -57,11 +59,12 @@ class PauseMenuUiLayerMaker:
                 .build())
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        button_background = self._sprites_loader.load_button_3_to_2()
+        button_background = self._sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON)
         button_text = TextData.for_button(text)
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(Rectangle(Vector2.zero(), button_background.shape.as_vector2)),
                                button_background,
+                               self._mouse_movement_observer,
                                button_text)
         button.was_clicked.subscribe(on_button_pressed)
         return button
