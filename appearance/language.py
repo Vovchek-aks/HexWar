@@ -83,7 +83,8 @@ _SELECTED_PLAYERS = "SELECTED_PLAYERS"
 _NO_PLAYERS_SELECTED = "NO_PLAYERS_SELECTED"
 
 _PLAY = "PLAY"
-_TUTORIAL = "TUTORIAL"
+_CAMPAIGN = "CAMPAIGN"
+_MAPS = "MAPS"
 _EXIT = "EXIT"
 _AUTHORS = "AUTHORS"
 _CYBER_DILF_ROLES = "CYBER_DILF_ROLES"
@@ -197,8 +198,11 @@ class Language:
     def get_play_message(self) -> str:
         return self._ui[_PLAY]
 
-    def get_tutorial_message(self) -> str:
-        return self._ui[_TUTORIAL]
+    def get_campaign_message(self) -> str:
+        return self._ui[_CAMPAIGN]
+
+    def get_maps_message(self) -> str:
+        return self._ui[_MAPS]
 
     def get_exit_message(self) -> str:
         return self._ui[_EXIT]

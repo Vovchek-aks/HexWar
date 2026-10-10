@@ -580,13 +580,13 @@ class MainMenuUiLayerMaker:
 
         tutorial_settings = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
         layout.append(tutorial_settings)
-        tutorial_settings.append(play := self._make_menu_button(self._language.get_play_message(),
+        tutorial_settings.append(play := self._make_menu_button(self._language.get_maps_message(),
                                                                 play_was_pressed.invoke,
                                                                 turn_tabs_off))
         tutorial_settings.append(settings := self._make_menu_button(self._language.get_settings_message(),
                                                                     settings_was_pressed.invoke, turn_tabs_off))
 
-        layout.append(self._make_menu_button(self._language.get_tutorial_message(),
+        layout.append(self._make_menu_button(self._language.get_campaign_message(),
                                              tutorial_was_pressed.invoke, turn_tabs_off))
 
         authors_close = HorizontalLayoutUi(Rectangle.zero(), reserved=2)

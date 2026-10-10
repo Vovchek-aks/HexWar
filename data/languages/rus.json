@@ -6,8 +6,9 @@
     "SPRITE_LOADING": "Загрузка спрайтов..."
   },
   "ui": {
-    "PLAY": "Карты",
-    "TUTORIAL": "Кампания",
+    "MAPS": "Карты",
+    "CAMPAIGN": "Кампания",
+    "PLAY": "Играть",
     "EXIT": "Выйти",
     "AUTHORS": "Авторы",
     "CYBER_DILF_ROLES": [
