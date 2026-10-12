@@ -49,7 +49,7 @@ class ButtonUi(proto.ElementUi):
              on_mouse_hover_darkness_ratio: float = ON_MOUSE_HOVER_DARKNESS_RATIO) -> "ButtonUi":
         image = ImageUi.make(drawer, rectangle, sprite)
         image = OnMouseCoverColoredImageUi.from_image(image,
-                                                      WHITE * (1 - on_mouse_hover_darkness_ratio),
+                                                      WHITE.multiply_by(1 - on_mouse_hover_darkness_ratio),
                                                       mouse_movement_observer)
         text = TextUi.make(drawer, get_text_rectangle(rectangle), text_data, is_center=True)
 

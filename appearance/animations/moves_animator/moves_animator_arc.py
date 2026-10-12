@@ -12,7 +12,7 @@ from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.graphics.sprites import SpritesLoader
 from core.moves.attack import Attack
 from core.moves.capture import Capture
-from core.moves.comnination import Combination
+from core.moves.combination import Combination
 from core.moves.creation import Creation
 from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch

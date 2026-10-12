@@ -14,7 +14,7 @@ from core.figures.figures_flags import ALL_TERRAINS
 from core.figures.resources_flow_flags import getting_resources_flow_process
 from core.moves.attack import Attack
 from core.moves.capture import Capture
-from core.moves.comnination import Combination
+from core.moves.combination import Combination
 from core.moves.conversion import Conversion
 from core.moves.creation import Creation
 from core.moves.grad_attack import GradAttack

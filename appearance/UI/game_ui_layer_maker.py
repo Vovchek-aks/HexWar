@@ -35,7 +35,7 @@ from appearance.protocols import CellSelector, InputAction, ElementUi
 from core.figures.resources_flow_flags import get_resource_flow
 from core.moves.attack import Attack
 from core.moves.capture import Capture
-from core.moves.comnination import Combination
+from core.moves.combination import Combination
 from core.moves.conversion import Conversion
 from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch

@@ -18,7 +18,7 @@ class Combination(proto.Move):
     _combinations: ClassVar[COMBINATIONS] = {
         (fig.Tank, fig.Artillery, fig.Howitzer): (ResourcesGroup.make(HeavyIndustryProducts(500)),
                                                   round(fig.Tank.MOVES_BUDGET / 2)),
-        (fig.Motorization, fig.Artillery, fig.Grad): (ResourcesGroup.make(LightIndustryProducts(500)),
+        (fig.Motorization, fig.Artillery, fig.Grad): (ResourcesGroup.make(HeavyIndustryProducts(100)),
                                                       round(fig.Motorization.MOVES_BUDGET / 2)),
     }
 

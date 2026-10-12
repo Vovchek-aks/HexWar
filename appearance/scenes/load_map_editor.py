@@ -91,7 +91,7 @@ def load_map_editor(window: Window,
     yield language.get_ui_making_message()
     mouse_movement_observer = MouseMovementObserver()
     exit_was_pressed = Event[None]()
-    ui_layer_maker = MapEditorUiLayerMaker(window, UiDrawer(), screen_shape, map_editor)
+    ui_layer_maker = MapEditorUiLayerMaker(window, UiDrawer(), screen_shape, map_editor, mouse_movement_observer)
     ui_layer = ui_layer_maker.make(exit_was_pressed.invoke)
 
     camera_assistant = CameraAssistant.make(camera)

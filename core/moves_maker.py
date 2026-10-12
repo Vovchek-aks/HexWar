@@ -3,7 +3,7 @@ from attrs import frozen, field
 import core.protocols as proto
 from core.moves.attack import Attack
 from core.moves.capture import Capture
-from core.moves.comnination import Combination
+from core.moves.combination import Combination
 from core.moves.grad_attack import GradAttack
 from core.moves.oreshnik_launch import OreshnikLaunch
 from core.moves.pulling import PullingTermination, PullingInitiation
