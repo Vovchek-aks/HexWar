@@ -781,6 +781,12 @@ class BotIgor(proto.Bot):
             return
 
     def _try_convert_motorization_to_grads(self) -> Iterator[None]:
+        heavy_cost = (Combination.combinations()
+                      [(fig.Motorization, fig.Artillery, fig.Grad)]
+                      [0].get(HeavyIndustryProducts).amount)
+        if heavy_cost > self._player.resources.get(HeavyIndustryProducts).amount:
+            return
+
         cells = self._session.cells
         our_cells = cells.with_owner(self._player)
 

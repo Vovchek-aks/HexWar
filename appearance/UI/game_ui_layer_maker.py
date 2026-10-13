@@ -93,18 +93,18 @@ class GameUiLayerMaker:
         return Layer.as_multiple(layers)
 
     def make_for_tutorial(self, tutorial_index: int, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
-        make_current_turn_ui = {
-            0: self._make_current_turn_ui_level_1,
-            1: self._make_current_turn_ui_level_2,
-            2: self._make_current_turn_ui_level_3,
-            3: self._make_current_turn_ui_level_4,
-            4: self._make_current_turn_ui_level_5,
-            5: self._make_current_turn_ui_level_6,
-            6: self._make_current_turn_ui_level_7,
-            7: self._make_current_turn_ui_level_8,
-            8: self._make_current_turn_ui,
-            9: self._make_current_turn_ui,
-        }.get(tutorial_index)
+        make_current_turn_ui = [
+            self._make_current_turn_ui_level_1,
+            self._make_current_turn_ui_level_2,
+            self._make_current_turn_ui_level_3,
+            self._make_current_turn_ui_level_4,
+            self._make_current_turn_ui_level_5,
+            self._make_current_turn_ui_level_6,
+            self._make_current_turn_ui_level_7,
+            self._make_current_turn_ui_level_8,
+            self._make_current_turn_ui,
+            self._make_current_turn_ui,
+        ][tutorial_index]
 
         return self._make_for_tutorial(tutorial_index, on_end_turn_button_was_clicked, make_current_turn_ui)
 
