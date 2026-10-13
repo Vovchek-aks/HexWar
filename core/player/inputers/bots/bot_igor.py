@@ -206,14 +206,6 @@ class BotIgor(proto.Bot):
             has_developed = hf_count > 0
             is_allowed_to_build = empties_count > cells_count * _MIN_EMPTIES_RATIO
 
-            bunker_ratio = 0.25
-            if is_allowed_to_build and bunkers_count < empty_front_length * bunker_ratio:
-                self._try_create(fig.Bunker)
-                # print("_try_create(fig.Bunker)")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
             for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
                 yield from self._try_launch_oreshnik(self._board.coordinates_of(silo))
                 # print("_try_launch_oreshnik")
@@ -235,14 +227,20 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            motorization_ratio = .5 if has_developed else .1
-            if infantry_count * motorization_ratio < 3:
-                motorization_ratio = 1
+            motorization_ratio = .5 if has_developed or motorization_count < 3 else .1
             yield from self._try_convert_infantry_to_motorization(motorization_ratio)
             # print("_try_convert_infantry_to_motorization")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
+
+            bunker_ratio = 0.25
+            if is_allowed_to_build and bunkers_count < empty_front_length * bunker_ratio:
+                self._try_create(fig.Bunker)
+                # print("_try_create(fig.Bunker)")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
 
             yield from self._try_connect_pullerless_artillery()
             # print("_try_connect_pullerless_artillery")
