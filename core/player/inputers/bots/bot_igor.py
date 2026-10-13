@@ -227,7 +227,7 @@ class BotIgor(proto.Bot):
                     # print(self._moves_to_make)
                     return
 
-            motorization_ratio = .5 if has_developed or motorization_count < 3 else .1
+            motorization_ratio = .5 if has_developed else .1
             yield from self._try_convert_infantry_to_motorization(motorization_ratio)
             # print("_try_convert_infantry_to_motorization")
             if self._moves_to_make:

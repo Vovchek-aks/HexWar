@@ -464,7 +464,7 @@ class GameUiLayerMaker:
         return layer
 
     def _make_end_turn_button(self) -> ButtonUi:
-        button_background = self._sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON)
+        button_background = self._sprites_loader.load_button_3().colored_in(RECTANGLE_BUTTON)
         button_text = TextData.for_button(self._language.get_end_turn_message())
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(RectangleBuilder(self._screen_shape)
@@ -1401,7 +1401,7 @@ class GameUiLayerMaker:
         return set_active
 
     def _make_null_button(self, text: str) -> ButtonUi:
-        background = self._sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON)
+        background = self._sprites_loader.load_button_3().colored_in(RECTANGLE_BUTTON)
         text_data = TextData.for_button(text)
         button = ButtonUi.make(self._drawer,
                                Rectangle.ones(),

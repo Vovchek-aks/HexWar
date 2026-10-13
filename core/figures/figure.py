@@ -299,9 +299,9 @@ class PrivateHeavyFactory(_Figure):
                       Static(),
                       Private(),
                       Capturable(),
-                      TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(250_000),
-                                                                         LightIndustryProducts(1_500)),
-                                                     ResourcesGroup.make(HeavyIndustryProducts(350)),
+                      TransformsResourcesIndefinably(ResourcesGroup.make(Dollars(100_000),
+                                                                         LightIndustryProducts(500)),
+                                                     ResourcesGroup.make(HeavyIndustryProducts(150)),
                                                      priority=_get_transformer_of(PrivateLightFactory).priority + 1,
                                                      on_no_resources=lambda coord, session:
                                                      PrivateLightFactory.on_no_resources_getter(Abandonment)

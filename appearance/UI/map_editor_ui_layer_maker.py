@@ -271,7 +271,7 @@ class MapEditorUiLayerMaker:
                 .build())
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        button_background = self._sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON)
+        button_background = self._sprites_loader.load_button_3().colored_in(RECTANGLE_BUTTON)
         button_text = TextData.debug(text)
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(Rectangle(Vector2.zero(), button_background.shape.as_vector2)),

@@ -37,7 +37,7 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
 
         back = ButtonUi.make(drawer,
                              Rectangle(rectangle.position, buttons_shape),
-                             sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON),
+                             sprites_loader.load_button_1().colored_in(RECTANGLE_BUTTON),
                              mouse_movement_observer,
                              TextData.for_button("<"))
         back.was_clicked.subscribe(self.back)
@@ -45,7 +45,7 @@ class TwoButtonsValueChanger[T](proto.ElementUi):
         next_ = ButtonUi.make(drawer,
                               Rectangle(rectangle.position + Vector2(rectangle.shape.x - buttons_shape.x, 0),
                                         buttons_shape),
-                              sprites_loader.load_button_3_to_2().colored_in(RECTANGLE_BUTTON),
+                              sprites_loader.load_button_1().colored_in(RECTANGLE_BUTTON),
                               mouse_movement_observer,
                               TextData.for_button(">"))
         next_.was_clicked.subscribe(self.next)

@@ -207,8 +207,8 @@
     }
   },
   "ui": {
-    "button_3_to_2": {
-      "file": "ui/btn_500_144.png",
+    "button_3": {
+      "file": "ui/btn_3.png",
       "pivot": [
         0,
         0
@@ -218,6 +218,19 @@
         50,
         45,
         50
+      ]
+    },
+    "button_1": {
+      "file": "ui/btn_1.png",
+      "pivot": [
+        0,
+        0
+      ],
+      "rectangle": [
+        20,
+        20,
+        40,
+        10
       ]
     },
     "make_art": {

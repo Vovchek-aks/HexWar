@@ -29,7 +29,7 @@ class ButtonUi(proto.ElementUi):
                   drawer: proto.UiDrawer,
                   mouse_movement_observer: MouseMovementObserver,
                   color=RECTANGLE_BUTTON) -> "ButtonUi":
-        background = sprites_loader.load_button_3_to_2().colored_in(color)
+        background = sprites_loader.load_button_3().colored_in(color)
         button_text = TextData.for_button(text)
         self = ButtonUi.make(drawer,
                              Rectangle(Vector2.zero(), background.shape.as_vector2),
