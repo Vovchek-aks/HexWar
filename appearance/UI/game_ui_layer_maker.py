@@ -93,21 +93,25 @@ class GameUiLayerMaker:
         return Layer.as_multiple(layers)
 
     def make_for_tutorial(self, tutorial_index: int, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
-        if tutorial_index == 5:
-            return Layer.as_multiple([self.make(on_end_turn_button_was_clicked),
-                                      self._make_tutorial_hints(tutorial_index)])
-
         make_current_turn_ui = {
-            0: self._make_current_turn_ui_tutorial_0,
-            1: self._make_current_turn_ui_tutorial_1
-        }.get(tutorial_index, self._make_current_turn_ui_tutorial_2)
+            0: self._make_current_turn_ui_level_1,
+            1: self._make_current_turn_ui_level_2,
+            2: self._make_current_turn_ui_level_3,
+            3: self._make_current_turn_ui_level_4,
+            4: self._make_current_turn_ui_level_5,
+            5: self._make_current_turn_ui_level_6,
+            6: self._make_current_turn_ui_level_7,
+            7: self._make_current_turn_ui_level_8,
+            8: self._make_current_turn_ui,
+            9: self._make_current_turn_ui,
+        }.get(tutorial_index)
 
         return self._make_for_tutorial(tutorial_index, on_end_turn_button_was_clicked, make_current_turn_ui)
 
     def _make_for_tutorial(self,
                            tutorial_index: int,
                            on_end_turn_button_was_clicked: Callable[[], None],
-                           current_turn_ui_maker: Callable[[ButtonUi], Layer]) -> Layer:
+                           current_turn_ui_maker: Callable[[ElementUi, ButtonUi], Layer]) -> Layer:
         resources, players_turn = self._make_resources_and_player_turn()
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
@@ -115,39 +119,165 @@ class GameUiLayerMaker:
         layers = [
             players_turn,
             self._make_tutorial_hints(tutorial_index),
-            current_turn_ui_maker(end_turn_button)
+            current_turn_ui := current_turn_ui_maker(resources, end_turn_button)
         ]
+        self._session.master.turn_had_started.subscribe(lambda player: current_turn_ui.set_activity(player.need_ui))
 
         return Layer.as_multiple(layers)
 
-    def _make_current_turn_ui_tutorial_0(self, end_turn_button: ButtonUi) -> Layer:
-        layer = Layer.as_multiple([
-            # self._make_infantry_menu_tutorial_1(),
+    def _make_current_turn_ui_level_1(self, _: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        return Layer.as_multiple([
+            self._make_infantry_menu_level_1(),
             end_turn_button,
         ])
-        self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
-        return layer
 
-    def _make_current_turn_ui_tutorial_1(self, end_turn_button: ButtonUi) -> Layer:
-        layer = Layer.as_multiple([
-            # self._make_infantry_menu_tutorial_2(),
+    def _make_current_turn_ui_level_2(self, _: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        return Layer.as_multiple([
+            self._make_infantry_menu_level_2(),
             self._make_artillery_menu(),
+            self._make_bunker_menu(),
             end_turn_button,
         ])
-        self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
-        return layer
 
-    def _make_current_turn_ui_tutorial_2(self, end_turn_button: ButtonUi) -> Layer:
-        layer = Layer.as_multiple([
+    def _make_current_turn_ui_level_3(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        table = [
+            [fig.Infantry],
+            [fig.Bunker],
+            [fig.Artillery],
+            [],
+            [fig.TierOneCapital, fig.Town, fig.LightFactory]
+        ]
+        return Layer.as_multiple([
+            self._make_figures_creation_menu(table),
+            self._make_infantry_menu_level_2(),
+            self._make_artillery_menu(),
+            self._make_bunker_menu(),
+            self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_capital_menu_level_3(),
+            resources,
+            end_turn_button,
+        ])
+
+    def _make_current_turn_ui_level_4(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        table = [
+            [fig.Infantry],
+            [],
+            [],
+            [],
+            []
+        ]
+        return Layer.as_multiple([
+            self._make_figures_creation_menu(table),
+            self._make_infantry_menu_level_4(),
+            self._make_motorization_menu_level_4(),
+            self._make_artillery_menu(),
+            self._make_bunker_menu(),
+            self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_capital_menu_level_3(),
+            resources,
+            end_turn_button,
+        ])
+
+    def _make_current_turn_ui_level_5(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        table = [
+            [fig.Infantry],
+            [fig.Bunker],
+            [fig.Artillery],
+            [fig.Tank],
+            [fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory]
+        ]
+
+        return Layer.as_multiple([
+            self._make_figures_creation_menu(table),
+            self._make_infantry_menu_level_4(),
+            self._make_motorization_menu_level_4(),
+            self._make_tank_menu_level_5(),
+            self._make_artillery_menu(),
+            self._make_bunker_menu(),
+            self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_heavy_factory_menu(),
+            self._make_capital_menu_level_3(),
+            resources,
+            end_turn_button,
+        ])
+
+    def _make_current_turn_ui_level_6(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        table = [
+            [fig.Infantry],
+            [fig.Bunker],
+            [fig.Artillery],
+            [fig.Tank],
+            [fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory]
+        ]
+
+        return Layer.as_multiple([
+            self._make_figures_creation_menu(table),
+            self._make_infantry_menu(),
+            self._make_motorization_menu_level_4(),
+            self._make_tank_menu_level_5(),
+            self._make_artillery_menu(),
+            self._make_bunker_menu(),
+            self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_heavy_factory_menu(),
+            self._make_capital_menu(),
+            self._make_tall_capital_menu(),
+            self._make_wide_capital_menu(),
+            self._make_abandonment_menu(),
+            self._make_settlement_menu(),
+            self._make_private_light_factory_menu(),
+            self._make_private_heavy_factory_menu(),
+            resources,
+            end_turn_button,
+        ])
+
+    def _make_current_turn_ui_level_7(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        return Layer.as_multiple([
             self._make_infantry_menu(),
             self._make_motorization_menu(),
-            self._make_tank_menu(),
+            self._make_grad_menu(),
+            self._make_tank_menu_level_5(),
             self._make_artillery_menu(),
-            self._make_missile_silo_menu(),
+            self._make_bunker_menu(),
+            self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_heavy_factory_menu(),
+            self._make_capital_menu(),
+            self._make_tall_capital_menu(),
+            self._make_wide_capital_menu(),
+            self._make_abandonment_menu(),
+            self._make_settlement_menu(),
+            self._make_private_light_factory_menu(),
+            self._make_private_heavy_factory_menu(),
+            resources,
             end_turn_button,
         ])
-        self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
-        return layer
+
+    def _make_current_turn_ui_level_8(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
+        return Layer.as_multiple([
+            self._make_infantry_menu(),
+            self._make_motorization_menu(),
+            self._make_grad_menu(),
+            self._make_tank_menu(),
+            self._make_howitzer_menu(),
+            self._make_artillery_menu(),
+            self._make_bunker_menu(),
+            self._make_town_menu(),
+            self._make_light_factory_menu(),
+            self._make_heavy_factory_menu(),
+            self._make_capital_menu(),
+            self._make_tall_capital_menu(),
+            self._make_wide_capital_menu(),
+            self._make_abandonment_menu(),
+            self._make_settlement_menu(),
+            self._make_private_light_factory_menu(),
+            self._make_private_heavy_factory_menu(),
+            resources,
+            end_turn_button,
+        ])
 
     def _make_player_top_list(self) -> LayoutUi:
         TOP_PLACES = 5
@@ -299,8 +429,16 @@ class GameUiLayerMaker:
         return text
 
     def _make_current_turn_ui(self, resources: VerticalLayoutUi, end_turn_button: ButtonUi) -> Layer:
+        table = [
+            [fig.Infantry],
+            [fig.Bunker],
+            [fig.Artillery],
+            [fig.Tank, fig.MissileSilo],
+            [fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory]
+        ]
+
         layer = Layer.as_multiple([
-            self._make_figures_creation_menu(),
+            self._make_figures_creation_menu(table),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
             self._make_tank_menu(),
@@ -341,8 +479,11 @@ class GameUiLayerMaker:
 
         return button
 
-    def _make_figures_creation_menu(self) -> Layer:
+    def _make_figures_creation_menu(self, table: list[list[type(fig.Figure)]]) -> Layer:
         shape = Vector2Int(4, 5)
+        assert len(table) <= shape.y
+        assert len(table[0]) <= shape.x
+
         height = self._screen_shape.y * 0.37
         rectangle = (RectangleBuilder(self._screen_shape)
                      .from_left_bottom()
@@ -368,7 +509,8 @@ class GameUiLayerMaker:
         layout.append(hint_box)
 
         buttons_availability_setters = list[Callable[[], None]]()
-        buttons.append(self._make_figures_creation_buttons(hint_box, shape, rectangle, buttons_availability_setters))
+        buttons.append(self._make_figures_creation_buttons(hint_box, shape, table, rectangle,
+                                                           buttons_availability_setters))
         buttons.append(ImageUi.make(self._drawer, rectangle, self._sprites_loader.load_background_2_to_3()))
 
         def set_buttons_availability() -> None:
@@ -391,6 +533,7 @@ class GameUiLayerMaker:
     def _make_figures_creation_buttons(self,
                                        hint_box: BoxUi,
                                        shape: Vector2Int,
+                                       table: list[list[type(fig.Figure)]],
                                        outer_rectangle: Rectangle,
                                        buttons_availability_setters: list[Callable[[], None]]) -> LayoutUi:
         margin = outer_rectangle.shape.y * .06
@@ -400,17 +543,6 @@ class GameUiLayerMaker:
         rectangle_ratio = rectangle.shape.x / rectangle.shape.y
         target_ratio = shape.x / shape.y
         assert abs(rectangle_ratio - target_ratio) < 0.1, f"{rectangle_ratio:.2f} {target_ratio:.2f}"
-
-        table = [
-            [fig.Infantry],
-            [fig.Bunker],
-            [fig.Artillery],
-            [fig.Tank, fig.MissileSilo],
-            [fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory]
-        ]
-
-        assert len(table) <= shape.y
-        assert len(table[0]) <= shape.x
 
         height_margin_ratio = 0.05
         button_size = rectangle.shape.y * (1 - height_margin_ratio) / shape.y
@@ -538,6 +670,31 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Infantry, [to_motorize, capture, settle],
                                       [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE, INFANTRY_SETTLE])
 
+    def _make_infantry_menu_level_1(self) -> Layer:
+        return self._make_figure_menu(fig.Infantry, [], [])
+
+    def _make_infantry_menu_level_2(self) -> Layer:
+        capture = self._make_activatable_figure_action_button(INFANTRY_CAPTURE,
+                                                              lambda: CaptureButtonPressAction(
+                                                                  self._cell_selector.get_coord()
+                                                              ))
+
+        return self._make_figure_menu(fig.Infantry, [capture], [INFANTRY_CAPTURE])
+
+    def _make_infantry_menu_level_4(self) -> Layer:
+        to_motorize, _ = self._make_figure_action_button(INFANTRY_TO_MOTORIZATION)
+        to_motorize.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                          .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                              fig.Motorization)))
+
+        capture = self._make_activatable_figure_action_button(INFANTRY_CAPTURE,
+                                                              lambda: CaptureButtonPressAction(
+                                                                  self._cell_selector.get_coord()
+                                                              ))
+
+        return self._make_figure_menu(fig.Infantry, [to_motorize, capture],
+                                      [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE])
+
     def _make_motorization_menu(self) -> Layer:
         to_infantry, _ = self._make_figure_action_button(MOTORIZATION_TO_INFANTRY)
         to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
@@ -551,6 +708,15 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.Motorization,
                                       [to_infantry, combine],
                                       [MOTORIZATION_TO_INFANTRY, MOTORIZATION_AND_ARTILLERY_TO_GRAD])
+
+    def _make_motorization_menu_level_4(self) -> Layer:
+        to_infantry, _ = self._make_figure_action_button(MOTORIZATION_TO_INFANTRY)
+        to_infantry.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                          .invoke(ConversionButtonPressAction(self._cell_selector.get_coord(),
+                                                                              fig.Infantry)))
+
+        return self._make_figure_menu(fig.Motorization,
+                                      [to_infantry], [MOTORIZATION_TO_INFANTRY])
 
     def _make_town_menu(self) -> Layer:
         mobilise, _ = self._make_figure_action_button(MOBILISE_TOWN)
@@ -605,6 +771,9 @@ class GameUiLayerMaker:
         return self._make_figure_menu(fig.TierOneCapital, [to_tall_capital, to_wide_capital],
                                       [CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL])
 
+    def _make_capital_menu_level_3(self) -> Layer:
+        return self._make_figure_menu(fig.TierOneCapital, [], [])
+
     def _make_tall_capital_menu(self) -> Layer:
         return self._make_figure_menu(fig.TallCapital, [], [])
 
@@ -636,6 +805,14 @@ class GameUiLayerMaker:
                                                               ))
 
         return self._make_figure_menu(fig.Tank, [attack, combine], [TANK_ATTACK, TANK_AND_ARTILLERY_TO_HOWITZER])
+
+    def _make_tank_menu_level_5(self) -> Layer:
+        attack = self._make_activatable_figure_action_button(TANK_ATTACK,
+                                                             lambda: AttackButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
+
+        return self._make_figure_menu(fig.Tank, [attack], [TANK_ATTACK])
 
     def _make_artillery_menu(self) -> Layer:
         attack = self._make_activatable_figure_action_button(ARTILLERY_ATTACK,

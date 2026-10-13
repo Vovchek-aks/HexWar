@@ -4,8 +4,7 @@
       "NAME": "Red",
       "COLOR": "#af5041",
       "INPUTER": [
-        "BotPlayerInputer",
-        "BotIgor"
+        "WantsToBeEventPlayerInputer"
       ],
       "RESOURCES": {
         "Dollars": 0,
