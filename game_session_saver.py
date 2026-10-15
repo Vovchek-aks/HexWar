@@ -24,7 +24,7 @@ from core.pulling_connections import PullingConnections
 from files import write_json, read_json
 from mathematics.vector import Vector2Int
 import core.figures.figure as fig
-from core.player.inputers.bots import bots
+from core.player.inputers.bots import bots, BotIgor
 from core.resources import get_resources_types, ResourcesStockpile, ResourcesGroup
 from statuses import MISSING
 
@@ -42,7 +42,9 @@ CELLS_LIST = list[int]
 SESSION_DICT = dict[str, list[PLAYER_DICT] | BUDGET_DICT | PULLING_CONNECTIONS_DICT | FIGURES_DICT
                          | GAME_RULE_STATES_DICT | str | CELLS_LIST]
 
-BOTS = {bot.__name__: bot for bot in bots}
+BOTS = {bot.__name__: lambda: bot() for bot in bots}
+BOTS["NoBuildIgor"] = lambda: BotIgor(is_allowed_to_build=False)
+
 RESOURCES = {resource.__name__: resource for resource in get_resources_types()}
 FIGURES = {figure.__name__: figure for figure in fig.get_figures()}
 

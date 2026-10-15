@@ -16,7 +16,7 @@ PRIVATES_SPAWN_SPEED_MULTIPLIER = .1
 PRIVATES_WEIGHTS = {
     fig.Settlement: 1,
     fig.PrivateLightFactory: .3,
-    fig.PrivateHeavyFactory: .2,
+    fig.PrivateHeavyFactory: .1,
 }
 
 

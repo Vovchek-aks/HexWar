@@ -83,11 +83,10 @@ CRITICAL = PRODUCTION | fig.Capital
 
 @define
 class BotIgor(proto.Bot):
+    _is_allowed_to_build: bool = True
+    _state: int = _INITIAL_STATE
     _session: proto.GameSession | Status = field(init=False, default=MISSING)
     _player: proto.Player | Status = field(init=False, default=MISSING)
-    _cells_count_at_last_turn: int = 0
-    _turns_count: int = 0
-    _state: int = _INITIAL_STATE
     _moves_to_make: list[proto.ValidMove] = field(factory=list)
     _moves_generator: Iterator[None] | Status = field(init=False, default=MISSING)
     _ran_out_of_moves: bool = field(init=False, default=False)
@@ -129,8 +128,6 @@ class BotIgor(proto.Bot):
             return IN_PROGRESS
 
         # print('\n' * 3)
-        self._cells_count_at_last_turn = cells_count
-        self._turns_count += 1
         self._state = _INITIAL_STATE
         self._ran_out_of_moves = False
         return MISSING
@@ -138,8 +135,8 @@ class BotIgor(proto.Bot):
     def _add_moves(self, cells_count: int, *, _is_inner=False) -> Iterator[None]:
         cells = self._session.cells
         empties_count = self._count_of(fig.Land)
-        town_count = self._count_of(fig.Town)
-        lf_count = self._count_of(fig.LightFactory)
+        # town_count = self._count_of(fig.Town)
+        # lf_count = self._count_of(fig.LightFactory)
         hf_count = self._count_of(fig.HeavyFactory)
         infantry_count = self._count_of(fig.Infantry)
         artillery_count = self._count_of(fig.Artillery)
@@ -154,57 +151,58 @@ class BotIgor(proto.Bot):
         silos_count = self._count_of(fig.MissileSilo)
 
         if self._state == _CATASTROPHY_PREVENTION:
-            for figure in fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory, fig.Tank:
-                if self._count_of(figure) == 0:
-                    self._try_create(figure)
-                    # print(f"_try_create({figure})")
+            if self._is_allowed_to_build:
+                for figure in fig.TierOneCapital, fig.Town, fig.LightFactory, fig.HeavyFactory, fig.Tank:
+                    if self._count_of(figure) == 0:
+                        self._try_create(figure)
+                        # print(f"_try_create({figure})")
+                        if self._moves_to_make:
+                            # print(self._moves_to_make)
+                            return
+
+                if artillery_count == 0:
+                    yield from self._try_spawn_artillery(1)
+                    # print("_try_spawn_and_connect_artillery")
                     if self._moves_to_make:
                         # print(self._moves_to_make)
                         return
 
-            if artillery_count == 0:
-                yield from self._try_spawn_artillery(1)
-                # print("_try_spawn_and_connect_artillery")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
+                is_any_to_develop = any(self._board
+                                        .get_neighbors(cell)
+                                        .with_owner(self._player)
+                                        .with_figure(fig.Land)
+                                        for cell in (cells.with_figure(fig.Capital) &
+                                                     cells.with_owner(self._player)))
 
-            is_any_to_develop = any(self._board
-                                    .get_neighbors(cell)
-                                    .with_owner(self._player)
-                                    .with_figure(fig.Land)
-                                    for cell in (cells.with_figure(fig.Capital) &
-                                                 cells.with_owner(self._player)))
+                if (not is_any_to_develop) and self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO *
+                                                                                       cells_count ** .25):
+                    self._try_create(fig.TierOneCapital)
+                    # print("_try_create(fig.Capital)")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
 
-            if (not is_any_to_develop) and self._count_of(fig.Capital) < math.ceil(_CAPITALS_RATIO *
-                                                                                   cells_count ** .25):
-                self._try_create(fig.TierOneCapital)
-                # print("_try_create(fig.Capital)")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
+                initial_army_size = min(_MAX_ARMY, .2 * len(cells.with_owner(self._player) & cells.at_changeable_front))
 
-            initial_army_size = min(_MAX_ARMY, .2 * len(cells.with_owner(self._player) & cells.at_changeable_front))
+                if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
+                    self._try_create(fig.Tank)
+                    # print("_try_create(fig.Tank)")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
 
-            if infantry_count + motorization_count > 0 and tanks_count < math.ceil(initial_army_size / 10):
-                self._try_create(fig.Tank)
-                # print("_try_create(fig.Tank)")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
-            if infantry_count + motorization_count < initial_army_size:
-                self._try_create(fig.Infantry)
-                # print("_try_create(fig.Infantry)")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
+                if infantry_count + motorization_count < initial_army_size:
+                    self._try_create(fig.Infantry)
+                    # print("_try_create(fig.Infantry)")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
 
             self._state = _SPENDING
 
         if self._state == _SPENDING:
             has_developed = hf_count > 0
-            is_allowed_to_build = empties_count > cells_count * _MIN_EMPTIES_RATIO
+            has_room_to_build = empties_count > cells_count * _MIN_EMPTIES_RATIO
 
             for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
                 yield from self._try_launch_oreshnik(self._board.coordinates_of(silo))
@@ -219,90 +217,91 @@ class BotIgor(proto.Bot):
                 # print(self._moves_to_make)
                 return
 
-            target_silos_count = max(1, hf_count // 4)
-            if silos_count < target_silos_count:
-                self._try_create(fig.MissileSilo)
-                # print("_try_create(fig.MissileSilo)")
+            if self._is_allowed_to_build:
+                target_silos_count = max(1, hf_count // 4)
+                if silos_count < target_silos_count:
+                    self._try_create(fig.MissileSilo)
+                    # print("_try_create(fig.MissileSilo)")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
+
+                motorization_ratio = .5 if has_developed else .1
+                yield from self._try_convert_infantry_to_motorization(motorization_ratio)
+                # print("_try_convert_infantry_to_motorization")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
 
-            motorization_ratio = .5 if has_developed else .1
-            yield from self._try_convert_infantry_to_motorization(motorization_ratio)
-            # print("_try_convert_infantry_to_motorization")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
+                bunker_ratio = 0.25
+                if has_room_to_build and bunkers_count < empty_front_length * bunker_ratio:
+                    self._try_create(fig.Bunker)
+                    # print("_try_create(fig.Bunker)")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
 
-            bunker_ratio = 0.25
-            if is_allowed_to_build and bunkers_count < empty_front_length * bunker_ratio:
-                self._try_create(fig.Bunker)
-                # print("_try_create(fig.Bunker)")
+                yield from self._try_upgrade_capitals()
+                # print("_try_upgrade_capitals")
                 if self._moves_to_make:
                     # print(self._moves_to_make)
                     return
 
+                yield from self._try_spawn_artillery(math.ceil((infantry_count + motorization_count) * .3) -
+                                                     artillery_count)
+                # print("_try_spawn_and_connect_artillery")
+                if self._moves_to_make:
+                    # print(self._moves_to_make)
+                    return
+
+                if (math.floor(tanks_count * _HOWITZERS_TO_TANKS_RATIO) > howitzers_count
+                        or tanks_count > 1 and howitzers_count == 0):
+                    yield from self._try_convert_tanks_to_howitzers()
+                    # print("_try_convert_tanks_to_howitzers")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
+
+                if (math.floor(motorization_count * _GRADS_TO_MOTORIZATION_RATIO) > grads_count
+                        or motorization_count > 1 and grads_count == 0):
+                    yield from self._try_convert_motorization_to_grads()
+                    # print("_try_convert_tanks_to_howitzers")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
+
+                if has_developed and self._player.resources.get(Dollars).amount > 5_000_000:
+                    yield from self._try_buy_out_private_figures()
+                    # print("_try_buy_out_private_figures")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
+
+                if has_room_to_build:
+                    yield from self._try_align_resources_flow(cells_count)
+                    # print("_try_align_resources_flow")
+                    if self._moves_to_make:
+                        # print(self._moves_to_make)
+                        return
+
+                    if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
+                        figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
+                        if figure_to_create is not MISSING:
+                            self._try_create(figure_to_create)
+                            # print(f"_try_create({figure_to_create})")
+                            if self._moves_to_make:
+                                # print(self._moves_to_make)
+                                return
+
+            self._state = _ATTACKING
+
+        if self._state == _ATTACKING:
             yield from self._try_connect_pullerless_artillery()
             # print("_try_connect_pullerless_artillery")
             if self._moves_to_make:
                 # print(self._moves_to_make)
                 return
 
-            yield from self._try_upgrade_capitals()
-            # print("_try_upgrade_capitals")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
-
-            yield from self._try_spawn_artillery(math.ceil((infantry_count + motorization_count) * .3) -
-                                                 artillery_count)
-            # print("_try_spawn_and_connect_artillery")
-            if self._moves_to_make:
-                # print(self._moves_to_make)
-                return
-
-            if (math.floor(tanks_count * _HOWITZERS_TO_TANKS_RATIO) > howitzers_count
-                    or tanks_count > 1 and howitzers_count == 0):
-                yield from self._try_convert_tanks_to_howitzers()
-                # print("_try_convert_tanks_to_howitzers")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
-            if (math.floor(motorization_count * _GRADS_TO_MOTORIZATION_RATIO) > grads_count
-                    or motorization_count > 1 and grads_count == 0):
-                yield from self._try_convert_motorization_to_grads()
-                # print("_try_convert_tanks_to_howitzers")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
-            if has_developed and self._player.resources.get(Dollars).amount > 5_000_000:
-                yield from self._try_buy_out_private_figures()
-                # print("_try_buy_out_private_figures")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
-            if is_allowed_to_build:
-                yield from self._try_align_resources_flow(cells_count)
-                # print("_try_align_resources_flow")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-
-                if infantry_count + tanks_count + artillery_count + motorization_count < _MAX_ARMY:
-                    figure_to_create = fig.Tank if random.random() > .85 else fig.Infantry
-                    if figure_to_create is not MISSING:
-                        self._try_create(figure_to_create)
-                        # print(f"_try_create({figure_to_create})")
-                        if self._moves_to_make:
-                            # print(self._moves_to_make)
-                            return
-
-            self._state = _ATTACKING
-
-        if self._state == _ATTACKING:
             yield from self._try_destroy_abandonments_with_artillery()
             if self._moves_to_make:
                 # print(self._moves_to_make)
@@ -1094,12 +1093,12 @@ class BotIgor(proto.Bot):
             return
         yield
 
-        infantry_count = len(infantries.as_set())
+        infantry_count = len(infantries)
         motorization_count = self._count_of(fig.Motorization)
         to_convert = max(0, math.floor((infantry_count + motorization_count) * target_ratio - motorization_count))
         yield
 
-        for infantry in islice(infantries.as_set(), 0, to_convert):
+        for infantry in islice(infantries, 0, to_convert):
             move = Conversion(self._board.coordinates_of(infantry),
                               fig.Motorization)
             if (valid_move := move.validate(self._session)) is not INVALID:

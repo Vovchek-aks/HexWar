@@ -19,7 +19,7 @@
       "COLOR": "#3232e1",
       "INPUTER": [
         "BotPlayerInputer",
-        "BotIgor"
+        "NoBuildIgor"
       ],
       "RESOURCES": {
         "Dollars": 0,

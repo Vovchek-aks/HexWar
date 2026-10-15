@@ -8,7 +8,7 @@
       ],
       "RESOURCES": {
         "Dollars": 10000000000000,
-        "Oil": 10000000000000,
+        "Oil": 0,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
       },
@@ -18,12 +18,12 @@
       "NAME": "aaaplayer",
       "COLOR": "#406aad",
       "INPUTER": [
-        "PassPlayerInputer",
-        1.0
+        "BotPlayerInputer",
+        "NoBuildIgor"
       ],
       "RESOURCES": {
         "Dollars": 10000000000000,
-        "Oil": 10000000000000,
+        "Oil": 0,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
       },
@@ -33,8 +33,8 @@
       "NAME": "K\u00f6enig Segg",
       "COLOR": "#9dad40",
       "INPUTER": [
-        "PassPlayerInputer",
-        1.0
+        "BotPlayerInputer",
+        "NoBuildIgor"
       ],
       "RESOURCES": {
         "Dollars": 10000000000000,

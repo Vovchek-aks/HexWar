@@ -8,7 +8,7 @@
       ],
       "RESOURCES": {
         "Dollars": 1000000000,
-        "Oil": 10000000000000,
+        "Oil": 0,
         "LightIndustryProducts": 1000000000,
         "HeavyIndustryProducts": 1000000000
       },
@@ -18,12 +18,12 @@
       "NAME": "v1_cool_guy",
       "COLOR": "#406aad",
       "INPUTER": [
-        "PassPlayerInputer",
-        1.0
+        "BotPlayerInputer",
+        "NoBuildIgor"
       ],
       "RESOURCES": {
         "Dollars": 1000000000,
-        "Oil": 10000000000000,
+        "Oil": 0,
         "LightIndustryProducts": 1000000000,
         "HeavyIndustryProducts": 1000000000
       },
