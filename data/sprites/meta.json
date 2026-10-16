@@ -207,6 +207,19 @@
     }
   },
   "ui": {
+    "button_1": {
+      "file": "ui/btn_1.png",
+      "pivot": [
+        0,
+        0
+      ],
+      "rectangle": [
+        15,
+        10,
+        30,
+        20
+      ]
+    },
     "button_3": {
       "file": "ui/btn_3.png",
       "pivot": [
@@ -220,17 +233,30 @@
         50
       ]
     },
-    "button_1": {
-      "file": "ui/btn_1.png",
+    "button_5": {
+      "file": "ui/btn_5.png",
       "pivot": [
         0,
         0
       ],
       "rectangle": [
-        20,
-        20,
-        40,
-        10
+        15,
+        15,
+        10,
+        7
+      ]
+    },
+    "button_10": {
+      "file": "ui/btn_10.png",
+      "pivot": [
+        0,
+        0
+      ],
+      "rectangle": [
+        10,
+        14,
+        10,
+        7
       ]
     },
     "make_art": {

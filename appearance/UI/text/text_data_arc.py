@@ -85,6 +85,9 @@ class TextDataBuilder:
     def debug_font(self, size: int = 30) -> "TextDataBuilder":
         return self.set_font(Font.make(None, size))
 
+    def label_font(self, size: int = 30) -> "TextDataBuilder":
+        return self.set_font(Font.make(None, size, is_bold=True))
+
     def button_font(self, size: int = 30) -> "TextDataBuilder":
         return self.set_font(Font.make(None, size, is_bold=True))
 

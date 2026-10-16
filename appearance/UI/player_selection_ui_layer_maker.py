@@ -5,13 +5,15 @@ from attrs import frozen, Factory
 import appearance.protocols as proto
 from appearance.UI.button import ButtonUi
 from appearance.UI.text import TextData, TextUi
-from appearance.graphics.sprites import SpritesLoader
+from appearance.graphics.colors import RECTANGLE_BUTTON
+from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.language import Language
 from appearance.layer import Layer
 from core.protocols import Player
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
 from observer import OnEventSubscriber
+from statuses import Status, MISSING
 
 
 @frozen
@@ -89,6 +91,10 @@ class PlayersSelectionUiLayerMaker:
                 .adjust_for_shape()
                 .build())
 
-    def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer,
+    def _make_null_button(self,
+                          text: str,
+                          on_button_pressed: Callable[[], None],
+                          sprite: Sprite | Status = MISSING) -> ButtonUi:
+        sprite = (sprite or self._sprites_loader.load_button_3()).colored_in(RECTANGLE_BUTTON)
+        return ButtonUi.make_null(text, on_button_pressed, sprite, self._drawer,
                                   self._mouse_movement_observer)

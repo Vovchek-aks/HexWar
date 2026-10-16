@@ -6,8 +6,8 @@ import appearance.protocols as proto
 from appearance.UI.image import ImageUi
 from appearance.UI.image.on_mouse_cover_colored_image import OnMouseCoverColoredImageUi
 from appearance.UI.text import TextUi
-from appearance.graphics.colors import RECTANGLE_BUTTON, WHITE
-from appearance.graphics.sprites import Sprite, SpritesLoader
+from appearance.graphics.colors import WHITE
+from appearance.graphics.sprites import Sprite
 from appearance.layer import Layer
 from appearance.protocols import MouseMovementObserver
 from mathematics.rectangle import Rectangle
@@ -25,11 +25,9 @@ class ButtonUi(proto.ElementUi):
     def make_null(cls,
                   text: str,
                   on_button_pressed: Callable[[], None],
-                  sprites_loader: SpritesLoader,
+                  background: Sprite,
                   drawer: proto.UiDrawer,
-                  mouse_movement_observer: MouseMovementObserver,
-                  color=RECTANGLE_BUTTON) -> "ButtonUi":
-        background = sprites_loader.load_button_3().colored_in(color)
+                  mouse_movement_observer: MouseMovementObserver) -> "ButtonUi":
         button_text = TextData.for_button(text)
         self = ButtonUi.make(drawer,
                              Rectangle(Vector2.zero(), background.shape.as_vector2),

@@ -97,7 +97,9 @@ _CONTINUE = "CONTINUE"
 _TO_MAIN_MENU = "TO_MAIN_MENU"
 _MAKE_NEW_MAP = "MAKE_NEW_MAP"
 _LOAD_EXISTING_MAP = "LOAD_EXISTING_MAP"
+_MAP_EDITOR = "MAP_EDITOR"
 _OPEN_FILE_IN_EXPLORER = "OPEN_FILE_IN_EXPLORER"
+_SHARE_ONLINE = "SHARE_ONLINE"
 
 _LOADING = "loading"
 _MAP_LOADING = "MAP_LOADING"
@@ -237,8 +239,14 @@ class Language:
     def get_load_existing_map_message(self) -> str:
         return self._ui[_LOAD_EXISTING_MAP]
 
+    def get_map_editor_message(self) -> str:
+        return self._ui[_MAP_EDITOR]
+
     def get_open_file_in_explorer_message(self) -> str:
         return self._ui[_OPEN_FILE_IN_EXPLORER]
+
+    def get_share_online_message(self) -> str:
+        return self._ui[_SHARE_ONLINE]
 
     def get_end_turn_message(self) -> str:
         return self._ui[_END_TURN_BTN]

@@ -36,6 +36,8 @@ _UI = "ui"
 _MAP_EDITOR = "map_editor"
 _BUTTON_1 = "button_1"
 _BUTTON_3 = "button_3"
+_BUTTON_5 = "button_5"
+_BUTTON_10 = "button_10"
 _BUTTON_3_TO_2_ACTIVE = "button_3_to_2_active"
 _BACKGROUND_3_TO_2 = "background_3_to_2"
 _BACKGROUND_2_TO_3 = "background_2_to_3"
@@ -164,6 +166,14 @@ class SpritesLoader:
 
     def load_button_3(self) -> Sprite:
         sprite_info = self._ui[_BUTTON_3]
+        return self._load_sprite(sprite_info)
+
+    def load_button_5(self) -> Sprite:
+        sprite_info = self._ui[_BUTTON_5]
+        return self._load_sprite(sprite_info)
+
+    def load_button_10(self) -> Sprite:
+        sprite_info = self._ui[_BUTTON_10]
         return self._load_sprite(sprite_info)
 
     def load_figure_creation_button_for(self, figure: type[fig.Figure]) -> Sprite:

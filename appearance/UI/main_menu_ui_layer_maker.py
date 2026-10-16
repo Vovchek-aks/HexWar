@@ -13,6 +13,7 @@ from appearance.UI.text import TextData, TextUi, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ValueChanger, ListChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
+from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.language import Language
 from appearance.layer import Layer
@@ -82,6 +83,13 @@ class MainMenuUiLayerMaker:
                              tab_was_selected: Event[None],
                              to_main_menu_was_pressed: Event[None]) -> Layer:
         layers = [
+            TextUi.make(self._drawer, self._get_map_editor_label_rectangle(),
+                        TextDataBuilder()
+                        .set_text(self._language.get_map_editor_message())
+                        .label_font()
+                        .white_colored()
+                        .build(),
+                        is_center=True),
             self._make_map_editor_buttons(on_map_editor_was_requested),
             self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
         ]
@@ -93,12 +101,12 @@ class MainMenuUiLayerMaker:
     def _make_map_editor_buttons(self, on_map_editor_was_requested: Callable[[], None]) -> LayoutUi:
         synchroniser = TextSizeSynchroniser()
 
-        layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.15)
-        top_layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.3)
+        layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.35)
+        top_layout = VerticalLayoutUi(Rectangle.zero(), reserved=2, margin_ratio=.1)
         layout.append(top_layout)
-        bottom_layout = VerticalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.15)
-        layout.append(bottom_layout)
-        new_open = HorizontalLayoutUi(self._get_map_editor_buttons_rectangle(), reserved=2, margin_ratio=.05)
+        bottom_layout = VerticalLayoutUi(Rectangle.zero(), reserved=3, margin_ratio=.15)
+        layout.append(bottom_layout, weight=10)
+        new_open = HorizontalLayoutUi(Rectangle.zero(), reserved=2, margin_ratio=.05)
         bottom_layout.append(new_open)
 
         rectangle = Rectangle(Vector2.zero(),
@@ -122,24 +130,52 @@ class MainMenuUiLayerMaker:
             on_map_editor_was_requested()
 
         new_open.append(new_button := self._make_null_button(self._language.get_make_new_map_message(),
-                                                             on_new_map_was_pressed))
+                                                             on_new_map_was_pressed,
+                                                             self._sprites_loader.load_button_5()))
         new_open.append(open_button := self._make_null_button(self._language.get_load_existing_map_message(),
-                                                              on_map_editor_was_requested))
+                                                              on_map_editor_was_requested,
+                                                              self._sprites_loader.load_button_5()))
 
         bottom_layout.append(open_in_explorer := self._make_null_button(
             self._language.get_open_file_in_explorer_message(),
-            lambda: subprocess.run(['explorer', '/select,', SAVE_FOLDER / EDIT_MAP_FILE])
+            lambda: subprocess.run(['explorer', '/select,', SAVE_FOLDER / EDIT_MAP_FILE]),
+            self._sprites_loader.load_button_10()
         ))
 
-        synchroniser.extend(new_button.text, open_button.text, open_in_explorer.text)
+        bottom_layout.append(share_online := self._make_null_button(
+            self._language.get_share_online_message(),
+            lambda: webbrowser.open("https://itch.io/t/7138561/community-maps"),
+            self._sprites_loader.load_button_10()
+        ))
+
+        synchroniser.extend(new_button.text, open_button.text, open_in_explorer.text, share_online.text)
         synchroniser.synchronise()
 
         return layout
 
+    def _get_map_editor_label_rectangle(self) -> Rectangle:
+        _, _, buttons_top, _ = self._get_map_editor_buttons_rectangle().left_right_up_bottom
+        free_space = self._screen_shape.y - buttons_top
+
+        width = self._screen_shape.x * .8
+        height = free_space * .9
+
+        top_margin = (free_space - height) * 0
+
+        center_x = self._screen_shape.x / 2
+        x = center_x - width / 2
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_up()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(x, top_margin))
+                .adjust_for_shape()
+                .build())
+
     def _get_map_editor_buttons_rectangle(self) -> Rectangle:
         width = self._screen_shape.x / 2
-        height = self._screen_shape.y / 2
-        bottom_margin = (self._screen_shape.y - height) / 2
+        height = self._screen_shape.y * .6
+        bottom_margin = (self._screen_shape.y - height) * .2
 
         center_x = self._screen_shape.x / 2
         x = center_x - width / 2
@@ -559,8 +595,8 @@ class MainMenuUiLayerMaker:
                     exit_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
-            self._make_buttons(play_was_pressed, tutorial_was_pressed, settings_was_pressed, authors_was_pressed,
-                               map_editor_was_pressed, exit_was_pressed, turn_tabs_off),
+            self._make_label_buttons(play_was_pressed, tutorial_was_pressed, settings_was_pressed, authors_was_pressed,
+                                     map_editor_was_pressed, exit_was_pressed, turn_tabs_off),
             self._make_build_info(),
         ]
 
@@ -569,35 +605,36 @@ class MainMenuUiLayerMaker:
 
         return layer
 
-    def _make_buttons(self,
-                      play_was_pressed: Event[None],
-                      tutorial_was_pressed: Event[None],
-                      settings_was_pressed: Event[None],
-                      authors_was_pressed: Event[None],
-                      map_editor_was_pressed: Event[None],
-                      exit_was_pressed: Callable[[], None],
-                      turn_tabs_off: Callable[[], None]) -> Layer:
+    def _make_label_buttons(self,
+                            play_was_pressed: Event[None],
+                            tutorial_was_pressed: Event[None],
+                            settings_was_pressed: Event[None],
+                            authors_was_pressed: Event[None],
+                            map_editor_was_pressed: Event[None],
+                            exit_was_pressed: Callable[[], None],
+                            turn_tabs_off: Callable[[], None]) -> Layer:
         layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.1, reserved=3)
 
-        tutorial_settings = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
-        layout.append(tutorial_settings)
-        tutorial_settings.append(play := self._make_menu_button(self._language.get_maps_message(),
+        maps_and_settings = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
+        layout.append(maps_and_settings)
+        maps_and_settings.append(maps := self._make_menu_button(self._language.get_maps_message(),
                                                                 play_was_pressed.invoke,
                                                                 turn_tabs_off))
-        tutorial_settings.append(settings := self._make_menu_button(self._language.get_settings_message(),
+        maps_and_settings.append(settings := self._make_menu_button(self._language.get_settings_message(),
                                                                     settings_was_pressed.invoke, turn_tabs_off))
 
         layout.append(self._make_menu_button(self._language.get_campaign_message(),
-                                             tutorial_was_pressed.invoke, turn_tabs_off))
+                                             tutorial_was_pressed.invoke, turn_tabs_off,
+                                             self._sprites_loader.load_button_5()))
 
-        authors_close = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
-        layout.append(authors_close)
-        authors_close.append(authors := self._make_menu_button(self._language.get_authors_message(),
+        authors_and_close = HorizontalLayoutUi(Rectangle.zero(), reserved=2)
+        layout.append(authors_and_close)
+        authors_and_close.append(authors := self._make_menu_button(self._language.get_authors_message(),
                                                                authors_was_pressed.invoke, turn_tabs_off))
-        authors_close.append(close := self._make_null_button(self._language.get_exit_message(), exit_was_pressed))
+        authors_and_close.append(close := self._make_null_button(self._language.get_exit_message(), exit_was_pressed))
 
         synchroniser = TextSizeSynchroniser()
-        synchroniser.extend(play.text, settings.text, close.text, authors.text)
+        synchroniser.extend(maps.text, settings.text, close.text, authors.text)
         synchroniser.synchronise()
 
         map_editor = self._make_menu_image_button(self._sprites_loader.load_map_editor_icon(),
@@ -629,12 +666,13 @@ class MainMenuUiLayerMaker:
     def _make_menu_button(self,
                           text: str,
                           on_button_pressed: Callable[[], None],
-                          turn_tabs_off: Callable[[], None]) -> ButtonUi:
+                          turn_tabs_off: Callable[[], None],
+                          sprite: Sprite | Status = MISSING) -> ButtonUi:
         def new_on_button_pressed() -> None:
             turn_tabs_off()
             on_button_pressed()
 
-        return self._make_null_button(text, new_on_button_pressed)
+        return self._make_null_button(text, new_on_button_pressed, sprite)
 
     def _make_menu_image_button(self,
                                 sprite: Sprite,
@@ -648,8 +686,12 @@ class MainMenuUiLayerMaker:
         button.was_clicked.subscribe(new_on_button_pressed)
         return button
 
-    def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        return ButtonUi.make_null(text, on_button_pressed, self._sprites_loader, self._drawer,
+    def _make_null_button(self,
+                          text: str,
+                          on_button_pressed: Callable[[], None],
+                          sprite: Sprite | Status = MISSING) -> ButtonUi:
+        sprite = (sprite or self._sprites_loader.load_button_3()).colored_in(RECTANGLE_BUTTON)
+        return ButtonUi.make_null(text, on_button_pressed, sprite, self._drawer,
                                   self._mouse_movement_observer)
 
     def _make_image_button(self, sprite: Sprite) -> ButtonUi:
