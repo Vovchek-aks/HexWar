@@ -7,7 +7,7 @@
         "WantsToBeEventPlayerInputer"
       ],
       "RESOURCES": {
-        "Dollars": 0,
+        "Dollars": 1000000,
         "Oil": 0,
         "LightIndustryProducts": 0,
         "HeavyIndustryProducts": 0
@@ -22,7 +22,7 @@
         "BotIgor"
       ],
       "RESOURCES": {
-        "Dollars": 0,
+        "Dollars": 1000000,
         "Oil": 0,
         "LightIndustryProducts": 0,
         "HeavyIndustryProducts": 0
@@ -37,7 +37,7 @@
         "BotIgor"
       ],
       "RESOURCES": {
-        "Dollars": 0,
+        "Dollars": 1000000,
         "Oil": 0,
         "LightIndustryProducts": 0,
         "HeavyIndustryProducts": 0

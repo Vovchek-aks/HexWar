@@ -194,7 +194,7 @@ def load_tutorial(window: Window,
                                                               annexation_map_updater,
                                                               board_drawer.not_updating_cells,
                                                               cell_changed_owner.invoke)
-                          if tutorial_index >= 6 - 1 else
+                          if tutorial_index + 1 in (6, 9, 10) else
                           GameRulesApplier.without_abandonments_and_privates(session,
                                                                              annexation_map_updater,
                                                                              board_drawer.not_updating_cells,

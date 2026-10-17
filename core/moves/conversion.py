@@ -17,11 +17,11 @@ CONVERSIONS = dict[tuple[type[fig.Figure], type[fig.Figure]], tuple[ResourcesGro
 class Conversion(proto.Move):
     _conversions: ClassVar[CONVERSIONS] = {
         (fig.Infantry, fig.Motorization): (ResourcesGroup.make(Dollars(100_000),
-                                                               LightIndustryProducts(500)),
+                                                               LightIndustryProducts(650)),
                                            round(fig.Infantry.MOVES_BUDGET / 3)),
 
         (fig.Motorization, fig.Infantry): (ResourcesGroup.make(-Dollars(50_000),
-                                                               -LightIndustryProducts(450)),
+                                                               -LightIndustryProducts(600)),
                                            0),
 
         (fig.TierOneCapital, fig.TallCapital): (ResourcesGroup.make(Dollars(3_000_000),

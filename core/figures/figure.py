@@ -554,7 +554,7 @@ class Motorization(_Figure):
                                           can_prevent=lambda coord, session, region:
                                           Infantry.can_prevent(coord, session, region)),
                       PreventsCaptures(),
-                      TriesTakeResourcesElseDies.make(Dollars(75_000), LightIndustryProducts(500)))
+                      TriesTakeResourcesElseDies.make(Dollars(75_000), LightIndustryProducts(400)))
     MOVES_BUDGET = 200
 
     @classmethod
