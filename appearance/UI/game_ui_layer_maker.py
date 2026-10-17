@@ -44,6 +44,7 @@ from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable, ResourcesChanger, \
     ResourcesTaker, ResourcesAdder, CanLaunchOreshnik, CanPull, WithRestrictedTerrainKinds
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, ResourcesGroup, get_resources_types
+from files import read_finished_levels, increment_finished_levels
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figure as fig
@@ -135,6 +136,8 @@ class GameUiLayerMaker:
                 return
 
             level_was_completed.invoke()
+            if tutorial_index == read_finished_levels():
+                increment_finished_levels()
 
         level_was_completed = Event[None]()
         self._session.master.turn_had_started.subscribe(on_turn_had_started)

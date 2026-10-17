@@ -5,6 +5,7 @@ DATA = Path("data")
 META_FILE = "meta.json"
 BUILD_INFO_FILE = DATA / "build_info.json"
 RANDOM_BOT_NAMES_FILE = DATA / "random_bot_names.json"
+FINISHED_LEVELS = DATA / "finished_levels.json"
 
 
 def read_meta[T](folder: Path | str) -> dict[str, T]:
@@ -14,6 +15,16 @@ def read_meta[T](folder: Path | str) -> dict[str, T]:
 
 def read_build_info() -> dict[str, str]:
     return read_json(BUILD_INFO_FILE)
+
+
+def read_finished_levels() -> int:
+    return read_json(FINISHED_LEVELS)["finished_levels"]
+
+
+def increment_finished_levels() -> None:
+    file = read_json(FINISHED_LEVELS)
+    file["finished_levels"] += 1
+    write_json(file, FINISHED_LEVELS)
 
 
 def read_random_bot_names() -> list[str]:

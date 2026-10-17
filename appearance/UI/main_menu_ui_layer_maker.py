@@ -13,13 +13,14 @@ from appearance.UI.text import TextData, TextUi, TextDataBuilder
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.UI.two_buttons_value_changer import TwoButtonsValueChanger, ValueChanger, ListChanger
 from appearance.UI.two_buttons_value_changer.int_changer import IntChanger
-from appearance.graphics.colors import RECTANGLE_BUTTON
+from appearance.graphics.colors import RECTANGLE_BUTTON, INVALID_RECTANGLE_BUTTON, NOT_ACTIVE_RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.language import Language
 from appearance.layer import Layer
 from appearance.settings import Settings, MUSIC, VOICE, EFFECTS, LANGUAGE, IS_FULLSCREEN, WIDTH, HEIGHT, \
     NEED_TO_PLAY_BOT_MOVE_ANIMATIONS
-from files import read_build_info, read_random_bot_names
+from color import Color
+from files import read_build_info, read_random_bot_names, read_finished_levels
 from game_session_saver import get_saved_maps, get_tutorials, SAVE_FOLDER, EDIT_MAP_FILE, GameSessionSaver
 from core.game_session import empty_map
 from mathematics.rectangle import Rectangle, RectangleBuilder
@@ -65,11 +66,10 @@ class MainMenuUiLayerMaker:
         tabs.append(self._make_label(turn_tabs_off, to_main_menu_was_pressed, play_was_pressed, tutorial_was_pressed,
                                      settings_was_pressed, authors_was_pressed, map_editor_was_pressed,
                                      on_exit_was_pressed))
-        tabs.append(self._make_map_selection(turn_tabs_off, get_saved_maps(), on_map_was_selected, play_was_pressed,
-                                             to_main_menu_was_pressed))
-        tabs.append(self._make_map_selection(turn_tabs_off, sorted(get_tutorials(), key=lambda name: (len(name), name)),
-                                             on_map_was_selected, tutorial_was_pressed,
-                                             to_main_menu_was_pressed, allow_random_players=False))
+        tabs.append(self._make_map_selection(turn_tabs_off, on_map_was_selected, play_was_pressed,
+                                             to_main_menu_was_pressed, is_tutorial=False))
+        tabs.append(self._make_map_selection(turn_tabs_off, on_map_was_selected, tutorial_was_pressed,
+                                             to_main_menu_was_pressed, is_tutorial=True))
         tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
         tabs.append(self._make_authors_tab(turn_tabs_off, authors_was_pressed, to_main_menu_was_pressed))
         tabs.append(self._make_map_editor_tab(turn_tabs_off, on_map_editor_was_requested, map_editor_was_pressed,
@@ -276,18 +276,18 @@ class MainMenuUiLayerMaker:
 
     def _make_map_selection(self,
                             turn_tabs_off: Callable[[], None],
-                            map_names: list[str],
                             on_map_was_selected: Callable[[str, Status | int], None],
                             tab_was_selected: Event[None],
                             to_main_menu_was_pressed: Event[None],
-                            allow_random_players: bool = True) -> Layer:
+                            *,
+                            is_tutorial: bool) -> Layer:
         on_map_name_was_selected = Event[str, None]()
         players_mode_selection, players_mode, players_count = self._make_players_mode_selection()
         layers = [
-            self._make_map_selection_buttons(map_names, on_map_name_was_selected.invoke),
+            self._make_map_selection_buttons(on_map_name_was_selected.invoke, is_tutorial=is_tutorial),
             self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
         ]
-        if allow_random_players:
+        if not is_tutorial:
             layers.append(players_mode_selection)
 
         layer = Layer.as_multiple(layers)
@@ -297,7 +297,7 @@ class MainMenuUiLayerMaker:
         on_map_name_was_selected.subscribe(
             lambda name: on_map_was_selected(name,
                                              players_count.value
-                                             if allow_random_players and
+                                             if not is_tutorial and
                                                 players_mode.value == self._language.get_players_mode_random_message()
                                              else
                                              MISSING))
@@ -357,14 +357,21 @@ class MainMenuUiLayerMaker:
         return layout.layer, value_changer
 
     def _make_map_selection_buttons(self,
-                                    map_names: list[str],
-                                    on_map_was_selected: Callable[[str], None]) -> VerticalLayoutUi:
+                                    on_map_was_selected: Callable[[str], None],
+                                    *,
+                                    is_tutorial: bool) -> VerticalLayoutUi:
         buttons_shape = Vector2Int(5, 5)
 
+        finished_levels = read_finished_levels()
         buttons = list[ButtonUi]()
         synchroniser = TextSizeSynchroniser()
-        for map_name in map_names:
-            buttons.append(button := self._make_map_selection_button(map_name, on_map_was_selected))
+        map_names = (sorted(get_tutorials(), key=lambda name: (len(name), name))
+                     if is_tutorial else
+                     get_saved_maps())
+        for index, map_name in enumerate(map_names):
+            color, on_button_was_clicked = self._get_button_color_end_method(finished_levels, index, is_tutorial,
+                                                                             on_map_was_selected)
+            buttons.append(button := self._make_map_selection_button(map_name, color, on_button_was_clicked))
             synchroniser.append(button.text)
 
         assert len(buttons) <= buttons_shape.x * buttons_shape.y
@@ -380,8 +387,27 @@ class MainMenuUiLayerMaker:
 
         return layout
 
-    def _make_map_selection_button(self, map_name: str, on_map_was_selected: Callable[[str], None]) -> ButtonUi:
-        return self._make_null_button(map_name, lambda: on_map_was_selected(map_name))
+    @staticmethod
+    def _get_button_color_end_method(finished_levels: int,
+                                     index: int,
+                                     is_tutorial: bool,
+                                     on_map_was_selected: Callable[[str], None]) -> tuple[Color, Callable[[str], None]]:
+        if not is_tutorial:
+            return RECTANGLE_BUTTON, on_map_was_selected
+
+        if index == finished_levels:
+            return RECTANGLE_BUTTON, on_map_was_selected
+
+        if index > finished_levels:
+            return INVALID_RECTANGLE_BUTTON, lambda *_: None
+
+        return NOT_ACTIVE_RECTANGLE_BUTTON, on_map_was_selected
+
+    def _make_map_selection_button(self,
+                                   map_name: str,
+                                   color: Color,
+                                   on_map_was_selected: Callable[[str], None]) -> ButtonUi:
+        return self._make_null_button(map_name, lambda: on_map_was_selected(map_name), color=color)
 
     def _get_maps_buttons_rectangle(self) -> Rectangle:
         margin = 20
@@ -685,8 +711,9 @@ class MainMenuUiLayerMaker:
     def _make_null_button(self,
                           text: str,
                           on_button_pressed: Callable[[], None],
-                          sprite: Sprite | Status = MISSING) -> ButtonUi:
-        sprite = (sprite or self._sprites_loader.load_button_3()).colored_in(RECTANGLE_BUTTON)
+                          sprite: Sprite | Status = MISSING,
+                          color: Color = RECTANGLE_BUTTON) -> ButtonUi:
+        sprite = (sprite or self._sprites_loader.load_button_3()).colored_in(color)
         return ButtonUi.make_null(text, on_button_pressed, sprite, self._drawer,
                                   self._mouse_movement_observer)
 
