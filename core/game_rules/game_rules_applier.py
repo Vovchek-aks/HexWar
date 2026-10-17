@@ -30,6 +30,21 @@ class GameRulesApplier(proto.GameRulesApplier):
                        PrivateFiguresSpawner(),
                    ])
 
+    @classmethod
+    def without_abandonments_and_privates(cls,
+                                          session: proto.GameSession,
+                                          annexation_map: proto.AnnexationMapUpdater,
+                                          multiple_cells_change: Callable[[proto.Cells], ContextManager[None]],
+                                          on_changed_cell_owner: Callable[
+                                              [Vector2Int], None]) -> proto.GameRulesApplier:
+        return cls(session,
+                   [
+                       FiguresUpdateFlagCaller(),
+                       Annexer(multiple_cells_change,
+                               on_changed_cell_owner,
+                               annexation_map),
+                   ])
+
     _session: proto.GameSession
     _game_rules: list[proto.GameRule]
 

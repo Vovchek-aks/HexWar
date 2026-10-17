@@ -18,8 +18,8 @@
       "NAME": "fIashenergy",
       "COLOR": "#406aad",
       "INPUTER": [
-        "PassPlayerInputer",
-        1.0
+        "BotPlayerInputer",
+        "NoBuildIgor"
       ],
       "RESOURCES": {
         "Dollars": 2500000,

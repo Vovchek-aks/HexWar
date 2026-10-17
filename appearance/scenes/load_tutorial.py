@@ -190,10 +190,15 @@ def load_tutorial(window: Window,
     turn_pass_animator = TurnPassAnimator(camera, to_target_camera_mover, in_game_time, session,
                                           hatching_map_updater, annexation_map_updater)
 
-    game_rules_applier = GameRulesApplier.with_default_rules(session,
-                                                             annexation_map_updater,
-                                                             board_drawer.not_updating_cells,
-                                                             cell_changed_owner.invoke)
+    game_rules_applier = (GameRulesApplier.with_default_rules(session,
+                                                              annexation_map_updater,
+                                                              board_drawer.not_updating_cells,
+                                                              cell_changed_owner.invoke)
+                          if tutorial_index >= 6 - 1 else
+                          GameRulesApplier.without_abandonments_and_privates(session,
+                                                                             annexation_map_updater,
+                                                                             board_drawer.not_updating_cells,
+                                                                             cell_changed_owner.invoke))
     game_rules_applier.turn_start_preparations_had_finished.subscribe(turn_start_preparations_had_finished.invoke)
 
     updater = Updater.make(camera_mover, camera_orientation, screenshot_saver, escape_press_handler,
