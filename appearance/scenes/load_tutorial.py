@@ -44,6 +44,7 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
+from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.pause_menu import PauseMenu
 from appearance.settings import Settings
 from core.annexation_map.annexation_map import AnnexationMap
@@ -55,6 +56,7 @@ from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
 from core.game_rules.game_rules_applier import GameRulesApplier
 from core.protocols import GameSession
+from game_session_saver import GameSessionLoader, _TUTORIAL_MAP_PREFIX
 from mathematics.vector import Vector2Int
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
@@ -66,7 +68,8 @@ from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 def load_tutorial(window: Window,
                   make_session: Callable[[], GameSession],
                   make_next_scene_loading: Callable[[], proto.Scene],
-                  tutorial_index: int) -> Iterator[proto.Scene | Status]:
+                  tutorial_index: int,
+                  ups: int) -> Iterator[proto.Scene | Status]:
     screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
@@ -75,7 +78,6 @@ def load_tutorial(window: Window,
 
     yield language.get_intermediate_preparing_message()
     screenshot_saver = ScreenshotSaver()
-
 
     camera_orientation = CameraOrientation.for_board(session.board)
     camera = CachedCamera.make(Camera(screen_shape.as_vector2, ReadonlyCameraOrientation(camera_orientation)))
@@ -130,6 +132,14 @@ def load_tutorial(window: Window,
     mouse_movement_observer = MouseMovementObserver()
 
     yield language.get_ui_making_message()
+
+    def on_to_next_level_was_pressed() -> None:
+        next_tutorial_index = tutorial_index + 1
+        next_level_name = f"{_TUTORIAL_MAP_PREFIX} {next_tutorial_index + 1}.json"
+        scene.switch_to(LoadingScene.make(load_tutorial(window,
+                                                        lambda: GameSessionLoader.make(next_level_name, ups).load(),
+                                                        make_next_scene_loading, next_tutorial_index, ups)))
+
     end_turn_button_was_clicked = Event[None]()
     turn_start_preparations_had_finished = Event[None]()
     game_ui_layer_maker = GameUiLayerMaker(window,
@@ -142,7 +152,8 @@ def load_tutorial(window: Window,
                                            moves_maker,
                                            turn_start_preparations_had_finished.subscriber,
                                            actions_reader)
-    ui_layer = game_ui_layer_maker.make_for_tutorial(tutorial_index, end_turn_button_was_clicked.invoke)
+    ui_layer = game_ui_layer_maker.make_for_tutorial(tutorial_index, end_turn_button_was_clicked.invoke,
+                                                     on_to_next_level_was_pressed)
 
     yield language.get_sprite_loading_message()
     hatching_map = HatchingMap()
@@ -193,7 +204,6 @@ def load_tutorial(window: Window,
                                                turn_pass_animator.end_for_game),
                            in_game_time,
                            [
-                               # lambda: next(test),
                                annexation_map_updater.update,
                                hatching_map_updater.update,
                                music_player.update,
@@ -224,7 +234,7 @@ def load_tutorial(window: Window,
 
     pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
     continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
-    to_main_menu_was_pressed.subscribe(lambda: scene.on_to_main_menu_was_pressed(make_next_scene_loading()))
+    to_main_menu_was_pressed.subscribe(lambda: scene.switch_to(make_next_scene_loading()))
     to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
 
     for _ in game_rules_applier.on_turn_start():

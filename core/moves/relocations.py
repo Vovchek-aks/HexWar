@@ -79,9 +79,6 @@ class Assault(FiguresRelocation):
         if proto.CannotBeDestroyed in to_cell.figure.FLAGS:
             return INVALID
 
-        if figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, to_cell, board=board):
-            return INVALID
-
         if not board.get_neighbors(to_cell, include_cell=False).with_owner(from_cell.owner):
             return INVALID
 
@@ -89,6 +86,9 @@ class Assault(FiguresRelocation):
             return INVALID
 
         if not movable.can_relocate(self.from_coord, self.to_coord, board):
+            return INVALID
+
+        if figure.FLAGS.get(proto.WithRestrictedTerrainKinds).contains_in(from_cell, to_cell, board=board):
             return INVALID
 
         if from_cell.strength(board) < to_cell.hardness(board):

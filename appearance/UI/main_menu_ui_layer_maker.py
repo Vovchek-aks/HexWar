@@ -84,11 +84,7 @@ class MainMenuUiLayerMaker:
                              to_main_menu_was_pressed: Event[None]) -> Layer:
         layers = [
             TextUi.make(self._drawer, self._get_map_editor_label_rectangle(),
-                        TextDataBuilder()
-                        .set_text(self._language.get_map_editor_message())
-                        .label_font()
-                        .white_colored()
-                        .build(),
+                        TextData.for_label(self._language.get_map_editor_message()),
                         is_center=True),
             self._make_map_editor_buttons(on_map_editor_was_requested),
             self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),

@@ -33,7 +33,7 @@ class GameWithPauseScene(proto.Scene):
     def on_pause_menu_toggle_requested(self) -> None:
         self._is_paused = not self._is_paused
 
-    def on_to_main_menu_was_pressed(self, scene: proto.Scene) -> None:
+    def switch_to(self, scene: proto.Scene) -> None:
         self._next_scene = scene
 
     def __enter__(self) -> proto.Scene:

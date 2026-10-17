@@ -50,6 +50,8 @@ _STRENGTH = "STRENGTH"
 _HARDNESS = "HARDNESS"
 _COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
+_YOU_WON = "YOU_WON"
+_TO_NEXT_LEVEL = "TO_NEXT_LEVEL"
 _PAGE = "PAGE"
 _NEXT = "NEXT"
 _PLAYERS_TOP = "PLAYERS_TOP"
@@ -270,6 +272,12 @@ class Language:
                         if resource.amount != 0])
 
         return message
+
+    def get_you_won_message(self) -> str:
+        return self._ui[_YOU_WON]
+
+    def get_to_next_level_message(self) -> str:
+        return self._ui[_TO_NEXT_LEVEL]
 
     def get_page_message(self, page_index: int) -> str:
         return f"{self._ui[_PAGE]} {page_index + 1}"

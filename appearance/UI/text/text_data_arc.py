@@ -31,6 +31,14 @@ class TextData(proto.TextData):
                 .set_color(BUTTON_COLOR)
                 .build())
 
+    @classmethod
+    def for_label(cls, text: str) -> "TextData":
+        return (TextDataBuilder()
+                .set_text(text)
+                .label_font()
+                .white_colored()
+                .build())
+
     text: str
     font: Font
     color: Color

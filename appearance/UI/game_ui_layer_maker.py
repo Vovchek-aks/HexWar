@@ -92,8 +92,11 @@ class GameUiLayerMaker:
 
         return Layer.as_multiple(layers)
 
-    def make_for_tutorial(self, tutorial_index: int, on_end_turn_button_was_clicked: Callable[[], None]) -> Layer:
-        make_current_turn_ui = [
+    def make_for_tutorial(self,
+                          tutorial_index: int,
+                          on_end_turn_button_was_clicked: Callable[[], None],
+                          on_to_next_level_was_pressed: Callable[[], None]) -> Layer:
+        current_turn_ui_makers = [
             self._make_current_turn_ui_level_1,
             self._make_current_turn_ui_level_2,
             self._make_current_turn_ui_level_3,
@@ -104,22 +107,48 @@ class GameUiLayerMaker:
             self._make_current_turn_ui_level_8,
             self._make_current_turn_ui,
             self._make_current_turn_ui,
-        ][tutorial_index]
+        ]
+        make_current_turn_ui = current_turn_ui_makers[tutorial_index]
 
-        return self._make_for_tutorial(tutorial_index, on_end_turn_button_was_clicked, make_current_turn_ui)
+        return self._make_for_tutorial(tutorial_index, on_end_turn_button_was_clicked, make_current_turn_ui,
+                                       on_to_next_level_was_pressed
+                                       if tutorial_index < len(current_turn_ui_makers) - 1 else
+                                       MISSING)
 
     def _make_for_tutorial(self,
                            tutorial_index: int,
                            on_end_turn_button_was_clicked: Callable[[], None],
-                           current_turn_ui_maker: Callable[[ElementUi, ButtonUi], Layer]) -> Layer:
+                           current_turn_ui_maker: Callable[[ElementUi, ButtonUi], Layer],
+                           on_to_next_level_was_pressed: Callable[[], None] | Status) -> Layer:
         resources, players_turn = self._make_resources_and_player_turn()
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
+        first_player = self._session.master.current_player
+
+        def on_turn_had_started(player: Player) -> None:
+            if player is not first_player:
+                return
+
+            cells = self._session.cells
+            if len(cells.with_owner(player)) < sum(len(cells.with_owner(other))
+                                                   for other in self._session.master.players):
+                return
+
+            level_was_completed.invoke()
+
+        level_was_completed = Event[None]()
+        self._session.master.turn_had_started.subscribe(on_turn_had_started)
+        you_won_screen = self._make_level_completion_screen(level_was_completed.subscriber,
+                                                            on_to_next_level_was_pressed)
+
+        hints = self._make_tutorial_hints(tutorial_index)
+        level_was_completed.subscribe(lambda: hints.layer.set_activity(False))
 
         layers = [
+            you_won_screen,
             players_turn,
-            self._make_tutorial_hints(tutorial_index),
-            current_turn_ui := current_turn_ui_maker(resources, end_turn_button)
+            hints,
+            current_turn_ui := current_turn_ui_maker(resources, end_turn_button),
         ]
         self._session.master.turn_had_started.subscribe(lambda player: current_turn_ui.set_activity(player.need_ui))
 
@@ -278,6 +307,61 @@ class GameUiLayerMaker:
             resources,
             end_turn_button,
         ])
+
+    def _make_level_completion_screen(self,
+                                      level_was_completed: OnEventSubscriber[None],
+                                      on_to_next_level_was_pressed: Callable[[], None] | Status) -> Layer:
+        need_button = on_to_next_level_was_pressed is not MISSING
+
+        elements = [TextUi.make(self._drawer, self._get_you_won_text_rectangle(not need_button),
+                                TextData.for_label(self._language.get_you_won_message()),
+                                is_center=True)]
+
+        if need_button:
+            button = ButtonUi.make_null(self._language.get_to_next_level_message(), on_to_next_level_was_pressed,
+                                        self._sprites_loader.load_button_5().colored_in(RECTANGLE_BUTTON),
+                                        self._drawer, self._mouse_movement_observer)
+            button.set_rectangle(self._get_to_next_level_button_rectangle())
+            elements.append(button)
+
+        layer = Layer.as_multiple(elements)
+        layer.set_activity(False)
+        level_was_completed.subscribe(lambda: layer.set_activity(True))
+        return layer
+
+    def _get_you_won_text_rectangle(self, need_to_center: bool) -> Rectangle:
+        width = self._screen_shape.x * (.9 if need_to_center else .8)
+        height = self._screen_shape.y * (1 if need_to_center else .3)
+
+        top_margin = (self._screen_shape.y - height) * (.5 if need_to_center else .3)
+
+        center_x = self._screen_shape.x / 2
+        x = center_x - width / 2
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_up()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(x, top_margin))
+                .adjust_for_shape()
+                .build())
+
+    def _get_to_next_level_button_rectangle(self) -> Rectangle:
+        *_, free_space = self._get_you_won_text_rectangle(False).left_right_up_bottom
+
+        width = self._screen_shape.x * .2
+        height = self._screen_shape.y * .1
+
+        bottom_margin = (free_space - height) * .5
+
+        center_x = self._screen_shape.x / 2
+        x = center_x - width / 2
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_bottom()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(x, bottom_margin))
+                .adjust_for_shape()
+                .build())
 
     def _make_player_top_list(self) -> LayoutUi:
         TOP_PLACES = 5
