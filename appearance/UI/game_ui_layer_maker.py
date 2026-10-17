@@ -127,6 +127,8 @@ class GameUiLayerMaker:
         first_player = self._session.master.current_player
 
         def on_turn_had_started(player: Player) -> None:
+            current_turn_ui.set_activity(player.need_ui)
+
             if player is not first_player:
                 return
 
@@ -136,6 +138,8 @@ class GameUiLayerMaker:
                 return
 
             level_was_completed.invoke()
+            current_turn_ui.set_activity(False)
+            hints.layer.set_activity(False)
             if tutorial_index == read_finished_levels():
                 increment_finished_levels()
 
@@ -144,16 +148,12 @@ class GameUiLayerMaker:
         you_won_screen = self._make_level_completion_screen(level_was_completed.subscriber,
                                                             on_to_next_level_was_pressed)
 
-        hints = self._make_tutorial_hints(tutorial_index)
-        level_was_completed.subscribe(lambda: hints.layer.set_activity(False))
-
         layers = [
             you_won_screen,
             players_turn,
-            hints,
+            hints := self._make_tutorial_hints(tutorial_index),
             current_turn_ui := current_turn_ui_maker(resources, end_turn_button),
         ]
-        self._session.master.turn_had_started.subscribe(lambda player: current_turn_ui.set_activity(player.need_ui))
 
         return Layer.as_multiple(layers)
 
