@@ -7,6 +7,7 @@ import core.protocols as proto
 from statuses import Status, MISSING, IN_PROGRESS
 
 THINK_TIME_RATIO = 1
+THINK_TIME_BEFORE_MOVE_REQUIRED = 1
 
 
 @define
@@ -15,13 +16,14 @@ class BotPlayerInputer(proto.PlayerInputer):
     _ups: float = 0
 
     _wants_to_end_turn: bool = field(init=False, default=False)
+    _last_move_time: float = field(init=False, default=0)
 
     @property
     def bot(self) -> proto.Bot:
         return self._bot
 
     @property
-    def time_to_think(self) -> float:
+    def time_to_think_during_one_frame(self) -> float:
         return THINK_TIME_RATIO / self._ups
 
     def wants_to_end_turn(self) -> bool:
@@ -33,15 +35,24 @@ class BotPlayerInputer(proto.PlayerInputer):
         start_thinking = time()
         while (move := self._bot.get_move(session)) is IN_PROGRESS:
             thinking_time = time() - start_thinking
-            if thinking_time >= self.time_to_think:
+            if thinking_time >= self.time_to_think_during_one_frame:
                 break
 
         if move is MISSING:
             self._wants_to_end_turn = True
+
+        if isinstance(move, proto.ValidMove):
+            self._last_move_time = time()
+
+        if time() - self._last_move_time > THINK_TIME_BEFORE_MOVE_REQUIRED:
+            self._wants_to_end_turn = True
+            return MISSING
+
         return move
 
     def __enter__(self) -> proto.PlayerInputer:
         self._wants_to_end_turn = False
+        self._last_move_time = time()
         return self
 
     def __exit__(self, exc_type: type[BaseException], exc_val: BaseException, exc_tb: TracebackType) -> bool | None:
