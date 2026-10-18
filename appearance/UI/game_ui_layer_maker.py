@@ -1062,10 +1062,8 @@ class GameUiLayerMaker:
             synchroniser.synchronise()
 
         self._cell_selector.cell_was_selected.subscribe(update)
-        self._moves_maker.board_move_was_made.subscribe(
-            lambda _: update(self._cell_selector.get_coord()))
-        self._turn_start_preparations_had_finished.subscribe(
-            lambda: update(self._cell_selector.get_coord()))
+        self._moves_maker.board_move_was_made.subscribe(lambda _: update(self._cell_selector.get_coord()))
+        self._turn_start_preparations_had_finished.subscribe(lambda: update(self._cell_selector.get_coord()))
 
         menu = StretcherUi(background.rectangle)
         menu.extend([
@@ -1524,6 +1522,7 @@ class GameUiLayerMaker:
 
         self._cell_selector.cell_was_selected.subscribe(set_validness)
         self._moves_maker.move_was_made.subscribe(lambda *_: set_validness(self._cell_selector.get_coord()))
+        self._turn_start_preparations_had_finished.subscribe(lambda: set_validness(self._cell_selector.get_coord()))
 
         return button, white
 
