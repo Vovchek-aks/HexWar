@@ -7,11 +7,12 @@ import appearance.protocols as proto
 from appearance.graphics.layer_drawers.layers_drawer import LayersDrawer
 from appearance.input.clicks_catcher import ClicksCatcher
 from appearance.input.screenshot_saver import ScreenshotSaver
+from observer import OnEventSubscriber, Event
 from statuses import Status, MISSING, ABORT_NEEDED
 
 
 @define
-class MainMenuScene(proto.Scene):
+class MainMenuScene(proto.SceneWithSwitchTo):
     @classmethod
     def make(cls,
              screenshot_saver: ScreenshotSaver,
@@ -29,6 +30,12 @@ class MainMenuScene(proto.Scene):
     _music: proto.SoundPlayer = field(factory=lambda: SoundsLoader.from_meta().load_menu_music())
     _next_scene: proto.Scene | Status = field(init=False, default=MISSING)
 
+    _was_switched: Event[proto.Scene, None] = field(init=False, factory=Event)
+
+    @property
+    def was_switched(self) -> OnEventSubscriber[proto.Scene, None]:
+        return self._was_switched.subscriber
+
     def next(self) -> proto.Scene | Status:
         return self._next_scene
 
@@ -42,6 +49,7 @@ class MainMenuScene(proto.Scene):
 
     def switch_to(self, scene: proto.Scene) -> None:
         self._next_scene = scene
+        self._was_switched.invoke(scene)
 
     def on_exit_was_pressed(self) -> None:
         self._next_scene = ABORT_NEEDED

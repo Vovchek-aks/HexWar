@@ -25,7 +25,8 @@ from game_session_saver import get_saved_maps, get_tutorials, SAVE_FOLDER, EDIT_
 from core.game_session import empty_map
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
-from observer import Event
+from my_types import call
+from observer import Event, OnEventSubscriber
 from statuses import Status, MISSING
 
 _AUDIO_SETTER_STEPS = 100
@@ -70,12 +71,200 @@ class MainMenuUiLayerMaker:
                                              to_main_menu_was_pressed, is_tutorial=False))
         tabs.append(self._make_map_selection(turn_tabs_off, on_map_was_selected, tutorial_was_pressed,
                                              to_main_menu_was_pressed, is_tutorial=True))
-        tabs.append(self._make_settings_tab(turn_tabs_off, settings_was_pressed, to_main_menu_was_pressed, reload))
+        tabs.append(self.make_settings_tab(turn_tabs_off, settings_was_pressed.subscriber, to_main_menu_was_pressed,
+                                           reload))
         tabs.append(self._make_authors_tab(turn_tabs_off, authors_was_pressed, to_main_menu_was_pressed))
         tabs.append(self._make_map_editor_tab(turn_tabs_off, on_map_editor_was_requested, map_editor_was_pressed,
                                               to_main_menu_was_pressed))
 
         return Layer.as_multiple(tabs)
+
+    def make_settings_tab(self,
+                          turn_tabs_off: Callable[[], None],
+                          tab_was_selected: OnEventSubscriber[None],
+                          to_main_menu_was_pressed: Event[None],
+                          reload: Callable[[], None],
+                          *,
+                          include_screed_settings: bool = True) -> Layer:
+        value_changers = dict[str, TwoButtonsValueChanger[str | int]]()
+        layers = [
+            self._make_settings_changers(to_main_menu_was_pressed, value_changers, include_screed_settings),
+            self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
+            self._make_apply_button(value_changers, reload, include_screed_settings),
+        ]
+        layer = Layer.as_multiple(layers)
+        layer.set_activity(False)
+        tab_was_selected.subscribe(lambda: layer.set_activity(True))
+        return layer
+
+    def _make_apply_button(self,
+                           value_changers: dict[str, TwoButtonsValueChanger[str | int]],
+                           reload: Callable[[], None],
+                           include_screed_settings: bool) -> Layer:
+        def apply() -> None:
+            settings: dict[str, str | float] = {
+                key: value_changers[key].value / _AUDIO_SETTER_STEPS
+                for key in (MUSIC, VOICE, EFFECTS)
+            }
+
+            @call
+            def _fill_graphics() -> None:
+                if not include_screed_settings:
+                    current = Settings.open()
+                    settings[IS_FULLSCREEN] = current.if_fullscreen
+                    settings[WIDTH] = current.screen_shape.x
+                    settings[HEIGHT] = current.screen_shape.y
+                    return
+
+                settings[IS_FULLSCREEN] = (value_changers[IS_FULLSCREEN].value
+                                           == self._language.get_fullscreen_message())
+                settings[WIDTH] = value_changers[WIDTH].value
+                settings[HEIGHT] = value_changers[HEIGHT].value
+
+            settings[LANGUAGE] = value_changers[LANGUAGE].value
+            settings[NEED_TO_PLAY_BOT_MOVE_ANIMATIONS] = (value_changers[NEED_TO_PLAY_BOT_MOVE_ANIMATIONS].value
+                                                          == self._language.get_on_message())
+
+            Settings.from_keys(settings).save()
+            reload()
+
+        button = self._make_null_button(self._language.get_apply_message(), apply)
+        button.set_rectangle(self._get_apply_button_rectangle())
+        return button.layer
+
+    def _get_apply_button_rectangle(self) -> Rectangle:
+        width = self._screen_shape.x / 10
+        height = self._screen_shape.y / 15
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_right_bottom()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(20, 20))
+                .adjust_for_shape()
+                .build())
+
+    def _make_settings_changers(self,
+                                to_main_menu_was_pressed: Event[None],
+                                value_changers: dict[str, TwoButtonsValueChanger[str | int]],
+                                include_screed_settings: bool) -> Layer:
+        def reset() -> None:
+            old_changers = self._get_changers()
+            for key, changer in value_changers.items():
+                changer.set(old_changers[key].value)
+
+        to_main_menu_was_pressed.subscribe(reset)
+
+        count = 10
+        margin_ratio = .3
+        layout = VerticalLayoutUi(self._get_changers_rectangle(), margin_ratio=margin_ratio, reserved=count)
+        rectangle = Rectangle(Vector2.zero(),
+                              Vector2(count * layout.rectangle.shape.x / layout.rectangle.shape.y,
+                                      1 - margin_ratio) * 100)
+
+        changers = self._get_changers()
+        synchroniser = TextSizeSynchroniser()
+        titles_synchroniser = TextSizeSynchroniser()
+
+        layout.append(audio := TextUi.make(self._drawer, Rectangle.zero(),
+                                           TextData.debug(self._language.get_audio_message()), is_center=True))
+        titles_synchroniser.append(audio)
+        self._add_changer(synchroniser, layout, self._language.get_music_volume_message(), MUSIC, changers,
+                          value_changers,
+                          rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_voice_volume_message(), VOICE, changers,
+                          value_changers,
+                          rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_effects_volume_message(), EFFECTS, changers,
+                          value_changers, rectangle)
+
+        if include_screed_settings:
+            layout.append(graphics := TextUi.make(self._drawer, Rectangle.zero(),
+                                                  TextData.debug(self._language.get_graphics_message()),
+                                                  is_center=True))
+            titles_synchroniser.append(graphics)
+            self._add_changer(synchroniser, layout, self._language.get_width_message(), WIDTH, changers,
+                              value_changers, rectangle)
+            self._add_changer(synchroniser, layout, self._language.get_height_message(), HEIGHT, changers,
+                              value_changers, rectangle)
+            self._add_changer(synchroniser, layout, self._language.get_screen_message(), IS_FULLSCREEN, changers,
+                              value_changers, rectangle)
+
+        layout.append(other := TextUi.make(self._drawer, Rectangle.zero(),
+                                           TextData.debug(self._language.get_other_message()), is_center=True))
+        titles_synchroniser.append(other)
+        self._add_changer(synchroniser, layout, self._language.get_selected_language_message(), LANGUAGE, changers,
+                          value_changers, rectangle)
+        self._add_changer(synchroniser, layout, self._language.get_need_to_play_bot_move_animations_message(),
+                          NEED_TO_PLAY_BOT_MOVE_ANIMATIONS, changers, value_changers, rectangle)
+
+        titles_synchroniser.synchronise()
+        synchroniser.synchronise()
+
+        return layout.layer
+
+    def _add_changer[T](self,
+                        synchroniser: TextSizeSynchroniser,
+                        layout: LayoutUi,
+                        text: str,
+                        key: str,
+                        changers: dict[str, ValueChanger[T]],
+                        value_changers: dict[str, TwoButtonsValueChanger[T]],
+                        rectangle: Rectangle) -> None:
+        changer = changers[key]
+        text = f"{text}:"
+        margin_ratio = .13
+        horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio, reserved=2)
+        layout.append(horizontal)
+        horizontal.append(text_ui := TextUi.make_with_anchors(self._drawer, Rectangle.zero(), TextData.debug(text),
+                                                              anchor_x=TextUi.RIGHT, anchor_y=TextUi.CENTER))
+        horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
+            Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
+            self._sprites_loader, self._drawer, self._mouse_movement_observer))
+        synchroniser.append(text_ui)
+        value_changers[key] = value_changer
+
+    def _get_changers_rectangle(self) -> Rectangle:
+        width = self._screen_shape.x / 2
+        height = self._screen_shape.y / 1.3
+        bottom_margin = (self._screen_shape.y - height) / 1.5
+
+        center_x = self._screen_shape.x / 2
+        x = center_x - width / 2
+
+        return (RectangleBuilder(self._screen_shape)
+                .from_left_bottom()
+                .set_shape(Vector2(width, height))
+                .move(Vector2(x, bottom_margin))
+                .adjust_for_shape()
+                .build())
+
+    def _get_changers(self) -> dict[str, ValueChanger[str | int]]:
+        settings = Settings.open()
+
+        languages = self._language.languages()
+        languages.remove(settings.selected_language)
+        languages.insert(0, settings.selected_language)
+
+        screen_mods = [self._language.get_fullscreen_message(), self._language.get_windowed_message()]
+        if not settings.if_fullscreen:
+            screen_mods = screen_mods[::-1]
+
+        bot_animation_states = [self._language.get_on_message(), self._language.get_off_message()]
+        if not settings.need_to_play_bot_move_animations:
+            bot_animation_states = bot_animation_states[::-1]
+
+        audio_changer_range = 0, _AUDIO_SETTER_STEPS, _AUDIO_SETTER_STEP
+        screen_shape_changer_range = 400, 6400, 20
+        return {
+            MUSIC: IntChanger(round(_AUDIO_SETTER_STEPS * settings.music_volume), *audio_changer_range),
+            VOICE: IntChanger(round(_AUDIO_SETTER_STEPS * settings.voice_volume), *audio_changer_range),
+            EFFECTS: IntChanger(round(_AUDIO_SETTER_STEPS * settings.effects_volume), *audio_changer_range),
+            WIDTH: IntChanger(settings.screen_shape.x, *screen_shape_changer_range),
+            HEIGHT: IntChanger(settings.screen_shape.y, *screen_shape_changer_range),
+            IS_FULLSCREEN: ListChanger(screen_mods),
+            LANGUAGE: ListChanger(languages),
+            NEED_TO_PLAY_BOT_MOVE_ANIMATIONS: ListChanger(bot_animation_states)
+        }
 
     def _make_map_editor_tab(self,
                              turn_tabs_off: Callable[[], None],
@@ -420,174 +609,6 @@ class MainMenuUiLayerMaker:
                 .move(Vector2(margin, margin))
                 .adjust_for_shape()
                 .build())
-
-    def _make_settings_tab(self,
-                           turn_tabs_off: Callable[[], None],
-                           tab_was_selected: Event[None],
-                           to_main_menu_was_pressed: Event[None],
-                           reload: Callable[[], None]) -> Layer:
-        value_changers = dict[str, TwoButtonsValueChanger[str | int]]()
-        layers = [
-            self._make_settings_changers(to_main_menu_was_pressed, value_changers),
-            self._make_back_button(to_main_menu_was_pressed.invoke, turn_tabs_off),
-            self._make_apply_button(value_changers, reload),
-        ]
-        layer = Layer.as_multiple(layers)
-        layer.set_activity(False)
-        tab_was_selected.subscribe(lambda: layer.set_activity(True))
-        return layer
-
-    def _make_apply_button(self,
-                           value_changers: dict[str, TwoButtonsValueChanger[str | int]],
-                           reload: Callable[[], None]) -> Layer:
-        def apply() -> None:
-            settings: dict[str, str | float] = {
-                key: value_changers[key].value / _AUDIO_SETTER_STEPS
-                for key in (MUSIC, VOICE, EFFECTS)
-            }
-            settings[LANGUAGE] = value_changers[LANGUAGE].value
-            settings[IS_FULLSCREEN] = value_changers[IS_FULLSCREEN].value == self._language.get_fullscreen_message()
-            settings[WIDTH] = value_changers[WIDTH].value
-            settings[HEIGHT] = value_changers[HEIGHT].value
-            settings[NEED_TO_PLAY_BOT_MOVE_ANIMATIONS] = (value_changers[NEED_TO_PLAY_BOT_MOVE_ANIMATIONS].value
-                                                          == self._language.get_on_message())
-
-            Settings.from_keys(settings).save()
-            reload()
-
-        button = self._make_null_button(self._language.get_apply_message(), apply)
-        button.set_rectangle(self._get_apply_button_rectangle())
-        return button.layer
-
-    def _get_apply_button_rectangle(self) -> Rectangle:
-        width = self._screen_shape.x / 10
-        height = self._screen_shape.y / 15
-
-        return (RectangleBuilder(self._screen_shape)
-                .from_right_bottom()
-                .set_shape(Vector2(width, height))
-                .move(Vector2(20, 20))
-                .adjust_for_shape()
-                .build())
-
-    def _make_settings_changers(self,
-                                to_main_menu_was_pressed: Event[None],
-                                value_changers: dict[str, TwoButtonsValueChanger[str | int]]) -> Layer:
-        def reset() -> None:
-            old_changers = self._get_changers()
-            for key, changer in value_changers.items():
-                changer.set(old_changers[key].value)
-
-        to_main_menu_was_pressed.subscribe(reset)
-
-        count = 10
-        margin_ratio = .3
-        layout = VerticalLayoutUi(self._get_changers_rectangle(), margin_ratio=margin_ratio, reserved=count)
-        rectangle = Rectangle(Vector2.zero(),
-                              Vector2(count * layout.rectangle.shape.x / layout.rectangle.shape.y,
-                                      1 - margin_ratio) * 100)
-
-        changers = self._get_changers()
-        synchroniser = TextSizeSynchroniser()
-
-        layout.append(audio := TextUi.make(self._drawer, Rectangle.zero(),
-                                           TextData.debug(self._language.get_audio_message()), is_center=True))
-        self._add_changer(synchroniser, layout, self._language.get_music_volume_message(), MUSIC, changers,
-                          value_changers,
-                          rectangle)
-        self._add_changer(synchroniser, layout, self._language.get_voice_volume_message(), VOICE, changers,
-                          value_changers,
-                          rectangle)
-        self._add_changer(synchroniser, layout, self._language.get_effects_volume_message(), EFFECTS, changers,
-                          value_changers, rectangle)
-
-        layout.append(graphics := TextUi.make(self._drawer, Rectangle.zero(),
-                                              TextData.debug(self._language.get_graphics_message()), is_center=True))
-        self._add_changer(synchroniser, layout, self._language.get_width_message(), WIDTH, changers,
-                          value_changers, rectangle)
-        self._add_changer(synchroniser, layout, self._language.get_height_message(), HEIGHT, changers,
-                          value_changers, rectangle)
-        self._add_changer(synchroniser, layout, self._language.get_screen_message(), IS_FULLSCREEN, changers,
-                          value_changers, rectangle)
-
-        layout.append(other := TextUi.make(self._drawer, Rectangle.zero(),
-                                           TextData.debug(self._language.get_other_message()), is_center=True))
-        self._add_changer(synchroniser, layout, self._language.get_selected_language_message(), LANGUAGE, changers,
-                          value_changers, rectangle)
-        self._add_changer(synchroniser, layout, self._language.get_need_to_play_bot_move_animations_message(),
-                          NEED_TO_PLAY_BOT_MOVE_ANIMATIONS, changers, value_changers, rectangle)
-
-        titles_synchroniser = TextSizeSynchroniser()
-        titles_synchroniser.extend(other, audio, graphics)
-
-        titles_synchroniser.synchronise()
-        synchroniser.synchronise()
-
-        return layout.layer
-
-    def _add_changer[T](self,
-                        synchroniser: TextSizeSynchroniser,
-                        layout: LayoutUi,
-                        text: str,
-                        key: str,
-                        changers: dict[str, ValueChanger[T]],
-                        value_changers: dict[str, TwoButtonsValueChanger[T]],
-                        rectangle: Rectangle) -> None:
-        changer = changers[key]
-        text = f"{text}:"
-        margin_ratio = .13
-        horizontal = HorizontalLayoutUi(rectangle, margin_ratio=margin_ratio, reserved=2)
-        layout.append(horizontal)
-        horizontal.append(text_ui := TextUi.make_with_anchors(self._drawer, Rectangle.zero(), TextData.debug(text),
-                                                              anchor_x=TextUi.RIGHT, anchor_y=TextUi.CENTER))
-        horizontal.append(value_changer := TwoButtonsValueChanger.make_horizontal(
-            Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x * (1 - margin_ratio) / 2)), changer,
-            self._sprites_loader, self._drawer, self._mouse_movement_observer))
-        synchroniser.append(text_ui)
-        value_changers[key] = value_changer
-
-    def _get_changers_rectangle(self) -> Rectangle:
-        width = self._screen_shape.x / 2
-        height = self._screen_shape.y / 1.3
-        bottom_margin = (self._screen_shape.y - height) / 1.5
-
-        center_x = self._screen_shape.x / 2
-        x = center_x - width / 2
-
-        return (RectangleBuilder(self._screen_shape)
-                .from_left_bottom()
-                .set_shape(Vector2(width, height))
-                .move(Vector2(x, bottom_margin))
-                .adjust_for_shape()
-                .build())
-
-    def _get_changers(self) -> dict[str, ValueChanger[str | int]]:
-        settings = Settings.open()
-
-        languages = self._language.languages()
-        languages.remove(settings.selected_language)
-        languages.insert(0, settings.selected_language)
-
-        screen_mods = [self._language.get_fullscreen_message(), self._language.get_windowed_message()]
-        if not settings.if_fullscreen:
-            screen_mods = screen_mods[::-1]
-
-        bot_animation_states = [self._language.get_on_message(), self._language.get_off_message()]
-        if not settings.need_to_play_bot_move_animations:
-            bot_animation_states = bot_animation_states[::-1]
-
-        audio_changer_range = 0, _AUDIO_SETTER_STEPS, _AUDIO_SETTER_STEP
-        screen_shape_changer_range = 400, 6400, 20
-        return {
-            MUSIC: IntChanger(round(_AUDIO_SETTER_STEPS * settings.music_volume), *audio_changer_range),
-            VOICE: IntChanger(round(_AUDIO_SETTER_STEPS * settings.voice_volume), *audio_changer_range),
-            EFFECTS: IntChanger(round(_AUDIO_SETTER_STEPS * settings.effects_volume), *audio_changer_range),
-            WIDTH: IntChanger(settings.screen_shape.x, *screen_shape_changer_range),
-            HEIGHT: IntChanger(settings.screen_shape.y, *screen_shape_changer_range),
-            IS_FULLSCREEN: ListChanger(screen_mods),
-            LANGUAGE: ListChanger(languages),
-            NEED_TO_PLAY_BOT_MOVE_ANIMATIONS: ListChanger(bot_animation_states)
-        }
 
     def _make_back_button(self, on_to_main_menu_was_pressed: Callable[[], None],
                           turn_tabs_off: Callable[[], None]) -> ButtonUi:

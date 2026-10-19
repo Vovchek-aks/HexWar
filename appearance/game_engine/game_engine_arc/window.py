@@ -6,6 +6,7 @@ from pyglet.image import load
 from mathematics.vector import Vector2Int, Vector2
 from appearance.input.clicks_catcher.click import Click, MouseButtons
 from observer import Event, OnEventSubscriber
+from statuses import Status, MISSING
 
 ICON_FILE = Path("data") / "sprites" / "icon.png"
 
@@ -19,6 +20,7 @@ class Window(arc.Window):
                          vsync=True,
                          samples=2,
                          fullscreen=is_fullscreen,
+                         center_window=True,
                          update_rate=dt,
                          fixed_rate=dt,
                          draw_rate=dt)
@@ -80,8 +82,12 @@ class Window(arc.Window):
     def keyboard_state_changed(self) -> OnEventSubscriber[set[int], None]:
         return self._keyboard_state_changed.subscriber
 
-    def change_is_fullscreen(self, is_fullscreen: bool) -> None:
-        self.set_fullscreen(is_fullscreen)
+    def change_is_fullscreen(self, is_fullscreen: bool, *, screen_shape: Vector2Int | Status = MISSING) -> None:
+        if screen_shape is MISSING:
+            self.set_fullscreen(is_fullscreen)
+            return
+
+        self.set_fullscreen(is_fullscreen, width=screen_shape.x, height=screen_shape.y)
 
     def change_screen_shape(self, screen_shape: Vector2Int) -> None:
         self.set_size(*screen_shape.tuple)

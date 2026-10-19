@@ -5,13 +5,17 @@ from attrs import frozen, Factory
 import appearance.protocols as proto
 from appearance.UI.button import ButtonUi, get_image_rectangle
 from appearance.UI.layouts import VerticalLayoutUi
+from appearance.UI.main_menu_ui_layer_maker import MainMenuUiLayerMaker
 from appearance.UI.text import TextData, TextUi
+from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
 from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
 from appearance.layer import Layer
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2Int, Vector2
+from my_types import combine
+from observer import Event, OnEventSubscriber
 
 
 @frozen
@@ -25,31 +29,67 @@ class PauseMenuUiLayerMaker:
 
     def make(self,
              on_continue_was_pressed: Callable[[], None],
-             on_to_main_menu_was_pressed: Callable[[], None]) -> Layer:
+             on_to_main_menu_was_pressed: Callable[[], None],
+             reload: Callable[[], None]) -> Layer:
+        settings_was_pressed = Event[None]()
+        to_label_was_pressed = Event[None]()
+
+        tabs = list[Layer]()
+
+        def turn_tabs_off() -> None:
+            for tab in tabs:
+                tab.set_activity(False)
+
+        tabs.append(self._make_label(turn_tabs_off, to_label_was_pressed.subscriber, on_continue_was_pressed,
+                                     on_to_main_menu_was_pressed, settings_was_pressed.invoke))
+        tabs.append(MainMenuUiLayerMaker(self._drawer, self._screen_shape, self._mouse_movement_observer)
+                    .make_settings_tab(turn_tabs_off, settings_was_pressed.subscriber, to_label_was_pressed, reload,
+                                       include_screed_settings=False))
+
+        return Layer.as_multiple(tabs)
+
+    def _make_label(self,
+                    turn_tabs_off: Callable[[], None],
+                    on_to_label_was_pressed: OnEventSubscriber[None],
+                    on_continue_was_pressed: Callable[[], None],
+                    on_to_main_menu_was_pressed: Callable[[], None],
+                    on_settings_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
-            self._make_buttons(on_continue_was_pressed, on_to_main_menu_was_pressed),
+            self._make_buttons(on_continue_was_pressed, on_to_main_menu_was_pressed,
+                               combine(turn_tabs_off, on_settings_was_pressed)),
         ]
 
-        return Layer.as_multiple(layers)
+        layer = Layer.as_multiple(layers)
+        on_to_label_was_pressed.subscribe(lambda: layer.set_activity(True))
+        return layer
 
     def _make_buttons(self,
                       on_continue_was_pressed: Callable[[], None],
-                      on_to_main_menu_was_pressed: Callable[[], None]) -> Layer:
+                      on_to_main_menu_was_pressed: Callable[[], None],
+                      on_settings_was_pressed: Callable[[], None]) -> Layer:
         buttons = [
             self._make_null_button(self._language.get_continue_message(), on_continue_was_pressed),
+            self._make_null_button(self._language.get_settings_message(), on_settings_was_pressed),
             self._make_null_button(self._language.get_to_main_menu_message(), on_to_main_menu_was_pressed),
         ]
+
         layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.2)
         layout.extend(buttons)
+
+        synchroniser = TextSizeSynchroniser()
+        for button in buttons:
+            synchroniser.append(button.text)
+        synchroniser.synchronise()
+
         return layout.layer
 
     def _get_buttons_rectangle(self) -> Rectangle:
         center_x = self._screen_shape.x / 2
-        width = self._screen_shape.x / 6
+        width = self._screen_shape.x / 5
         x = center_x - width / 2
-        height = self._screen_shape.y / 5
-        bottom_margin = self._screen_shape.y / 5
+        height = self._screen_shape.y / 5 * 1.5
+        bottom_margin = self._screen_shape.y / 5 / 1.5
 
         return (RectangleBuilder(self._screen_shape)
                 .from_left_bottom()

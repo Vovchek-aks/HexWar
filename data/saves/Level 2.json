@@ -38,7 +38,7 @@
       ],
       "RESOURCES": {
         "Dollars": 10000000000000,
-        "Oil": 10000000000000,
+        "Oil": 0,
         "LightIndustryProducts": 10000000000000,
         "HeavyIndustryProducts": 10000000000000
       },

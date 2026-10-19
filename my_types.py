@@ -1,6 +1,6 @@
 from functools import reduce
 from types import TracebackType, UnionType
-from typing import Protocol
+from typing import Protocol, Callable
 from abc import ABCMeta, abstractmethod
 
 
@@ -16,3 +16,15 @@ class ContextManager[T](Protocol, metaclass=ABCMeta):
 
 def union[T](*types: T) -> UnionType:
     return reduce(lambda a, b: a | b, types)
+
+
+def combine(*functions: Callable[[], None]) -> Callable[[], None]:
+    def do() -> None:
+        for function in functions:
+            function()
+
+    return do
+
+
+def call(function: Callable[[], None]) -> None:
+    function()

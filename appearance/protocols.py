@@ -597,6 +597,17 @@ class Scene(ABC):
         ...
 
 
+class SceneWithSwitchTo(Scene, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def was_switched(self) -> OnEventSubscriber[Scene, None]:
+        ...
+
+    @abstractmethod
+    def switch_to(self, scene: Scene) -> None:
+        ...
+
+
 class SceneSwitcher(ABC):
     @property
     @abstractmethod

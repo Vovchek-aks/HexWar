@@ -46,18 +46,20 @@ from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
+from appearance.scenes.realod import reload
 from appearance.settings import Settings
 from core.annexation_map.annexation_map import AnnexationMap
 from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
 from core.cells_changes_observer import CellsChangesObserver
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
-from game_session_saver import GameSessionSaver, SAVE_FILE
+from game_session_saver import GameSessionSaver, SAVE_FILE, GameSessionLoader, TEMP_FILE
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
 from core.game_rules.game_rules_applier import GameRulesApplier
 from core.protocols import GameSession, Player
 from mathematics.vector import Vector2Int
+from my_types import combine
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
@@ -66,11 +68,13 @@ from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 
 def load_game(window: Window,
+              ups: int,
               make_session: Callable[[], GameSession],
               make_next_scene_loading: Callable[[], proto.Scene],
               *,
               is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
     screen_shape = Settings.open().screen_shape
+    print(screen_shape)
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
@@ -211,9 +215,19 @@ def load_game(window: Window,
 
     continue_was_pressed = Event[None]()
     to_main_menu_was_pressed = Event[None]()
+
+    pause_ui_layer = (PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
+                      .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
+                            combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
+                                    lambda: reload(window, scene,
+                                                   load_game(window,
+                                                             ups,
+                                                             GameSessionLoader.make(TEMP_FILE, ups).load,
+                                                             make_next_scene_loading),
+                                                   need_to_resize=False))))
+
     pause_menu_layers = [
-        PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
-        .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke),
+        pause_ui_layer,
         Layer(WholeScreenDrawableLayer(Draw(BackgroundDrawer(screen_shape, PAUSE_MENU_BACKGROUND))), null_layer)
     ]
 
@@ -250,8 +264,8 @@ def load_game(window: Window,
         pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
         continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
         to_main_menu_was_pressed.subscribe(lambda: scene.switch_to(make_next_scene_loading()))
-        to_main_menu_was_pressed.subscribe(lambda: GameSessionSaver(session).save(SAVE_FILE))
-        to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
+        scene.was_switched.subscribe(lambda _: GameSessionSaver(session).save(SAVE_FILE))
+        scene.was_switched.subscribe(lambda _: music_player.stop())
 
     yield scene
 

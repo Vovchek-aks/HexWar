@@ -5,16 +5,23 @@ from attrs import define, field
 import appearance.protocols as proto
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.pause_menu import PauseMenu
+from observer import Event, OnEventSubscriber
 from statuses import Status, MISSING
 
 
 @define
-class GameWithPauseScene(proto.Scene):
+class GameWithPauseScene(proto.SceneWithSwitchTo):
     _game: GameScene
     _pause_menu: PauseMenu
 
     _is_paused: bool = False
     _next_scene: proto.Scene | Status = field(init=False, default=MISSING)
+
+    _was_switched: Event[proto.Scene, None] = field(init=False, factory=Event)
+
+    @property
+    def was_switched(self) -> OnEventSubscriber[proto.Scene, None]:
+        return self._was_switched.subscriber
 
     def next(self) -> proto.Scene | Status:
         return self._next_scene
@@ -35,6 +42,7 @@ class GameWithPauseScene(proto.Scene):
 
     def switch_to(self, scene: proto.Scene) -> None:
         self._next_scene = scene
+        self._was_switched.invoke(scene)
 
     def __enter__(self) -> proto.Scene:
         return self

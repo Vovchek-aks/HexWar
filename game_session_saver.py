@@ -31,6 +31,7 @@ from statuses import MISSING
 SAVE_FOLDER = Path("data") / "saves"
 
 SAVE_FILE = Path("last_save.json")
+TEMP_FILE = Path("_temp.json")
 EDIT_MAP_FILE = Path("_map_from_editor.json")
 
 PLAYER_DICT = dict[str, str | list[str] | dict[str, int]]

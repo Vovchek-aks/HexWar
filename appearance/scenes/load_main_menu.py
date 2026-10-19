@@ -15,6 +15,7 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
+from appearance.scenes.realod import reload
 from appearance.settings import Settings
 from core.map_randomizer import MapRandomizer
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
@@ -50,14 +51,19 @@ def load_main_menu(ups: int,
     map_was_selected = Event[str, Status | int, None]()
     map_editor_was_requested = Event[None]()
     exit_was_pressed = Event[None]()
-    reload_was_pressed = Event[None]()
 
     yield language.get_ui_making_message()
     mouse_movement_observer = MouseMovementObserver()
     drawer = UiDrawer()
     ui_layer = (MainMenuUiLayerMaker(drawer, screen_shape, mouse_movement_observer)
                 .make(map_was_selected.invoke, map_editor_was_requested.invoke, exit_was_pressed.invoke,
-                      reload_was_pressed.invoke))
+                      lambda: reload(window, scene,
+                                     load_main_menu(ups,
+                                                    window,
+                                                    get_player_selection_loading_scene,
+                                                    get_map_editor_loading_scene,
+                                                    get_game_loading_scene,
+                                                    get_tutorial_game_loading_scene_getter))))
 
     yield language.get_sprite_loading_message()
     background = SpritesLoader.from_meta().load_menu_background()
@@ -93,24 +99,9 @@ def load_main_menu(ups: int,
 
         return get_player_selection_loading_scene
 
-    def reload() -> None:
-        settings = Settings.open()
-        screen_shape = settings.screen_shape
-        window.change_is_fullscreen(True)
-        window.change_is_fullscreen(False)
-        window.change_screen_shape(screen_shape)
-        window.change_is_fullscreen(settings.if_fullscreen)
-        scene.switch_to(LoadingScene.make(load_main_menu(ups,
-                                                         window,
-                                                         get_player_selection_loading_scene,
-                                                         get_map_editor_loading_scene,
-                                                         get_game_loading_scene,
-                                                         get_tutorial_game_loading_scene_getter)))
-
     map_was_selected.subscribe(on_map_was_selected)
     map_editor_was_requested.subscribe(lambda: scene.switch_to(get_map_editor_loading_scene()))
     exit_was_pressed.subscribe(scene.on_exit_was_pressed)
-    reload_was_pressed.subscribe(reload)
 
     yield scene
 

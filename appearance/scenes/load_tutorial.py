@@ -46,6 +46,7 @@ from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.pause_menu import PauseMenu
+from appearance.scenes.realod import reload
 from appearance.settings import Settings
 from core.annexation_map.annexation_map import AnnexationMap
 from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
@@ -56,8 +57,9 @@ from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
 from core.game_rules.game_rules_applier import GameRulesApplier
 from core.protocols import GameSession
-from game_session_saver import GameSessionLoader, _TUTORIAL_MAP_PREFIX
+from game_session_saver import GameSessionLoader, _TUTORIAL_MAP_PREFIX, GameSessionSaver, TEMP_FILE
 from mathematics.vector import Vector2Int
+from my_types import combine
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
@@ -217,9 +219,20 @@ def load_tutorial(window: Window,
 
     continue_was_pressed = Event[None]()
     to_main_menu_was_pressed = Event[None]()
+
+    pause_ui_layer = (PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
+                      .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
+                            combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
+                                    lambda: reload(window, scene,
+                                                   load_tutorial(window,
+                                                                 GameSessionLoader.make(TEMP_FILE, ups).load,
+                                                                 make_next_scene_loading,
+                                                                 tutorial_index,
+                                                                 ups),
+                                                   need_to_resize=False))))
+
     pause_menu_layers = [
-        PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
-        .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke),
+        pause_ui_layer,
         Layer(WholeScreenDrawableLayer(Draw(BackgroundDrawer(screen_shape, PAUSE_MENU_BACKGROUND))), null_layer)
     ]
 
@@ -240,7 +253,7 @@ def load_tutorial(window: Window,
     pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
     continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
     to_main_menu_was_pressed.subscribe(lambda: scene.switch_to(make_next_scene_loading()))
-    to_main_menu_was_pressed.subscribe(lambda: music_player.stop())
+    scene.was_switched.subscribe(lambda _: music_player.stop())
 
     for _ in game_rules_applier.on_turn_start():
         ...

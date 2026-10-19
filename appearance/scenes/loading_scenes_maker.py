@@ -34,7 +34,7 @@ class LoadingScenesMaker:
                                                         self._window))
 
     def make_game_loading_scene(self, make_game_session: GameSessionMaker) -> LoadingScene:
-        return LoadingScene.make(load_game(self._window, make_game_session,
+        return LoadingScene.make(load_game(self._window, self._ups, make_game_session,
                                            self.make_main_menu_loading_scene))
 
     def make_tutorial_loading_scene_getter(self, map_name: str) -> Callable[[GameSessionMaker], LoadingScene]:
