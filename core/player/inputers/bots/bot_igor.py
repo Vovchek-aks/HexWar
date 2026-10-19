@@ -92,6 +92,10 @@ class BotIgor(proto.Bot):
     _ran_out_of_moves: bool = field(init=False, default=False)
 
     @property
+    def is_allowed_to_build(self) -> bool:
+        return self._is_allowed_to_build
+
+    @property
     def _board(self) -> proto.Board:
         assert self._session is not MISSING
         return self._session.board

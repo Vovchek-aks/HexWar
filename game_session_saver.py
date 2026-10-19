@@ -43,8 +43,9 @@ CELLS_LIST = list[int]
 SESSION_DICT = dict[str, list[PLAYER_DICT] | BUDGET_DICT | PULLING_CONNECTIONS_DICT | FIGURES_DICT
                          | GAME_RULE_STATES_DICT | str | CELLS_LIST]
 
+NO_BUILD_IGOR = "NoBuildIgor"
 BOTS = {bot.__name__: lambda: bot() for bot in bots}
-BOTS["NoBuildIgor"] = lambda: BotIgor(is_allowed_to_build=False)
+BOTS[NO_BUILD_IGOR] = lambda: BotIgor(is_allowed_to_build=False)
 
 RESOURCES = {resource.__name__: resource for resource in get_resources_types()}
 FIGURES = {figure.__name__: figure for figure in fig.get_figures()}
@@ -106,10 +107,14 @@ class GameSessionSaver:
 
     @staticmethod
     def _get_player_inputer_list(inputer: proto.PlayerInputer) -> list[str]:
-        name = inputer.__class__.__name__
+        name = type(inputer).__name__
         match inputer:
             case BotPlayerInputer():
-                return [name, inputer.bot.__class__.__name__]
+                bot = inputer.bot
+                if isinstance(bot, BotIgor) and not bot.is_allowed_to_build:
+                    return [name, NO_BUILD_IGOR]
+
+                return [name, type(bot).__name__]
             case PassPlayerInputer():
                 return [name, inputer.timeout]
             case EventPlayerInputer():
