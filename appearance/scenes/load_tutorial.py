@@ -79,10 +79,11 @@ def load_tutorial(window: Window,
     yield language.get_intermediate_preparing_message()
     screenshot_saver = ScreenshotSaver()
 
+    in_game_time = InGameTime()
     camera_orientation = CameraOrientation.for_board(session.board)
     camera = CachedCamera.make(Camera(screen_shape.as_vector2, ReadonlyCameraOrientation(camera_orientation)))
     keyboard_camera_mover = KeyboardCameraMover(camera_orientation)
-    to_target_camera_mover = ToTargetOrientationCameraMover(camera_orientation)
+    to_target_camera_mover = ToTargetOrientationCameraMover(camera_orientation, in_game_time)
     camera_mover = CameraMover(keyboard_camera_mover, to_target_camera_mover)
 
     hovered_cell_getter = UnderCursorCellGetter(camera, session.board)
@@ -173,7 +174,6 @@ def load_tutorial(window: Window,
         Layer(WholeScreenDrawableLayer(draw), null_layer)
     ]
 
-    in_game_time = InGameTime()
     players_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,
                                                   in_game_time)
     bots_moves_animations = MovesAnimator.make(on_board_sprites_drawer, figures_drawer, camera, session,

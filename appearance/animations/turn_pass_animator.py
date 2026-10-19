@@ -30,7 +30,7 @@ class TurnPassAnimator:
         if isinstance(player.inputer, BotPlayerInputer):
             return
 
-        yield from sleep_gametime(FOR_GAME_MOVE_TIME, self._in_game_time)
+        yield  # important???
 
         board = self._session.board
         cells = self._session.cells.with_owner(player)
