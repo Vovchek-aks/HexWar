@@ -22,7 +22,7 @@ class MultibotScene(proto.Scene):
     def draw(self) -> None:
         self._game.draw()
 
-    def on_reload(self, scene: proto.Scene) -> None:
+    def switch_to(self, scene: proto.Scene) -> None:
         self._next_scene = scene
 
     def __enter__(self) -> proto.Scene:

@@ -74,7 +74,6 @@ def load_game(window: Window,
               *,
               is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
     screen_shape = Settings.open().screen_shape
-    print(screen_shape)
     language = Language.from_meta()
 
     yield language.get_map_loading_message()
@@ -239,7 +238,7 @@ def load_game(window: Window,
         def on_player_turn_started(player: Player) -> None:
             ratio_to_win = .5
             if max(session.cells.get_territories_and_production_ratios_of(player)) >= ratio_to_win:
-                scene.on_reload(make_next_scene_loading())
+                scene.switch_to(make_next_scene_loading())
 
         session.master.turn_had_started.subscribe(on_player_turn_started)
         for _ in game_rules_applier.on_turn_start():

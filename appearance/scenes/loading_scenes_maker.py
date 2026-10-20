@@ -46,7 +46,7 @@ class LoadingScenesMaker:
         return make_tutorial_loading_scene
 
     def make_multibot_loading_scene(self, make_game_session: GameSessionMaker) -> LoadingScene:
-        return LoadingScene.make(load_game(self._window, make_game_session,
+        return LoadingScene.make(load_game(self._window, self._ups, make_game_session,
                                            lambda: self.make_multibot_loading_scene(make_game_session),
                                            is_multibot=True))
 
