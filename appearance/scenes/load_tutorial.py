@@ -222,6 +222,7 @@ def load_tutorial(window: Window,
 
     pause_ui_layer = (PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
                       .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
+                            pause_menu_open_requested.subscriber,
                             combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
                                     lambda: reload(window, scene,
                                                    load_tutorial(window,

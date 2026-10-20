@@ -30,9 +30,12 @@ class PauseMenuUiLayerMaker:
     def make(self,
              on_continue_was_pressed: Callable[[], None],
              on_to_main_menu_was_pressed: Callable[[], None],
+             pause_menu_open_requested: OnEventSubscriber[None],
              reload: Callable[[], None]) -> Layer:
-        settings_was_pressed = Event[None]()
         to_label_was_pressed = Event[None]()
+        settings_was_pressed = Event[None]()
+
+        pause_menu_open_requested.subscribe(to_label_was_pressed.invoke)
 
         tabs = list[Layer]()
 
@@ -61,7 +64,7 @@ class PauseMenuUiLayerMaker:
         ]
 
         layer = Layer.as_multiple(layers)
-        on_to_label_was_pressed.subscribe(lambda: layer.set_activity(True))
+        on_to_label_was_pressed.subscribe(combine(turn_tabs_off, lambda: layer.set_activity(True)))
         return layer
 
     def _make_buttons(self,
