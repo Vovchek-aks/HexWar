@@ -35,10 +35,13 @@ def group(*animations: Animation, strict: bool = False) -> Animation:
 
 def until_happen[* T](event: OnEventSubscriber[*T, None],
                       get_animation: Callable[[], Animation] = no_animation) -> Animation:
+    assert False, "temporarily deprecated"
+
     def on_event(*_: *T) -> None:
         nonlocal had_happened
         had_happened = True
         event.unsubscribe(on_event)
+        print(666)
 
     had_happened = False
     event.subscribe(on_event)

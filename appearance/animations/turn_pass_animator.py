@@ -1,6 +1,6 @@
 from attrs import frozen
 
-from appearance.animations.basic import Animation, until_happen, sleep_gametime
+from appearance.animations.basic import Animation, sleep_gametime
 from appearance.animations.to_target_orientation_camera_mover import ToTargetOrientationCameraMover
 from appearance.game_engine.game_engine_arc.in_game_time import InGameTime
 from appearance.graphics.camera.camera_orientation import CameraOrientation
@@ -37,7 +37,8 @@ class TurnPassAnimator:
         target = CameraOrientation.for_cells(cells, board, self._camera, margin=MARGIN)
         self._to_target_camera_mover.set_target(target, time=FOR_GAME_MOVE_TIME)
         yield
-        yield from until_happen(self._to_target_camera_mover.target_has_been_reached)
+        while self._to_target_camera_mover.has_target:
+            yield
         yield
 
     def end_for_game(self, player: Player) -> Animation:
@@ -58,7 +59,10 @@ class TurnPassAnimator:
         board = self._session.board
         target = CameraOrientation.for_board(board)
         self._to_target_camera_mover.set_target(target, time=FOR_MULTIBOT_MOVE_TIME)
-        yield from until_happen(self._to_target_camera_mover.target_has_been_reached)
+        yield
+        while self._to_target_camera_mover.has_target:
+            yield
+        yield
 
         yield from sleep_gametime(ON_FULL_BOARD_WAIT_TIME, self._in_game_time)
         yield
@@ -77,7 +81,8 @@ class TurnPassAnimator:
             target.zoom_in(ratio)
         self._to_target_camera_mover.set_target(target, time=FOR_MULTIBOT_MOVE_TIME)
         yield
-        yield from until_happen(self._to_target_camera_mover.target_has_been_reached)
+        while self._to_target_camera_mover.has_target:
+            yield
         yield
 
         while self._is_annexations_display_in_progress_for(player):

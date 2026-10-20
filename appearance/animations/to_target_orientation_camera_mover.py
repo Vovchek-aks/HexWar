@@ -44,7 +44,7 @@ class ToTargetOrientationCameraMover:
             self._time_to_move = self._delta_position.length() / self._movement_speed
             return
 
-        self._movement_speed = self._delta_position.length() * self._orientation.zoom ** .5 / time
+        self._movement_speed = self._delta_position.length() / time
         self._time_to_move = time
 
     def update(self, dt: float) -> None:
@@ -61,7 +61,7 @@ class ToTargetOrientationCameraMover:
         self._target_has_been_reached.invoke()
 
     def _movement(self, dt: float) -> bool:
-        ds = self._get_movement_speed() * dt
+        ds = self._movement_speed * dt
 
         direction = self._delta_position
         if direction.length() < ds or ds == 0:
@@ -90,7 +90,7 @@ class ToTargetOrientationCameraMover:
         return False
 
     def _get_zoom_speed(self) -> float:
-        speed = self._get_movement_speed()
+        speed = self._movement_speed
         if speed == 0:
             return 0
 
@@ -99,6 +99,3 @@ class ToTargetOrientationCameraMover:
             return 0
 
         return abs(self._target_orientation.zoom - self._orientation.zoom) / time
-
-    def _get_movement_speed(self) -> float:
-        return self._movement_speed / self._orientation.zoom ** .5
