@@ -23,13 +23,21 @@
     },
     "Howitzer": {
       "type": "variants",
-      "elements": "figures/tank_variants"
+      "elements": "figures/howitzer_variants"
     },
     "Artillery": {
       "type": "variants",
       "elements": "figures/artillery_variants"
     },
+    "Grad": {
+      "type": "variants",
+      "elements": "figures/grad_variants"
+    },
     "LightFactory": {
+      "type": "variants",
+      "elements": "figures/lf_variants"
+    },
+    "PrivateLightFactory": {
       "type": "variants",
       "elements": "figures/lf_variants"
     },
@@ -37,7 +45,23 @@
       "type": "variants",
       "elements": "figures/hf_variants"
     },
+    "PrivateHeavyFactory": {
+      "type": "variants",
+      "elements": "figures/hf_variants"
+    },
+    "Abandonment": {
+      "type": "variants",
+      "elements": "figures/abandonment_variants"
+    },
     "TierOneCapital": {
+      "type": "loop",
+      "elements": "figures/capital_loop"
+    },
+    "TallCapital": {
+      "type": "loop",
+      "elements": "figures/capital_loop"
+    },
+    "WideCapital": {
       "type": "loop",
       "elements": "figures/capital_loop"
     },
@@ -48,6 +72,10 @@
     "Town": {
       "type": "variants",
       "elements": "figures/town_variants"
+    },
+    "Settlement": {
+      "type": "loop",
+      "elements": "figures/settlement_loop"
     },
     "MissileSilo": {
       "type": "loop",
@@ -85,6 +113,11 @@
       "effects/tank_reloc_3.wav"
     ],
     "mt_reloc": [
+      "effects/mt_reloc_1.wav",
+      "effects/mt_reloc_2.wav",
+      "effects/mt_reloc_3.wav"
+    ],
+    "grad_reloc": [
       "effects/mt_reloc_1.wav",
       "effects/mt_reloc_2.wav",
       "effects/mt_reloc_3.wav"

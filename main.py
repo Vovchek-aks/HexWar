@@ -32,17 +32,17 @@ def main() -> None:
 
     psutil.Process(os.getpid()).nice(psutil.HIGH_PRIORITY_CLASS)
     sys.setrecursionlimit(10_000)
-    # make_first_scene = _make_test_game_loading_scene
+    make_first_scene = _make_test_game_loading_scene
     # make_first_scene = _make_map_editor_loading_scene
     # make_first_scene = _make_multibot_loading_scene
-    make_first_scene = _make_main_menu_loading_scene
+    # make_first_scene = _make_main_menu_loading_scene
     with GameEngine.make(CAPTION, UPS, make_first_scene) as engine:
         engine.run()
 
 
 def _make_test_game_loading_scene(window: Window) -> Scene:
     def make_game_session() -> GameSession:
-        session = GameSessionLoader.make("Level 2.json", UPS).load()
+        session = GameSessionLoader.make("_map_from_editor.json", UPS).load()
         player = session.master.current_player
         # player = session.master.players[1]
         players_selector = PlayersSelector(session)

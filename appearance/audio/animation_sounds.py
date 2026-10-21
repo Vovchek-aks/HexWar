@@ -18,6 +18,7 @@ class AnimationSounds:
     _relocation_motorization: SoundPlayer
     _relocation_tank: SoundPlayer
     _relocation_howitzer: SoundPlayer
+    _relocation_grad: SoundPlayer
 
     @property
     def creation_landing(self) -> SoundPlayer:
@@ -54,5 +55,6 @@ class AnimationSounds:
             fig.Motorization: self._relocation_motorization,
             fig.Tank: self._relocation_tank,
             fig.Howitzer: self._relocation_howitzer,
+            fig.Grad: self._relocation_grad,
         }
         return sound_for.get(figure, self._no_sound)
