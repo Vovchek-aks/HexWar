@@ -5,6 +5,7 @@ import arcade as arc
 
 import core.protocols as proto
 from appearance.input.moves_inputer.input_actions import CellClickAction
+from appearance.language import Language
 from appearance.protocols import InputAction, MouseButtons, InputActionsReader, InputState
 from core.cells import Cells
 from core.master import Master
@@ -31,14 +32,15 @@ class MapEditor:
         self = cls(input_state, session, on_changed_cell_owner, multiple_cells_change, transforms)
         actions_reader.action_was_read.subscribe(self._on_action_was_read)
 
-        transforms.append(("Clear", lambda coord: self._change_figure(coord, fig.Land)))
-        transforms.append(("Water", lambda coord: self._change_owner_to(coord, MISSING)))
+        language = Language.from_meta()
+        transforms.append((language.get_clear_message(), lambda coord: self._change_figure(coord, fig.Land)))
+        transforms.append((language.get_figure_name(fig.Water), lambda coord: self._change_owner_to(coord, MISSING)))
 
         for figure in fig.get_figures():
             if proto.Empty in figure.FLAGS:
                 continue
 
-            self._append_transform(transforms, figure)
+            self._append_figure_transform(transforms, figure, language)
 
         for player in session.master.players:
             self.append_player_transform(player)
@@ -148,5 +150,8 @@ class MapEditor:
         if proto.Empty not in target.FLAGS:
             self._session.figures.add(target, coord)
 
-    def _append_transform(self, transforms: list[Transform], figure: type[fig.Figure]) -> None:
-        transforms.append((figure.__name__, lambda coord: self._change_figure(coord, figure)))
+    def _append_figure_transform(self,
+                                 transforms: list[Transform],
+                                 figure: type[fig.Figure],
+                                 language: Language) -> None:
+        transforms.append((language.get_figure_name(figure), lambda coord: self._change_figure(coord, figure)))

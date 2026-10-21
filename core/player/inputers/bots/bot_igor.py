@@ -27,6 +27,7 @@ from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts
 from mathematics.path_searcers.a_star_path_searcher import AStarPathSearcher as PathSearcher
 from mathematics.hex_geometry import get_distance
 from mathematics.vector import Vector2Int
+from my_types import union
 from statuses import Status, MISSING, INVALID, IN_PROGRESS, ABORT_NEEDED
 
 _ATTACKING = 0
@@ -934,9 +935,11 @@ class BotIgor(proto.Bot):
                 self._moves_to_make.append(valid_move)
 
     def _try_pull_forces_to_front(self) -> Iterator[None]:
+        figures_to_pull = fig.Infantry, fig.Motorization, fig.Tank, fig.Howitzer, fig.Grad
+
         cells = self._session.cells
         to_pull = (cells.with_owner(self._player) &
-                   cells.with_figure(fig.Infantry | fig.Motorization | fig.Tank | fig.Howitzer | fig.Grad))
+                   cells.with_figure(union(*figures_to_pull)))
 
         to_pull = to_pull.filter(lambda cell: self._session.figures_budget
                                  .can_spend(cell.figure,
@@ -948,7 +951,7 @@ class BotIgor(proto.Bot):
 
         front_of: dict[type[fig.Figure] | tuple[type[fig.Figure], type[fig.Figure]], proto.Cells] = {
             figure: self._get_good_front_for(figure)
-            for figure in (fig.Infantry, fig.Motorization, fig.Tank, fig.Howitzer, fig.Grad)
+            for figure in figures_to_pull
         }
         for figure in (fig.Infantry, fig.Motorization):
             front_of[figure, fig.Artillery] = self._get_good_front_for(figure, fig.Artillery)

@@ -76,6 +76,7 @@ _OFF = "OFF"
 _APPLY = "APPLY"
 _ADD_PLAYER = "ADD_PLAYER"
 _PLAYERS_NAME = "PLAYERS_NAME"
+_CLEAR = "CLEAR"
 _PLAYERS_MODE = "PLAYERS_MODE"
 _PLAYERS_MODE_STATES = "PLAYERS_MODE_STATES"
 _PLAYERS_MODE_RANDOM = "PLAYERS_MODE_RANDOM"
@@ -344,6 +345,9 @@ class Language:
 
     def get_players_name_message(self) -> str:
         return self._ui[_PLAYERS_NAME]
+
+    def get_clear_message(self) -> str:
+        return self._ui[_CLEAR]
 
     def get_add_player_message(self) -> str:
         return self._ui[_ADD_PLAYER]

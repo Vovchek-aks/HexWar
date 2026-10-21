@@ -291,8 +291,8 @@ class MainMenuUiLayerMaker:
         layout.append(top_layout)
         bottom_layout = VerticalLayoutUi(Rectangle.zero(), reserved=3, margin_ratio=.15)
         layout.append(bottom_layout, weight=10)
-        new_open = HorizontalLayoutUi(Rectangle.zero(), reserved=2, margin_ratio=.05)
-        bottom_layout.append(new_open)
+        new_and_open = HorizontalLayoutUi(Rectangle.zero(), reserved=2, margin_ratio=.05)
+        bottom_layout.append(new_and_open)
 
         rectangle = Rectangle(Vector2.zero(),
                               Vector2(2 * top_layout.rectangle.shape.x / top_layout.rectangle.shape.y,
@@ -314,12 +314,23 @@ class MainMenuUiLayerMaker:
              .save(EDIT_MAP_FILE))
             on_map_editor_was_requested()
 
-        new_open.append(new_button := self._make_null_button(self._language.get_make_new_map_message(),
+        def on_open_was_pressed() -> None:
+            if not is_map_from_editor_exists:
+                return
+
+            on_map_editor_was_requested()
+
+        new_and_open.append(new_button := self._make_null_button(self._language.get_make_new_map_message(),
                                                              on_new_map_was_pressed,
                                                              self._sprites_loader.load_button_5()))
-        new_open.append(open_button := self._make_null_button(self._language.get_load_existing_map_message(),
-                                                              on_map_editor_was_requested,
-                                                              self._sprites_loader.load_button_5()))
+
+        is_map_from_editor_exists = (SAVE_FOLDER / EDIT_MAP_FILE).exists()
+        new_and_open.append(open_button := self._make_null_button(self._language.get_load_existing_map_message(),
+                                                                  on_open_was_pressed,
+                                                                  self._sprites_loader.load_button_5(),
+                                                                  color=RECTANGLE_BUTTON
+                                                                  if is_map_from_editor_exists else
+                                                                  INVALID_RECTANGLE_BUTTON))
 
         bottom_layout.append(open_in_explorer := self._make_null_button(
             self._language.get_open_file_in_explorer_message(),
@@ -682,10 +693,11 @@ class MainMenuUiLayerMaker:
 
         map_editor = self._make_menu_image_button(self._sprites_loader.load_map_editor_icon(),
                                                   map_editor_was_pressed.invoke, turn_tabs_off)
+        multiplier = self._screen_shape.y / 720
         map_editor.set_rectangle(RectangleBuilder(self._screen_shape)
                                  .from_left_bottom()
-                                 .set_shape(Vector2(60, 60))  # todo
-                                 .move(Vector2(15, 15))
+                                 .set_shape(Vector2(60, 60) * multiplier)
+                                 .move(Vector2(15, 15) * multiplier)
                                  .adjust_for_shape()
                                  .build())
 

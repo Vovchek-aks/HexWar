@@ -34,6 +34,7 @@ _HARDNESS = "HARDNESS"
 
 _UI = "ui"
 _MAP_EDITOR = "map_editor"
+_TEXTURED_RECTANGLE = "textured_rectangle"
 _BUTTON_1 = "button_1"
 _BUTTON_3 = "button_3"
 _BUTTON_5 = "button_5"
@@ -158,6 +159,10 @@ class SpritesLoader:
 
     def load_map_editor_icon(self) -> Sprite:
         sprite_info = self._ui[_MAP_EDITOR]
+        return self._load_sprite(sprite_info)
+
+    def load_textured_rectangle(self) -> Sprite:
+        sprite_info = self._ui[_TEXTURED_RECTANGLE]
         return self._load_sprite(sprite_info)
 
     def load_button_1(self) -> Sprite:

@@ -14,7 +14,7 @@ class ContextManager[T](Protocol, metaclass=ABCMeta):
         ...
 
 
-def union[T](*types: T) -> UnionType:
+def union[T: type](*types: T) -> UnionType:
     return reduce(lambda a, b: a | b, types)
 
 

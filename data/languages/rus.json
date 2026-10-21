@@ -72,6 +72,7 @@
     "APPLY": "Применить",
     "ADD_PLAYER": "Добавить игрока",
     "PLAYERS_NAME": "Имя игрока",
+    "CLEAR": "Очистить",
     "PLAYERS_TOP": "Топ игроков",
     "TERRITORIES": "Земли",
     "ECONOMY": "Эко.",
@@ -802,6 +803,12 @@
     ]
   },
   "figures": {
+    "Land": "Равнины",
+    "Mountain": "Горы",
+    "Forest": "Леса",
+    "Swamp": "Болота",
+    "Desert": "Пустыни",
+    "Water": "Вода",
     "Infantry": "Пехота",
     "Tank": "Танк",
     "Artillery": "Артиллерия",

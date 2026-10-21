@@ -46,7 +46,7 @@ class MapEditorUiLayerMaker:
         layers = [
             self._make_back_button(exit_was_pressed.invoke),
             changer := self._make_transform_switcher(),
-            self._make_player_adding_menu(changer.changer, exit_was_pressed.subscriber),
+            self._make_player_adding_menu(changer, exit_was_pressed.subscriber),
             self._make_player_edit_menu(changer),
         ]
 
@@ -148,16 +148,16 @@ class MapEditorUiLayerMaker:
         return value_changer
 
     def _make_player_adding_menu(self,
-                                 transforms_changer: ListChanger[str],
+                                 transform_switcher: TwoButtonsValueChanger[str],
                                  exit_was_pressed: OnEventSubscriber[None]) -> Layer:
         layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
                                   .from_left_up()
                                   .move(Vector2(20, 20))
                                   .set_shape(Vector2(self._screen_shape.x / 5,
-                                                     self._screen_shape.y * .4))
+                                                     self._screen_shape.y * .45))
                                   .adjust_for_shape()
                                   .build(),
-                                  reserved=5,
+                                  reserved=6,
                                   margin_ratio=.2)
 
         def can_append_player() -> bool:
@@ -168,7 +168,7 @@ class MapEditorUiLayerMaker:
             if name == self._language.get_players_name_message():
                 return False
 
-            if name in transforms_changer.values:
+            if name in transform_switcher.changer.values:
                 return False
 
             return True
@@ -182,8 +182,14 @@ class MapEditorUiLayerMaker:
             player = Player(PlayerData(color, name), BotPlayerInputer(BotIgor()), ResourcesStockpile())
 
             self._map_editor.append_player_transform(player)
-            transforms_changer.insert(0, name)
+            transform_switcher.changer.insert(0, name)
+            transform_switcher.set(name)
             player_name.set_text(self._language.get_players_name_message())
+
+        def on_color_chanel_was_changed(_: int) -> None:
+            textured_rectangle.set_sprite(white_rectangle.colored_in(Color(color_r.value,
+                                                                           color_g.value,
+                                                                           color_b.value)))
 
         synchroniser = TextSizeSynchroniser()
         line_edit_text_data = (TextDataBuilder()
@@ -193,9 +199,18 @@ class MapEditorUiLayerMaker:
                                .build())
         player_name = LineEditUi.make(self._window, exit_was_pressed, Rectangle.ones(), line_edit_text_data)
         layout.append(player_name)
-        self._add_changer(synchroniser, layout, "R", color_r := IntChanger(125, 0, 255, 5), name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "G", color_g := IntChanger(125, 0, 255, 5), name_size_ratio=.2)
-        self._add_changer(synchroniser, layout, "B", color_b := IntChanger(125, 0, 255, 5), name_size_ratio=.2)
+        default_color = 125
+        white_rectangle = self._sprites_loader.load_textured_rectangle()
+        layout.append(textured_rectangle :=
+                      ImageUi.make(self._drawer, Rectangle.ones(),
+                                   white_rectangle.colored_in(Color(default_color, default_color, default_color))),
+                      weight=.3)
+        color_r = self._add_changer(synchroniser, layout, "R", IntChanger(default_color, 0, 255, 5), name_size_ratio=.2)
+        color_r.value_had_changed.subscribe(on_color_chanel_was_changed)
+        color_g = self._add_changer(synchroniser, layout, "G", IntChanger(default_color, 0, 255, 5), name_size_ratio=.2)
+        color_g.value_had_changed.subscribe(on_color_chanel_was_changed)
+        color_b = self._add_changer(synchroniser, layout, "B", IntChanger(default_color, 0, 255, 5), name_size_ratio=.2)
+        color_b.value_had_changed.subscribe(on_color_chanel_was_changed)
         layout.append(add_player := self._make_null_button(self._language.get_add_player_message(), try_append_player))
         synchroniser.append(add_player.text)
         synchroniser.synchronise()
@@ -207,7 +222,7 @@ class MapEditorUiLayerMaker:
                         text: str,
                         changer: ValueChanger[T],
                         *,
-                        name_size_ratio: float = .5) -> None:
+                        name_size_ratio: float = .5) -> TwoButtonsValueChanger[T]:
         text = f"{text}:"
         margin_ratio = .13
         rectangle = Rectangle(Vector2.zero(),
@@ -225,11 +240,13 @@ class MapEditorUiLayerMaker:
         horizontal.append(text_ui := TextUi.make_with_anchors(self._drawer, Rectangle.zero(), TextData.debug(text),
                                                               anchor_x=TextUi.RIGHT, anchor_y=TextUi.CENTER),
                           weight=text_weight)
-        horizontal.append(TwoButtonsValueChanger.make_horizontal(
+        horizontal.append(result := TwoButtonsValueChanger.make_horizontal(
             Rectangle(Vector2.zero(), rectangle.shape.with_x(rectangle.shape.x *
                                                              (1 - margin_ratio) / (text_weight + 1))),
             changer, self._sprites_loader, self._drawer, self._mouse_movement_observer))
         synchroniser.append(text_ui)
+
+        return result
 
     def _make_back_button(self, on_exit_was_pressed: Callable[[], None]) -> ButtonUi:
         button = self._make_null_button(self._language.get_to_main_menu_message(), on_exit_was_pressed)
@@ -271,8 +288,8 @@ class MapEditorUiLayerMaker:
                 .build())
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
-        button_background = self._sprites_loader.load_button_3().colored_in(RECTANGLE_BUTTON)
-        button_text = TextData.debug(text)
+        button_background = self._sprites_loader.load_button_5().colored_in(RECTANGLE_BUTTON)
+        button_text = TextData.for_button(text)
         button = ButtonUi.make(self._drawer,
                                get_image_rectangle(Rectangle(Vector2.zero(), button_background.shape.as_vector2)),
                                button_background,
