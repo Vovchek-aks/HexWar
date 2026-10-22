@@ -43,6 +43,8 @@ CAPTURE_SCALE_RATIO = 1.5
 
 CONVERSION_DURATION = .5
 
+COMBINATION_DURATION = RELOCATION_JUMP_DURATION
+
 CREATION_DURATION = .5
 CREATION_FIRST_JUMP_DURATION_RATIO = .6
 CREATION_FIRST_JUMP_HEIGHT = DISTANCE_BETWEEN_CENTERS / 3
@@ -61,7 +63,7 @@ ORESHNIK_LAUNCH_EXPLOSIONS_MIN_SCALE_RATIO = 1
 ORESHNIK_LAUNCH_EXPLOSIONS_MAX_SCALE_RATIO = 1.5
 
 GRAD_ATTACK_FLIGHT_DURATION = 1
-GRAD_ATTACK_FLIGHTS_TIME_SPACING = .1
+GRAD_ATTACK_FLIGHTS_TIME_SPACING = .25
 GRAD_ATTACK_FLIGHT_HEIGHT = DISTANCE_BETWEEN_CENTERS * 4
 GRAD_ATTACK_ROCKET_SCALE = .4
 GRAD_ATTACK_EXPLOSIONS_DURATION = .6
@@ -129,8 +131,8 @@ class MovesAnimator(proto.MovesAnimator):
                 return self._get_capture_animation(coord)
             case Conversion(coord=coord, target=target):
                 return self._get_conversion_animation(coord, target)
-            case Combination(first_coord=to_coord, second_coord=from_coord):
-                return self._get_relocation_animation(from_coord, to_coord)
+            case Combination(first_coord=first_coord, second_coord=second_coord):
+                return self._get_combination_animation(first_coord, second_coord)
             case Creation(to_coord=coord, figure_type=figure):
                 return self._get_creation_animation(coord, figure)
             case OreshnikLaunch(from_coord=coord, to_coord=target):
@@ -189,6 +191,12 @@ class MovesAnimator(proto.MovesAnimator):
                      self._rotate_sprite(sprite, lambda t: Angle(rotation_speed * t), half_rotation_duration),
                      self._hide_figure(coord),
                      other_half())
+
+    def _get_combination_animation(self, first_coord: Vector2Int, second_coord: Vector2Int) -> Animation:
+        return group(chain(self._sleep(COMBINATION_DURATION * .2),
+                           self._play_sound_fully(self._sounds.combination),
+                           cycle(no_animation)),
+                     self._get_relocation_animation(second_coord, first_coord))
 
     def _get_capture_animation(self, coord: Vector2Int) -> Animation:
         if self._session.board[coord].is_empty:
@@ -331,7 +339,8 @@ class MovesAnimator(proto.MovesAnimator):
                           GRAD_ATTACK_FLIGHT_HEIGHT,
                           GRAD_ATTACK_FLIGHT_DURATION)
         get_jump_delta_position = self._get_jump_delta_position_getter(*jump_arguments)
-        flight = chain(group(self._jump(rocket, *jump_arguments),
+        flight = chain(self._play_sound_fully(self._sounds.grad_rocket_flight),
+                       group(self._jump(rocket, *jump_arguments),
                              self._rotate_sprite(rocket, self._get_rocket_delta_angle_getter(get_jump_delta_position),
                                                  GRAD_ATTACK_FLIGHT_DURATION)),
                        call(lambda: self._on_board_sprites_drawer.discard_sprite(rocket_index)))

@@ -24,14 +24,14 @@ class Conversion(proto.Move):
                                                                -LightIndustryProducts(600)),
                                            0),
 
-        (fig.TierOneCapital, fig.TallCapital): (ResourcesGroup.make(Dollars(3_000_000),
-                                                                    LightIndustryProducts(7_500),
-                                                                    HeavyIndustryProducts(1_000)),
+        (fig.TierOneCapital, fig.TallCapital): (ResourcesGroup.make(Dollars(4_000_000),
+                                                                    LightIndustryProducts(9_500),
+                                                                    HeavyIndustryProducts(300)),
                                                 fig.TierOneCapital.MOVES_BUDGET),
 
-        (fig.TierOneCapital, fig.WideCapital): (ResourcesGroup.make(Dollars(3_000_000),
-                                                                    LightIndustryProducts(7_500),
-                                                                    HeavyIndustryProducts(1_000)),
+        (fig.TierOneCapital, fig.WideCapital): (ResourcesGroup.make(Dollars(4_000_000),
+                                                                    LightIndustryProducts(9_500),
+                                                                    HeavyIndustryProducts(300)),
                                                 fig.TierOneCapital.MOVES_BUDGET),
 
         (fig.Settlement, fig.Town): (ResourcesGroup.make(fig.Town.FLAGS.get(proto.Creatable).cost.get(Dollars) * 2),

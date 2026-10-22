@@ -66,9 +66,9 @@ def _make_main_menu_loading_scene(window: Window) -> Scene:
 def _make_multibot_loading_scene(window: Window) -> Scene:
     map_name = random.choice([
         # "Round Cross.json",
-        "SVO.json",
-        "Middle East.json",
-        "Finnish Gulf.json",
+        # "SVO.json",
+        # "Middle East.json",
+        # "Finnish Gulf.json",
         "Balkans.json"
     ])
     bots_count = len(read_random_bot_names())

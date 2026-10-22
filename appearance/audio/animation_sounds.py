@@ -10,6 +10,8 @@ class AnimationSounds:
     _creation_landing: SoundPlayer
     _pulling_initiation: SoundPlayer
     _conversion: SoundPlayer
+    _combination: SoundPlayer
+    _grad_rocket_flight: SoundPlayer
     _capture: SoundPlayer
     _oreshnik_flight: SoundPlayer
     _explosion: SoundPlayer
@@ -31,6 +33,14 @@ class AnimationSounds:
     @property
     def conversion(self) -> SoundPlayer:
         return self._conversion
+
+    @property
+    def combination(self) -> SoundPlayer:
+        return self._combination
+
+    @property
+    def grad_rocket_flight(self) -> SoundPlayer:
+        return self._grad_rocket_flight
 
     @property
     def capture(self) -> SoundPlayer:

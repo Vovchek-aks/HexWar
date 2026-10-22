@@ -39,6 +39,8 @@ _EFFECTS = "effects"
 _CREATION_LANDING = "creation_landing"
 _PULLING_INITIATION = "pulling_initiation"
 _CONVERSION = "conversion"
+_COMBINATION = "combination"
+_GRAD_ROCKET_FLIGHT = "grad_rocket_flight"
 _CAPTURE = "capture"
 _ORESHNIK_FLIGHT = "oreshnik_flight"
 _EXPLOSIONS = "explosions"
@@ -91,6 +93,8 @@ class SoundsLoader:
             self._load_sound(self._effects[_CREATION_LANDING], volume=volume),
             self._load_sound(self._effects[_PULLING_INITIATION], volume=volume),
             self._load_sound(self._effects[_CONVERSION], volume=volume),
+            self._load_sound(self._effects[_COMBINATION], volume=volume),
+            self._load_sound(self._effects[_GRAD_ROCKET_FLIGHT], volume=volume),
             self._load_sound(self._effects[_CAPTURE], volume=volume),
             self._load_sound(self._effects[_ORESHNIK_FLIGHT], volume=volume),
             self._load_random_effects(_EXPLOSIONS, volume),

@@ -86,6 +86,8 @@
     "creation_landing": "effects/creation_landing.wav",
     "pulling_initiation": "effects/pulling_initiation.wav",
     "conversion": "effects/conversion.wav",
+    "combination": "effects/combination.wav",
+    "grad_rocket_flight": "effects/grad_rocket_flight.wav",
     "capture": "effects/capture.wav",
     "oreshnik_flight": "effects/oreshnik_flight.wav",
     "explosions": [

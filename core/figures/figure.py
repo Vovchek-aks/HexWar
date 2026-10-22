@@ -352,8 +352,8 @@ class TallCapital(_Figure):
                                           can_prevent=lambda coord, session, region:
                                           TierOneCapital.can_prevent(coord, session, region)),
                       TriesTakeResourcesElseDies.make(Dollars(1_000_000),
-                                                      LightIndustryProducts(1_000),
-                                                      HeavyIndustryProducts(200)),
+                                                      LightIndustryProducts(1_350),
+                                                      HeavyIndustryProducts(100)),
                       BuffsNearbyResourceAdders(additional_ratio=2))
     MOVES_BUDGET = 0
 
@@ -375,8 +375,8 @@ class WideCapital(_Figure):
                                           can_prevent=lambda coord, session, region:
                                           TierOneCapital.can_prevent(coord, session, region)),
                       TriesTakeResourcesElseDies.make(Dollars(1_000_000),
-                                                      LightIndustryProducts(1_000),
-                                                      HeavyIndustryProducts(200)),
+                                                      LightIndustryProducts(1_350),
+                                                      HeavyIndustryProducts(100)),
                       BuffsNearbyResourceAdders(additional_ratio=1, distance=2))
     MOVES_BUDGET = 0
 
@@ -672,7 +672,7 @@ class Artillery(_Figure):
 
 class Howitzer(_Figure):
     FLAGS = Flags.new(OnLand(),
-                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainDesert}),
+                      WithRestrictedTerrainKinds.make(ALL_TERRAINS - {TerrainDesert, TerrainForest}),
                       MovableBuilder()
                       .set_base_strength(Artillery.FLAGS.get(proto.Movable).base_strength)
                       .can_move_to_neighbor()
@@ -696,7 +696,7 @@ class Howitzer(_Figure):
             case Assault():
                 return cls.MOVES_BUDGET + 1
             case Attack():
-                return 50
+                return 40
             case _:
                 raise NotSupportedMove(move)
 
@@ -710,11 +710,11 @@ class Grad(_Figure):
                       .build(),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(200_000),
-                                                      LightIndustryProducts(500)),
-                      CanGradAttack(max_distance=5,
+                                                      LightIndustryProducts(250)),
+                      CanGradAttack(max_distance=4,
                                     targets_count=3,
                                     is_attacking_center=False,
-                                    cost=ResourcesGroup.make(LightIndustryProducts(250))))
+                                    cost=ResourcesGroup.make(LightIndustryProducts(500))))
     MOVES_BUDGET = 20
 
     @classmethod

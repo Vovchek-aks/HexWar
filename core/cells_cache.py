@@ -72,18 +72,13 @@ class CellsCache(proto.CellsCache):
         return Cells(result)
 
     def with_figure(self, figure: type[proto.Figure] | UnionType) -> Cells:
-        def get() -> Cells:
-            if not isinstance(figure, UnionType):
-                return Cells(self._cells_with[figure])
+        if not isinstance(figure, UnionType):
+            return Cells(self._cells_with[figure])
 
-            result = set[proto.Cell]()
-            for concrete_figure in get_args(figure):
-                result |= self._cells_with[concrete_figure]
-            return Cells(result)
-
-        result = get()
-        assert all(isinstance(cell.figure, figure) for cell in result)
-        return result
+        result = set[proto.Cell]()
+        for concrete_figure in get_args(figure):
+            result |= self._cells_with[concrete_figure]
+        return Cells(result)
 
     def get_all_players(self) -> Cells:
         return reduce(lambda a, b: a + b, (self.with_owner(player) for player in self._cells_of))
