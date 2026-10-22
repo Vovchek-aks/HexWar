@@ -368,6 +368,7 @@ class GameUiLayerMaker:
 
     def _make_player_top_list(self) -> LayoutUi:
         TOP_PLACES = 5
+        MAX_NAME_LENGTH = 13
 
         layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
                                   .from_right_up()
@@ -392,9 +393,15 @@ class GameUiLayerMaker:
                     self._language.get_territories_message(),
                     self._language.get_economy_message())
             for player, ratios in rows:
-                add_row(synchroniser, synchroniser, player.data.name, *(f"{ratio:.0%}" for ratio in ratios))
+                add_row(synchroniser, synchroniser, get_player_name(player), *(f"{ratio:.0%}" for ratio in ratios))
             synchroniser.synchronise(first_element_synchroniser.size * .8)
             first_row_synchroniser.synchronise()
+
+        def get_player_name(player: Player) -> str:
+            name = player.data.name
+            if len(name) <= MAX_NAME_LENGTH:
+                return name
+            return f"{name[:MAX_NAME_LENGTH - 3]}..."
 
         def add_row(first_synchroniser: TextSizeSynchroniser,
                     synchroniser: TextSizeSynchroniser,

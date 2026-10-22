@@ -301,8 +301,8 @@ class MainMenuUiLayerMaker:
         width = self._language.get_width_message()
         height = self._language.get_height_message()
         changers: dict[str, IntChanger] = {
-            width: IntChanger(50, 5, 500, 5),
-            height: IntChanger(50, 5, 500, 5),
+            width: IntChanger(20, 5, 500, 5),
+            height: IntChanger(20, 5, 500, 5),
         }
         self._add_changer(synchroniser, top_layout, width, width, changers, {}, rectangle)
         self._add_changer(synchroniser, top_layout, height, height, changers, {}, rectangle)

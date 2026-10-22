@@ -1,3 +1,6 @@
+import sys
+import os
+import subprocess
 from typing import Iterator, Callable
 
 from attrs import frozen
@@ -15,7 +18,6 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
-from appearance.scenes.realod import reload
 from appearance.settings import Settings
 from core.map_randomizer import MapRandomizer
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
@@ -56,14 +58,7 @@ def load_main_menu(ups: int,
     mouse_movement_observer = MouseMovementObserver()
     drawer = UiDrawer()
     ui_layer = (MainMenuUiLayerMaker(drawer, screen_shape, mouse_movement_observer)
-                .make(map_was_selected.invoke, map_editor_was_requested.invoke, exit_was_pressed.invoke,
-                      lambda: reload(window, scene,
-                                     load_main_menu(ups,
-                                                    window,
-                                                    get_player_selection_loading_scene,
-                                                    get_map_editor_loading_scene,
-                                                    get_game_loading_scene,
-                                                    get_tutorial_game_loading_scene_getter))))
+                .make(map_was_selected.invoke, map_editor_was_requested.invoke, exit_was_pressed.invoke, _reload))
 
     yield language.get_sprite_loading_message()
     background = SpritesLoader.from_meta().load_menu_background()
@@ -112,3 +107,12 @@ class Draw:
 
     def background(self) -> None:
         self._background.layer.draw(Vector2.zero())
+
+
+# shitty magic tricks
+def _reload() -> None:
+    env = os.environ.copy()
+    env["PYINSTALLER_RESET_ENVIRONMENT"] = "1"
+    exe_path = sys.executable
+    subprocess.Popen([exe_path], env=env)
+    sys.exit()

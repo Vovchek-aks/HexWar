@@ -44,9 +44,9 @@ from appearance.language import Language
 from appearance.layer import Layer
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
+from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.multibot_scene import MultibotScene
 from appearance.scenes.pause_menu import PauseMenu
-from appearance.scenes.realod import reload
 from appearance.settings import Settings
 from core.annexation_map.annexation_map import AnnexationMap
 from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
@@ -219,12 +219,12 @@ def load_game(window: Window,
                       .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
                             pause_menu_open_requested.subscriber,
                             combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
-                                    lambda: reload(window, scene,
-                                                   load_game(window,
-                                                             ups,
-                                                             GameSessionLoader.make(TEMP_FILE, ups).load,
-                                                             make_next_scene_loading),
-                                                   need_to_resize=False))))
+                                    lambda: scene.switch_to(LoadingScene.make(
+                                        load_game(window,
+                                                  ups,
+                                                  GameSessionLoader.make(TEMP_FILE, ups).load,
+                                                  make_next_scene_loading)
+                                    )))))
 
     pause_menu_layers = [
         pause_ui_layer,
