@@ -45,6 +45,7 @@ class BotPlayerInputer(proto.PlayerInputer):
             self._last_move_time = time()
 
         if time() - self._last_move_time > THINK_TIME_BEFORE_MOVE_REQUIRED:
+            self._bot.abort(session)
             self._wants_to_end_turn = True
             return MISSING
 

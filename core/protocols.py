@@ -111,6 +111,10 @@ class Bot:
     def get_move(self, session: "GameSession") -> "ValidMove | Status":
         ...
 
+    @abstractmethod
+    def abort(self, session: "GameSession") -> None:
+        ...
+
 
 class Move(ABC):
     @abstractmethod

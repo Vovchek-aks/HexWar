@@ -133,9 +133,14 @@ class BotIgor(proto.Bot):
             return IN_PROGRESS
 
         # print('\n' * 3)
+        self.abort(session)
+        return MISSING
+
+    def abort(self, session: proto.GameSession) -> None:
+        self._moves_to_make.clear()
+        self._moves_generator = MISSING
         self._state = _INITIAL_STATE
         self._ran_out_of_moves = False
-        return MISSING
 
     def _add_moves(self, cells_count: int, *, _is_inner=False) -> Iterator[None]:
         cells = self._session.cells
@@ -350,14 +355,11 @@ class BotIgor(proto.Bot):
             self._state = _PULLING
 
         if self._state == _PULLING:
-            try:
-                yield from self._try_pull_forces_to_front()
-                # print(f"_try_pull_forces_to_front {_is_inner}")
-                if self._moves_to_make:
-                    # print(self._moves_to_make)
-                    return
-            except Exception as ex:
-                print(type(ex).__name__, ex)
+            yield from self._try_pull_forces_to_front()
+            # print(f"_try_pull_forces_to_front {_is_inner}")
+            if self._moves_to_make:
+                # print(self._moves_to_make)
+                return
 
             yield from self.move_infantryless_tanks_away_from_front()
             # print(f"move_infantryless_tanks_away_from_front {_is_inner}")
@@ -944,15 +946,11 @@ class BotIgor(proto.Bot):
         to_pull = (cells.with_owner(self._player) &
                    cells.with_figure(union(*figures_to_pull)))
 
-        assert all(isinstance(cell.figure, union(*figures_to_pull)) for cell in to_pull), "1"
-
         to_pull = to_pull.filter(lambda cell: self._session.figures_budget
                                  .can_spend(cell.figure,
                                             cell.figure
                                             .get_cost_of(Relocation(Vector2Int.zero(),
                                                                     Vector2Int.zero()))))
-
-        assert all(isinstance(cell.figure, union(*figures_to_pull)) for cell in to_pull), "2"
         if not to_pull:
             return
 
@@ -970,8 +968,6 @@ class BotIgor(proto.Bot):
 
         shuffled = to_pull.as_list()
         random.shuffle(shuffled)
-
-        assert all(isinstance(cell.figure, union(*figures_to_pull)) for cell in shuffled), "3"
         for cell in shuffled:
             yield
             front = (front_of[type(cell.figure)]
