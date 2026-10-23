@@ -4,7 +4,7 @@ import arcade as arc
 import appearance.protocols as proto
 from appearance.input.moves_inputer.input_actions import CellClickAction
 from core.cells import Cells
-from core.moves.relocations import Relocation, Assault
+from core.moves.relocations import Relocation, Assault, FiguresRelocation
 from core.moves.valid_move import ValidMove
 from core.protocols import GameSession, Player, Movable, WithRestrictedTerrainKinds, CannotBeDestroyed, CanPull, \
     TerrainKind
@@ -36,12 +36,29 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
         if not path:
             return []
 
-        player = self._session.master.current_player
+        return self.get_moves_for(path)
+
+    def get_moves_for(self, path: list[Vector2Int]) -> list[ValidMove[FiguresRelocation]]:
+        if len(path) < 2:
+            return []
+
         board = self._session.board
-        moves = list[ValidMove]()
+        player = board[path[0]].owner
+        figure = board[path[0]].figure
+        budget = figure.MOVES_BUDGET - self._session.figures_budget.of(figure)
+
+        moves = list[ValidMove[FiguresRelocation]]()
         for from_coord, to_coord in zip(path[:-1], path[1:]):
             move_type = Relocation if board[to_coord].owner is player else Assault
-            moves.append(ValidMove(move_type.make(from_coord, to_coord)))
+            move = move_type.make(from_coord, to_coord)
+
+            if (cost := figure.get_cost_of(move)) > budget:
+                break
+
+            moves.append(ValidMove(move))
+            budget -= (budget
+                       if figure.FLAGS.get(WithRestrictedTerrainKinds).contains_in(board[to_coord], board=board) else
+                       cost)
 
         return moves
 
@@ -68,23 +85,15 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
         allowed = self._get_allowed(player, target.owner, strength, cell.figure)
         bad_terrains = cells.at_terrain(*self._get_bad_terrain_kinds_of(cell.figure))
 
-        empties = allowed & cells.with_figure(fig.Land)
-        movables = allowed.with_flag(Movable) - cells.at_changeable_front - board.get_neighbors(cell)
-
-        good_and_empty = empties - bad_terrains
-        good_with_movables = movables - bad_terrains
-        bad_and_empty = empties & bad_terrains
-        bad_with_movables = movables & bad_terrains
+        good = allowed - bad_terrains
+        bad = allowed - good
 
         possible_moves_count = (cell.figure.MOVES_BUDGET //
                                 cell.figure.get_cost_of(Relocation(Vector2Int.zero(), Vector2Int.zero())))
         path_searcher = PathSearcher.make(board, target,
                                           (Cells({cell, target}), 0),
-                                          (good_and_empty, 1),
-                                          (bad_and_empty, possible_moves_count),
-                                          (good_with_movables, 100),
-                                          (bad_with_movables, 100 * possible_moves_count)
-                                          )
+                                          (good, 1),
+                                          (bad, possible_moves_count))
         path = path_searcher.search_from(cell)
         return path
 
@@ -104,9 +113,9 @@ class MultipleRelocationsReader(proto.MultipleRelocationsReader):
         return allowed
 
     def _get_bad_terrain_kinds_of(self, figure: fig.Figure | type[fig.Figure]) -> set[type[TerrainKind]]:
-        result = (figure.FLAGS
-                  .get(WithRestrictedTerrainKinds)
-                  .terrain_kinds)
+        result = set(figure.FLAGS
+                     .get(WithRestrictedTerrainKinds)
+                     .terrain_kinds)
 
         if CanPull in figure.FLAGS and self._session.pulling_connections.is_puller(figure):
             result -= self._get_bad_terrain_kinds_of(self._session.pulling_connections.get_pullable(figure))

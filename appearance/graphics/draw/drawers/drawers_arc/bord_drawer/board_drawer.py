@@ -2,6 +2,7 @@ import math
 import random
 from collections import defaultdict
 from contextlib import contextmanager
+from functools import cache
 from typing import Iterator, Callable
 from time import time
 
@@ -26,6 +27,8 @@ from statuses import MISSING
 from .shape_list import ShapeList
 
 Shape = arc.shape_list.Shape
+
+HIGHLIGHTING_PULSES_PERIOD = 1
 
 EDGES_WIDTH_RATIO = 1.1
 EDGES_BRIGHTNESS_RATIO = .6
@@ -84,6 +87,16 @@ class BoardDrawer(proto.BoardDrawer):
                    backgrounds, cell_changed_owner, draw_event_finished)
         cell_changed_owner.subscribe(self.update_cell)
 
+        # https://www.desmos.com/calculator/jnxjjfgroh
+        def update_highlight_ratio_multiplier():
+            self._highlight_ratio_multiplier = (1.8 * (math.e - math.e ** ((math.sin(time()
+                                                                                     * math.pi
+                                                                                     / HIGHLIGHTING_PULSES_PERIOD
+                                                                                     + math.pi / 2) + 1) / 2))
+                                                / (math.e - 1))
+
+        draw_event_finished.subscribe(update_highlight_ratio_multiplier)
+
         hatching = self.make_hatching()
         for coord in board.cell_coords:
             color = self._get_hatching_color(coord)
@@ -106,6 +119,7 @@ class BoardDrawer(proto.BoardDrawer):
     _cell_changed_owner: OnEventSubscriber[Vector2Int, None]
     _draw_event_finished: OnEventSubscriber[None]
 
+    _highlight_ratio_multiplier: float = field(init=False, default=0)
     _hatchings: dict[Vector2Int, arc.Sprite] = field(init=False, factory=dict)
     _shape_list: ShapeList = field(init=False, factory=ShapeList)
     _edges: dict[Vector2Int, list[Shape]] = field(init=False, factory=lambda: defaultdict(list))
@@ -115,7 +129,10 @@ class BoardDrawer(proto.BoardDrawer):
         self._shape_list.draw()
         self._water_animator.update_all(time())
 
-    def draw_highlighted(self, coord: Vector2Int, highlight_ratio: float) -> None:
+    def draw_highlighted(self, coord: Vector2Int, highlight_ratio: float, will_pulsate: bool = False) -> None:
+        if will_pulsate:
+            highlight_ratio = min(max(highlight_ratio * self._highlight_ratio_multiplier, 0), 1)
+
         initial_color = (self._backgrounds[coord].color
                          if AtWater in self._board[coord].figure.FLAGS else
                          self._get_hex_color(coord, self._board))

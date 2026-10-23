@@ -585,7 +585,7 @@ class Tank(_Figure):
                       .set_additional_strength_getter(lambda coord, board: Tank.get_projected_strength(coord, board))
                       .build(),
                       Creatable.make(Dollars(750_000), LightIndustryProducts(5_000), HeavyIndustryProducts(1_500),
-                                     necessary_neighbor=HeavyFactory),
+                                     necessary_neighbor=Town),
                       Capturable(),
                       TriesTakeResourcesElseDies.make(Dollars(250_000),
                                                       LightIndustryProducts(1_000),

@@ -53,7 +53,13 @@ class BoardDrawableLayer(proto.DrawableLayer):
         if not self._multiple_relocations_reader.is_requested():
             return
 
-        for coord in self._multiple_relocations_reader.get_path(selected_coord, hovered_coord):
+        path = self._multiple_relocations_reader.get_path(selected_coord, hovered_coord)
+        moves = len(self._multiple_relocations_reader.get_moves_for(path))
+
+        for coord in path[1:moves + 1]:
+            self._draw.interest_cell(coord, will_pulsate=True)
+
+        for coord in path[moves + 1:]:
             self._draw.interest_cell(coord)
 
     def _draw_figure_creation_targets_if_needed(self) -> None:
@@ -75,7 +81,7 @@ class BoardDrawableLayer(proto.DrawableLayer):
                                                                       Creation(figure, Vector2Int.zero())
                                                                   ))))
         for target in targets:
-            self._draw.interest_cell(board.coordinates_of(target))
+            self._draw.interest_cell(board.coordinates_of(target), will_pulsate=True)
 
     def _draw_oreshnik_targets_if_needed(self, hovered_coord: Vector2Int, selected_coord: Vector2Int | Status) -> None:
         if not self._is_highlighting_for_click_after_button_press_needed(hovered_coord, selected_coord,
@@ -103,7 +109,7 @@ class BoardDrawableLayer(proto.DrawableLayer):
             return
 
         for cell in move.get_target_cells(self._session):
-            self._draw.interest_cell(board.coordinates_of(cell))
+            self._draw.interest_cell(board.coordinates_of(cell), will_pulsate=True)
 
     def _draw_attack_targets_if_needed(self, hovered_coord: Vector2Int, selected_coord: Vector2Int | Status) -> None:
         if not self._is_highlighting_for_click_after_button_press_needed(hovered_coord, selected_coord,

@@ -27,8 +27,8 @@ class Draw(proto.Draw):
     def selected_cell(self, cell_coord: Vector2Int) -> None:
         self._bord_drawer.draw_highlighted(cell_coord, SELECT_HIGHLIGHT_RATIO)
 
-    def interest_cell(self, cell_coord: Vector2Int) -> None:
-        self._bord_drawer.draw_highlighted(cell_coord, INTEREST_HIGHLIGHT_RATIO)
+    def interest_cell(self, cell_coord: Vector2Int, *, will_pulsate: bool = False) -> None:
+        self._bord_drawer.draw_highlighted(cell_coord, INTEREST_HIGHLIGHT_RATIO, will_pulsate)
 
     def board_sprites(self) -> None:
         self._on_board_sprites_drawer.draw()

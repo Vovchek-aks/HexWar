@@ -7,7 +7,7 @@ import core.protocols as proto
 from statuses import Status, MISSING, IN_PROGRESS
 
 THINK_TIME_RATIO = 1
-THINK_TIME_BEFORE_MOVE_REQUIRED = 1
+THINK_TIME_BEFORE_MOVE_REQUIRED = 3
 
 
 @define

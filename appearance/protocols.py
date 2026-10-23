@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod, ABCMeta
 
 from appearance.graphics.colors import WHITE
+from core.moves.relocations import FiguresRelocation
 from my_types import TracebackType
 from typing import Callable, Iterator
 
@@ -133,7 +134,7 @@ class Draw(ABC):
         ...
 
     @abstractmethod
-    def interest_cell(self, cell_coord: Vector2Int) -> None:
+    def interest_cell(self, cell_coord: Vector2Int, *, will_pulsate: bool = False) -> None:
         ...
 
     @abstractmethod
@@ -211,7 +212,7 @@ class BoardDrawer(ABC):
         ...
 
     @abstractmethod
-    def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float) -> None:
+    def draw_highlighted(self, cell_coord: Vector2Int, highlight_ratio: float, will_pulsate: bool = False) -> None:
         ...
 
     @abstractmethod
@@ -515,6 +516,10 @@ class InputActionsReader(ABC):
 class MultipleRelocationsReader:
     @abstractmethod
     def process(self, last_action: InputAction) -> list[proto.ValidMove]:
+        ...
+
+    @abstractmethod
+    def get_moves_for(self, path: list[Vector2Int]) -> list[proto.ValidMove[FiguresRelocation]]:
         ...
 
     @abstractmethod
