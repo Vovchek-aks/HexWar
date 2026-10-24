@@ -69,7 +69,6 @@ from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 
 def load_tutorial(window: Window,
                   make_session: Callable[[], GameSession],
-                  make_next_scene_loading: Callable[[], proto.Scene],
                   tutorial_index: int,
                   ups: int) -> Iterator[proto.Scene | Status]:
     window.set_mouse_visible(False)
@@ -143,7 +142,7 @@ def load_tutorial(window: Window,
         next_level_name = f"{_TUTORIAL_MAP_PREFIX} {next_tutorial_index + 1}.json"
         scene.switch_to(LoadingScene.make(load_tutorial(window,
                                                         lambda: GameSessionLoader.make(next_level_name, ups).load(),
-                                                        make_next_scene_loading, next_tutorial_index, ups)))
+                                                        next_tutorial_index, ups)))
 
     end_turn_button_was_clicked = Event[None]()
     turn_start_preparations_had_finished = Event[None]()
@@ -231,7 +230,6 @@ def load_tutorial(window: Window,
                                     lambda: scene.switch_to(LoadingScene.make(
                                         load_tutorial(window,
                                                       GameSessionLoader.make(TEMP_FILE, ups).load,
-                                                      make_next_scene_loading,
                                                       tutorial_index,
                                                       ups)
                                     )))))
@@ -258,7 +256,7 @@ def load_tutorial(window: Window,
 
     pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
     continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
-    to_main_menu_was_pressed.subscribe(lambda: scene.switch_to(make_next_scene_loading()))
+    to_main_menu_was_pressed.subscribe(window.reload)
     scene.was_switched.subscribe(lambda _: music_player.stop())
 
     for _ in game_rules_applier.on_turn_start():

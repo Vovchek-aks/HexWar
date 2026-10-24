@@ -1,4 +1,7 @@
 from pathlib import Path
+import sys
+import os
+import subprocess
 
 import arcade as arc
 from pyglet.image import load
@@ -128,3 +131,12 @@ class Window(arc.Window):
     def on_key_release(self, symbol: int, modifiers: int) -> None:
         self._pressed_keys.discard(symbol)
         self._keyboard_state_changed.invoke(self._pressed_keys)
+
+    # shitty magic tricks
+    @staticmethod
+    def reload() -> None:
+        env = os.environ.copy()
+        env["PYINSTALLER_RESET_ENVIRONMENT"] = "1"
+        exe_path = sys.executable
+        subprocess.Popen([exe_path], env=env)
+        sys.exit()

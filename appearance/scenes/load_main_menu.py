@@ -1,6 +1,3 @@
-import sys
-import os
-import subprocess
 from typing import Iterator, Callable
 
 from attrs import frozen
@@ -61,7 +58,8 @@ def load_main_menu(ups: int,
     mouse_movement_observer = MouseMovementObserver()
     drawer = UiDrawer()
     ui_layer = (MainMenuUiLayerMaker(drawer, screen_shape, mouse_movement_observer)
-                .make(map_was_selected.invoke, map_editor_was_requested.invoke, exit_was_pressed.invoke, _reload))
+                .make(map_was_selected.invoke, map_editor_was_requested.invoke,
+                      exit_was_pressed.invoke, window.reload))
 
     yield language.get_sprite_loading_message()
     background = SpritesLoader.from_meta().load_menu_background()
@@ -112,11 +110,3 @@ class Draw:
     def background(self) -> None:
         self._background.layer.draw(Vector2.zero())
 
-
-# shitty magic tricks
-def _reload() -> None:
-    env = os.environ.copy()
-    env["PYINSTALLER_RESET_ENVIRONMENT"] = "1"
-    exe_path = sys.executable
-    subprocess.Popen([exe_path], env=env)
-    sys.exit()

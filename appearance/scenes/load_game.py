@@ -41,7 +41,7 @@ from appearance.input.pause_menu_opener import EscapePressHandler
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
-from appearance.layer import Layer, LayerBuilder
+from appearance.layer import Layer
 from appearance.scenes.cursor_layer import get_cursor_layer
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
@@ -269,7 +269,7 @@ def load_game(window: Window,
 
         pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
         continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
-        to_main_menu_was_pressed.subscribe(lambda: scene.switch_to(make_next_scene_loading()))
+        to_main_menu_was_pressed.subscribe(window.reload)
         scene.was_switched.subscribe(lambda _: GameSessionSaver(session).save(SAVE_FILE))
         scene.was_switched.subscribe(lambda _: music_player.stop())
 

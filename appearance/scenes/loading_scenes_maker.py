@@ -39,8 +39,7 @@ class LoadingScenesMaker:
 
     def make_tutorial_loading_scene_getter(self, map_name: str) -> Callable[[GameSessionMaker], LoadingScene]:
         def make_tutorial_loading_scene(make_game_session: GameSessionMaker):
-            return LoadingScene.make(load_tutorial(self._window, make_game_session,
-                                                   self.make_main_menu_loading_scene, int(map_name.split()[-1]) - 1,
+            return LoadingScene.make(load_tutorial(self._window, make_game_session, int(map_name.split()[-1]) - 1,
                                                    self._ups))
 
         return make_tutorial_loading_scene
@@ -51,5 +50,4 @@ class LoadingScenesMaker:
                                            is_multibot=True))
 
     def make_map_editor_loading_scene(self) -> LoadingScene:
-        return LoadingScene.make(load_map_editor(self._window,
-                                                 self.make_main_menu_loading_scene))
+        return LoadingScene.make(load_map_editor(self._window))
