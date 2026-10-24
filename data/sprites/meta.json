@@ -207,6 +207,13 @@
     }
   },
   "ui": {
+    "cursor": {
+      "file": "ui/cursor.png",
+      "pivot": [
+        0,
+        300
+      ]
+    },
     "textured_rectangle": {
       "file": "ui/textured_rectangle.png",
       "pivot": [

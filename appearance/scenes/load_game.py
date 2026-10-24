@@ -41,7 +41,8 @@ from appearance.input.pause_menu_opener import EscapePressHandler
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
-from appearance.layer import Layer
+from appearance.layer import Layer, LayerBuilder
+from appearance.scenes.cursor_layer import get_cursor_layer
 from appearance.scenes.game_scene import GameScene
 from appearance.scenes.game_with_pause_scene import GameWithPauseScene
 from appearance.scenes.loading_scene import LoadingScene
@@ -73,6 +74,8 @@ def load_game(window: Window,
               make_next_scene_loading: Callable[[], proto.Scene],
               *,
               is_multibot: bool = False) -> Iterator[proto.Scene | Status]:
+    window.set_mouse_visible(False)
+
     screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
@@ -162,8 +165,10 @@ def load_game(window: Window,
                                                                                    WaterAnimator.make,
                                                                                    window.draw_event_finished)
 
+    cursor_layer = get_cursor_layer()
     camera_assistant = CameraAssistant.make(camera)
     layers = [
+        cursor_layer,
         ui_layer,
         Layer(BoardDrawableLayer(session, draw, hovered_cell_getter, cell_selector, camera_assistant,
                                  multiple_relocations_reader, actions_reader), board_layer),
@@ -227,6 +232,7 @@ def load_game(window: Window,
                                     )))))
 
     pause_menu_layers = [
+        cursor_layer,
         pause_ui_layer,
         Layer(WholeScreenDrawableLayer(Draw(BackgroundDrawer(screen_shape, PAUSE_MENU_BACKGROUND))), null_layer)
     ]

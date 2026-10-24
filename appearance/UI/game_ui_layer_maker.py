@@ -1465,7 +1465,7 @@ class GameUiLayerMaker:
         title_margin = Vector2(18, 18)
         title_height = shape.y / 10
         title_ui = TextUi.make(self._drawer,
-                               RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
+                               RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape, strict=False))
                                .from_left_up()
                                .move(title_margin)
                                .set_shape(Vector2(shape.x - title_margin.x * 2,
@@ -1486,7 +1486,8 @@ class GameUiLayerMaker:
         content = blank_lines[:len(blank_lines) // 2] + content + blank_lines[len(blank_lines) // 2:]
         content_margin = Vector2(title_margin.x, 10 + title_margin.y + title_height)
         bottom_margin = 30
-        content_ui = VerticalLayoutUi(RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape))
+        content_ui = VerticalLayoutUi(RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape,
+                                                                               strict=False))
                                       .from_left_up()
                                       .move(content_margin)
                                       .set_shape(Vector2(title_ui.rectangle.shape.x,

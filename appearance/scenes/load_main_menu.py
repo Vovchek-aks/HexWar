@@ -16,6 +16,7 @@ from appearance.input.mouse_movement_observer import MouseMovementObserver
 from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.language import Language
 from appearance.layer import Layer
+from appearance.scenes.cursor_layer import get_cursor_layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.main_menu_scene import MainMenuScene
 from appearance.settings import Settings
@@ -42,6 +43,8 @@ def load_main_menu(ups: int,
                    get_game_loading_scene: FromSessionMakerLoadingSceneGetter,
                    get_tutorial_game_loading_scene_getter: Callable[[str], FromSessionMakerLoadingSceneGetter],
                    ) -> Iterator[proto.Scene | Status]:
+    window.set_mouse_visible(False)
+
     screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
@@ -65,6 +68,7 @@ def load_main_menu(ups: int,
     rectangle = Rectangle(Vector2.zero(), screen_shape.as_vector2)
 
     layers = [
+        get_cursor_layer(),
         ui_layer,
         Layer(WholeScreenDrawableLayer(Draw(ImageUi.make(drawer, rectangle, background))), null_layer)
     ]

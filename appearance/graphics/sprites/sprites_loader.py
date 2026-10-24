@@ -33,6 +33,7 @@ _STRENGTH = "STRENGTH"
 _HARDNESS = "HARDNESS"
 
 _UI = "ui"
+_CURSOR = "cursor"
 _MAP_EDITOR = "map_editor"
 _TEXTURED_RECTANGLE = "textured_rectangle"
 _BUTTON_1 = "button_1"
@@ -155,6 +156,10 @@ class SpritesLoader:
 
     def load_hardness_icon(self) -> Sprite:
         sprite_info = self._resources[_HARDNESS]
+        return self._load_sprite(sprite_info)
+
+    def load_cursor(self) -> Sprite:
+        sprite_info = self._ui[_CURSOR]
         return self._load_sprite(sprite_info)
 
     def load_map_editor_icon(self) -> Sprite:

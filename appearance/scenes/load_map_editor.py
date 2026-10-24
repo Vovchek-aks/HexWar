@@ -21,6 +21,7 @@ from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
 from appearance.layer import Layer
+from appearance.scenes.cursor_layer import get_cursor_layer
 from appearance.scenes.loading_scene import LoadingScene
 from appearance.scenes.map_editor_scene import MapEditorScene
 from appearance.settings import Settings
@@ -37,6 +38,8 @@ from statuses import Status
 
 def load_map_editor(window: Window,
                     get_main_menu_loading_scene: Callable[[], LoadingScene]) -> Iterator[proto.Scene | Status]:
+    window.set_mouse_visible(False)
+
     screen_shape = Settings.open().screen_shape
 
     language = Language.from_meta()
@@ -96,6 +99,7 @@ def load_map_editor(window: Window,
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
+        get_cursor_layer(),
         ui_layer,
         Layer(MapEditorBoardDrawableLayer(draw, hovered_cell_getter, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
