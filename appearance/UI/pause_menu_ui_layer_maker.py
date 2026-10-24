@@ -51,6 +51,50 @@ class PauseMenuUiLayerMaker:
 
         return Layer.as_multiple(tabs)
 
+    def make_for_tutorial(self,
+                          on_continue_was_pressed: Callable[[], None],
+                          on_to_main_menu_was_pressed: Callable[[], None],
+                          pause_menu_open_requested: OnEventSubscriber[None],
+                          restart_level: Callable[[], None],
+                          reload: Callable[[], None]) -> Layer:
+        to_label_was_pressed = Event[None]()
+        settings_was_pressed = Event[None]()
+
+        pause_menu_open_requested.subscribe(to_label_was_pressed.invoke)
+
+        tabs = list[Layer]()
+
+        def turn_tabs_off() -> None:
+            for tab in tabs:
+                tab.set_activity(False)
+
+        tabs.append(self._make_label_for_tutorial(turn_tabs_off, to_label_was_pressed.subscriber,
+                                                  on_continue_was_pressed, on_to_main_menu_was_pressed,
+                                                  settings_was_pressed.invoke, restart_level))
+        tabs.append(MainMenuUiLayerMaker(self._drawer, self._screen_shape, self._mouse_movement_observer)
+                    .make_settings_tab(turn_tabs_off, settings_was_pressed.subscriber, to_label_was_pressed, reload,
+                                       include_screed_settings=False))
+
+        return Layer.as_multiple(tabs)
+
+    def _make_label_for_tutorial(self,
+                                 turn_tabs_off: Callable[[], None],
+                                 on_to_label_was_pressed: OnEventSubscriber[None],
+                                 on_continue_was_pressed: Callable[[], None],
+                                 on_to_main_menu_was_pressed: Callable[[], None],
+                                 on_settings_was_pressed: Callable[[], None],
+                                 restart_level: Callable[[], None]) -> Layer:
+        layers = [
+            self._make_title(),
+            self._make_buttons(self._get_buttons_for_tutorial(on_continue_was_pressed, on_to_main_menu_was_pressed,
+                                                              combine(turn_tabs_off, on_settings_was_pressed),
+                                                              restart_level)),
+        ]
+
+        layer = Layer.as_multiple(layers)
+        on_to_label_was_pressed.subscribe(combine(turn_tabs_off, lambda: layer.set_activity(True)))
+        return layer
+
     def _make_label(self,
                     turn_tabs_off: Callable[[], None],
                     on_to_label_was_pressed: OnEventSubscriber[None],
@@ -59,25 +103,16 @@ class PauseMenuUiLayerMaker:
                     on_settings_was_pressed: Callable[[], None]) -> Layer:
         layers = [
             self._make_title(),
-            self._make_buttons(on_continue_was_pressed, on_to_main_menu_was_pressed,
-                               combine(turn_tabs_off, on_settings_was_pressed)),
+            self._make_buttons(self._get_buttons(on_continue_was_pressed, on_to_main_menu_was_pressed,
+                                                 combine(turn_tabs_off, on_settings_was_pressed))),
         ]
 
         layer = Layer.as_multiple(layers)
         on_to_label_was_pressed.subscribe(combine(turn_tabs_off, lambda: layer.set_activity(True)))
         return layer
 
-    def _make_buttons(self,
-                      on_continue_was_pressed: Callable[[], None],
-                      on_to_main_menu_was_pressed: Callable[[], None],
-                      on_settings_was_pressed: Callable[[], None]) -> Layer:
-        buttons = [
-            self._make_null_button(self._language.get_continue_message(), on_continue_was_pressed),
-            self._make_null_button(self._language.get_settings_message(), on_settings_was_pressed),
-            self._make_null_button(self._language.get_to_main_menu_message(), on_to_main_menu_was_pressed),
-        ]
-
-        layout = VerticalLayoutUi(self._get_buttons_rectangle(), margin_ratio=0.2)
+    def _make_buttons(self, buttons: list[ButtonUi]) -> Layer:
+        layout = VerticalLayoutUi(self._get_buttons_rectangle(len(buttons)), margin_ratio=0.2)
         layout.extend(buttons)
 
         synchroniser = TextSizeSynchroniser()
@@ -87,12 +122,12 @@ class PauseMenuUiLayerMaker:
 
         return layout.layer
 
-    def _get_buttons_rectangle(self) -> Rectangle:
+    def _get_buttons_rectangle(self, buttons_count: int) -> Rectangle:
         center_x = self._screen_shape.x / 2
         width = self._screen_shape.x / 5
         x = center_x - width / 2
-        height = self._screen_shape.y / 5 * 1.5
-        bottom_margin = self._screen_shape.y / 5 / 1.5
+        height = self._screen_shape.y / 5 * (buttons_count / 2)
+        bottom_margin = self._screen_shape.y / 5 / (buttons_count / 2)
 
         return (RectangleBuilder(self._screen_shape)
                 .from_left_bottom()
@@ -100,6 +135,28 @@ class PauseMenuUiLayerMaker:
                 .move(Vector2(x, bottom_margin))
                 .adjust_for_shape()
                 .build())
+
+    def _get_buttons(self,
+                     on_continue_was_pressed: Callable[[], None],
+                     on_to_main_menu_was_pressed: Callable[[], None],
+                     on_settings_was_pressed: Callable[[], None]) -> list[ButtonUi]:
+        return [
+            self._make_null_button(self._language.get_continue_message(), on_continue_was_pressed),
+            self._make_null_button(self._language.get_settings_message(), on_settings_was_pressed),
+            self._make_null_button(self._language.get_save_and_quit_message(), on_to_main_menu_was_pressed),
+        ]
+
+    def _get_buttons_for_tutorial(self,
+                                  on_continue_was_pressed: Callable[[], None],
+                                  on_to_main_menu_was_pressed: Callable[[], None],
+                                  on_settings_was_pressed: Callable[[], None],
+                                  restart_level: Callable[[], None]) -> list[ButtonUi]:
+        return [
+            self._make_null_button(self._language.get_continue_message(), on_continue_was_pressed),
+            self._make_null_button(self._language.get_restart_level_message(), restart_level),
+            self._make_null_button(self._language.get_settings_message(), on_settings_was_pressed),
+            self._make_null_button(self._language.get_save_and_quit_message(), on_to_main_menu_was_pressed),
+        ]
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:
         button_background = self._sprites_loader.load_button_5().colored_in(RECTANGLE_BUTTON)

@@ -249,7 +249,7 @@ class MapEditorUiLayerMaker:
         return result
 
     def _make_back_button(self, on_exit_was_pressed: Callable[[], None]) -> ButtonUi:
-        button = self._make_null_button(self._language.get_to_main_menu_message(), on_exit_was_pressed)
+        button = self._make_null_button(self._language.get_save_and_quit_message(), on_exit_was_pressed)
         button.set_rectangle(self._get_back_button_rectangle())
         return button
 

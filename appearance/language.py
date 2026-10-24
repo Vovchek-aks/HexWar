@@ -97,7 +97,8 @@ _BACK = "BACK"
 
 _PAUSE = "PAUSE"
 _CONTINUE = "CONTINUE"
-_TO_MAIN_MENU = "TO_MAIN_MENU"
+_SAVE_AND_QUIT = "SAVE_AND_QUIT"
+_RESTART_LEVEL = "RESTART_LEVEL"
 _MAKE_NEW_MAP = "MAKE_NEW_MAP"
 _LOAD_EXISTING_MAP = "LOAD_EXISTING_MAP"
 _MAP_EDITOR = "MAP_EDITOR"
@@ -233,8 +234,11 @@ class Language:
     def get_continue_message(self) -> str:
         return self._ui[_CONTINUE]
 
-    def get_to_main_menu_message(self) -> str:
-        return self._ui[_TO_MAIN_MENU]
+    def get_save_and_quit_message(self) -> str:
+        return self._ui[_SAVE_AND_QUIT]
+
+    def get_restart_level_message(self) -> str:
+        return self._ui[_RESTART_LEVEL]
 
     def get_make_new_map_message(self) -> str:
         return self._ui[_MAKE_NEW_MAP]

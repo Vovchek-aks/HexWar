@@ -224,15 +224,14 @@ def load_tutorial(window: Window,
     to_main_menu_was_pressed = Event[None]()
 
     pause_ui_layer = (PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
-                      .make(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
-                            pause_menu_open_requested.subscriber,
-                            combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
-                                    lambda: scene.switch_to(LoadingScene.make(
-                                        load_tutorial(window,
-                                                      GameSessionLoader.make(TEMP_FILE, ups).load,
-                                                      tutorial_index,
-                                                      ups)
-                                    )))))
+                      .make_for_tutorial(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
+                                         pause_menu_open_requested.subscriber,
+                                         lambda: scene.switch_to(LoadingScene.make(
+                                             load_tutorial(window, make_session, tutorial_index, ups))),
+                                         combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
+                                                 lambda: scene.switch_to(LoadingScene.make(
+                                                     load_tutorial(window, GameSessionLoader.make(TEMP_FILE, ups).load,
+                                                                   tutorial_index, ups))))))
 
     pause_menu_layers = [
         cursor_layer,
