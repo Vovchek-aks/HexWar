@@ -1,5 +1,5 @@
 import math
-from typing import Callable
+from typing import Callable, Sequence
 
 from attrs import frozen, Factory
 
@@ -97,31 +97,42 @@ class GameUiLayerMaker:
                           tutorial_index: int,
                           on_end_turn_button_was_clicked: Callable[[], None],
                           on_to_next_level_was_pressed: Callable[[], None]) -> Layer:
-        current_turn_ui_makers = [
-            self._make_current_turn_ui_level_1,
-            self._make_current_turn_ui_level_2,
-            self._make_current_turn_ui_level_3,
-            self._make_current_turn_ui_level_4,
-            self._make_current_turn_ui_level_5,
-            self._make_current_turn_ui_level_6,
-            self._make_current_turn_ui_level_7,
-            self._make_current_turn_ui_level_8,
-            self._make_current_turn_ui,
-            self._make_current_turn_ui,
+        first_levels_resources = (
+            Dollars,
+            LightIndustryProducts,
+        )
+        all_resources = (
+            Dollars,
+            LightIndustryProducts,
+            HeavyIndustryProducts,
+        )
+        current_turn_ui_makers_and_resources = [
+            (self._make_current_turn_ui_level_1, first_levels_resources),
+            (self._make_current_turn_ui_level_2, first_levels_resources),
+            (self._make_current_turn_ui_level_3, first_levels_resources),
+            (self._make_current_turn_ui_level_4, first_levels_resources),
+            (self._make_current_turn_ui_level_5, first_levels_resources),
+            (self._make_current_turn_ui_level_6, first_levels_resources),
+            (self._make_current_turn_ui_level_7, all_resources),
+            (self._make_current_turn_ui_level_8, all_resources),
+            (self._make_current_turn_ui, all_resources),
+            (self._make_current_turn_ui, all_resources),
         ]
-        make_current_turn_ui = current_turn_ui_makers[tutorial_index]
+        make_current_turn_ui, allowed_resources = current_turn_ui_makers_and_resources[tutorial_index]
 
-        return self._make_for_tutorial(tutorial_index, on_end_turn_button_was_clicked, make_current_turn_ui,
+        return self._make_for_tutorial(tutorial_index, on_end_turn_button_was_clicked,
+                                       allowed_resources, make_current_turn_ui,
                                        on_to_next_level_was_pressed
-                                       if tutorial_index < len(current_turn_ui_makers) - 1 else
+                                       if tutorial_index < len(current_turn_ui_makers_and_resources) - 1 else
                                        MISSING)
 
     def _make_for_tutorial(self,
                            tutorial_index: int,
                            on_end_turn_button_was_clicked: Callable[[], None],
+                           allowed_resources: Sequence[type[Resource]],
                            current_turn_ui_maker: Callable[[ElementUi, ButtonUi], Layer],
                            on_to_next_level_was_pressed: Callable[[], None] | Status) -> Layer:
-        resources, players_turn = self._make_resources_and_player_turn()
+        resources, players_turn = self._make_resources_and_player_turn(allowed_resources)
         end_turn_button = self._make_end_turn_button()
         end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
         first_player = self._session.master.current_player
@@ -166,7 +177,7 @@ class GameUiLayerMaker:
     def _make_current_turn_ui_level_2(self, _: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
             self._make_infantry_menu_level_2(),
-            self._make_artillery_menu(),
+            self._make_artillery_menu_level_2(),
             self._make_bunker_menu(),
             end_turn_button,
         ])
@@ -181,7 +192,7 @@ class GameUiLayerMaker:
         ]
         return Layer.as_multiple([
             self._make_figures_creation_menu(table),
-            self._make_infantry_menu_level_2(),
+            self._make_infantry_menu_level_3(),
             self._make_artillery_menu(),
             self._make_bunker_menu(),
             self._make_town_menu(),
@@ -194,10 +205,10 @@ class GameUiLayerMaker:
     def _make_current_turn_ui_level_4(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
         table = [
             [fig.Infantry],
+            [fig.Bunker],
+            [fig.Artillery],
             [],
-            [],
-            [],
-            []
+            [fig.TierOneCapital, fig.Town, fig.LightFactory]
         ]
         return Layer.as_multiple([
             self._make_figures_creation_menu(table),
@@ -425,7 +436,12 @@ class GameUiLayerMaker:
 
         return layout
 
-    def _make_resources_and_player_turn(self) -> tuple[VerticalLayoutUi, Layer]:
+    def _make_resources_and_player_turn(self,
+                                        resource_types: Sequence[type[Resource]] = (
+                                                Dollars,
+                                                LightIndustryProducts,
+                                                HeavyIndustryProducts,
+                                        )) -> tuple[VerticalLayoutUi, Layer]:
         width = self._screen_shape.x / 4
         height = self._screen_shape.y / 20
         current_player = TextUi.make(self._drawer,
@@ -447,11 +463,7 @@ class GameUiLayerMaker:
                                    TextData.debug('...'),
                                    is_center=True)
 
-        resources, update_resources = self._make_resources([
-            Dollars,
-            LightIndustryProducts,
-            HeavyIndustryProducts,
-        ])
+        resources, update_resources = self._make_resources(resource_types)
 
         self._moves_maker.current_player_resources_flow_could_have_changed.subscribe(update_resources)
         self._turn_start_preparations_had_finished.subscribe(update_resources)
@@ -470,12 +482,14 @@ class GameUiLayerMaker:
 
         return resources, Layer.as_multiple([current_player, current_turn])
 
-    def _make_resources(self, resources: list[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
+    def _make_resources(self, resources: Sequence[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
+        height_multiplier = len(resources) / 3
+
         layout = VerticalLayoutUi((RectangleBuilder(self._screen_shape)
                                    .from_left_up()
                                    .move(Vector2(20, 10))
                                    .set_shape(Vector2(self._screen_shape.x / 6,
-                                                      self._screen_shape.y / 5))
+                                                      self._screen_shape.y / 5 * height_multiplier))
                                    .adjust_for_shape()
                                    .build()),
                                   margin_ratio=.05,
@@ -734,7 +748,7 @@ class GameUiLayerMaker:
         ]
 
         content_ui = [TextUi.make(self._drawer,
-                                  Rectangle.zero(),
+                                  Rectangle.ones(),
                                   self._get_text_data_builder_for_hint(line)
                                   .build())
                       for line in content]
@@ -765,9 +779,17 @@ class GameUiLayerMaker:
                                       [INFANTRY_TO_MOTORIZATION, INFANTRY_CAPTURE, INFANTRY_SETTLE])
 
     def _make_infantry_menu_level_1(self) -> Layer:
-        return self._make_figure_menu(fig.Infantry, [], [])
+        return self._make_figure_menu(fig.Infantry, [], [], need_resources=False, need_strength_and_hardness=False)
 
     def _make_infantry_menu_level_2(self) -> Layer:
+        capture = self._make_activatable_figure_action_button(INFANTRY_CAPTURE,
+                                                              lambda: CaptureButtonPressAction(
+                                                                  self._cell_selector.get_coord()
+                                                              ))
+
+        return self._make_figure_menu(fig.Infantry, [capture], [INFANTRY_CAPTURE], need_resources=False)
+
+    def _make_infantry_menu_level_3(self) -> Layer:
         capture = self._make_activatable_figure_action_button(INFANTRY_CAPTURE,
                                                               lambda: CaptureButtonPressAction(
                                                                   self._cell_selector.get_coord()
@@ -947,6 +969,46 @@ class GameUiLayerMaker:
                                       [attack, attach_detach],
                                       [ARTILLERY_ATTACK, (ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING)])
 
+    def _make_artillery_menu_level_2(self) -> Layer:
+        attack = self._make_activatable_figure_action_button(ARTILLERY_ATTACK,
+                                                             lambda: AttackButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
+
+        attach = self._make_activatable_figure_action_button(ARTILLERY_INITIATE_PULLING,
+                                                             lambda: PullingInitiationButtonPressAction(
+                                                                 self._cell_selector.get_coord()
+                                                             ))
+
+        detach, _ = self._make_figure_action_button(ARTILLERY_TERMINATE_PULLING)
+        detach.was_clicked.subscribe(lambda: self._button_press_action_happened
+                                     .invoke(PullingTerminationButtonPressAction(self._cell_selector.get_coord())))
+
+        attach_detach = SwitchButtonUi.make(Rectangle(Vector2.zero(), Vector2.ones()), attach, detach)
+
+        def switch_if_needed() -> None:
+            coord = self._cell_selector.get_coord()
+            if coord is MISSING:
+                return
+
+            cell = self._session.board[coord]
+            if not isinstance(figure := cell.figure, fig.Artillery):
+                return
+
+            is_pullable = self._session.pulling_connections.is_pullable(figure)
+            is_attach_button_active = attach.layer.is_active
+
+            if is_pullable == is_attach_button_active:
+                attach_detach.next()
+
+        self._cell_selector.cell_was_selected.subscribe(lambda _: switch_if_needed())
+        self._moves_maker.board_move_was_made.subscribe(lambda _: switch_if_needed())
+
+        return self._make_figure_menu(fig.Artillery,
+                                      [attack, attach_detach],
+                                      [ARTILLERY_ATTACK, (ARTILLERY_INITIATE_PULLING, ARTILLERY_TERMINATE_PULLING)],
+                                      need_resources=False)
+
     def _make_howitzer_menu(self) -> Layer:
         attack = self._make_activatable_figure_action_button(HOWITZER_ATTACK,
                                                              lambda: AttackButtonPressAction(
@@ -966,10 +1028,13 @@ class GameUiLayerMaker:
     def _make_figure_menu(self,
                           figure: type[fig.Figure],
                           buttons: list[ButtonUi | SwitchButtonUi],
-                          button_tags: list[str | tuple[str, ...]]) -> Layer:
+                          button_tags: list[str | tuple[str, ...]],
+                          *,
+                          need_resources: bool = True,
+                          need_strength_and_hardness: bool = True) -> Layer:
         assert len(buttons) == len(button_tags)
 
-        menu = self._make_figure_menu_without_hints(figure, buttons)
+        menu = self._make_figure_menu_without_hints(figure, buttons, need_resources, need_strength_and_hardness)
         menu_width, menu_height = menu.rectangle.shape
         hint_box = BoxUi(Rectangle(menu.rectangle.position + Vector2.right() * (10 + menu_width),
                                    Vector2(menu_height, menu_height)))
@@ -977,12 +1042,14 @@ class GameUiLayerMaker:
         for button, tag in zip(buttons, button_tags):
             if not isinstance(button, SwitchButtonUi):
                 synchroniser = TextSizeSynchroniser()
-                hint_box.append(self._make_figure_menu_button_hint(synchroniser, button, tag))
+                hint_box.append(self._make_figure_menu_button_hint(synchroniser, button, tag,
+                                                                   hint_box.rectangle.shape))
                 synchroniser.synchronise()
                 continue
             for button_, tag_ in zip(button.buttons, tag):
                 synchroniser = TextSizeSynchroniser()
-                hint_box.append(self._make_figure_menu_button_hint(synchroniser, button_, tag_))
+                hint_box.append(self._make_figure_menu_button_hint(synchroniser, button_, tag_,
+                                                                   hint_box.rectangle.shape))
                 synchroniser.synchronise()
 
         layer = Layer.as_multiple([
@@ -995,12 +1062,16 @@ class GameUiLayerMaker:
 
     def _make_figure_menu_without_hints(self,
                                         figure_type: type[fig.Figure],
-                                        buttons: list[ButtonUi | SwitchButtonUi]) -> StretcherUi:
+                                        buttons: list[ButtonUi | SwitchButtonUi],
+                                        need_resources: bool = True,
+                                        need_strength_and_hardness: bool = True) -> StretcherUi:
         BUTTONS_COUNT = 5
         assert len(buttons) <= BUTTONS_COUNT
 
-        background_margin = Vector2(20, 20)
-        background_shape = Vector2(375, 250) * self._screen_shape.y / 720
+        scale = self._screen_shape.y / 720
+
+        background_margin = Vector2(20, 20) * scale
+        background_shape = Vector2(338, 225) * scale
         background = ImageUi.make(self._drawer,
                                   RectangleBuilder(self._screen_shape)
                                   .from_left_bottom()
@@ -1011,7 +1082,7 @@ class GameUiLayerMaker:
                                   self._sprites_loader.load_background_3_to_2())
 
         title_height = background.rectangle.shape.y / 6
-        title_margin = Vector2(20, background.rectangle.shape.y - 15 - title_height)
+        title_margin = Vector2(20 * scale, background.rectangle.shape.y - 15 * scale - title_height)
         title = TextUi.make(self._drawer,
                             RectangleBuilder(self._screen_shape)
                             .move(background.rectangle.position + title_margin)
@@ -1024,7 +1095,7 @@ class GameUiLayerMaker:
                             .black_colored()
                             .build())
 
-        layout_margin = Vector2(20, 20)
+        layout_margin = Vector2(20, 20) * scale
         buttons_position = background_margin + layout_margin
         buttons_width = background.rectangle.shape.x - layout_margin.x * 2 - 5
         buttons_height = background.rectangle.shape.y / 4
@@ -1041,7 +1112,7 @@ class GameUiLayerMaker:
         buttons_layout.extend(buttons)
 
         title_bottom = title.rectangle.position.y
-        stats_margin = 15
+        stats_margin = 15 * scale
         stats_height = title_bottom - buttons_position.y - buttons_height - stats_margin * 2
         stats_position = Vector2(title.rectangle.position.x, title_bottom - stats_margin - stats_height)
         stats_and_flow_rectangle = (RectangleBuilder(self._screen_shape)
@@ -1059,8 +1130,11 @@ class GameUiLayerMaker:
         text_data = TextDataBuilder().set_text("...").hints_font().black_colored()
 
         synchroniser = TextSizeSynchroniser()
-        update_stats = self._fill_figure_menu_stats(synchroniser, stats, text_data, figure_type)
-        update_flow = self._fill_figure_menu_flow(synchroniser, flow, text_data, figure_type)
+        update_stats = self._fill_figure_menu_stats(synchroniser, stats, text_data, figure_type,
+                                                    need_strength_and_hardness)
+        update_flow = (self._fill_figure_menu_flow(synchroniser, flow, text_data, figure_type)
+                       if need_resources else
+                       lambda _: None)
         synchroniser.synchronise()
 
         def update(coord: Vector2Int | Status) -> None:
@@ -1086,22 +1160,8 @@ class GameUiLayerMaker:
                                 synchroniser: TextSizeSynchroniser,
                                 stats: VerticalLayoutUi,
                                 text_data: TextDataBuilder,
-                                figure_type: type[fig.Figure]) -> Callable[[Vector2Int | Status], None]:
-        combat_ability = self._append_square_image_and_text_to(stats,
-                                                               self._sprites_loader.load_combat_ability_icon(),
-                                                               text_data.build)
-        synchroniser.append(combat_ability)
-        hardness = self._append_square_image_and_text_to(stats,
-                                                         self._sprites_loader.load_hardness_icon(),
-                                                         text_data.build)
-        synchroniser.append(hardness)
-
-        if Movable in figure_type.FLAGS:
-            strength = self._append_square_image_and_text_to(stats,
-                                                             self._sprites_loader.load_strength_icon(),
-                                                             text_data.build)
-            synchroniser.append(strength)
-
+                                figure_type: type[fig.Figure],
+                                need_strength_and_hardness: bool) -> Callable[[Vector2Int | Status], None]:
         def update_stats(coord: Vector2Int | Status) -> None:
             if coord is MISSING:
                 return
@@ -1111,6 +1171,9 @@ class GameUiLayerMaker:
                 return
 
             update_combat_ability(figure)
+            if not need_strength_and_hardness:
+                return
+
             update_strength(figure, coord)
             update_hardness(figure, coord)
 
@@ -1137,6 +1200,24 @@ class GameUiLayerMaker:
             additional = board[coord].hardness(board) - base
 
             hardness.set_text(f":  {base}" + (f" + {additional}" if additional > 0 else ""))
+
+        combat_ability = self._append_square_image_and_text_to(stats,
+                                                               self._sprites_loader.load_combat_ability_icon(),
+                                                               text_data.build)
+        synchroniser.append(combat_ability)
+        if not need_strength_and_hardness:
+            return update_stats
+
+        hardness = self._append_square_image_and_text_to(stats,
+                                                         self._sprites_loader.load_hardness_icon(),
+                                                         text_data.build)
+        synchroniser.append(hardness)
+
+        if Movable in figure_type.FLAGS:
+            strength = self._append_square_image_and_text_to(stats,
+                                                             self._sprites_loader.load_strength_icon(),
+                                                             text_data.build)
+            synchroniser.append(strength)
 
         return update_stats
 
@@ -1201,12 +1282,15 @@ class GameUiLayerMaker:
     def _make_figure_menu_button_hint(self,
                                       synchroniser: TextSizeSynchroniser,
                                       button: ButtonUi,
-                                      tag: str) -> StretcherUi:
+                                      tag: str,
+                                      shape: Vector2) -> StretcherUi:
         return self._make_button_hint(self._language.get_name_of_figures_action(tag),
                                       self._get_figure_menu_hint_content_for(tag, synchroniser),
-                                      button, Vector2(200, 220))
+                                      button, shape)
 
-    def _get_figure_menu_hint_content_for(self, action_tag: str, synchroniser: TextSizeSynchroniser) -> list[ElementUi]:
+    def _get_figure_menu_hint_content_for(self,
+                                          action_tag: str,
+                                          synchroniser: TextSizeSynchroniser) -> list[ElementUi]:
         message = self._language.get_figure_menu_hint_for(action_tag)
         message.append("")
         combat_ability_index = len(message)
@@ -1228,11 +1312,10 @@ class GameUiLayerMaker:
             move_cost = FIGURE_OF_TAG[action_tag].get_cost_of(MOVE_OF_TAG[action_tag]())
             budget = FIGURE_OF_TAG[action_tag].MOVES_BUDGET
 
-        content_ui: list[ElementUi] = [TextUi.make_with_anchors(self._drawer,
-                                                                Rectangle.zero(),
-                                                                self._get_text_data_builder_for_hint(line)
-                                                                .build(),
-                                                                anchor_x=TextUi.LEFT)
+        content_ui: list[ElementUi] = [TextUi.make(self._drawer,
+                                                   Rectangle.ones(),
+                                                   self._get_text_data_builder_for_hint(line)
+                                                   .build())
                                        for line in message]
 
         if resources:
@@ -1256,14 +1339,11 @@ class GameUiLayerMaker:
         combat_ability = HorizontalLayoutUi(Rectangle(Vector2.zero(), Vector2(100, 10)), reserved=2, margin_ratio=.01)
         content_ui.insert(index, combat_ability)
         combat_ability.append(
-            combat_ability_cost_message := TextUi.make_with_anchors(self._drawer,
-                                                                    Rectangle.zero(),
-                                                                    self._get_text_data_builder_for_hint(
-                                                                        self._language.get_combat_ability_cost_message(),
-                                                                        need_to_adjust_length=False
-                                                                    ).build(),
-                                                                    anchor_x=TextUi.LEFT
-                                                                    ),
+            combat_ability_cost_message := TextUi.make(self._drawer,
+                                                       Rectangle.zero(),
+                                                       self._get_text_data_builder_for_hint(
+                                                           self._language.get_combat_ability_cost_message()
+                                                       ).build()),
             weight=.7
         )
         synchroniser.append(combat_ability_cost_message)
@@ -1272,8 +1352,7 @@ class GameUiLayerMaker:
             self._append_square_image_and_text_to(
                 combat_ability,
                 self._sprites_loader.load_combat_ability_icon(),
-                self._get_text_data_builder_for_hint(f":  {100 * combat_ability_cost_ratio:.0f}%",
-                                                     need_to_adjust_length=False).build
+                self._get_text_data_builder_for_hint(f":  {100 * combat_ability_cost_ratio:.0f}%").build
             )
         )
 
@@ -1299,8 +1378,7 @@ class GameUiLayerMaker:
                 self._append_square_image_and_text_to(
                     layout,
                     self._sprites_loader.load_resource_sprite(type(resource)),
-                    self._get_text_data_builder_for_hint(f":  {NumberShortener.shorten(resource.amount)}",
-                                                         need_to_adjust_length=False).build
+                    self._get_text_data_builder_for_hint(f":  {NumberShortener.shorten(resource.amount)}").build
                 )
             )
 
@@ -1427,10 +1505,9 @@ class GameUiLayerMaker:
         return stretcher
 
     @staticmethod
-    def _get_text_data_builder_for_hint(line: str, *, need_to_adjust_length: bool = True) -> TextDataBuilder:
-        MAX_LINE_LENGTH = 25
+    def _get_text_data_builder_for_hint(line: str) -> TextDataBuilder:
         return (TextDataBuilder()
-                .set_text(line.ljust(MAX_LINE_LENGTH, " ") if need_to_adjust_length else line)
+                .set_text(line or " ")
                 .hints_font()
                 .black_colored())
 
