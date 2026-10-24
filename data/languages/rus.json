@@ -28,6 +28,7 @@
     "PAUSE": "Пауза",
     "CONTINUE": "Продолжить",
     "SAVE_AND_QUIT": "Сохраниться и выйти",
+    "QUIT_WITHOUT_SAVING": "Выйти без сохранения",
     "RESTART_LEVEL": "Начать заново",
     "MAKE_NEW_MAP": "Новая",
     "LOAD_EXISTING_MAP": "Открыть",

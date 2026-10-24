@@ -155,7 +155,7 @@ class PauseMenuUiLayerMaker:
             self._make_null_button(self._language.get_continue_message(), on_continue_was_pressed),
             self._make_null_button(self._language.get_restart_level_message(), restart_level),
             self._make_null_button(self._language.get_settings_message(), on_settings_was_pressed),
-            self._make_null_button(self._language.get_save_and_quit_message(), on_to_main_menu_was_pressed),
+            self._make_null_button(self._language.get_quit_without_saving_message(), on_to_main_menu_was_pressed),
         ]
 
     def _make_null_button(self, text: str, on_button_pressed: Callable[[], None]) -> ButtonUi:

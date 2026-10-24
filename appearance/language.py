@@ -100,6 +100,7 @@ _BACK = "BACK"
 _PAUSE = "PAUSE"
 _CONTINUE = "CONTINUE"
 _SAVE_AND_QUIT = "SAVE_AND_QUIT"
+_QUIT_WITHOUT_SAVING = "QUIT_WITHOUT_SAVING"
 _RESTART_LEVEL = "RESTART_LEVEL"
 _MAKE_NEW_MAP = "MAKE_NEW_MAP"
 _LOAD_EXISTING_MAP = "LOAD_EXISTING_MAP"
@@ -243,6 +244,9 @@ class Language:
 
     def get_save_and_quit_message(self) -> str:
         return self._ui[_SAVE_AND_QUIT]
+
+    def get_quit_without_saving_message(self) -> str:
+        return self._ui[_QUIT_WITHOUT_SAVING]
 
     def get_restart_level_message(self) -> str:
         return self._ui[_RESTART_LEVEL]
