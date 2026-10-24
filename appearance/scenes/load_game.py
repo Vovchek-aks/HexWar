@@ -269,7 +269,7 @@ def load_game(window: Window,
 
         pause_menu_open_requested.subscribe(scene.on_pause_menu_toggle_requested)
         continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
-        to_main_menu_was_pressed.subscribe(window.reload)
+        to_main_menu_was_pressed.subscribe(combine(lambda: GameSessionSaver(session).save(SAVE_FILE), window.reload))
         scene.was_switched.subscribe(lambda _: GameSessionSaver(session).save(SAVE_FILE))
         scene.was_switched.subscribe(lambda _: music_player.stop())
 

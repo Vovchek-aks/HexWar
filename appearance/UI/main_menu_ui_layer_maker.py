@@ -607,7 +607,8 @@ class MainMenuUiLayerMaker:
                                    map_name: str,
                                    color: Color,
                                    on_map_was_selected: Callable[[str], None]) -> ButtonUi:
-        return self._make_null_button(map_name, lambda: on_map_was_selected(map_name), color=color)
+        return self._make_null_button(self._language.localise_map_name(map_name),
+                                      lambda: on_map_was_selected(map_name), color=color)
 
     def _get_maps_buttons_rectangle(self) -> Rectangle:
         margin = 20

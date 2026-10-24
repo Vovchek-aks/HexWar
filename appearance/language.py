@@ -29,6 +29,8 @@ _CREATION = "creation"
 _FIGURES_MENU = "figures_menu"
 _TUTORIALS = "tutorials"
 
+_MAPS_LOCALIZATION = "maps"
+
 _UI = "ui"
 _END_TURN_BTN = "END_TURN_BTN"
 _PLAYERS_TURN_TEXT = "PLAYERS_TURN_TEXT"
@@ -150,6 +152,7 @@ class Language:
         json = read_json(file)
         messages = {
             _UI: Section(json[_UI]),
+            _MAPS_LOCALIZATION: Section(json[_MAPS_LOCALIZATION]),
             _RESOURCES: Section(json[_RESOURCES]),
             _FIGURES: Section(json[_FIGURES]),
             _LOADING: Section(json[_LOADING]),
@@ -174,6 +177,10 @@ class Language:
     @property
     def _ui(self) -> LANGUAGE_SECTION_DICT:
         return self._messages[_UI]
+
+    @property
+    def _maps(self) -> LANGUAGE_SECTION_DICT:
+        return self._messages[_MAPS_LOCALIZATION]
 
     @property
     def _loading(self) -> LANGUAGE_SECTION_DICT:
@@ -389,6 +396,9 @@ class Language:
 
     def has_figure(self, figure: type[Figure]) -> bool:
         return figure.__name__ in self._figures
+
+    def localise_map_name(self, map_name: str) -> str:
+        return self._maps.get(map_name, map_name)
 
 
 class Section(dict[str, str]):
