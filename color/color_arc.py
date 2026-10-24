@@ -37,6 +37,15 @@ class Color(arc.color.Color):
     def brightness(self) -> int:
         return sum(self.tuple4) - self.a
 
+    @property
+    def inverse(self) -> "Color":
+        return Color(
+            255 - self.r,
+            255 - self.g,
+            255 - self.b,
+            self.a
+        )
+
     def hex(self) -> str:
         return f"#{hex(self.r)[2:]}{hex(self.g)[2:]}{hex(self.b)[2:]}"
 

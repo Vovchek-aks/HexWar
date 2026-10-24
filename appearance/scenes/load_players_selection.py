@@ -3,6 +3,7 @@ from typing import Iterator, Callable
 from appearance.UI.drawer import UiDrawer
 from appearance.UI.player_selection_ui_layer_maker import PlayersSelectionUiLayerMaker
 from appearance.game_engine.game_engine_arc.input_state import InputState
+from appearance.graphics import colors
 from appearance.graphics.camera.camera import CachedCamera, Camera
 from appearance.graphics.camera.camera_orientation import CameraOrientation, ReadonlyCameraOrientation
 from appearance.graphics.draw import DrawMaker
@@ -22,6 +23,7 @@ from appearance.input.screenshot_saver import ScreenshotSaver
 from appearance.input.under_cursor_cell_getter import UnderCursorCellGetter
 from appearance.language import Language
 from appearance.layer import Layer
+from appearance.scenes.cursor_layer import get_cursor_layer
 from appearance.scenes.players_selection import PlayersSelectionScene
 from appearance.settings import Settings
 from core.annexation_map.annexation_map import AnnexationMap
@@ -29,6 +31,7 @@ from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
 from core.cells_changes_observer import CellsChangesObserver
 from core.game_session import GameSession
 from core.game_rules.game_rules_applier import GameRulesApplier
+from core.protocols import Player
 from observer import Event
 from appearance.game_engine.game_engine_arc.window import Window
 import appearance.protocols as proto
@@ -36,9 +39,10 @@ from statuses import Status
 
 
 def load_players_selection(make_game_scene_loading: Callable[[GameSession], proto.Scene],
-                           make_main_menu_scene_loading: Callable[[], proto.Scene],
                            make_game_session: Callable[[], GameSession],
                            window: Window) -> Iterator[proto.Scene | Status]:
+    window.set_mouse_visible(False)
+
     screen_shape = Settings.open().screen_shape
     language = Language.from_meta()
 
@@ -65,6 +69,27 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
     input_state = InputState.make(window)
     cells_change_observer = CellsChangesObserver.make([], [])
     players_selector = PlayersSelector.make(session, actions_reader)
+    selected_players = set[Player]()
+
+    def update_hatching_map(players: list[Player]) -> None:
+        to_color = set(players) - selected_players
+        to_uncolor = selected_players - set(players)
+
+        for player in to_color | to_uncolor:
+            for cell in session.cells.with_owner(player):
+                coord = session.board.coordinates_of(cell)
+                if player in to_color:
+                    hatching_map.set_color_at(coord, colors.WHITE)
+                    board_drawer.update_hatching(coord)
+                    continue
+
+                hatching_map.remove_at(coord)
+                board_drawer.update_hatching(coord)
+
+        selected_players.clear()
+        selected_players.update(players)
+
+    players_selector.selected_players_were_changed.subscribe(update_hatching_map)
 
     yield language.get_ui_making_message()
     mouse_movement_observer = MouseMovementObserver()
@@ -87,6 +112,7 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
 
     camera_assistant = CameraAssistant.make(camera)
     layers = [
+        get_cursor_layer(),
         ui_layer,
         Layer(MapEditorBoardDrawableLayer(draw, hovered_cell_getter, camera_assistant), board_layer),
         Layer(WholeScreenDrawableLayer(draw), null_layer)
@@ -96,7 +122,7 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
 
 
     def on_play_was_pressed() -> None:
-        if not players_selector.has_selected:
+        if not players_selector.had_selected_someone:
             return
 
         new_session = session.with_master(players_selector.make_master())
@@ -111,6 +137,6 @@ def load_players_selection(make_game_scene_loading: Callable[[GameSession], prot
         scene.switch_to(make_game_scene_loading(new_session))
 
     play_was_pressed.subscribe(on_play_was_pressed)
-    exit_was_pressed.subscribe(lambda: scene.switch_to(make_main_menu_scene_loading()))
+    exit_was_pressed.subscribe(window.reload)
 
     yield scene

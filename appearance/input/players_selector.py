@@ -26,7 +26,7 @@ class PlayersSelector:
     _selected_players_were_changed: Event[list[proto.Player], None] = field(init=False, factory=Event)
 
     @property
-    def has_selected(self) -> bool:
+    def had_selected_someone(self) -> bool:
         return bool(self._selected_players)
 
     @property

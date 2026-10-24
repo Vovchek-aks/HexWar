@@ -29,7 +29,6 @@ class LoadingScenesMaker:
     def make_player_selection_loading_scene(self, make_game_session: GameSessionMaker) -> LoadingScene:
         return LoadingScene.make(load_players_selection(lambda game_session: self.make_game_loading_scene(
                                                             lambda: game_session),
-                                                        self.make_main_menu_loading_scene,
                                                         make_game_session,
                                                         self._window))
 

@@ -392,11 +392,11 @@ class Language:
     def get_tutorial_hints(self, tutorial_index: int) -> list[list[str]]:
         return self._hints[_TUTORIALS][tutorial_index]
 
-    def get_selected_players_message(self, selected_players: list[str]) -> str:
-        if not selected_players:
+    def get_selected_players_message(self, selected_players: int) -> str:
+        if selected_players == 0:
             return self._ui[_NO_PLAYERS_SELECTED]
 
-        return f"{self._ui[_SELECTED_PLAYERS]}: {', '.join(selected_players)}."
+        return f"{self._ui[_SELECTED_PLAYERS]}: {selected_players}."
 
     def has_figure(self, figure: type[Figure]) -> bool:
         return figure.__name__ in self._figures

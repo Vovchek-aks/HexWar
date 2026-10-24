@@ -73,10 +73,10 @@ class PlayersSelectionUiLayerMaker:
                                     selected_players_were_changed: OnEventSubscriber[list[Player], None]) -> TextUi:
         text = TextUi.make(self._drawer,
                            self._get_selected_players_text_rectangle(),
-                           TextData.debug(self._language.get_selected_players_message([])))
+                           TextData.debug(self._language.get_selected_players_message(0)))
 
         selected_players_were_changed.subscribe(lambda selected_players: text.set_text(
-            self._language.get_selected_players_message([player.data.name for player in selected_players])))
+            self._language.get_selected_players_message(len(selected_players))))
 
         return text
 
