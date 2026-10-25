@@ -1293,7 +1293,6 @@ class GameUiLayerMaker:
                                           synchroniser: TextSizeSynchroniser) -> list[ElementUi]:
         message = self._language.get_figure_menu_hint_for(action_tag)
         message.append("")
-        combat_ability_index = len(message)
 
         if action_tag in CONVERSIONS:
             conversion = CONVERSIONS[action_tag]
@@ -1317,49 +1316,18 @@ class GameUiLayerMaker:
                                                    self._get_text_data_builder_for_hint(line)
                                                    .build())
                                        for line in message]
+        self._append_resources(synchroniser, content_ui, resources, combat_ability_cost_ratio=move_cost / budget)
 
-        if resources:
-            content_ui.append(TextUi.make_with_anchors(self._drawer,
-                                                       Rectangle.zero(),
-                                                       self._get_text_data_builder_for_hint("").build(),
-                                                       anchor_x=TextUi.LEFT))
-            self._append_resources(synchroniser, content_ui, resources)
-
-        self._insert_combat_ability(synchroniser, content_ui, combat_ability_index, budget, move_cost)
         synchroniser.extend(*(element for element in content_ui
                               if isinstance(element, TextUi)))
         return content_ui
 
-    def _insert_combat_ability(self,
-                               synchroniser: TextSizeSynchroniser,
-                               content_ui: list[ElementUi],
-                               index: int,
-                               budget: int,
-                               move_cost: int) -> None:
-        combat_ability = HorizontalLayoutUi(Rectangle(Vector2.zero(), Vector2(100, 10)), reserved=2, margin_ratio=.01)
-        content_ui.insert(index, combat_ability)
-        combat_ability.append(
-            combat_ability_cost_message := TextUi.make(self._drawer,
-                                                       Rectangle.zero(),
-                                                       self._get_text_data_builder_for_hint(
-                                                           self._language.get_combat_ability_cost_message()
-                                                       ).build()),
-            weight=.7
-        )
-        synchroniser.append(combat_ability_cost_message)
-        combat_ability_cost_ratio = move_cost / budget
-        synchroniser.append(
-            self._append_square_image_and_text_to(
-                combat_ability,
-                self._sprites_loader.load_combat_ability_icon(),
-                self._get_text_data_builder_for_hint(f":  {100 * combat_ability_cost_ratio:.0f}%").build
-            )
-        )
-
     def _append_resources(self,
                           synchroniser: TextSizeSynchroniser,
                           content_ui: list[ElementUi],
-                          resources: ResourcesGroup) -> None:
+                          resources: ResourcesGroup,
+                          *,
+                          combat_ability_cost_ratio: float | Status = MISSING) -> None:
         content_ui.append(cost := TextUi.make_with_anchors(self._drawer,
                                                            Rectangle.zero(),
                                                            self._get_text_data_builder_for_hint(
@@ -1367,6 +1335,18 @@ class GameUiLayerMaker:
                                                            ).build(),
                                                            anchor_x=TextUi.LEFT))
         synchroniser.append(cost)
+
+        if combat_ability_cost_ratio is not MISSING:
+            layout = HorizontalLayoutUi(Rectangle(Vector2.zero(), Vector2(100, 10)), reserved=2)
+            content_ui.append(layout)
+            layout.append(BoxUi(Rectangle.zero()), weight=.1)
+            synchroniser.append(
+                self._append_square_image_and_text_to(
+                    layout,
+                    self._sprites_loader.load_combat_ability_icon(),
+                    self._get_text_data_builder_for_hint(f":  {100 * combat_ability_cost_ratio:.0f}%").build
+                )
+            )
         for resource in resources:
             if not resource:
                 continue
@@ -1462,7 +1442,7 @@ class GameUiLayerMaker:
                                   Rectangle(Vector2.zero(), shape),
                                   self._sprites_loader.load_background_2_to_3())
 
-        title_margin = Vector2(18, 18)
+        title_margin = Vector2(18 * shape.x / 200, 18 * shape.y / 300)
         title_height = shape.y / 10
         title_ui = TextUi.make(self._drawer,
                                RectangleBuilder(Vector2Int.from_vector2(background.rectangle.shape, strict=False))

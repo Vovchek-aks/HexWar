@@ -50,7 +50,6 @@ _LAUNCH_ORESHNIK = "LAUNCH_ORESHNIK"
 _COMBAT_ABILITY = "COMBAT_ABILITY"
 _STRENGTH = "STRENGTH"
 _HARDNESS = "HARDNESS"
-_COMBAT_ABILITY_COST = "COMBAT_ABILITY_COST"
 _COST = "COST"
 _YOU_WON = "YOU_WON"
 _TO_NEXT_LEVEL = "TO_NEXT_LEVEL"
@@ -378,9 +377,6 @@ class Language:
 
     def get_count_message(self) -> str:
         return self._ui[_COUNT]
-
-    def get_combat_ability_cost_message(self) -> str:
-        return self._ui[_COMBAT_ABILITY_COST]
 
     def get_creation_hint(self, figure: type[Figure]) -> list[str]:
         return self._hints[_CREATION][figure.__name__]

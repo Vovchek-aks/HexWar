@@ -8,6 +8,7 @@ from appearance.UI.layouts import VerticalLayoutUi
 from appearance.UI.main_menu_ui_layer_maker import MainMenuUiLayerMaker
 from appearance.UI.text import TextData, TextUi
 from appearance.UI.text.test_size_synchroniser import TextSizeSynchroniser
+from appearance.game_engine.game_engine_arc.window import Window
 from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader
 from appearance.language import Language
@@ -28,6 +29,7 @@ class PauseMenuUiLayerMaker:
     _sprites_loader: SpritesLoader = Factory(SpritesLoader.from_meta)
 
     def make(self,
+             window: Window,
              on_continue_was_pressed: Callable[[], None],
              on_to_main_menu_was_pressed: Callable[[], None],
              pause_menu_open_requested: OnEventSubscriber[None],
@@ -36,6 +38,7 @@ class PauseMenuUiLayerMaker:
         settings_was_pressed = Event[None]()
 
         pause_menu_open_requested.subscribe(to_label_was_pressed.invoke)
+        pause_menu_open_requested.subscribe(lambda: window.set_mouse_visible(False))
 
         tabs = list[Layer]()
 
@@ -52,6 +55,7 @@ class PauseMenuUiLayerMaker:
         return Layer.as_multiple(tabs)
 
     def make_for_tutorial(self,
+                          window: Window,
                           on_continue_was_pressed: Callable[[], None],
                           on_to_main_menu_was_pressed: Callable[[], None],
                           pause_menu_open_requested: OnEventSubscriber[None],
@@ -61,6 +65,7 @@ class PauseMenuUiLayerMaker:
         settings_was_pressed = Event[None]()
 
         pause_menu_open_requested.subscribe(to_label_was_pressed.invoke)
+        pause_menu_open_requested.subscribe(lambda: window.set_mouse_visible(False))
 
         tabs = list[Layer]()
 

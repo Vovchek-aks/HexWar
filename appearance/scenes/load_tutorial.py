@@ -224,7 +224,7 @@ def load_tutorial(window: Window,
     to_main_menu_was_pressed = Event[None]()
 
     pause_ui_layer = (PauseMenuUiLayerMaker(UiDrawer(), screen_shape, mouse_movement_observer)
-                      .make_for_tutorial(continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
+                      .make_for_tutorial(window, continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
                                          pause_menu_open_requested.subscriber,
                                          lambda: scene.switch_to(LoadingScene.make(
                                              load_tutorial(window, make_session, tutorial_index, ups))),
