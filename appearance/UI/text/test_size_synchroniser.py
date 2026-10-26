@@ -9,7 +9,7 @@ class TextSizeSynchroniser:
 
     @property
     def size(self) -> float:
-        return min(text.font_size for text in self._texts)
+        return min(text.font_size for text in self._texts) if self._texts else 0
 
     def append(self, text: TextUi) -> None:
         self._texts.append(text)

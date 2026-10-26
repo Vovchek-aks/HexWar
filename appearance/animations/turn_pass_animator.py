@@ -35,7 +35,7 @@ class TurnPassAnimator:
         master = self._session.master
         is_fist_ever_move = max(map(master.turn_of, master.players)) == 1
         if is_fist_ever_move:
-            yield from sleep_gametime(ON_FULL_BOARD_WAIT_TIME, self._in_game_time)
+            yield from sleep_gametime(ON_FULL_BOARD_WAIT_TIME / 2, self._in_game_time)
             yield
 
         board = self._session.board

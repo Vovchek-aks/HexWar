@@ -18,12 +18,13 @@ class CellSelector(proto.CellSelector):
              actions_reader: InputActionsReader,
              moves_maker: MovesMaker,
              master: Master) -> "CellSelector":
-        selector = cls(master)
+        self = cls(master)
 
-        actions_reader.action_was_read.subscribe(selector._on_action_was_read)
-        moves_maker.board_move_was_made.subscribe(selector._on_board_move_was_made)
+        actions_reader.action_was_read.subscribe(self._on_action_was_read)
+        moves_maker.board_move_was_made.subscribe(self._on_board_move_was_made)
+        master.turn_has_passed.subscribe(lambda _: self.unselect_cell())
 
-        return selector
+        return self
 
     _master: Master
 

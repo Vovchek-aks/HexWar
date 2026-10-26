@@ -1034,11 +1034,11 @@
     ]
   },
   "figures": {
-    "Land": "Равнины",
-    "Mountain": "Горы",
-    "Forest": "Леса",
-    "Swamp": "Болота",
-    "Desert": "Пустыни",
+    "Land": "Равнина",
+    "Mountain": "Гора",
+    "Forest": "Лес",
+    "Swamp": "Болото",
+    "Desert": "Пустыня",
     "Water": "Вода",
     "Infantry": "Пехота",
     "Tank": "Танк",

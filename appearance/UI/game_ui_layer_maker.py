@@ -78,7 +78,8 @@ class GameUiLayerMaker:
         layers = [
             players_turn,
             self._make_player_top_list(),
-            self._make_current_turn_ui(resources, end_turn_button)
+            self._make_current_turn_ui(resources, end_turn_button),
+            self._make_enemy_stats_indication(),
         ]
 
         return Layer.as_multiple(layers)
@@ -165,6 +166,9 @@ class GameUiLayerMaker:
             hints := self._make_tutorial_hints(tutorial_index),
             current_turn_ui := current_turn_ui_maker(resources, end_turn_button),
         ]
+
+        if tutorial_index > 0:
+            layers.append(self._make_enemy_stats_indication())
 
         end_turn_button.was_clicked.subscribe(combine(lambda: current_turn_ui.set_activity(False),
                                                       on_end_turn_button_was_clicked))
@@ -1541,9 +1545,10 @@ class GameUiLayerMaker:
     def _bind_layer_to_cell_with_figure_selection(self, layer: Layer, figure: type[fig.Figure]) -> None:
         layer.set_activity(False)
 
-        self._cell_selector.cell_was_selected.subscribe(
-            lambda coord: layer.set_activity(self._is_ui_needed(coord, figure)))
         self._cell_selector.cell_was_unselected.subscribe(lambda: layer.set_activity(False))
+        self._cell_selector.cell_was_selected.subscribe(
+            lambda coord: layer.set_activity(self._is_ui_needed(coord, figure))
+        )
 
         def on_board_move_was_made(_: ValidMove) -> None:
             if (coord := self._cell_selector.get_coord()) is MISSING:
@@ -1553,6 +1558,70 @@ class GameUiLayerMaker:
             return layer.set_activity(self._is_ui_needed(coord, figure))
 
         self._moves_maker.board_move_was_made.subscribe(on_board_move_was_made)
+
+    def _make_enemy_stats_indication(self) -> Layer:
+        scale = self._screen_shape.y / 720
+        background_margin = Vector2(10, 10) * scale
+        background_shape = Vector2(80, 66) * scale
+
+        background = ImageUi.make(self._drawer,
+                                  RectangleBuilder(self._screen_shape)
+                                  .from_left_bottom()
+                                  .move(background_margin)
+                                  .set_shape(background_shape)
+                                  .adjust_for_shape()
+                                  .build(),
+                                  self._sprites_loader.load_background_3_to_2())
+
+        stats_margin = 10 * scale
+        stats = VerticalLayoutUi(RectangleBuilder(self._screen_shape)
+                                 .from_left_bottom()
+                                 .move(background_margin + Vector2.ones() * stats_margin)
+                                 .set_shape(background_shape - Vector2.ones() * stats_margin * 2)
+                                 .adjust_for_shape()
+                                 .build(),
+                                 reserved=2)
+
+        synchroniser = TextSizeSynchroniser()
+        text_data = TextDataBuilder().set_text("...").hints_font().black_colored()
+        hardness = self._append_square_image_and_text_to(stats,
+                                                         self._sprites_loader.load_hardness_icon(),
+                                                         text_data.build)
+        synchroniser.append(hardness)
+
+        strength = self._append_square_image_and_text_to(stats,
+                                                         self._sprites_loader.load_strength_icon(),
+                                                         text_data.build)
+        synchroniser.append(strength)
+
+        layer = Layer.as_multiple([
+            stats,
+            background,
+        ])
+
+        def on_cell_was_selected(coord: Vector2Int) -> None:
+            board = self._session.board
+            master = self._session.master
+            cell = board[coord]
+
+            hardness_value = cell.hardness(board)
+            movable = cell.figure.FLAGS.get(Movable)
+            strength_value = movable.strength(coord, board) if movable else 0
+
+            if (cell.owner is master.current_player
+                    or hardness_value == strength_value == 0):
+                layer.set_activity(False)
+                return
+
+            layer.set_activity(True)
+            hardness.set_text(f": {hardness_value}")
+            strength.set_text(f": {strength_value}")
+            synchroniser.synchronise()
+
+        layer.set_activity(False)
+        self._cell_selector.cell_was_selected.subscribe(on_cell_was_selected)
+        self._cell_selector.cell_was_unselected.subscribe(lambda: layer.set_activity(False))
+        return layer
 
     def _make_activatable_figure_action_button(self,
                                                action_tag: str,
