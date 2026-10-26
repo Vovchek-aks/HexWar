@@ -32,14 +32,16 @@ class BoardDrawableLayer(proto.DrawableLayer):
         is_empty = True if selected_coord is MISSING else self._session.board[selected_coord].is_empty
 
         if hovered_coord is not MISSING:
+            was_path_drawn = False
             if not is_empty:
-                self._draw_path_if_needed(hovered_coord, selected_coord)
+                was_path_drawn = self._draw_path_if_needed(hovered_coord, selected_coord)
                 self._draw_oreshnik_targets_if_needed(hovered_coord, selected_coord)
                 self._draw_grad_attack_targets_if_needed(hovered_coord, selected_coord)
                 self._draw_attack_targets_if_needed(hovered_coord, selected_coord)
 
             self._draw_figure_creation_targets_if_needed()
-            self._draw.under_cursor_cell(hovered_coord)
+            if not was_path_drawn:
+                self._draw.under_cursor_cell(hovered_coord)
 
         if selected_coord is not MISSING:
             self._draw.selected_cell(selected_coord)
@@ -49,9 +51,9 @@ class BoardDrawableLayer(proto.DrawableLayer):
         self._draw.board()
         self._draw.board_sprites()
 
-    def _draw_path_if_needed(self, hovered_coord: Vector2Int, selected_coord: Vector2Int | Status) -> None:
+    def _draw_path_if_needed(self, hovered_coord: Vector2Int, selected_coord: Vector2Int | Status) -> bool:
         if not self._multiple_relocations_reader.is_requested():
-            return
+            return False
 
         path = self._multiple_relocations_reader.get_path(selected_coord, hovered_coord)
         moves = len(self._multiple_relocations_reader.get_moves_for(path))
@@ -61,6 +63,8 @@ class BoardDrawableLayer(proto.DrawableLayer):
 
         for coord in path[moves + 1:]:
             self._draw.interest_cell(coord)
+
+        return True
 
     def _draw_figure_creation_targets_if_needed(self) -> None:
         last_action = self._actions_reader.last_action

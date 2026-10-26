@@ -5,6 +5,22 @@
       "type": "variants",
       "elements": "figures/empty_variants"
     },
+    "Mountain": {
+      "type": "variants",
+      "elements": "figures/empty_variants"
+    },
+    "Forest": {
+      "type": "variants",
+      "elements": "figures/empty_variants"
+    },
+    "Swamp": {
+      "type": "variants",
+      "elements": "figures/empty_variants"
+    },
+    "Desert": {
+      "type": "variants",
+      "elements": "figures/empty_variants"
+    },
     "Water": {
       "type": "variants",
       "elements": "figures/empty_variants"

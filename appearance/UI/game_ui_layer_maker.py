@@ -185,7 +185,7 @@ class GameUiLayerMaker:
 
     def _make_current_turn_ui_level_2(self, _: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_infantry_menu_level_2(),
             self._make_artillery_menu_level_2(),
             self._make_capital_menu_level_2(),
@@ -202,7 +202,7 @@ class GameUiLayerMaker:
             [fig.TierOneCapital, fig.Town, fig.LightFactory]
         ]
         return Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu_level_3(),
             self._make_artillery_menu(),
@@ -223,7 +223,7 @@ class GameUiLayerMaker:
             [fig.TierOneCapital, fig.Town, fig.LightFactory]
         ]
         return Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu_level_4(),
             self._make_motorization_menu_level_4(),
@@ -246,7 +246,7 @@ class GameUiLayerMaker:
         ]
 
         return Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu_level_4(),
             self._make_motorization_menu_level_4(),
@@ -271,7 +271,7 @@ class GameUiLayerMaker:
         ]
 
         return Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu(),
             self._make_motorization_menu_level_4(),
@@ -294,7 +294,7 @@ class GameUiLayerMaker:
 
     def _make_current_turn_ui_level_7(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
             self._make_grad_menu(),
@@ -317,7 +317,7 @@ class GameUiLayerMaker:
 
     def _make_current_turn_ui_level_8(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
             self._make_grad_menu(),
@@ -482,9 +482,6 @@ class GameUiLayerMaker:
 
         resources, update_resources = self._make_resources(resource_types)
 
-        self._moves_maker.current_player_resources_flow_could_have_changed.subscribe(update_resources)
-        self._turn_start_preparations_had_finished.subscribe(update_resources)
-
         def on_turn_passed(player: Player) -> None:
             name = player.data.name
             current_player.set_text(name)
@@ -492,11 +489,13 @@ class GameUiLayerMaker:
             update_resources()
 
         self._turn_start_preparations_had_finished.subscribe(
-            lambda: on_turn_passed(self._session.master.current_player))
+            lambda: on_turn_passed(self._session.master.current_player)
+        )
+        self._moves_maker.current_player_resources_flow_could_have_changed.subscribe(update_resources)
+        for player in self._session.master.players:
+            player.resources.has_changed.subscribe(lambda *_: update_resources())
 
         on_turn_passed(self._session.master.current_player)
-        update_resources()
-
         return resources, Layer.as_multiple([current_player, current_turn])
 
     def _make_resources(self, resources: Sequence[type[Resource]]) -> tuple[VerticalLayoutUi, Callable[[], None]]:
@@ -563,7 +562,7 @@ class GameUiLayerMaker:
         ]
 
         layer = Layer.as_multiple([
-            *self.make_terrain_kind_menus(),
+            *self._make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
@@ -792,7 +791,7 @@ class GameUiLayerMaker:
     def _make_desert_menu(self) -> Layer:
         return self._make_figure_menu(fig.Desert, [], [])
 
-    def make_terrain_kind_menus(self) -> list[Layer]:
+    def _make_terrain_kind_menus(self) -> list[Layer]:
         return [
             self._make_mountain_menu(),
             self._make_forest_menu(),
@@ -1728,7 +1727,8 @@ class GameUiLayerMaker:
         if action_tag == ARTILLERY_TERMINATE_PULLING:
             return connections.is_pullable(figure)
 
-        if flags.get(WithRestrictedTerrainKinds).contains_in(cell, board=self._session.board):
+        if (WithRestrictedTerrainKinds in flags
+                and flags.get(WithRestrictedTerrainKinds).contains_in(cell, board=self._session.board)):
             return False
 
         if action_tag in (ARTILLERY_ATTACK, HOWITZER_ATTACK, TANK_ATTACK):
