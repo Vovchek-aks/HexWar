@@ -48,6 +48,7 @@ from files import read_finished_levels, increment_finished_levels
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figure as fig
+from my_types import combine
 from observer import Event, OnEventSubscriber
 from statuses import MISSING, Status
 
@@ -134,7 +135,6 @@ class GameUiLayerMaker:
                            on_to_next_level_was_pressed: Callable[[], None] | Status) -> Layer:
         resources, players_turn = self._make_resources_and_player_turn(allowed_resources)
         end_turn_button = self._make_end_turn_button()
-        end_turn_button.was_clicked.subscribe(on_end_turn_button_was_clicked)
         first_player = self._session.master.current_player
 
         def on_turn_had_started(player: Player) -> None:
@@ -166,18 +166,25 @@ class GameUiLayerMaker:
             current_turn_ui := current_turn_ui_maker(resources, end_turn_button),
         ]
 
+        end_turn_button.was_clicked.subscribe(combine(lambda: current_turn_ui.set_activity(False),
+                                                      on_end_turn_button_was_clicked))
+
         return Layer.as_multiple(layers)
 
     def _make_current_turn_ui_level_1(self, _: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
+            self._make_forest_menu_level_1(),
             self._make_infantry_menu_level_1(),
+            self._make_capital_menu_level_1(),
             end_turn_button,
         ])
 
     def _make_current_turn_ui_level_2(self, _: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_infantry_menu_level_2(),
             self._make_artillery_menu_level_2(),
+            self._make_capital_menu_level_2(),
             self._make_bunker_menu(),
             end_turn_button,
         ])
@@ -191,6 +198,7 @@ class GameUiLayerMaker:
             [fig.TierOneCapital, fig.Town, fig.LightFactory]
         ]
         return Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu_level_3(),
             self._make_artillery_menu(),
@@ -211,6 +219,7 @@ class GameUiLayerMaker:
             [fig.TierOneCapital, fig.Town, fig.LightFactory]
         ]
         return Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu_level_4(),
             self._make_motorization_menu_level_4(),
@@ -233,6 +242,7 @@ class GameUiLayerMaker:
         ]
 
         return Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu_level_4(),
             self._make_motorization_menu_level_4(),
@@ -257,6 +267,7 @@ class GameUiLayerMaker:
         ]
 
         return Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu(),
             self._make_motorization_menu_level_4(),
@@ -279,6 +290,7 @@ class GameUiLayerMaker:
 
     def _make_current_turn_ui_level_7(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
             self._make_grad_menu(),
@@ -301,6 +313,7 @@ class GameUiLayerMaker:
 
     def _make_current_turn_ui_level_8(self, resources: ElementUi, end_turn_button: ButtonUi) -> Layer:
         return Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
             self._make_grad_menu(),
@@ -546,6 +559,7 @@ class GameUiLayerMaker:
         ]
 
         layer = Layer.as_multiple([
+            *self.make_terrain_kind_menus(),
             self._make_figures_creation_menu(table),
             self._make_infantry_menu(),
             self._make_motorization_menu(),
@@ -759,6 +773,29 @@ class GameUiLayerMaker:
 
         return hint
 
+    def _make_mountain_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Mountain, [], [])
+
+    def _make_forest_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Forest, [], [])
+
+    def _make_forest_menu_level_1(self) -> Layer:
+        return self._make_figure_menu(fig.Forest, [], [], need_strength_and_hardness=False)
+
+    def _make_swamp_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Swamp, [], [])
+
+    def _make_desert_menu(self) -> Layer:
+        return self._make_figure_menu(fig.Desert, [], [])
+
+    def make_terrain_kind_menus(self) -> list[Layer]:
+        return [
+            self._make_mountain_menu(),
+            self._make_forest_menu(),
+            self._make_swamp_menu(),
+            self._make_desert_menu(),
+        ]
+
     def _make_infantry_menu(self) -> Layer:
         to_motorize, _ = self._make_figure_action_button(INFANTRY_TO_MOTORIZATION)
         to_motorize.was_clicked.subscribe(lambda: self._button_press_action_happened
@@ -886,6 +923,13 @@ class GameUiLayerMaker:
                                                                                   fig.WideCapital)))
         return self._make_figure_menu(fig.TierOneCapital, [to_tall_capital, to_wide_capital],
                                       [CAPITAL_TO_TALL_CAPITAL, CAPITAL_TO_WIDE_CAPITAL])
+
+    def _make_capital_menu_level_1(self) -> Layer:
+        return self._make_figure_menu(fig.TierOneCapital, [], [],
+                                      need_resources=False, need_strength_and_hardness=False)
+
+    def _make_capital_menu_level_2(self) -> Layer:
+        return self._make_figure_menu(fig.TierOneCapital, [], [], need_resources=False)
 
     def _make_capital_menu_level_3(self) -> Layer:
         return self._make_figure_menu(fig.TierOneCapital, [], [])
@@ -1170,12 +1214,12 @@ class GameUiLayerMaker:
             if not isinstance(figure, figure_type):
                 return
 
-            update_combat_ability(figure)
-            if not need_strength_and_hardness:
-                return
+            if figure_type.MOVES_BUDGET:
+                update_combat_ability(figure)
 
-            update_strength(figure, coord)
-            update_hardness(figure, coord)
+            if need_strength_and_hardness:
+                update_strength(figure, coord)
+                update_hardness(figure, coord)
 
         def update_combat_ability(figure: fig.Figure) -> None:
             if figure.MOVES_BUDGET == 0:
@@ -1201,10 +1245,12 @@ class GameUiLayerMaker:
 
             hardness.set_text(f":  {base}" + (f" + {additional}" if additional > 0 else ""))
 
-        combat_ability = self._append_square_image_and_text_to(stats,
-                                                               self._sprites_loader.load_combat_ability_icon(),
-                                                               text_data.build)
-        synchroniser.append(combat_ability)
+        if figure_type.MOVES_BUDGET:
+            combat_ability = self._append_square_image_and_text_to(stats,
+                                                                   self._sprites_loader.load_combat_ability_icon(),
+                                                                   text_data.build)
+            synchroniser.append(combat_ability)
+
         if not need_strength_and_hardness:
             return update_stats
 

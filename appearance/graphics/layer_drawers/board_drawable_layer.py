@@ -153,4 +153,4 @@ class BoardDrawableLayer(proto.DrawableLayer):
         if other is MISSING:
             return
 
-        self._draw.interest_cell(self._session.figures.locate(other))
+        self._draw.interest_cell(self._session.figures.locate(other), will_pulsate=True)
