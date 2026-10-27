@@ -57,7 +57,7 @@ from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
 from core.game_rules.game_rules_applier import GameRulesApplier
 from core.protocols import GameSession
-from game_session_saver import GameSessionLoader, _TUTORIAL_MAP_PREFIX, GameSessionSaver, TEMP_FILE
+from game_session_saver import GameSessionLoader, TUTORIAL_MAP_PREFIX, GameSessionSaver, TEMP_FILE
 from mathematics.vector import Vector2Int
 from my_types import combine
 from observer import Event
@@ -139,7 +139,7 @@ def load_tutorial(window: Window,
 
     def on_to_next_level_was_pressed() -> None:
         next_tutorial_index = tutorial_index + 1
-        next_level_name = f"{_TUTORIAL_MAP_PREFIX} {next_tutorial_index + 1}.json"
+        next_level_name = f"{TUTORIAL_MAP_PREFIX} {next_tutorial_index + 1}.json"
         scene.switch_to(LoadingScene.make(load_tutorial(window,
                                                         lambda: GameSessionLoader.make(next_level_name, ups).load(),
                                                         next_tutorial_index, ups)))
@@ -227,7 +227,13 @@ def load_tutorial(window: Window,
                       .make_for_tutorial(window, continue_was_pressed.invoke, to_main_menu_was_pressed.invoke,
                                          pause_menu_open_requested.subscriber,
                                          lambda: scene.switch_to(LoadingScene.make(
-                                             load_tutorial(window, make_session, tutorial_index, ups))),
+                                             load_tutorial(
+                                                 window,
+                                                 GameSessionLoader.make(
+                                                     f"{TUTORIAL_MAP_PREFIX} {tutorial_index + 1}.json",
+                                                     ups).load,
+                                                 tutorial_index, ups))
+                                         ),
                                          combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
                                                  lambda: scene.switch_to(LoadingScene.make(
                                                      load_tutorial(window, GameSessionLoader.make(TEMP_FILE, ups).load,

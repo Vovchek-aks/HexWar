@@ -34,6 +34,8 @@ SAVE_FILE = Path("last_save.json")
 TEMP_FILE = Path("_temp.json")
 EDIT_MAP_FILE = Path("_map_from_editor.json")
 
+TUTORIAL_MAP_PREFIX = "Level"
+
 PLAYER_DICT = dict[str, str | list[str] | dict[str, int]]
 BUDGET_DICT = dict[str, int]
 PULLING_CONNECTIONS_DICT = dict[str, str]
@@ -70,8 +72,6 @@ _CELLS = "CELLS"
 _GAME_RULE_STATES = "GAME_RULE_STATES"
 _ABANDONMENTS_SPREADER = "ABANDONMENTS_SPREADER"
 _WAS_ANY_ABANDONMENT_DESTROYED = "WAS_ANY_ABANDONMENT_DESTROYED"
-
-_TUTORIAL_MAP_PREFIX = "Level"
 
 
 @frozen
@@ -315,4 +315,4 @@ def get_tutorials() -> list[str]:
 
 
 def is_tutorial(map_name: str) -> bool:
-    return map_name.startswith(_TUTORIAL_MAP_PREFIX)
+    return map_name.startswith(TUTORIAL_MAP_PREFIX)
