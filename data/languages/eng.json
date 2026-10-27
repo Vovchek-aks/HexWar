@@ -1,0 +1,1123 @@
+{
+  "loading": {
+    "MAP_LOADING": "Map loading...",
+    "INTERMEDIATE_PREPARING": "Intermediate preparation...",
+    "UI_MAKING": "Creating user interface...",
+    "SPRITE_LOADING": "Loading sprites..."
+  },
+  "maps": {
+    "last_save": "Continue...",
+    "Level 1": "Gotland",
+    "Level 2": "Epstein I.",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sicily",
+    "Level 5": "Haiti",
+    "Level 6": "Iceland",
+    "Level 7": "Crete",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagascar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Maps",
+    "CAMPAIGN": "Campaign",
+    "PLAY": "Play",
+    "EXIT": "Exit",
+    "AUTHORS": "Authors",
+    "CYBER_DILF_ROLES": [
+      "Idea author",
+      "Programmer",
+      "Level designer",
+      "Sound designer"
+    ],
+    "DIVAN_ROLES": [
+      "Artist",
+      "Art designer"
+    ],
+    "SETTINGS": "Settings",
+    "PAUSE": "Pause",
+    "CONTINUE": "Continue",
+    "SAVE_AND_QUIT": "Save and quit",
+    "QUIT_WITHOUT_SAVING": "Quit without saving",
+    "RESTART_LEVEL": "Restart",
+    "MAKE_NEW_MAP": "New",
+    "LOAD_EXISTING_MAP": "Open",
+    "MAP_EDITOR": "Map editor",
+    "OPEN_FILE_IN_EXPLORER": "Open in explorer",
+    "SHARE_ONLINE": "Share",
+    "BACK": "Back",
+    "END_TURN_BTN": "End turn",
+    "TO_MOTORIZATION": "Get wheels",
+    "CAPTURE": "Capture",
+    "TO_INFANTRY": "Lose wheels",
+    "ATTACK": "Attack",
+    "INITIATE_PULLING": "Attach",
+    "TERMINATE_PULLING": "Detach",
+    "TO_TALL_CAPITAL": "Elevate",
+    "TO_WIDE_CAPITAL": "Expand",
+    "PURCHASE": "Purchase",
+    "MOBILISE": "Mobilize",
+    "SETTLE": "Settle",
+    "COMBINE": "Combine",
+    "LAUNCH_ORESHNIK": "Launch \"Oreshnik\"",
+    "COST": "Cost",
+    "FLOW": "Flow",
+    "SELECTED_PLAYERS": "Selected players",
+    "NO_PLAYERS_SELECTED": "No players selected!",
+    "YOU_WON": "VICTORY",
+    "TO_NEXT_LEVEL": "Continue",
+    "PAGE": "Page",
+    "NEXT": "Next",
+    "MUSIC_VOLUME": "Music volume",
+    "VOICE_VOLUME": "Voice volume",
+    "EFFECTS_VOLUME": "Effects volume",
+    "SELECTED_LANGUAGE": "Interface language",
+    "GRAPHICS": "Graphics",
+    "SCREEN": "Screen",
+    "FULLSCREEN": "Fullscreen",
+    "WINDOWED": "Windowed",
+    "WIDTH": "Width",
+    "HEIGHT": "Height",
+    "AUDIO": "Audio",
+    "OTHER": "Other",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Bot move animations",
+    "ON": "On",
+    "OFF": "Off",
+    "APPLY": "Apply",
+    "ADD_PLAYER": "Add player",
+    "FILL_HINT": "Fill: Shift + LMB",
+    "PLAYERS_NAME": "Player name",
+    "CLEAR": "Clear",
+    "PLAYERS_TOP": "Top players",
+    "TERRITORIES": "Territories",
+    "ECONOMY": "Eco.",
+    "PLAYERS_MODE": "Players",
+    "PLAYERS_MODE_STATES": "States",
+    "PLAYERS_MODE_RANDOM": "Random",
+    "COUNT": "Count"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Can capture adjacent",
+        "enemy vehicles.",
+        "Can be turned",
+        "into motorized infantry.",
+        "",
+        "All terrain types available."
+      ],
+      "Tank": [
+        "Gains bonus to",
+        "attack and defense from",
+        "adjacent infantry",
+        "and motorized infantry.",
+        "",
+        "Mountains and Swamps unavailable."
+      ],
+      "Artillery": [
+        "Can attack",
+        "enemy positions at",
+        "a range of three tiles.",
+        "Cannot move",
+        "on its own.",
+        "",
+        "Forests, Swamps",
+        "and Deserts unavailable."
+      ],
+      "Bunker": [
+        "Increases defense of",
+        "adjacent infantry.",
+        "",
+        "Forests, Swamps",
+        "and Deserts unavailable."
+      ],
+      "MissileSilo": [
+        "Can launch \"Oreshnik\"",
+        "missiles.",
+        "",
+        "Only plains available."
+      ],
+      "Town": [
+        "Produces dollars.",
+        "Can be turned",
+        "into infantry.",
+        "",
+        "Mountains, Swamps",
+        "and Deserts unavailable."
+      ],
+      "LightFactory": [
+        "Produces ConsGoods,",
+        "consumes dollars.",
+        "",
+        "Mountains, Swamps",
+        "and Deserts unavailable."
+      ],
+      "HeavyFactory": [
+        "Produces HeavyMach,",
+        "consumes ConsGoods",
+        "and dollars.",
+        "",
+        "Swamps and Deserts unavailable."
+      ],
+      "TierOneCapital": [
+        "Increases 2x the",
+        "output of adjacent",
+        "buildings and prevents",
+        "annexation of the encircled",
+        "region it is located in.",
+        "",
+        "Only plains available."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Destroys a weaker",
+        "piece at a distance",
+        "of 3 tiles."
+      ],
+      "HOWITZER_ATTACK": [
+        "Destroys a weaker",
+        "piece at a distance",
+        "of 3 tiles."
+      ],
+      "GRAD_ATTACK": [
+        "Destroys weaker pieces in",
+        "the vicinity of the target tile."
+      ],
+      "TANK_ATTACK": [
+        "Destroys a weaker",
+        "piece nearby."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Attaches the artillery",
+        "to the selected infantry",
+        "or motorized infantry."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Detaches the artillery",
+        "from the attached piece."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Launches an \"Oreshnik\" missile",
+        "at the selected tile and",
+        "its surroundings."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Turns this piece into",
+        "a Tall Capital,",
+        "increasing the output",
+        "bonus for neighbors."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Turns this piece into",
+        "a Wide Capital,",
+        "increasing the output",
+        "bonus radius",
+        "to two tiles."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorbing nearby",
+        "artillery, turns",
+        "this piece into a Howitzer.",
+        "",
+        "Mountains and Swamps unavailable."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorbing nearby",
+        "artillery, turns",
+        "this piece into a Grad.",
+        "",
+        "Only plains available."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Turns this piece",
+        "into a town."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Turns this piece",
+        "into a factory."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Turns this piece",
+        "into a heavy factory."
+      ],
+      "MOBILISE_TOWN": [
+        "Turns this piece",
+        "into infantry."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Turns this piece",
+        "into infantry."
+      ],
+      "INFANTRY_SETTLE": [
+        "Turns this piece",
+        "into a settlement."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Captures a weaker",
+        "piece nearby."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Turns this",
+        "piece into infantry.",
+        "",
+        "All terrain types available."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Turns this piece",
+        "into motorized infantry. ",
+        "",
+        "Mountains, Swamps",
+        "and Deserts unavailable."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Welcome to the",
+          "basic training",
+          "course! By the",
+          "end of it you",
+          "will master the core",
+          "mechanics of the game.",
+          "It all starts with",
+          "a review."
+        ],
+        [
+          "Before you",
+          "lies the battlefield,",
+          "divided into",
+          "separate tiles.",
+          "Each tile",
+          "has its own owner -",
+          "a player, and in",
+          "the tiles stand pieces."
+        ],
+        [
+          "Some tiles",
+          "are occupied by water -",
+          "remember right away:",
+          "pieces cannot",
+          "enter water, it's",
+          "an impassable zone."
+        ],
+        [
+          "To conveniently view",
+          "everything around, move",
+          "the camera with WASD,",
+          "rotate the view using ",
+          "QE, and with the mouse wheel",
+          "zoom in and out",
+          "the camera."
+        ],
+        [
+          "See a piece on the field?",
+          "Click on it with the left",
+          "mouse button - in",
+          "the bottom left corner",
+          "its menu will open."
+        ],
+        [
+          "To close the piece's",
+          "menu press ESC",
+          "- this will deselect",
+          "the selected tile."
+        ],
+        [
+          "Many pieces",
+          "can move",
+          "by jumping to adjacent",
+          "tiles. To jump",
+          "select a piece (LMB)",
+          "and click with the right",
+          "mouse button on",
+          "an adjacent tile",
+          "you want to",
+          "move to."
+        ],
+        [
+          "If a tile",
+          "belongs to another",
+          "player, after the jump",
+          "it will become yours.",
+          "But you cannot",
+          "jump onto a tile",
+          "where your forces already",
+          "are - it's occupied."
+        ],
+        [
+          "Important: if",
+          "on the enemy tile",
+          "you jump to",
+          "an enemy piece",
+          "is already standing - it",
+          "will disappear, and yours",
+          "will take its place."
+        ],
+        [
+          "Each move",
+          "consumes the piece's",
+          "combat ability - see its",
+          "supply in the piece's menu."
+        ],
+        [
+          "Combat ability",
+          "can only be restored",
+          "in one way:",
+          "end the turn and let",
+          "the soldiers rest."
+        ],
+        [
+          "Players take turns,",
+          "so when everyone",
+          "has made their moves,",
+          "control will return",
+          "to you."
+        ],
+        [
+          "And finally - quick",
+          "movement: to avoid",
+          "clicking on every",
+          "tile of the path, hold",
+          "the Shift key, hover",
+          "over a distant tile",
+          "and press RMB. The selected",
+          "piece will plot",
+          "the shortest route itself."
+        ],
+        [
+          "And now let's see",
+          "if you're good",
+          "for anything at all.",
+          "Your first combat",
+          "mission - capture",
+          "the enemy",
+          "capital building."
+        ]
+      ],
+      [
+        [
+          "Now let's talk about",
+          "the numbers that",
+          "decide the outcome of battle.",
+          "Every piece",
+          "has two key",
+          "parameters: attack and",
+          "defense - they're in",
+          "the menu, next to",
+          "combat ability."
+        ],
+        [
+          "The rule is simple:",
+          "if the defense",
+          "of the enemy tile (with",
+          "all bonuses included)",
+          "is higher than",
+          "your piece's attack,",
+          "then you can't jump",
+          "onto that tile."
+        ],
+        [
+          "Besides, all",
+          "pieces project",
+          "their defense onto",
+          "adjacent tiles,",
+          "as if covering",
+          "their comrades' backs."
+        ],
+        [
+          "Click on an enemy",
+          "piece in order",
+          "to see its attack",
+          "or defense in the small",
+          "window at bottom left. If",
+          "there is no window, the selected",
+          "piece has neither attack",
+          "nor defense - an easy target."
+        ],
+        [
+          "And now pay",
+          "attention to the battlefield",
+          "- there are new",
+          "pieces on it: a bunker and",
+          "artillery."
+        ],
+        [
+          "The bunker is a bastion",
+          "of defense: it not",
+          "only has impressive",
+          "defense on its own,",
+          "but also buffs",
+          "the defense of",
+          "adjacent",
+          "infantry."
+        ],
+        [
+          "Artillery strikes",
+          "from afar - it can",
+          "attack the enemy at",
+          "a distance of up to three",
+          "tiles and destroy",
+          "them without direct",
+          "contact."
+        ],
+        [
+          "The bunker, despite ",
+          "all its might,",
+          "is no match for artillery -",
+          "one shot at",
+          "it is enough."
+        ],
+        [
+          "However,",
+          "artillery cannot",
+          "move on",
+          "its own - it needs",
+          "to be attached to infantry.",
+          "Then, when the",
+          "infantry moves, the artillery",
+          "will obediently",
+          "roll along behind."
+        ],
+        [
+          "Note: the attached",
+          "pair can",
+          "make a jump",
+          "only if both",
+          "pieces have enough",
+          "combat ability for it."
+        ],
+        [
+          "And another important",
+          "trick: enemy",
+          "artillery can",
+          "be captured by our",
+          "infantryman. For this",
+          "move the infantry to",
+          "the tile adjacent to the enemy,",
+          "open its menu, press",
+          "the \"Capture\" button and",
+          "click RMB on the enemy",
+          "piece."
+        ],
+        [
+          "But be careful:",
+          "the capture cannot",
+          "be performed if",
+          "next to the target",
+          "there is enemy",
+          "infantry or a bunker -",
+          "they will hinder",
+          "the operation."
+        ],
+        [
+          "And finally - pay",
+          "attention to the swampy",
+          "terrain to the north of",
+          "us. Under no circumstances",
+          "should you bring",
+          "artillery into it - once it",
+          "ends up there, it",
+          "will lose the ability",
+          "to attack the enemy,",
+          "until you",
+          "pull it out of there."
+        ],
+        [
+          "And now deal",
+          "with the enemy on",
+          "this strange",
+          "island - capture its",
+          "artillery and crack open",
+          "the bunkers it",
+          "hides behind."
+        ]
+      ],
+      [
+        [
+          "And now about what",
+          "no army can exist",
+          "without - a solid",
+          "rear. Pieces don't come",
+          "out of thin air, they need",
+          "to be created, and that",
+          "requires resources."
+        ],
+        [
+          "Look in the top left",
+          "corner - your resources",
+          "(dollars and ConsGoods)",
+          "you will see there.",
+          "Each turn they are",
+          "brought to you by producing",
+          "buildings."
+        ],
+        [
+          "Dollars are brought",
+          "by towns.",
+          "ConsGoods are produced",
+          "by factories, spending",
+          "dollars on it."
+        ],
+        [
+          "And finally, the main",
+          "secret of an efficient",
+          "economy - the",
+          "capital building. It",
+          "doubles",
+          "the output",
+          "of all adjacent",
+          "towns and factories,",
+          "while - the resources",
+          "they spend remain",
+          "the same."
+        ],
+        [
+          "Enemy capitals,",
+          "towns and factories",
+          "can be captured",
+          "by infantry - just like",
+          "artillery."
+        ],
+        [
+          "Now let's try",
+          "to spend resources on",
+          "creating a piece. When",
+          "no tile is selected,",
+          "in place of the piece",
+          "menu there are buttons",
+          "for creating pieces - those of",
+          "them for which",
+          "you have enough resources",
+          "are marked with color."
+        ],
+        [
+          "You should have enough",
+          "dollars to create",
+          "a factory - click on",
+          "the corresponding button,",
+          "and then, using RMB,",
+          "select a tile for",
+          "construction."
+        ],
+        [
+          "Creating infantry and",
+          "artillery works",
+          "somewhat differently - they",
+          "can only be built",
+          "next to producing",
+          "buildings."
+        ],
+        [
+          "When you click on",
+          "the infantry creation button,",
+          "the towns next to which",
+          "it can be built",
+          "will be highlighted",
+          "for you."
+        ],
+        [
+          "Note that a piece cannot",
+          "be created on an unsuitable",
+          "terrain type, for example -",
+          "you won't be able to",
+          "build a factory in the mountains,",
+          "but artillery will be",
+          "quite comfortable there."
+        ],
+        [
+          "Also note: many",
+          "pieces require resources",
+          "not only on appearance,",
+          "but also consume them",
+          "each turn. The resources",
+          "consumed by a piece",
+          "each turn can be",
+          "found in its menu."
+        ],
+        [
+          "If at the start of a turn",
+          "there aren't enough resources",
+          "for upkeep, the piece will",
+          "be removed from the field - so",
+          "keep an eye on the Flow."
+        ],
+        [
+          "If a factory lacks",
+          "raw materials, it",
+          "doesn't disappear, but simply",
+          "idles without",
+          "producing output."
+        ],
+        [
+          "Besides the resource stock",
+          "in the top left corner",
+          "the expected growth",
+          "for the next turn is",
+          "also displayed (in",
+          "parentheses), but remember:",
+          "possible idle time",
+          "due to lack of resources",
+          "is not considered",
+          "in this forecast."
+        ],
+        [
+          "Using the knowledge",
+          "you've gained, strengthen",
+          "the economy, gather",
+          "a strong army and",
+          "crush your enemies",
+          "on this beautiful",
+          "island."
+        ]
+      ],
+      [
+        [
+          "A competent commander",
+          "knows how to win not",
+          "only by force, but also",
+          "by cunning. Why",
+          "spill blood where",
+          "you can take yours",
+          "without a fight?"
+        ],
+        [
+          "If you manage",
+          "to encircle a group",
+          "of enemy tiles,",
+          "that is, fully",
+          "cut them off from",
+          "the rest of the enemy's",
+          "possessions, then at",
+          "the end of their turn",
+          "these tiles will be",
+          "annexed by you."
+        ],
+        [
+          "This is very profitable!",
+          "But there is a nuance -",
+          "only tiles not",
+          "controlled by",
+          "the enemy are annexed,",
+          "which, moreover,",
+          "after annexation we",
+          "will be able to control."
+        ],
+        [
+          "Control of tiles is provided",
+          "by capitals and infantry.",
+          "If in the encircled region",
+          "there is an enemy capital,",
+          "then it will not be annexed.",
+          "And conversely, even unencircled",
+          "tiles can be",
+          "annexed, in case",
+          "they are far from",
+          "the nearest capital or",
+          "infantry."
+        ],
+        [
+          "However, it should be noted",
+          "that infantry provides",
+          "control only ",
+          "when it is in",
+          "the same region as",
+          "a capital or else",
+          "(if there is no capital),",
+          "when it is next to",
+          "water - this way it",
+          "gets the ability",
+          "to be supplied by sea."
+        ],
+        [
+          "If the annexation",
+          "does happen,",
+          "then all enemy",
+          "infantry inside",
+          "the encirclement",
+          "is disbanded (the soldiers",
+          "scatter to their",
+          "homes), and all",
+          "the other pieces -",
+          "pass into your",
+          "army safe and sound."
+        ],
+        [
+          "To create encirclements",
+          "it's useful to have",
+          "high mobility.",
+          "Regular infantry can",
+          "get wheels -",
+          "mount",
+          "a transport and",
+          "turn into",
+          "motorized infantry."
+        ],
+        [
+          "This gives a huge",
+          "plus: the supply",
+          "of combat ability for",
+          "motorized infantry is much",
+          "larger than on foot,",
+          "and it can also",
+          "attach to itself",
+          "artillery."
+        ],
+        [
+          "Moreover, motorized",
+          "infantry, just like",
+          "regular infantry,",
+          "provides control over",
+          "tiles - use",
+          "this so as not to lose",
+          "territory for nothing."
+        ],
+        [
+          "But there's also a minus -",
+          "capturing",
+          "enemy pieces",
+          "motorized infantry is no longer",
+          "capable of, for this",
+          "you need specifically on-foot",
+          "soldiers."
+        ],
+        [
+          "This whole island",
+          "is overgrown with dense forest,",
+          "in which our",
+          "artillery is useless.",
+          "The enemy, knowing this, has well",
+          "fortified and brought their",
+          "motorized infantry to",
+          "push us out of here."
+        ],
+        [
+          "Urgently gather some wheels",
+          "and tear their lands",
+          "to shreds."
+        ]
+      ],
+      [
+        [
+          "Now about heavy",
+          "equipment. An enemy",
+          "bunker that infantry",
+          "can't handle,",
+          "can be destroyed",
+          "by a tank."
+        ],
+        [
+          "Tanks, like artillery,",
+          "are allowed to be captured",
+          "by infantry. A tank can",
+          "attack the enemy, but",
+          "only on an adjacent",
+          "tile - point-blank."
+        ],
+        [
+          "A tank's strength grows",
+          "if nearby there is",
+          "infantry or motorized infantry:",
+          "combat comrades cover",
+          "the armor, and the tank's attack and defense",
+          "are increased."
+        ],
+        [
+          "A lone tank,",
+          "meanwhile - is easy",
+          "prey. Even regular",
+          "infantry can",
+          "destroy it."
+        ],
+        [
+          "Creating your own",
+          "tank is no easy task -",
+          "the available means",
+          "won't do here.",
+          "Meet a new",
+          "resource - HeavyMach, it is",
+          "produced by heavy factories,",
+          "spending on it",
+          "dollars and ConsGoods."
+        ],
+        [
+          "A heavy factory, just like",
+          "a factory, gets a bonus",
+          "from adjacency to",
+          "a capital, and",
+          "enemy heavy factories can",
+          "be captured by infantry."
+        ],
+        [
+          "As for the passability",
+          "of tanks - they are one of",
+          "the few able to fight",
+          "in the desert, however in mountains",
+          "and swamps don't expect",
+          "anything from them."
+        ],
+        [
+          "Look at this poor",
+          "island, it has for many",
+          "years been engulfed in eternal",
+          "war - it's time",
+          "to bring order here."
+        ]
+      ],
+      [
+        [
+          "Producing buildings don't always",
+          "have to be built by you.",
+          "Resource producers can",
+          "appear on your",
+          "territories by themselves - we're talking",
+          "about privateers (alternative",
+          "versions of towns,",
+          "factories and heavy factories)."
+        ],
+        [
+          "To appear they require",
+          "unoccupied plains",
+          "and the absence of state",
+          "control (the fewer",
+          "capitals, the more",
+          "privateers)."
+        ],
+        [
+          "Privateers are less efficient",
+          "than productions in your",
+          "possession, since they still",
+          "need to make a profit.",
+          "At the same time, each privateer",
+          "can be purchased - turned",
+          "into a regular producing building."
+        ],
+        [
+          "Another difference - a privateer",
+          "won't tolerate the absence of",
+          "the resources it needs",
+          "for production -",
+          "in case of a deficit it will abandon",
+          "its production."
+        ],
+        [
+          "An abandonment not only",
+          "gratuitously consumes",
+          "the state budget, it also",
+          "infects producing",
+          "buildings nearby."
+        ],
+        [
+          "Starting from this moment",
+          "bunkers located",
+          "at a great distance",
+          "from the front will also",
+          "turn into abandonments -",
+          "no point building them in the rear!"
+        ],
+        [
+          "The good news is",
+          "that abandonments, like all",
+          "buildings you don't need,",
+          "can be demolished by shots",
+          "from tanks and artillery -",
+          "use this to",
+          "prevent their",
+          "spread."
+        ],
+        [
+          "And finally, spare",
+          "infantry can always",
+          "settle - turn",
+          "them into settlements.",
+          "This will help save",
+          "the economy in a difficult",
+          "hour."
+        ]
+      ],
+      [
+        [
+          "The enemy on this island",
+          "knew in advance about our",
+          "arrival and was able to invest heavily",
+          "in static",
+          "defense - luckily for us",
+          "we had our man in",
+          "the western province who",
+          "sabotaged the construction."
+        ],
+        [
+          "Alas, to the east we'll have to",
+          "break through countless",
+          "rows of bunkers. Here a new",
+          "piece will come to our",
+          "aid - the Grad. Spending on each",
+          "shot a bit of ConsGoods",
+          "it destroys 3 targets at once -",
+          "just the thing against dense construction."
+        ],
+        [
+          "Just note that the Grad is an",
+          "imprecise weapon, and exactly the tile",
+          "you're aiming at,",
+          "it will never hit."
+        ],
+        [
+          "The Grad, at that, cannot",
+          "simply be hired - to create",
+          "it you need to combine",
+          "motorized infantry with artillery.",
+          "This transformation requires,",
+          "furthermore, a bit of HeavyMach,",
+          "which we didn't bring along.",
+          "But we're sure you'll find",
+          "a way out of this situation."
+        ],
+        [
+          "And another small thing - our staff",
+          "builders have staged something",
+          "like a strike, so on",
+          "this and the next mission",
+          "you won't be able to create",
+          "new pieces."
+        ]
+      ],
+      [
+        [
+          "Damn these logisticians!",
+          "The request clearly stated -",
+          "deliver a tank to the north of",
+          "the river. Without it, through these",
+          "bunkers, to the enemy capital",
+          "we won't break through. Luckily",
+          "our craftsmen recently",
+          "developed a wonder weapon - the Howitzer."
+        ],
+        [
+          "With the passability of a tank and",
+          "the range of artillery",
+          "this monster has no equal.",
+          "It is obtained by combining",
+          "a tank with artillery, but there's",
+          "a nuance - they didn't deliver",
+          "the artillery to us either. Get out of",
+          "this situation however you know how."
+        ]
+      ],
+      [
+        [
+          "And now let's talk",
+          "seriously - destroying",
+          "the enemy army is not always",
+          "enough for",
+          "a decisive victory.",
+          "If the enemy's economy",
+          "is strong, then after",
+          "defeat they will return",
+          "with increased strength."
+        ],
+        [
+          "To solve this",
+          "problem you",
+          "will need a missile",
+          "silo - it can",
+          "launch missiles under",
+          "the code name",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" is a",
+          "long-range weapon.",
+          "At that, if an enemy",
+          "silo catches your",
+          "eye, know - it",
+          "can be captured",
+          "by infantry and used",
+          "against its former owner."
+        ],
+        [
+          "Launching \"Oreshnik\"",
+          "is possible at any",
+          "enemy tile",
+          "that is at",
+          "a distance of not less than",
+          "ten tiles from",
+          "the silo."
+        ],
+        [
+          "The missile strikes",
+          "not only at",
+          "your chosen",
+          "target, but also",
+          "additionally",
+          "hits six",
+          "random tiles in",
+          "the vicinity."
+        ],
+        [
+          "We managed to establish a foothold on",
+          "the continent, but the landing",
+          "on the island turned out",
+          "to be a complete failure - our",
+          "infantry got stuck in the dense",
+          "forests in the north of the island.",
+          "Here we will need",
+          "\"Oreshnik\" - wipe out their",
+          "capitals on",
+          "Madagascar and then",
+          "the enemy will capitulate."
+        ]
+      ],
+      [
+        [
+          "The basic training",
+          "course is over! Now you",
+          "know everything",
+          "necessary to",
+          "lead your troops to",
+          "victory. And now",
+          "prove it by taking",
+          "the whole island."
+        ],
+        [
+          "Remember: knowledge of mechanics",
+          "- is half the success,",
+          "the second half -",
+          "your quick wits.",
+          "Forward, to victories!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Land",
+    "Mountain": "Mountain",
+    "Forest": "Forest",
+    "Swamp": "Swamp",
+    "Desert": "Desert",
+    "Water": "Water",
+    "Infantry": "Infantry",
+    "Tank": "Tank",
+    "Artillery": "Artillery",
+    "Howitzer": "Howitzer",
+    "Grad": "Grad",
+    "Motorization": "Motorization",
+    "Bunker": "Bunker",
+    "MissileSilo": "Missile Silo",
+    "Town": "Town",
+    "LightFactory": "Light Factory",
+    "HeavyFactory": "Heavy Factory",
+    "TierOneCapital": "Capital",
+    "TallCapital": "Tall Capital",
+    "WideCapital": "Wide Capital",
+    "Settlement": "Settlement",
+    "PrivateLightFactory": "Artisan",
+    "PrivateHeavyFactory": "Private",
+    "Abandonment": "Abandonment"
+  },
+  "resources": {
+    "Dollars": "Dollars",
+    "LightIndustryProducts": "ConsGoods",
+    "HeavyIndustryProducts": "HeavyMach"
+  }
+}

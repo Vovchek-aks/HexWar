@@ -1,0 +1,1123 @@
+{
+  "loading": {
+    "MAP_LOADING": "Indlæser kort...",
+    "INTERMEDIATE_PREPARING": "Mellemforberedelse...",
+    "UI_MAKING": "Opretter brugergrænseflade...",
+    "SPRITE_LOADING": "Indlæser sprites..."
+  },
+  "maps": {
+    "last_save": "Fortsæt...",
+    "Level 1": "Gotland",
+    "Level 2": "Epstein Ø",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sicilien",
+    "Level 5": "Haiti",
+    "Level 6": "Island",
+    "Level 7": "Kreta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaskar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Kort",
+    "CAMPAIGN": "Kampagne",
+    "PLAY": "Spil",
+    "EXIT": "Afslut",
+    "AUTHORS": "Ophavsmænd",
+    "CYBER_DILF_ROLES": [
+      "Idéforfatter",
+      "Programmør",
+      "Leveldesigner",
+      "Lyddesigner"
+    ],
+    "DIVAN_ROLES": [
+      "Kunstner",
+      "Artdesigner"
+    ],
+    "SETTINGS": "Indstillinger",
+    "PAUSE": "Pause",
+    "CONTINUE": "Fortsæt",
+    "SAVE_AND_QUIT": "Gem og afslut",
+    "QUIT_WITHOUT_SAVING": "Afslut uden at gemme",
+    "RESTART_LEVEL": "Genstart",
+    "MAKE_NEW_MAP": "Nyt",
+    "LOAD_EXISTING_MAP": "Åbn",
+    "MAP_EDITOR": "Korteditor",
+    "OPEN_FILE_IN_EXPLORER": "Åbn i Stifinder",
+    "SHARE_ONLINE": "Del",
+    "BACK": "Tilbage",
+    "END_TURN_BTN": "Afslut tur",
+    "TO_MOTORIZATION": "Få hjul",
+    "CAPTURE": "Indtag",
+    "TO_INFANTRY": "Mist hjul",
+    "ATTACK": "Angrib",
+    "INITIATE_PULLING": "Kobl til",
+    "TERMINATE_PULLING": "Kobl fra",
+    "TO_TALL_CAPITAL": "Forhøj",
+    "TO_WIDE_CAPITAL": "Udvid",
+    "PURCHASE": "Køb",
+    "MOBILISE": "Mobiliser",
+    "SETTLE": "Bosæt",
+    "COMBINE": "Kombiner",
+    "LAUNCH_ORESHNIK": "Affyr \"Oreshnik\"",
+    "COST": "Pris",
+    "FLOW": "Balance",
+    "SELECTED_PLAYERS": "Valgte spillere",
+    "NO_PLAYERS_SELECTED": "Ingen spillere valgt!",
+    "YOU_WON": "SEJR",
+    "TO_NEXT_LEVEL": "Fortsæt",
+    "PAGE": "Side",
+    "NEXT": "Næste",
+    "MUSIC_VOLUME": "Musikstyrke",
+    "VOICE_VOLUME": "Stemmestyrke",
+    "EFFECTS_VOLUME": "Effektstyrke",
+    "SELECTED_LANGUAGE": "Grænsefladesprog",
+    "GRAPHICS": "Grafik",
+    "SCREEN": "Skærm",
+    "FULLSCREEN": "Fuldskærm",
+    "WINDOWED": "Vindue",
+    "WIDTH": "Bredde",
+    "HEIGHT": "Højde",
+    "AUDIO": "Lyd",
+    "OTHER": "Andet",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Bot-træksanimationer",
+    "ON": "Til",
+    "OFF": "Fra",
+    "APPLY": "Anvend",
+    "ADD_PLAYER": "Tilføj spiller",
+    "FILL_HINT": "Fyld: Shift + VMB",
+    "PLAYERS_NAME": "Spillernavn",
+    "CLEAR": "Ryd",
+    "PLAYERS_TOP": "Topspillere",
+    "TERRITORIES": "Områder",
+    "ECONOMY": "Økon.",
+    "PLAYERS_MODE": "Spillere",
+    "PLAYERS_MODE_STATES": "Stater",
+    "PLAYERS_MODE_RANDOM": "Tilfældig",
+    "COUNT": "Antal"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Kan indtage et tilstødende",
+        "fjendtligt køretøj.",
+        "Kan omdannes",
+        "til motoriseret infanteri.",
+        "",
+        "Alle terræntyper tilgængelige."
+      ],
+      "Tank": [
+        "Får bonus til",
+        "angreb og forsvar fra",
+        "tilstødende infanteri",
+        "og motoriseret infanteri.",
+        "",
+        "Bjerge og sumpe utilgængelige."
+      ],
+      "Artillery": [
+        "Kan angribe",
+        "fjendtlige stillinger på",
+        "en afstand af tre felter.",
+        "Kan ikke bevæge sig",
+        "selv.",
+        "",
+        "Skove, sumpe",
+        "og ørkener utilgængelige."
+      ],
+      "Bunker": [
+        "Øger forsvaret hos",
+        "tilstødende infanteri.",
+        "",
+        "Skove, sumpe",
+        "og ørkener utilgængelige."
+      ],
+      "MissileSilo": [
+        "Kan affyre \"Oreshnik\"-",
+        "missiler.",
+        "",
+        "Kun sletter tilgængelige."
+      ],
+      "Town": [
+        "Producerer dollars.",
+        "Kan omdannes",
+        "til infanteri.",
+        "",
+        "Bjerge, sumpe",
+        "og ørkener utilgængelige."
+      ],
+      "LightFactory": [
+        "Producerer forbrugsvarer,",
+        "forbruger dollars.",
+        "",
+        "Bjerge, sumpe",
+        "og ørkener utilgængelige."
+      ],
+      "HeavyFactory": [
+        "Producerer tung ind.,",
+        "forbruger forbrugsvarer",
+        "og dollars.",
+        "",
+        "Sumpe og ørkener utilgængelige."
+      ],
+      "TierOneCapital": [
+        "Fordobler",
+        "produktionen hos tilstødende",
+        "bygninger og forhindrer",
+        "annektering af den omringede",
+        "region, den står i.",
+        "",
+        "Kun sletter tilgængelige."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Ødelægger en svagere",
+        "brik på en afstand",
+        "af 3 felter."
+      ],
+      "HOWITZER_ATTACK": [
+        "Ødelægger en svagere",
+        "brik på en afstand",
+        "af 3 felter."
+      ],
+      "GRAD_ATTACK": [
+        "Ødelægger svagere brikker i",
+        "omgivelserne af målfeltet."
+      ],
+      "TANK_ATTACK": [
+        "Ødelægger en svagere",
+        "brik i nærheden."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Kobler artilleriet",
+        "til det valgte infanteri",
+        "eller motoriserede infanteri."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Kobler artilleriet",
+        "fra den tilkoblede brik."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Affyrer en \"Oreshnik\"-missil",
+        "mod det valgte felt og",
+        "dets omgivelser."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Omdanner denne brik til",
+        "en Høj Hovedstad,",
+        "øger produktions-",
+        "bonussen for naboer."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Omdanner denne brik til",
+        "en Bred Hovedstad,",
+        "øger radius for",
+        "produktions-",
+        "bonussen til to felter."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorberer tilstødende",
+        "artilleri og omdanner",
+        "denne brik til en Haubits.",
+        "",
+        "Bjerge og sumpe utilgængelige."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorberer tilstødende",
+        "artilleri og omdanner",
+        "denne brik til en Grad.",
+        "",
+        "Kun sletter tilgængelige."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Omdanner denne brik",
+        "til en by."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Omdanner denne brik",
+        "til en fabrik."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Omdanner denne brik",
+        "til en tung fabrik."
+      ],
+      "MOBILISE_TOWN": [
+        "Omdanner denne brik",
+        "til infanteri."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Omdanner denne brik",
+        "til infanteri."
+      ],
+      "INFANTRY_SETTLE": [
+        "Omdanner denne brik",
+        "til en bosættelse."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Indtager en svagere",
+        "brik i nærheden."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Omdanner denne",
+        "brik til infanteri.",
+        "",
+        "Alle terræntyper tilgængelige."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Omdanner denne brik",
+        "til motoriseret infanteri. ",
+        "",
+        "Bjerge, sumpe",
+        "og ørkener utilgængelige."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Velkommen til",
+          "grunduddannelsen",
+          "for soldater! Når",
+          "den er slut,",
+          "behersker du spillets",
+          "ker nemekanikker.",
+          "Det hele starter med",
+          "et overblik."
+        ],
+        [
+          "Foran dig",
+          "ligger slagmarken,",
+          "opdelt i",
+          "separate felter.",
+          "Hvert felt",
+          "har sin ejer -",
+          "en spiller, og i",
+          "felterne står brikker."
+        ],
+        [
+          "Nogle felter",
+          "er dækket af vand -",
+          "husk det med det samme:",
+          "brikker kan ikke",
+          "gå ud i vand, det er",
+          "en ufremkommelig zone."
+        ],
+        [
+          "For at se",
+          "alt omkring dig bekvemt, flyt",
+          "kameraet med WASD,",
+          "roter visningen med ",
+          "QE, og med museshjulet",
+          "zoom ind og ud",
+          "på kameraet."
+        ],
+        [
+          "Ser du en brik på feltet?",
+          "Klik på den med venstre",
+          "museknap - i",
+          "nederste venstre hjørne",
+          "åbnes dens menu."
+        ],
+        [
+          "For at lukke brikkens",
+          "menu, tryk ESC",
+          "- det fravælger",
+          "det valgte felt."
+        ],
+        [
+          "Mange brikker",
+          "kan bevæge sig",
+          "ved at hoppe til tilstødende",
+          "felter. For at hoppe",
+          "vælg en brik (VMB)",
+          "og klik med højre",
+          "museknap på",
+          "et tilstødende felt,",
+          "som du vil",
+          "flytte til."
+        ],
+        [
+          "Hvis et felt",
+          "tilhører en anden",
+          "spiller, bliver det efter",
+          "hoppet dit.",
+          "Men du kan ikke",
+          "hoppe til et felt,",
+          "hvor dine styrker allerede",
+          "står - det er optaget."
+        ],
+        [
+          "Vigtigt: hvis",
+          "på det fjendtlige felt,",
+          "du hopper til,",
+          "allerede står en fjendtlig",
+          "brik - forsvinder den, og din",
+          "tager dens plads."
+        ],
+        [
+          "Hver flytning",
+          "forbruger brikkens",
+          "kampdygtighed - dens",
+          "forråd ses i brikkens menu."
+        ],
+        [
+          "Kampdygtighed",
+          "kan kun genoprettes",
+          "på én måde:",
+          "afslut turen og lad",
+          "soldaterne hvile."
+        ],
+        [
+          "Spillere skiftes,",
+          "så når alle",
+          "har gjort deres træk,",
+          "vender styringen",
+          "tilbage til dig."
+        ],
+        [
+          "Og til sidst - hurtig",
+          "flytning: for ikke at",
+          "klikke på hvert",
+          "felt på vejen, hold",
+          "Shift nede, peg",
+          "på et fjernt felt",
+          "og tryk HMB. Den valgte",
+          "brik lægger selv",
+          "den korteste rute."
+        ],
+        [
+          "Og lad os nu se,",
+          "om du duer",
+          "til noget som helst.",
+          "Din første kamp-",
+          "mission - indtag",
+          "den fjendtlige",
+          "hovedstadsbygning."
+        ]
+      ],
+      [
+        [
+          "Lad os nu tale om",
+          "tallene, som",
+          "afgør kampens udfald.",
+          "Hver brik",
+          "har to vigtige",
+          "parametre: angreb og",
+          "forsvar - de findes i",
+          "menuen, ved siden af",
+          "kampdygtigheden."
+        ],
+        [
+          "Reglen er enkel:",
+          "hvis forsvaret",
+          "hos det fjendtlige felt (med",
+          "alle bonusser)",
+          "er højere end",
+          "din briks angreb,",
+          "kan du ikke hoppe",
+          "til det felt."
+        ],
+        [
+          "Derudover projicerer",
+          "alle brikker",
+          "deres forsvar på",
+          "tilstødende felter,",
+          "som om de dækker",
+          "kammeraternes rygge."
+        ],
+        [
+          "Klik på en fjendtlig",
+          "brik for at",
+          "se dens angreb",
+          "eller forsvar i det lille",
+          "vindue nederst til venstre. Hvis",
+          "der ikke er noget vindue, har den valgte",
+          "brik hverken angreb",
+          "eller forsvar - et nemt mål."
+        ],
+        [
+          "Og læg nu",
+          "mærke til slagmarken",
+          "- der er nye",
+          "brikker: en bunker og",
+          "artilleri."
+        ],
+        [
+          "Bunkeren er en bastion",
+          "for forsvaret: den har ikke",
+          "kun et imponerende",
+          "forsvar i sig selv,",
+          "men buff er også",
+          "forsvaret hos",
+          "tilstødende",
+          "infanteri."
+        ],
+        [
+          "Artilleriet slår",
+          "på afstand - det kan",
+          "angribe fjenden på",
+          "en afstand af op til tre",
+          "felter og udslette",
+          "ham uden direkte",
+          "kontakt."
+        ],
+        [
+          "Bunkeren, trods ",
+          "al sin magt,",
+          "er ingen hindring for artilleriet -",
+          "et enkelt skud på",
+          "den er nok."
+        ],
+        [
+          "Dog",
+          "kan artilleriet ikke",
+          "bevæge sig",
+          "selv - det skal",
+          "kobles til infanteri.",
+          "Så når",
+          "infanteriet rykker, ruller",
+          "artilleriet lydigt",
+          "bagefter."
+        ],
+        [
+          "Bemærk: det tilkoblede",
+          "par kan",
+          "gøre et hop",
+          "kun hvis begge",
+          "brikker har nok",
+          "kampdygtighed til det."
+        ],
+        [
+          "Og et andet vigtigt",
+          "trick: fjendtligt",
+          "artilleri kan",
+          "indtages af vores",
+          "infanterist. For dette",
+          "før infanteriet til",
+          "feltet ved siden af fjenden,",
+          "åbn dens menu, tryk",
+          "på knappen \"Indtag\" og",
+          "klik HMB på den fjendtlige",
+          "brik."
+        ],
+        [
+          "Men vær forsigtig:",
+          "indtagelsen kan ikke",
+          "udføres, hvis",
+          "ved siden af målet",
+          "der er fjendtligt",
+          "infanteri eller en bunker -",
+          "de vil hindre",
+          "operationen."
+        ],
+        [
+          "Og til sidst - læg",
+          "mærke til det sumpede",
+          "terræn nord for",
+          "os. Under ingen omstændigheder",
+          "skal du føre",
+          "artilleri derind - så snart det",
+          "ender der,",
+          "mister det evnen",
+          "til at angribe fjenden,",
+          "indtil du",
+          "trækker det ud derfra."
+        ],
+        [
+          "Og gør nu op",
+          "med fjenden på",
+          "denne mærkelige",
+          "ø - indtag hans",
+          "artilleri og spræng",
+          "bunkerne, som",
+          "han gemmer sig bag."
+        ]
+      ],
+      [
+        [
+          "Og nu om det,",
+          "uden hvilket ingen hær",
+          "eksisterer - en solid",
+          "baglinje. Brikker opstår ikke",
+          "af den blå luft, de skal",
+          "skabes, og det",
+          "kræver ressourcer."
+        ],
+        [
+          "Kig i øverste venstre",
+          "hjørne - dine ressourcer",
+          "(dollars og forbrugsvarer)",
+          "ser du der.",
+          "Hver tur bringes de",
+          "til dig af producerende",
+          "bygninger."
+        ],
+        [
+          "Dollars bringes",
+          "af byer.",
+          "Forbrugsvarer produceres",
+          "af fabrikker, som bruger",
+          "dollars på det."
+        ],
+        [
+          "Og til sidst, den største",
+          "hemmelighed bag en effektiv",
+          "økonomi - hovedstadens",
+          "bygning. Den",
+          "fordobler",
+          "produktionen",
+          "hos alle tilstødende",
+          "byer og fabrikker,",
+          "samtidig med - de ressourcer,",
+          "de bruger, forbliver",
+          "de samme."
+        ],
+        [
+          "Fjendtlige hovedstæder,",
+          "byer og fabrikker",
+          "kan",
+          "indtages af infanteri",
+          "- præcis som",
+          "artilleri."
+        ],
+        [
+          "Lad os nu prøve",
+          "at bruge ressourcer på",
+          "at skabe en brik. Når",
+          "intet felt er valgt,",
+          "findes på pladsen for brikkens",
+          "menu der knapper",
+          "til at skabe brikker - dem,",
+          "som du",
+          "har nok ressourcer til,",
+          "er markeret med farve."
+        ],
+        [
+          "Du burde have nok",
+          "dollars til at skabe",
+          "en fabrik - klik på",
+          "den tilsvarende knap,",
+          "og vælg derefter, med HMB,",
+          "et felt til",
+          "byggeriet."
+        ],
+        [
+          "At skabe infanteri og",
+          "artilleri fungerer",
+          "lidt anderledes - de",
+          "kan kun bygges",
+          "ved siden af producerende",
+          "bygninger."
+        ],
+        [
+          "Når du klikker på",
+          "knappen til at skabe infanteri,",
+          "markeres de byer,",
+          "som det kan bygges ved siden af,",
+          "for dig."
+        ],
+        [
+          "Bemærk, at en brik ikke",
+          "kan skabes på uegnet",
+          "terræn, for eksempel -",
+          "du kan ikke",
+          "bygge en fabrik i bjergene,",
+          "men artilleri vil have det",
+          "ganske behageligt der."
+        ],
+        [
+          "Bemærk også: mange",
+          "brikker kræver ressourcer",
+          "ikke kun ved fremkomsten,",
+          "men forbruger dem også",
+          "hver tur. De ressourcer,",
+          "som en brik",
+          "forbruger hver tur, kan",
+          "findes i dens menu."
+        ],
+        [
+          "Hvis der i starten af en tur",
+          "ikke er nok ressourcer",
+          "til vedligeholdelsen, fjernes",
+          "brikken fra feltet - så",
+          "hold øje med balancen."
+        ],
+        [
+          "Hvis en fabrik mangler",
+          "råvarer,",
+          "forsvinder den ikke, men",
+          "står blot stille uden",
+          "at producere."
+        ],
+        [
+          "Ud over ressourcebeholdningen",
+          "i øverste venstre hjørne",
+          "vises også den forventede",
+          "vækst til næste tur",
+          "(i",
+          "parenteser), men husk:",
+          "mulig stilstand",
+          "på grund af ressourcemangel",
+          "tages ikke med i",
+          "denne prognose."
+        ],
+        [
+          "Brug den viden,",
+          "du har fået, styrk",
+          "økonomien, saml",
+          "en stærk hær og",
+          "knus dine fjender",
+          "på denne smukke",
+          "ø."
+        ]
+      ],
+      [
+        [
+          "En dygtig kommandant",
+          "kan vinde ikke kun",
+          "med magt, men også",
+          "med list. Hvorfor",
+          "spilde blod, hvor",
+          "du kan tage dit",
+          "uden kamp?"
+        ],
+        [
+          "Hvis det lykkes",
+          "dig at omringe en gruppe",
+          "fjendtlige felter,",
+          "det vil sige helt",
+          "skære dem af fra",
+          "resten af fjendens",
+          "ejendele,",
+          "så vil ved",
+          "slutningen af hans tur",
+          "disse felter blive",
+          "annekteret af dig."
+        ],
+        [
+          "Det er meget fordelagtigt!",
+          "Men der er en hage -",
+          "kun felter, der ikke",
+          "kontrolleres af",
+          "fjenden, annekteres,",
+          "som vi desuden",
+          "efter annekteringen",
+          "vil kunne kontrollere."
+        ],
+        [
+          "Kontrol over felter sikres",
+          "af hovedstæder og infanteri.",
+          "Hvis der i den omringede region",
+          "er en fjendtlig hovedstad,",
+          "bliver den ikke annekteret.",
+          "Og omvendt kan selv ikke-omringede",
+          "felter",
+          "annekteres, hvis",
+          "de er langt fra",
+          "den nærmeste hovedstad eller",
+          "infanteri."
+        ],
+        [
+          "Det bør dog bemærkes,",
+          "at infanteri kun giver",
+          "kontrol ",
+          "når det er i",
+          "samme region som",
+          "en hovedstad, eller alternativt",
+          "(hvis der ikke er nogen hovedstad),",
+          "når det er ved siden af",
+          "vand - så får det",
+          "evnen",
+          "til at blive forsynet ad søvejen."
+        ],
+        [
+          "Hvis annekteringen",
+          "faktisk sker,",
+          "opløses alt fjendtligt",
+          "infanteri inden for",
+          "omringningen",
+          "(soldaterne",
+          "spredes til deres",
+          "hjem), og alle",
+          "andre brikker -",
+          "går over i din",
+          "hær helt uskadte."
+        ],
+        [
+          "For at skabe omringninger",
+          "er det nyttigt at have",
+          "høj mobilitet.",
+          "Almindeligt infanteri kan",
+          "få hjul -",
+          "sætte sig op på",
+          "en transport og",
+          "omdannes til",
+          "motoriseret infanteri."
+        ],
+        [
+          "Det giver en enorm",
+          "fordel: forrådet",
+          "af kampdygtighed hos",
+          "motoriseret infanteri er meget",
+          "større end til fods,",
+          "og det kan også",
+          "koble til sig",
+          "artilleri."
+        ],
+        [
+          "Desuden giver motoriseret",
+          "infanteri, præcis som",
+          "almindeligt infanteri,",
+          "kontrol over",
+          "felter - brug",
+          "det for ikke at miste",
+          "territorium forgæves."
+        ],
+        [
+          "Men der er også en ulempe -",
+          "at indtage",
+          "fjendtlige brikker",
+          "er motoriseret infanteri ikke længere",
+          "i stand til, for det",
+          "kræves netop",
+          "soldater til fods."
+        ],
+        [
+          "Hele denne ø",
+          "er overgroet med tæt skov,",
+          "hvori vores",
+          "artilleri er ubrugeligt.",
+          "Fjenden, som ved det, har",
+          "befæstet sig godt og bragt sit",
+          "motoriserede infanteri for",
+          "at presse os ud herfra."
+        ],
+        [
+          "Saml hurtigt nogle hjul",
+          "og flå deres lande",
+          "i stumper."
+        ]
+      ],
+      [
+        [
+          "Nu om tungt",
+          "materiel. En fjendtlig",
+          "bunker, som infanteriet",
+          "ikke klarer,",
+          "kan ødelægges",
+          "af en kampvogn."
+        ],
+        [
+          "Kampvogne, præcis som artilleri,",
+          "må indtages",
+          "af infanteri. En kampvogn kan",
+          "angribe fjenden, men",
+          "kun på et tilstødende",
+          "felt - på klods hold."
+        ],
+        [
+          "En kampvogns styrke vokser,",
+          "hvis der i nærheden er",
+          "infanteri eller motoriseret infanteri:",
+          "kammeraterne dækker",
+          "panseret, og kampvognens angreb og forsvar",
+          "øges."
+        ],
+        [
+          "En ensom kampvogn,",
+          "derimod - er et nemt",
+          "bytte. Selv almindeligt",
+          "infanteri kan",
+          "ødelægge den."
+        ],
+        [
+          "At skabe sin egen",
+          "kampvogn er ingen nem opgave -",
+          "med de tilgængelige midler",
+          "går det ikke.",
+          "Mød en ny",
+          "ressource - tung ind., den",
+          "produceres af tunge fabrikker,",
+          "som bruger",
+          "dollars og forbrugsvarer på det."
+        ],
+        [
+          "En tung fabrik, præcis som",
+          "en fabrik, får en bonus",
+          "fra nærhed til",
+          "en hovedstad, og",
+          "fjendtlige tunge fabrikker kan",
+          "indtages af infanteri."
+        ],
+        [
+          "Hvad angår fremkommeligheden",
+          "for kampvogne - de er blandt",
+          "de få, der kan kæmpe",
+          "i ørkenen, dog i bjerge",
+          "og sumpe skal du ikke forvente",
+          "noget af dem."
+        ],
+        [
+          "Se på denne stakkels",
+          "ø, den har i mange",
+          "år været opslugt af evig",
+          "krig - det er tid",
+          "til at skabe orden her."
+        ]
+      ],
+      [
+        [
+          "Producerende bygninger behøver ikke",
+          "altid bygges af dig.",
+          "Ressourceproducenter kan",
+          "dukke op af sig selv på dine",
+          "territorier - vi taler",
+          "om privateers (alternative",
+          "versioner af byer,",
+          "fabrikker og tunge fabrikker)."
+        ],
+        [
+          "For at dukke op kræver de",
+          "ubemandede sletter",
+          "og fravær af statslig",
+          "kontrol (jo færre",
+          "hovedstæder, desto flere",
+          "privateers)."
+        ],
+        [
+          "Privateers er mindre effektive",
+          "end produktioner i din",
+          "besiddelse, da de alligevel",
+          "skal tjene penge.",
+          "Samtidig kan hver privateer",
+          "købes - omdannes",
+          "til en almindelig producerende bygning."
+        ],
+        [
+          "En anden forskel - en privateer",
+          "tolererer ikke manglen på",
+          "de ressourcer, den har",
+          "brug for til produktion -",
+          "ved underskud opgiver den",
+          "sin produktion."
+        ],
+        [
+          "En forladthed forbruger ikke kun",
+          "gratis",
+          "statsbudgettet, den",
+          "smitter også producerende",
+          "bygninger i nærheden."
+        ],
+        [
+          "Fra dette øjeblik",
+          "vil også bunkere,",
+          "der ligger på stor afstand",
+          "fra fronten,",
+          "forvandles til forladtheder -",
+          "ingen grund til at bygge dem i baglandet!"
+        ],
+        [
+          "Den gode nyhed er,",
+          "at forladtheder, præcis som alle",
+          "bygninger, du ikke har brug for,",
+          "kan rives ned med skud",
+          "fra kampvogne og artilleri -",
+          "brug dette til",
+          "at forhindre deres",
+          "spredning."
+        ],
+        [
+          "Og til sidst kan overskydende",
+          "infanteri altid",
+          "bosætte sig - omdannes",
+          "til bosættelser.",
+          "Det hjælper med at redde",
+          "økonomien i en svær",
+          "stund."
+        ]
+      ],
+      [
+        [
+          "Fjenden på denne ø",
+          "vidste på forhånd om vores",
+          "ankomst og kunne investere stort",
+          "i statisk",
+          "forsvar - heldigvis for os",
+          "havde vi vores mand i",
+          "den vestlige provins, som",
+          "saboterede byggeriet."
+        ],
+        [
+          "Ak, mod øst må vi",
+          "bryde gennem utallige",
+          "rækker af bunkere. Her kommer en ny",
+          "brik os til",
+          "hjælp - Graden. Ved at bruge lidt forbrugsvarer",
+          "per skud",
+          "udsletter den 3 mål ad gangen -",
+          "netop hvad der er brug for mod tæt bebyggelse."
+        ],
+        [
+          "Bemærk blot, at Graden er et",
+          "upålideligt våben, og præcis det felt,",
+          "du sigter på,",
+          "vil den aldrig ramme."
+        ],
+        [
+          "Graden kan desuden ikke",
+          "bare hyres - for at skabe",
+          "den skal du kombinere",
+          "motoriseret infanteri med artilleri.",
+          "Denne forvandling kræver",
+          "desuden lidt tung ind.,",
+          "som vi ikke tog med.",
+          "Men vi er sikre på, at du finder",
+          "en vej ud af denne situation."
+        ],
+        [
+          "Og en anden lille ting - vores",
+          "byggere har arrangeret noget",
+          "som en strejke, så ved",
+          "denne og næste mission",
+          "kan du ikke skabe",
+          "nye brikker."
+        ]
+      ],
+      [
+        [
+          "Forbandede logistikere!",
+          "I anmodningen stod der klart -",
+          "lever en kampvogn nord for",
+          "floden. Uden den, gennem disse",
+          "bunkere, til den fjendtlige hovedstad",
+          "kommer vi ikke igennem. Heldigvis",
+          "har vores håndværkere for nylig",
+          "udviklet et mirakelvåben - Haubitsen."
+        ],
+        [
+          "Med en kampvogns fremkommelighed og",
+          "artilleriets rækkevidde",
+          "har dette monster sin lige.",
+          "Den opnås ved at kombinere",
+          "en kampvogn med artilleri, men der er",
+          "en hage - artilleriet blev",
+          "heller ikke leveret til os. klare dig",
+          "ud af denne situation, som du ved."
+        ]
+      ],
+      [
+        [
+          "Og lad os nu tale",
+          "alvorligt - at udslette",
+          "den fjendtlige hær er ikke altid",
+          "nok til",
+          "en afgørende sejr.",
+          "Hvis fjendens økonomi",
+          "er stærk, så kommer de efter",
+          "nederlaget tilbage",
+          "med øget styrke."
+        ],
+        [
+          "For at løse dette",
+          "problem skal du",
+          "bruge en raket-",
+          "silo - den kan",
+          "affyre raketter under",
+          "kodenavnet",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" er et",
+          "langdistancevåben.",
+          "Desuden, hvis en fjendtlig",
+          "silo fanger dit",
+          "øje, vid - den",
+          "kan indtages",
+          "af infanteri og bruges",
+          "mod sin tidligere ejer."
+        ],
+        [
+          "Affyring af \"Oreshnik\"",
+          "er mulig mod ethvert",
+          "fjendtligt felt,",
+          "der er på",
+          "en afstand af ikke mindre end",
+          "ti felter fra",
+          "siloen."
+        ],
+        [
+          "Raketten slår",
+          "ikke kun mod",
+          "det mål, du har",
+          "valgt, men",
+          "derudover",
+          "rammer den seks",
+          "tilfældige felter i",
+          "omgivelserne."
+        ],
+        [
+          "Vi lykkedes med at etablere os på",
+          "kontinentet, men landgangen",
+          "på øen viste sig",
+          "at være en total fiasko - vores",
+          "infanteri sad fast i de tætte",
+          "skove i den nordlige del af øen.",
+          "Her får vi brug for",
+          "\"Oreshnik\" - udslet deres",
+          "hovedstæder på",
+          "Madagaskar, og så",
+          "kapitulerer fjenden."
+        ]
+      ],
+      [
+        [
+          "Grunduddannelsen",
+          "er slut! Nu",
+          "ved du alt,",
+          "der er nødvendigt for",
+          "at føre dine tropper til",
+          "sejr. Og bevis det nu",
+          "ved at tage",
+          "hele øen."
+        ],
+        [
+          "Husk: kendskab til mekanikkerne",
+          "- er halvdelen af succesen,",
+          "den anden halvdel -",
+          "din snilde.",
+          "Fremad, mod sejre!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Slette",
+    "Mountain": "Bjerg",
+    "Forest": "Skov",
+    "Swamp": "Sump",
+    "Desert": "Ørken",
+    "Water": "Vand",
+    "Infantry": "Infanteri",
+    "Tank": "Kampvogn",
+    "Artillery": "Artilleri",
+    "Howitzer": "Haubits",
+    "Grad": "Grad",
+    "Motorization": "Motorisering",
+    "Bunker": "Bunker",
+    "MissileSilo": "Raketsilo",
+    "Town": "By",
+    "LightFactory": "Let fabrik",
+    "HeavyFactory": "Tung fabrik",
+    "TierOneCapital": "Hovedstad",
+    "TallCapital": "Høj Hovedstad",
+    "WideCapital": "Bred Hovedstad",
+    "Settlement": "Bosættelse",
+    "PrivateLightFactory": "Håndværker",
+    "PrivateHeavyFactory": "Privat",
+    "Abandonment": "Forladthed"
+  },
+  "resources": {
+    "Dollars": "Dollars",
+    "LightIndustryProducts": "Forbrugsvarer",
+    "HeavyIndustryProducts": "Tung ind."
+  }
+}

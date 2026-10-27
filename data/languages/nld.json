@@ -1,0 +1,1124 @@
+{
+  "loading": {
+    "MAP_LOADING": "Kaart laden...",
+    "INTERMEDIATE_PREPARING": "Tussentijdse voorbereiding...",
+    "UI_MAKING": "Gebruikersinterface maken...",
+    "SPRITE_LOADING": "Sprites laden..."
+  },
+  "maps": {
+    "last_save": "Doorgaan...",
+    "Level 1": "Gotland",
+    "Level 2": "Epstein Eil.",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sicilië",
+    "Level 5": "Haïti",
+    "Level 6": "IJsland",
+    "Level 7": "Kreta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaskar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Kaarten",
+    "CAMPAIGN": "Campagne",
+    "PLAY": "Spelen",
+    "EXIT": "Afsluiten",
+    "AUTHORS": "Auteurs",
+    "CYBER_DILF_ROLES": [
+      "Idee-auteur",
+      "Programmeur",
+      "Leveldesigner",
+      "Geluidsontwerper"
+    ],
+    "DIVAN_ROLES": [
+      "Kunstenaar",
+      "Artdesigner"
+    ],
+    "SETTINGS": "Instellingen",
+    "PAUSE": "Pauze",
+    "CONTINUE": "Doorgaan",
+    "SAVE_AND_QUIT": "Opslaan en afsluiten",
+    "QUIT_WITHOUT_SAVING": "Afsluiten zonder opslaan",
+    "RESTART_LEVEL": "Opnieuw",
+    "MAKE_NEW_MAP": "Nieuw",
+    "LOAD_EXISTING_MAP": "Openen",
+    "MAP_EDITOR": "Kaarteditor",
+    "OPEN_FILE_IN_EXPLORER": "Openen in Verkenner",
+    "SHARE_ONLINE": "Delen",
+    "BACK": "Terug",
+    "END_TURN_BTN": "Beurt beëindigen",
+    "TO_MOTORIZATION": "Wielen krijgen",
+    "CAPTURE": "Innemen",
+    "TO_INFANTRY": "Wielen verliezen",
+    "ATTACK": "Aanvallen",
+    "INITIATE_PULLING": "Aankoppelen",
+    "TERMINATE_PULLING": "Afkoppelen",
+    "TO_TALL_CAPITAL": "Verhogen",
+    "TO_WIDE_CAPITAL": "Uitbreiden",
+    "PURCHASE": "Kopen",
+    "MOBILISE": "Mobiliseren",
+    "SETTLE": "Vestigen",
+    "COMBINE": "Combineren",
+    "LAUNCH_ORESHNIK": "\"Oreshnik\" lanceren",
+    "COST": "Kosten",
+    "FLOW": "Balans",
+    "SELECTED_PLAYERS": "Geselecteerde spelers",
+    "NO_PLAYERS_SELECTED": "Geen spelers geselecteerd!",
+    "YOU_WON": "OVERWINNING",
+    "TO_NEXT_LEVEL": "Doorgaan",
+    "PAGE": "Pagina",
+    "NEXT": "Volgende",
+    "MUSIC_VOLUME": "Muziekvolume",
+    "VOICE_VOLUME": "Stemvolume",
+    "EFFECTS_VOLUME": "Effectvolume",
+    "SELECTED_LANGUAGE": "Interfacetaal",
+    "GRAPHICS": "Grafisch",
+    "SCREEN": "Scherm",
+    "FULLSCREEN": "Volledig scherm",
+    "WINDOWED": "Venster",
+    "WIDTH": "Breedte",
+    "HEIGHT": "Hoogte",
+    "AUDIO": "Audio",
+    "OTHER": "Overig",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Botzet-animaties",
+    "ON": "Aan",
+    "OFF": "Uit",
+    "APPLY": "Toepassen",
+    "ADD_PLAYER": "Speler toevoegen",
+    "FILL_HINT": "Vullen: Shift + LMB",
+    "PLAYERS_NAME": "Spelernaam",
+    "CLEAR": "Wissen",
+    "PLAYERS_TOP": "Topspelers",
+    "TERRITORIES": "Gebieden",
+    "ECONOMY": "Econ.",
+    "PLAYERS_MODE": "Spelers",
+    "PLAYERS_MODE_STATES": "Staten",
+    "PLAYERS_MODE_RANDOM": "Willekeurig",
+    "COUNT": "Aantal"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Kan een aangrenzend",
+        "vijandelijk voertuig innemen.",
+        "Kan worden omgezet",
+        "in gemotoriseerde infanterie.",
+        "",
+        "Alle terreintypes beschikbaar."
+      ],
+      "Tank": [
+        "Krijgt bonus op",
+        "aanval en verdediging van",
+        "aangrenzende infanterie",
+        "en gemotoriseerde infanterie.",
+        "",
+        "Bergen en moerassen niet beschikbaar."
+      ],
+      "Artillery": [
+        "Kan vijandelijke",
+        "stellingen aanvallen op",
+        "een bereik van drie vakken.",
+        "Kan niet zelfstandig",
+        "bewegen.",
+        "",
+        "Bossen, moerassen",
+        "en woestijnen niet beschikbaar."
+      ],
+      "Bunker": [
+        "Verhoogt de verdediging van",
+        "aangrenzende infanterie.",
+        "",
+        "Bossen, moerassen",
+        "en woestijnen niet beschikbaar."
+      ],
+      "MissileSilo": [
+        "Kan \"Oreshnik\"-",
+        "raketten lanceren.",
+        "",
+        "Alleen vlaktes beschikbaar."
+      ],
+      "Town": [
+        "Produceert dollars.",
+        "Kan worden omgezet",
+        "in infanterie.",
+        "",
+        "Bergen, moerassen",
+        "en woestijnen niet beschikbaar."
+      ],
+      "LightFactory": [
+        "Produceert consumptiegoederen,",
+        "verbruikt dollars.",
+        "",
+        "Bergen, moerassen",
+        "en woestijnen niet beschikbaar."
+      ],
+      "HeavyFactory": [
+        "Produceert zware ind.,",
+        "verbruikt consumptiegoederen",
+        "en dollars.",
+        "",
+        "Moerassen en woestijnen niet beschikbaar."
+      ],
+      "TierOneCapital": [
+        "Verdubbelt de",
+        "productie van aangrenzende",
+        "gebouwen en voorkomt",
+        "annexatie van de omsingelde",
+        "regio waarin het staat.",
+        "",
+        "Alleen vlaktes beschikbaar."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Vernietigt een zwakker",
+        "stuk op een afstand",
+        "van 3 vakken."
+      ],
+      "HOWITZER_ATTACK": [
+        "Vernietigt een zwakker",
+        "stuk op een afstand",
+        "van 3 vakken."
+      ],
+      "GRAD_ATTACK": [
+        "Vernietigt zwakkere stukken in",
+        "de omgeving van het doelvak."
+      ],
+      "TANK_ATTACK": [
+        "Vernietigt een zwakker",
+        "stuk in de buurt."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Koppelt de artillerie",
+        "aan de geselecteerde infanterie",
+        "of gemotoriseerde infanterie."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Koppelt de artillerie",
+        "los van het aangekoppelde stuk."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Lanceert een \"Oreshnik\"-raket",
+        "op het geselecteerde vak en",
+        "de omgeving ervan."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Verandert dit stuk in",
+        "een Hoge Hoofdstad,",
+        "verhoogt de productie-",
+        "bonus voor buren."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Verandert dit stuk in",
+        "een Brede Hoofdstad,",
+        "verhoogt de straal van de",
+        "productie-",
+        "bonus naar twee vakken."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorbeert nabije",
+        "artillerie en verandert",
+        "dit stuk in een Houwitser.",
+        "",
+        "Bergen en moerassen niet beschikbaar."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorbeert nabije",
+        "artillerie en verandert",
+        "dit stuk in een Grad.",
+        "",
+        "Alleen vlaktes beschikbaar."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Verandert dit stuk",
+        "in een stad."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Verandert dit stuk",
+        "in een fabriek."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Verandert dit stuk",
+        "in een zware fabriek."
+      ],
+      "MOBILISE_TOWN": [
+        "Verandert dit stuk",
+        "in infanterie."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Verandert dit stuk",
+        "in infanterie."
+      ],
+      "INFANTRY_SETTLE": [
+        "Verandert dit stuk",
+        "in een nederzetting."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Neemt een zwakker",
+        "stuk in de buurt in."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Verandert dit",
+        "stuk in infanterie.",
+        "",
+        "Alle terreintypes beschikbaar."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Verandert dit stuk",
+        "in gemotoriseerde infanterie. ",
+        "",
+        "Bergen, moerassen",
+        "en woestijnen niet beschikbaar."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Welkom bij de",
+          "basistraining",
+          "voor soldaten! Aan",
+          "het einde ervan",
+          "beheers je de",
+          "kernmechanieken van het spel.",
+          "Alles begint met",
+          "een overzicht."
+        ],
+        [
+          "Voor je",
+          "ligt het slagveld,",
+          "verdeeld in",
+          "afzonderlijke vakken.",
+          "Elk vak",
+          "heeft zijn eigenaar -",
+          "een speler, en in",
+          "de vakken staan stukken."
+        ],
+        [
+          "Sommige vakken",
+          "zijn bezet door water -",
+          "onthoud meteen:",
+          "stukken kunnen",
+          "geen water betreden, het is",
+          "een onbegaanbare zone."
+        ],
+        [
+          "Om alles",
+          "comfortabel te bekijken, beweeg",
+          "de camera met WASD,",
+          "draai het zicht met ",
+          "QE, en met het muiswiel",
+          "zoom je in en uit",
+          "op de camera."
+        ],
+        [
+          "Zie je een stuk op het veld?",
+          "Klik erop met de linker",
+          "muisknop - links",
+          "in de onderhoek",
+          "opent het menu."
+        ],
+        [
+          "Om het menu van het stuk",
+          "te sluiten druk je ESC",
+          "- dit deselecteert",
+          "het gekozen vak."
+        ],
+        [
+          "Veel stukken",
+          "kunnen bewegen",
+          "door naar aangrenzende",
+          "vakken te springen. Om te springen",
+          "selecteer je een stuk (LMB)",
+          "en klik je met de rechter",
+          "muisknop op",
+          "een aangrenzend vak",
+          "waar je",
+          "naartoe wilt."
+        ],
+        [
+          "Als een vak",
+          "aan een andere",
+          "speler toebehoort, wordt het na",
+          "de sprong van jou.",
+          "Maar je kunt niet",
+          "op een vak springen",
+          "waar je troepen al",
+          "staan - het is bezet."
+        ],
+        [
+          "Belangrijk: als",
+          "op het vijandelijke vak",
+          "waar je naartoe springt",
+          "al een vijandelijk stuk",
+          "staat - het",
+          "verdwijnt, en het jouwe",
+          "neemt zijn plaats in."
+        ],
+        [
+          "Elke beweging",
+          "verbruikt de",
+          "gevechtscapaciteit van het stuk - de voorraad",
+          "zie je in het menu van het stuk."
+        ],
+        [
+          "Gevechtscapaciteit",
+          "kan slechts op één",
+          "manier worden hersteld:",
+          "beëindig de beurt en laat",
+          "de soldaten uitrusten."
+        ],
+        [
+          "Spelers spelen om de beurt,",
+          "dus wanneer iedereen",
+          "zijn zetten heeft gedaan,",
+          "komt de besturing",
+          "bij jou terug."
+        ],
+        [
+          "En tot slot - snelle",
+          "beweging: om niet",
+          "op elk vak van het pad",
+          "te klikken, houd",
+          "Shift ingedrukt, wijs",
+          "een ver vak aan",
+          "en druk op RMB. Het geselecteerde",
+          "stuk legt zelf",
+          "de kortste route aan."
+        ],
+        [
+          "En laten we nu kijken",
+          "of je überhaupt",
+          "ergens goed voor bent.",
+          "Je eerste gevechts-",
+          "opdracht - neem",
+          "het gebouw",
+          "van de vijandelijke hoofdstad in."
+        ]
+      ],
+      [
+        [
+          "Laten we het nu hebben over",
+          "de getallen die",
+          "de uitkomst van de strijd bepalen.",
+          "Elk stuk",
+          "heeft twee belangrijke",
+          "parameters: aanval en",
+          "verdediging - ze staan in",
+          "het menu, naast",
+          "de gevechtscapaciteit."
+        ],
+        [
+          "De regel is simpel:",
+          "als de verdediging",
+          "van het vijandelijke vak (met",
+          "alle bonussen)",
+          "hoger is dan",
+          "de aanval van jouw stuk,",
+          "kun je niet op",
+          "dat vak springen."
+        ],
+        [
+          "Bovendien projecteren",
+          "alle stukken",
+          "hun verdediging op",
+          "aangrenzende vakken,",
+          "alsof ze de ruggen",
+          "van kameraden dekken."
+        ],
+        [
+          "Klik op een vijandelijk",
+          "stuk om",
+          "zijn aanval",
+          "of verdediging te zien in het kleine",
+          "venster linksonder. Is",
+          "er geen venster, dan heeft het",
+          "geselecteerde stuk noch aanval",
+          "noch verdediging - een makkelijk doelwit."
+        ],
+        [
+          "En let nu",
+          "op het slagveld",
+          "- er zijn nieuwe",
+          "stukken: een bunker en",
+          "artillerie."
+        ],
+        [
+          "De bunker is een bolwerk",
+          "van verdediging: hij heeft niet",
+          "alleen zelf een indrukwekkende",
+          "verdediging,",
+          "maar bufft ook",
+          "de verdediging van",
+          "aangrenzende",
+          "infanterie."
+        ],
+        [
+          "Artillerie slaat",
+          "van ver - ze kan",
+          "de vijand aanvallen op",
+          "een afstand tot drie",
+          "vakken en hem vernietigen",
+          "zonder direct",
+          "contact."
+        ],
+        [
+          "De bunker, ondanks ",
+          "al zijn macht,",
+          "is geen obstakel voor artillerie -",
+          "één schot erop",
+          "volstaat."
+        ],
+        [
+          "Echter,",
+          "artillerie kan niet",
+          "zelfstandig",
+          "bewegen - ze moet",
+          "aan infanterie worden gekoppeld.",
+          "Dan, wanneer de",
+          "infanterie beweegt, rolt",
+          "de artillerie gehoorzaam",
+          "achteraan."
+        ],
+        [
+          "Let op: het aangekoppelde",
+          "paar kan",
+          "een sprong maken",
+          "alleen als beide",
+          "stukken genoeg",
+          "gevechtscapaciteit daarvoor hebben."
+        ],
+        [
+          "En nog een belangrijke",
+          "truc: vijandelijke",
+          "artillerie kan",
+          "door onze infanterist",
+          "worden ingenomen. Daarvoor",
+          "breng de infanterie naar",
+          "het vak naast de vijand,",
+          "open het menu, druk",
+          "op de knop \"Innemen\" en",
+          "klik met RMB op het vijandelijke",
+          "stuk."
+        ],
+        [
+          "Maar wees voorzichtig:",
+          "de inname kan niet",
+          "worden uitgevoerd als",
+          "naast het doel",
+          "vijandelijke",
+          "infanterie of een bunker staat -",
+          "ze zullen",
+          "de operatie hinderen."
+        ],
+        [
+          "En tot slot - let",
+          "op het moerassige",
+          "terrein ten noorden van",
+          "ons. Onder geen beding",
+          "moet je artillerie",
+          "daarheen brengen - zodra ze",
+          "daar belandt,",
+          "verliest ze het vermogen",
+          "de vijand aan te vallen,",
+          "totdat je haar",
+          "eruit haalt."
+        ],
+        [
+          "En reken nu",
+          "af met de vijand op",
+          "dit vreemde",
+          "eiland - neem zijn",
+          "artillerie in en kraak",
+          "de bunkers waarachter",
+          "hij zich verschuilt."
+        ]
+      ],
+      [
+        [
+          "En nu over datgene",
+          "zonder wat geen leger",
+          "bestaat - een solide",
+          "achterhoede. Stukken ontstaan niet",
+          "uit het niets, ze moeten",
+          "worden gecreëerd, en dat",
+          "vereist grondstoffen."
+        ],
+        [
+          "Kijk in de linkerbovenhoek",
+          "- je grondstoffen",
+          "(dollars en consumptiegoederen)",
+          "zie je daar.",
+          "Elke beurt worden ze je",
+          "gebracht door producerende",
+          "gebouwen."
+        ],
+        [
+          "Dollars worden gebracht",
+          "door steden.",
+          "Consumptiegoederen worden geproduceerd",
+          "door fabrieken, die daarvoor",
+          "dollars uitgeven."
+        ],
+        [
+          "En tot slot, het belangrijkste",
+          "geheim van een efficiënte",
+          "economie - het gebouw",
+          "van de hoofdstad. Het",
+          "verdubbelt",
+          "de productie",
+          "van alle aangrenzende",
+          "steden en fabrieken,",
+          "terwijl - de grondstoffen",
+          "die ze uitgeven gelijk",
+          "blijven."
+        ],
+        [
+          "Vijandelijke hoofdsteden,",
+          "steden en fabrieken",
+          "kunnen",
+          "door infanterie worden ingenomen",
+          "- precies zoals",
+          "artillerie."
+        ],
+        [
+          "Laten we nu proberen",
+          "grondstoffen uit te geven aan",
+          "het creëren van een stuk. Wanneer",
+          "geen vak geselecteerd is,",
+          "staan op de plaats van het menu",
+          "van het stuk knoppen",
+          "voor het creëren van stukken - die",
+          "waarvoor",
+          "je genoeg grondstoffen hebt",
+          "zijn met kleur gemarkeerd."
+        ],
+        [
+          "Je zou genoeg",
+          "dollars moeten hebben om",
+          "een fabriek te maken - klik op",
+          "de bijbehorende knop,",
+          "en kies dan, met RMB,",
+          "een vak voor",
+          "de bouw."
+        ],
+        [
+          "Het creëren van infanterie en",
+          "artillerie werkt",
+          "iets anders - ze",
+          "kunnen alleen",
+          "naast producerende",
+          "gebouwen worden gebouwd."
+        ],
+        [
+          "Wanneer je op",
+          "de knop voor het creëren van infanterie klikt,",
+          "worden de steden waar naast",
+          "ze kan worden gebouwd",
+          "voor je",
+          "gemarkeerd."
+        ],
+        [
+          "Let op dat een stuk niet",
+          "op ongeschikt",
+          "terrein kan worden gecreëerd, bijvoorbeeld -",
+          "je kunt geen",
+          "fabriek in de bergen bouwen,",
+          "maar artillerie zal het daar",
+          "heel comfortabel hebben."
+        ],
+        [
+          "Let ook op: veel",
+          "stukken vereisen grondstoffen",
+          "niet alleen bij verschijnen,",
+          "maar verbruiken ze ook",
+          "elke beurt. De grondstoffen",
+          "die een stuk",
+          "elke beurt verbruikt, vind",
+          "je in zijn menu."
+        ],
+        [
+          "Als aan het begin van een beurt",
+          "niet genoeg grondstoffen",
+          "voor het onderhoud zijn, wordt het stuk",
+          "van het veld verwijderd - dus",
+          "houd de balans in het oog."
+        ],
+        [
+          "Als een fabriek",
+          "grondstoffen tekortkomt,",
+          "verdwijnt ze niet, maar",
+          "staat ze gewoon stil zonder",
+          "productie."
+        ],
+        [
+          "Naast de grondstofvoorraad",
+          "linksboven",
+          "wordt ook de verwachte",
+          "groei voor de volgende beurt",
+          "getoond (tussen",
+          "haakjes), maar onthoud:",
+          "mogelijke stilstand",
+          "door gebrek aan grondstoffen",
+          "wordt niet meegerekend",
+          "in deze voorspelling."
+        ],
+        [
+          "Gebruik de kennis",
+          "die je hebt opgedaan, versterk",
+          "de economie, verzamel",
+          "een sterk leger en",
+          "verpletter je vijanden",
+          "op dit prachtige",
+          "eiland."
+        ]
+      ],
+      [
+        [
+          "Een bekwame commandant",
+          "weet niet alleen",
+          "met geweld te winnen, maar ook",
+          "met list. Waarom",
+          "bloed vergieten waar",
+          "je het jouwe zonder",
+          "strijd kunt halen?"
+        ],
+        [
+          "Als het je lukt",
+          "een groep vijandelijke",
+          "vakken te omsingelen,",
+          "dat wil zeggen ze volledig",
+          "af te snijden van",
+          "de rest van de vijandelijke",
+          "bezittingen,",
+          "dan worden aan",
+          "het einde van zijn beurt",
+          "deze vakken",
+          "door jou geannexeerd."
+        ],
+        [
+          "Dit is erg voordelig!",
+          "Maar er is een addertje -",
+          "alleen vakken die niet",
+          "door de vijand",
+          "worden gecontroleerd worden geannexeerd,",
+          "die we bovendien",
+          "na annexatie",
+          "zullen kunnen controleren."
+        ],
+        [
+          "Controle over vakken wordt",
+          "geboden door hoofdsteden en infanterie.",
+          "Als in de omsingelde regio",
+          "een vijandelijke hoofdstad staat,",
+          "wordt die niet geannexeerd.",
+          "En omgekeerd, zelfs niet-omsingelde",
+          "vakken kunnen",
+          "worden geannexeerd, voor het geval",
+          "ze ver van",
+          "de dichtstbijzijnde hoofdstad of",
+          "infanterie verwijderd zijn."
+        ],
+        [
+          "Er moet echter worden opgemerkt",
+          "dat infanterie",
+          "controle geeft alleen ",
+          "wanneer ze in",
+          "dezelfde regio is als",
+          "een hoofdstad of anders",
+          "(als er geen hoofdstad is),",
+          "wanneer ze naast",
+          "water staat - zo",
+          "krijgt ze het vermogen",
+          "om over zee te worden bevoorraad."
+        ],
+        [
+          "Als de annexatie",
+          "daadwerkelijk gebeurt,",
+          "dan wordt alle vijandelijke",
+          "infanterie binnen",
+          "de omsingeling",
+          "ontbonden (de soldaten",
+          "verdwijnen naar",
+          "huis), en alle",
+          "andere stukken -",
+          "gaan in jouw",
+          "leger over, veilig en wel."
+        ],
+        [
+          "Om omsingelingen te maken",
+          "is het nuttig om",
+          "grote mobiliteit te hebben.",
+          "Gewone infanterie kan",
+          "wielen krijgen -",
+          "op een",
+          "transport stappen en",
+          "veranderen in",
+          "gemotoriseerde infanterie."
+        ],
+        [
+          "Dat geeft een enorm",
+          "voordeel: de voorraad",
+          "gevechtscapaciteit van",
+          "gemotoriseerde infanterie is veel",
+          "groter dan te voet,",
+          "en ze kan ook",
+          "artillerie aan zich",
+          "koppelen."
+        ],
+        [
+          "Bovendien biedt gemotoriseerde",
+          "infanterie, net als",
+          "gewone infanterie,",
+          "controle over",
+          "vakken - gebruik",
+          "dit om niet",
+          "voor niets grondgebied te verliezen."
+        ],
+        [
+          "Maar er is ook een minpunt -",
+          "het innemen van",
+          "vijandelijke stukken",
+          "is gemotoriseerde infanterie niet meer",
+          "toe in staat, daarvoor",
+          "heb je juist",
+          "soldaten te voet nodig."
+        ],
+        [
+          "Dit hele eiland",
+          "is overwoekerd met dicht bos,",
+          "waarin onze",
+          "artillerie nutteloos is.",
+          "De vijand, dit wetend, heeft zich goed",
+          "verschanst en zijn",
+          "gemotoriseerde infanterie gebracht om",
+          "ons hier weg te jagen."
+        ],
+        [
+          "Verzamel snel wat wielen",
+          "en scheur zijn landen",
+          "aan stukken."
+        ]
+      ],
+      [
+        [
+          "Nu over zwaar",
+          "materieel. Een vijandelijke",
+          "bunker waar infanterie",
+          "niet doorheen komt,",
+          "kan worden vernietigd",
+          "door een tank."
+        ],
+        [
+          "Tanks, net als artillerie,",
+          "mogen door infanterie",
+          "worden ingenomen. Een tank kan",
+          "de vijand aanvallen, maar",
+          "alleen op een aangrenzend",
+          "vak - van dichtbij."
+        ],
+        [
+          "De kracht van een tank groeit",
+          "als er in de buurt",
+          "infanterie of gemotoriseerde infanterie is:",
+          "strijdmakkers dekken",
+          "het pantser, en aanval en verdediging van de tank",
+          "stijgen."
+        ],
+        [
+          "Een eenzame tank",
+          "is echter - een makkelijke",
+          "prooi. Zelfs gewone",
+          "infanterie kan",
+          "hem vernietigen."
+        ],
+        [
+          "Je eigen tank",
+          "bouwen is geen eenvoudige taak -",
+          "met de beschikbare middelen",
+          "lukt dat niet.",
+          "Maak kennis met een nieuwe",
+          "grondstof - zware ind., die wordt",
+          "geproduceerd door zware fabrieken,",
+          "die daarvoor",
+          "dollars en consumptiegoederen uitgeven."
+        ],
+        [
+          "Een zware fabriek, precies zoals",
+          "een fabriek, krijgt een bonus",
+          "door nabijheid van",
+          "een hoofdstad, en",
+          "vijandelijke zware fabrieken kunnen",
+          "door infanterie worden ingenomen."
+        ],
+        [
+          "Wat de begaanbaarheid",
+          "van tanks betreft - ze zijn een van",
+          "de weinigen die in de woestijn",
+          "kunnen vechten, maar in bergen",
+          "en moerassen moet je",
+          "niets van ze verwachten."
+        ],
+        [
+          "Kijk naar dit arme",
+          "eiland, het is al vele",
+          "jaren in een eeuwige",
+          "oorlog verwikkeld - het is tijd",
+          "om hier orde op zaken te stellen."
+        ]
+      ],
+      [
+        [
+          "Producerende gebouwen hoeven niet",
+          "altijd door jou te worden gebouwd.",
+          "Grondstofproducenten kunnen",
+          "vanzelf op je",
+          "gebieden verschijnen - we hebben het",
+          "over privateers (alternatieve",
+          "versies van steden,",
+          "fabrieken en zware fabrieken)."
+        ],
+        [
+          "Om te verschijnen hebben ze",
+          "onbezette vlaktes",
+          "en de afwezigheid van staats-",
+          "controle nodig (hoe minder",
+          "hoofdsteden, hoe meer",
+          "privateers)."
+        ],
+        [
+          "Privateers zijn minder efficiënt",
+          "dan producties in jouw",
+          "bezit, omdat ze toch",
+          "winst moeten maken.",
+          "Tegelijkertijd kan elke privateer",
+          "worden gekocht - omgezet",
+          "in een gewoon producerend gebouw."
+        ],
+        [
+          "Een ander verschil - een privateer",
+          "tolereert het ontbreken van",
+          "de grondstoffen die hij nodig heeft",
+          "voor productie niet -",
+          "bij een tekort staakt hij",
+          "zijn productie."
+        ],
+        [
+          "Een verlatenheid verbruikt niet alleen",
+          "kosteloos",
+          "de staatsbegroting, ze",
+          "besmet ook producerende",
+          "gebouwen in de buurt."
+        ],
+        [
+          "Vanaf dit moment",
+          "zullen ook bunkers",
+          "op grote afstand",
+          "van het front",
+          "in verlatenheden veranderen -",
+          "geen zin om ze in de achterhoede te bouwen!"
+        ],
+        [
+          "Het goede nieuws is",
+          "dat verlatenheden, net als alle",
+          "gebouwen die je niet nodig hebt,",
+          "kunnen worden gesloopt door schoten",
+          "van tanks en artillerie -",
+          "gebruik dit om",
+          "hun verspreiding",
+          "te voorkomen."
+        ],
+        [
+          "En tot slot, overtollige",
+          "infanterie kan zich altijd",
+          "vestigen - verander",
+          "ze in nederzettingen.",
+          "Dit helpt de economie te redden in een moeilijk",
+          "uur."
+        ]
+      ],
+      [
+        [
+          "De vijand op dit eiland",
+          "wist vooraf van onze",
+          "aankomst en kon flink investeren",
+          "in statische",
+          "verdediging - gelukkig voor ons",
+          "hadden we onze man in",
+          "de westelijke provincie die",
+          "de bouw saboteerde."
+        ],
+        [
+          "Helaas moeten we naar het oosten",
+          "door talloze",
+          "rijen bunkers breken. Hier komt een nieuw",
+          "stuk ons te",
+          "hulp - de Grad. Door bij elk",
+          "schot een beetje consumptiegoederen uit te geven",
+          "vernietigt hij 3 doelen tegelijk -",
+          "precies wat je nodig hebt tegen dichte bebouwing."
+        ],
+        [
+          "Let alleen op dat de Grad een",
+          "onnauwkeurig wapen is, en precies het vak",
+          "waarop je mikt,",
+          "zal hij nooit raken."
+        ],
+        [
+          "De Grad kan bovendien niet",
+          "simpelweg worden ingehuurd - om hem",
+          "te maken moet je",
+          "gemotoriseerde infanterie met artillerie combineren.",
+          "Deze transformatie vereist",
+          "bovendien wat zware ind.,",
+          "die we niet hebben meegenomen.",
+          "Maar we zijn ervan overtuigd dat je",
+          "een uitweg uit deze situatie vindt."
+        ],
+        [
+          "En nog een kleinigheidje - onze",
+          "bouwers zijn iets als een staking",
+          "begonnen, dus bij",
+          "deze en de volgende missie",
+          "kun je geen nieuwe",
+          "stukken maken."
+        ]
+      ],
+      [
+        [
+          "Verdomme, die logistici!",
+          "In de aanvraag stond duidelijk -",
+          "lever een tank ten noorden van",
+          "de rivier. Zonder hem, door deze",
+          "bunkers, naar de vijandelijke hoofdstad",
+          "komen we niet door. Gelukkig",
+          "hebben onze vaklui onlangs",
+          "een wonderwapen ontwikkeld - de Houwitser."
+        ],
+        [
+          "Met de begaanbaarheid van een tank en",
+          "het bereik van artillerie",
+          "heeft dit monster zijns gelijke niet.",
+          "Het ontstaat door een",
+          "tank met artillerie te combineren, maar er is",
+          "een addertje - ook de artillerie",
+          "hebben ze ons niet geleverd. Red je",
+          "uit deze situatie zoals je weet."
+        ]
+      ],
+      [
+        [
+          "En laten we nu",
+          "serieus praten - het vernietigen",
+          "van het vijandelijke leger is niet altijd",
+          "genoeg voor",
+          "een beslissende overwinning.",
+          "Als de economie van de vijand",
+          "sterk is, komen ze na",
+          "de nederlaag terug",
+          "met toegenomen kracht."
+        ],
+        [
+          "Om dit",
+          "probleem op te lossen heb je",
+          "een raket-",
+          "silo nodig - die kan",
+          "raketten lanceren onder",
+          "de codenaam",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" is een",
+          "langeafstandswapen.",
+          "Bovendien, als een vijandelijke",
+          "silo je in het",
+          "oog springt, weet - hij",
+          "kan door infanterie",
+          "worden ingenomen en tegen",
+          "zijn voormalige eigenaar worden gebruikt."
+        ],
+        [
+          "Het lanceren van \"Oreshnik\"",
+          "is mogelijk op elk",
+          "vijandelijk vak",
+          "dat zich op",
+          "een afstand van niet minder dan",
+          "tien vakken van",
+          "de silo bevindt."
+        ],
+        [
+          "De raket treft",
+          "niet alleen het",
+          "door jou gekozen",
+          "doel, maar",
+          "daarnaast",
+          "treft hij zes",
+          "willekeurige vakken in",
+          "de omgeving."
+        ],
+        [
+          "We wisten ons op",
+          "het continent te vestigen, maar de landing",
+          "op het eiland bleek",
+          "een complete mislukking - onze",
+          "infanterie zat vast in de dichte",
+          "bossen in het noorden van het eiland.",
+          "Hier hebben we",
+          "\"Oreshnik\" nodig - vernietig hun",
+          "hoofdsteden op",
+          "Madagaskar en dan",
+          "capituleert de vijand."
+        ]
+      ],
+      [
+        [
+          "De basistraining",
+          "is voorbij! Nu",
+          "weet je alles",
+          "wat nodig is om",
+          "je troepen naar",
+          "de overwinning te leiden. En bewijs het nu",
+          "door het hele",
+          "eiland in te nemen."
+        ],
+        [
+          "Onthoud: kennis van de mechanieken",
+          "- is het halve succes,",
+          "de andere helft -",
+          "je slimheid.",
+          "Vooruit, naar overwinningen!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Vlakte",
+    "Mountain": "Berg",
+    "Forest": "Bos",
+    "Swamp": "Moeras",
+    "Desert": "Woestijn",
+    "Water": "Water",
+    "Infantry": "Infanterie",
+    "Tank": "Tank",
+    "Artillery": "Artillerie",
+    "Howitzer": "Houwitser",
+    "Grad": "Grad",
+    "Motorization": "Motorisering",
+    "Bunker": "Bunker",
+    "MissileSilo": "Raketsilo",
+    "Town": "Stad",
+    "LightFactory": "Lichte fabriek",
+    "HeavyFactory": "Zware fabriek",
+    "TierOneCapital": "Hoofdstad",
+    "TallCapital": "Hoge Hoofdstad",
+    "WideCapital": "Brede Hoofdstad",
+    "Settlement": "Nederzetting",
+    "PrivateLightFactory": "Ambachtsman",
+    "PrivateHeavyFactory": "Particulier",
+    "Abandonment": "Verlatenheid"
+  },
+  "resources": {
+    "Dollars": "Dollars",
+    "LightIndustryProducts": "Consumptiegoederen",
+    "HeavyIndustryProducts": "Zware ind."
+  }
+}

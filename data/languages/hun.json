@@ -1,0 +1,1132 @@
+{
+  "loading": {
+    "MAP_LOADING": "Térkép betöltése...",
+    "INTERMEDIATE_PREPARING": "Köztes előkészítés...",
+    "UI_MAKING": "Felhasználói felület létrehozása...",
+    "SPRITE_LOADING": "Sprite-ok betöltése..."
+  },
+  "maps": {
+    "last_save": "Folytatás...",
+    "Level 1": "Gotland",
+    "Level 2": "Epstein-sziget",
+    "Level 3": "Hokkaido",
+    "Level 4": "Szicília",
+    "Level 5": "Haiti",
+    "Level 6": "Izland",
+    "Level 7": "Kréta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaszkár",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Térképek",
+    "CAMPAIGN": "Kampány",
+    "PLAY": "Játék",
+    "EXIT": "Kilépés",
+    "AUTHORS": "Szerzők",
+    "CYBER_DILF_ROLES": [
+      "Ötlet szerzője",
+      "Programozó",
+      "Pályatervező",
+      "Hangtervező"
+    ],
+    "DIVAN_ROLES": [
+      "Művész",
+      "Grafikai tervező"
+    ],
+    "SETTINGS": "Beállítások",
+    "PAUSE": "Szünet",
+    "CONTINUE": "Folytatás",
+    "SAVE_AND_QUIT": "Mentés és kilépés",
+    "QUIT_WITHOUT_SAVING": "Kilépés mentés nélkül",
+    "RESTART_LEVEL": "Újrakezdés",
+    "MAKE_NEW_MAP": "Új",
+    "LOAD_EXISTING_MAP": "Megnyitás",
+    "MAP_EDITOR": "Térképszerkesztő",
+    "OPEN_FILE_IN_EXPLORER": "Megnyitás az Intézőben",
+    "SHARE_ONLINE": "Megosztás",
+    "BACK": "Vissza",
+    "END_TURN_BTN": "Kör befejezése",
+    "TO_MOTORIZATION": "Kerekezni",
+    "CAPTURE": "Elfoglalás",
+    "TO_INFANTRY": "Kereket le",
+    "ATTACK": "Támadás",
+    "INITIATE_PULLING": "Csatlakoztatás",
+    "TERMINATE_PULLING": "Leválasztás",
+    "TO_TALL_CAPITAL": "Magasítás",
+    "TO_WIDE_CAPITAL": "Szélesítés",
+    "PURCHASE": "Megvásárlás",
+    "MOBILISE": "Mozgósítás",
+    "SETTLE": "Le telepedés",
+    "COMBINE": "Egyesítés",
+    "LAUNCH_ORESHNIK": "\"Oreshnik\" indítása",
+    "COST": "Költség",
+    "FLOW": "Egyenleg",
+    "SELECTED_PLAYERS": "Kiválasztott játékosok",
+    "NO_PLAYERS_SELECTED": "Nincs kiválasztott játékos!",
+    "YOU_WON": "GYŐZELEM",
+    "TO_NEXT_LEVEL": "Folytatás",
+    "PAGE": "Oldal",
+    "NEXT": "Következő",
+    "MUSIC_VOLUME": "Zene hangereje",
+    "VOICE_VOLUME": "Hangok hangereje",
+    "EFFECTS_VOLUME": "Effektek hangereje",
+    "SELECTED_LANGUAGE": "Felület nyelve",
+    "GRAPHICS": "Grafika",
+    "SCREEN": "Képernyő",
+    "FULLSCREEN": "Teljes képernyő",
+    "WINDOWED": "Ablak",
+    "WIDTH": "Szélesség",
+    "HEIGHT": "Magasság",
+    "AUDIO": "Hang",
+    "OTHER": "Egyéb",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Bot lépés animációk",
+    "ON": "Be",
+    "OFF": "Ki",
+    "APPLY": "Alkalmaz",
+    "ADD_PLAYER": "Játékos hozzáadása",
+    "FILL_HINT": "Kitöltés: Shift + LMB",
+    "PLAYERS_NAME": "Játékos neve",
+    "CLEAR": "Törlés",
+    "PLAYERS_TOP": "Legjobb játékosok",
+    "TERRITORIES": "Területek",
+    "ECONOMY": "Gazd.",
+    "PLAYERS_MODE": "Játékosok",
+    "PLAYERS_MODE_STATES": "Államok",
+    "PLAYERS_MODE_RANDOM": "Véletlen",
+    "COUNT": "Mennyiség"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Elfoglalhat egy szomszédos",
+        "ellenséges járművet.",
+        "Motorizált gyalogsággá",
+        "alakítható.",
+        "",
+        "Minden tereptípus elérhető."
+      ],
+      "Tank": [
+        "Bónuszt kap",
+        "támadásra és védelemre",
+        "a szomszédos gyalogságtól",
+        "és motorizált gyalogságtól.",
+        "",
+        "Hegyek és mocsarak nem elérhetők."
+      ],
+      "Artillery": [
+        "Támadhat",
+        "ellenséges állásokat",
+        "három mező távolságból.",
+        "Nem tud magától",
+        "mozogni.",
+        "",
+        "Erdők, mocsarak",
+        "és sivatagok nem elérhetők."
+      ],
+      "Bunker": [
+        "Növeli a szomszédos",
+        "gyalogság védelmét.",
+        "",
+        "Erdők, mocsarak",
+        "és sivatagok nem elérhetők."
+      ],
+      "MissileSilo": [
+        "Kilőhet \"Oreshnik\"",
+        "rakétákat.",
+        "",
+        "Csak síkságok elérhetők."
+      ],
+      "Town": [
+        "Dollárt termel.",
+        "Gyalogsággá",
+        "alakítható.",
+        "",
+        "Hegyek, mocsarak",
+        "és sivatagok nem elérhetők."
+      ],
+      "LightFactory": [
+        "Fogyasztási cikkeket termel,",
+        "dollárt fogyaszt.",
+        "",
+        "Hegyek, mocsarak",
+        "és sivatagok nem elérhetők."
+      ],
+      "HeavyFactory": [
+        "Nehézipari terméket termel,",
+        "fogyasztási cikkeket",
+        "és dollárt fogyaszt.",
+        "",
+        "Mocsarak és sivatagok nem elérhetők."
+      ],
+      "TierOneCapital": [
+        "Megduplázza",
+        "a szomszédos épületek",
+        "termelését és megakadályozza",
+        "a körbezárt régió",
+        "annektálását, amelyben található.",
+        "",
+        "Csak síkságok elérhetők."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Megsemmisít egy gyengébb",
+        "figurát 3 mező",
+        "távolságból."
+      ],
+      "HOWITZER_ATTACK": [
+        "Megsemmisít egy gyengébb",
+        "figurát 3 mező",
+        "távolságból."
+      ],
+      "GRAD_ATTACK": [
+        "Megsemmisít gyengébb figurákat",
+        "a célmező környékén."
+      ],
+      "TANK_ATTACK": [
+        "Megsemmisít egy gyengébb",
+        "figurát a közelben."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Csatlakoztatja a tüzérséget",
+        "a kiválasztott gyalogsághoz",
+        "vagy motorizált gyalogsághoz."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Leválasztja a tüzérséget",
+        "a csatlakoztatott figuráról."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Kilő egy \"Oreshnik\" rakétát",
+        "a kiválasztott mezőre és",
+        "annak környékére."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Ezt a figurát",
+        "Magas Fővárossá változtatja,",
+        "növelve a szomszédok",
+        "termelési bónuszát."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Ezt a figurát",
+        "Széles Fővárossá változtatja,",
+        "két mezőre növelve",
+        "a termelési bónusz",
+        "sugarát."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Elnyeli a szomszédos",
+        "tüzérséget és",
+        "Tarackká változtatja ezt a figurát.",
+        "",
+        "Hegyek és mocsarak nem elérhetők."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Elnyeli a szomszédos",
+        "tüzérséget és",
+        "Graddá változtatja ezt a figurát.",
+        "",
+        "Csak síkságok elérhetők."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Ezt a figurát",
+        "várossá változtatja."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Ezt a figurát",
+        "gyárrá változtatja."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Ezt a figurát",
+        "nehéz gyárrá változtatja."
+      ],
+      "MOBILISE_TOWN": [
+        "Ezt a figurát",
+        "gyalogsággá változtatja."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Ezt a figurát",
+        "gyalogsággá változtatja."
+      ],
+      "INFANTRY_SETTLE": [
+        "Ezt a figurát",
+        "településsé változtatja."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Elfoglal egy gyengébb",
+        "figurát a közelben."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Ezt a",
+        "figurát gyalogsággá változtatja.",
+        "",
+        "Minden tereptípus elérhető."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Ezt a figurát",
+        "motorizált gyalogsággá változtatja. ",
+        "",
+        "Hegyek, mocsarak",
+        "és sivatagok nem elérhetők."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Üdvözlünk a",
+          "közkatona-",
+          "képzésen! A",
+          "végére",
+          "elsajátítod a játék",
+          "alapvető mechanikáit.",
+          "Minden azzal kezdődik,",
+          "hogy körülnézünk."
+        ],
+        [
+          "Előtted",
+          "van a csatatér,",
+          "külön mezőkre",
+          "felosztva.",
+          "Minden mezőnek",
+          "megvan a maga tulajdonosa -",
+          "egy játékos, a",
+          "mezőkön pedig figurák állnak."
+        ],
+        [
+          "Néhány mezőt",
+          "víz borít -",
+          "jegyezd meg azonnal:",
+          "a figurák nem",
+          "tudnak vízre lépni, ez",
+          "járhatatlan zóna."
+        ],
+        [
+          "Hogy kényelmesen",
+          "körülnézz, mozgasd",
+          "a kamerát WASD-vel,",
+          "forgasd a nézetet ",
+          "QE-vel, egérgörgővel",
+          "pedig közelíts és távolíts",
+          "a kamerán."
+        ],
+        [
+          "Látsz egy figurát a mezőn?",
+          "Kattints rá bal",
+          "egérgombbal - a",
+          "bal alsó sarokban",
+          "megnyílik a menüje."
+        ],
+        [
+          "A figura menüjének",
+          "bezárásához nyomd meg az ESC-et",
+          "- ez megszünteti",
+          "a kiválasztott mező kijelölését."
+        ],
+        [
+          "Sok figura",
+          "tud mozogni",
+          "a szomszédos mezőkre",
+          "ugrálva. Az ugráshoz",
+          "jelölj ki egy figurát (LMB)",
+          "és kattints jobb",
+          "egérgombbal",
+          "egy szomszédos mezőre,",
+          "amelyre",
+          "menni szeretnél."
+        ],
+        [
+          "Ha egy mező",
+          "másik",
+          "játékosé, az ugrás után",
+          "a tiéd lesz.",
+          "De nem tudsz",
+          "olyan mezőre ugrani,",
+          "ahol már a saját",
+          "erőid állnak - foglalt."
+        ],
+        [
+          "Fontos: ha",
+          "az ellenséges mezőn,",
+          "amelyre ugrasz,",
+          "már áll egy ellenséges",
+          "figura - eltűnik, és a tiéd",
+          "veszi át a helyét."
+        ],
+        [
+          "Minden mozgás",
+          "fogyasztja a figura",
+          "harcképességét - a készletét",
+          "a figura menüjében látod."
+        ],
+        [
+          "A harcképesség",
+          "csak egyetlen módon",
+          "állítható helyre:",
+          "fejezd be a kört és hagyd",
+          "pihenni a katonákat."
+        ],
+        [
+          "A játékosok felváltva lépnek,",
+          "így amikor mindenki",
+          "megtette a lépéseit,",
+          "az irányítás visszakerül",
+          "hozzád."
+        ],
+        [
+          "És végül - a gyors",
+          "mozgás: hogy ne kelljen",
+          "minden mezőre",
+          "kattintanod az úton, tartsd",
+          "nyomva a Shiftet, mutass",
+          "egy távoli mezőre,",
+          "és nyomd meg az RMB-t. A kiválasztott",
+          "figura maga húzza meg",
+          "a legrövidebb útvonalat."
+        ],
+        [
+          "És most lássuk,",
+          "alkalmas vagy-e",
+          "valamire egyáltalán.",
+          "Az első harci",
+          "feladatod - foglald el",
+          "az ellenséges",
+          "főváros épületét."
+        ]
+      ],
+      [
+        [
+          "Most beszéljünk a",
+          "számokról, amelyek",
+          "a csata kimenetelét döntik el.",
+          "Minden figurának",
+          "két kulcsfontosságú",
+          "paramétere van: támadás és",
+          "védelem - a menüben",
+          "találhatók,",
+          "a harcképesség mellett."
+        ],
+        [
+          "A szabály egyszerű:",
+          "ha az ellenséges mező",
+          "védelme (az összes",
+          "bónusszal együtt)",
+          "magasabb, mint",
+          "a figurád támadása,",
+          "nem tudsz",
+          "arra a mezőre ugrani."
+        ],
+        [
+          "Ráadásul minden",
+          "figura kivetíti",
+          "a védelmét a",
+          "szomszédos mezőkre,",
+          "mintha fedezné",
+          "a bajtársak hátát."
+        ],
+        [
+          "Kattints egy ellenséges",
+          "figurára, hogy",
+          "lásd a támadását",
+          "vagy védelmét a kis",
+          "ablakban balra lent. Ha",
+          "nincs ablak, a kiválasztott",
+          "figurának nincs se támadása,",
+          "se védelme - könnyű célpont."
+        ],
+        [
+          "És most figyelj",
+          "a csatatérre",
+          "- új",
+          "figurák vannak rajta: egy bunker és",
+          "tüzérség."
+        ],
+        [
+          "A bunker a védelem",
+          "bástyája: nemcsak",
+          "önmagában van",
+          "lenyűgöző védelme,",
+          "hanem buffolja",
+          "a szomszédos",
+          "gyalogság",
+          "védelmét is."
+        ],
+        [
+          "A tüzérség",
+          "messziről csap -",
+          "támadhatja az ellenséget",
+          "akár három mező",
+          "távolságból, és megsemmisítheti",
+          "közvetlen",
+          "érintkezés nélkül."
+        ],
+        [
+          "A bunker, minden ",
+          "ereje ellenére,",
+          "nem akadály a tüzérségnek -",
+          "egyetlen lövés",
+          "elég rá."
+        ],
+        [
+          "Azonban",
+          "a tüzérség nem tud",
+          "magától",
+          "menni - csatlakoztatni",
+          "kell a gyalogsághoz.",
+          "Aztán amikor a",
+          "gyalogság mozog, a tüzérség",
+          "engedelmesen",
+          "gurul utána."
+        ],
+        [
+          "Figyelem: a csatlakoztatott",
+          "pár csak",
+          "akkor tud",
+          "ugrani, ha mindkét",
+          "figurának van elég",
+          "harcképessége ehhez."
+        ],
+        [
+          "És még egy fontos",
+          "trükk: az ellenséges",
+          "tüzérséget el",
+          "tudja foglalni a",
+          "gyalogosunk. Ehhez",
+          "vidd a gyalogságot az",
+          "ellenség melletti mezőre,",
+          "nyisd meg a menüjét, nyomd",
+          "meg az \"Elfoglalás\" gombot, és",
+          "kattints RMB-vel az ellenséges",
+          "figurára."
+        ],
+        [
+          "De légy óvatos:",
+          "az elfoglalás nem",
+          "hajtható végre, ha",
+          "a cél mellett",
+          "ellenséges",
+          "gyalogság vagy bunker van -",
+          "zavarni fogják",
+          "a műveletet."
+        ],
+        [
+          "És végül - figyelj",
+          "az északra tőlünk",
+          "lévő mocsaras",
+          "terepre. Semmiképp",
+          "ne vidd oda",
+          "a tüzérséget - amint",
+          "oda kerül,",
+          "elveszíti a képességét,",
+          "hogy támadja az ellenséget,",
+          "amíg ki",
+          "nem húzod onnan."
+        ],
+        [
+          "És most számolj le",
+          "az ellenséggel ezen",
+          "a furcsa",
+          "szigeten - foglald el a",
+          "tüzérségét, és nyisd fel",
+          "a bunkereket, amelyek",
+          "mögé bújik."
+        ]
+      ],
+      [
+        [
+          "És most arról,",
+          "ami nélkül egyetlen hadsereg",
+          "sem létezik - a szilárd",
+          "hátország. A figurák nem",
+          "a semmiből jönnek létre,",
+          "létre kell őket hozni, és ez",
+          "erőforrásokat igényel."
+        ],
+        [
+          "Nézz a bal felső",
+          "sarokba - az erőforrásaidat",
+          "(dollár és fogyasztási cikkek)",
+          "ott látod.",
+          "Minden körben a termelő",
+          "épületek hozzák",
+          "neked őket."
+        ],
+        [
+          "A dollárt a",
+          "városok hozzák.",
+          "A fogyasztási cikkeket",
+          "gyárak termelik, dollárt",
+          "költenek rá."
+        ],
+        [
+          "És végül a hatékony",
+          "gazdaság fő",
+          "titka - a főváros",
+          "épülete. Megduplázza",
+          "az összes szomszédos",
+          "város és gyár",
+          "termelését,",
+          "ugyanakkor - a",
+          "felhasznált erőforrások",
+          "ugyanazok maradnak."
+        ],
+        [
+          "Az ellenséges fővárosokat,",
+          "városokat és gyárakat",
+          "el lehet",
+          "foglalni",
+          "gyalogsággal - pontosan úgy,",
+          "mint a tüzérséget."
+        ],
+        [
+          "Most próbáljunk",
+          "erőforrásokat költeni",
+          "egy figura létrehozására. Amikor",
+          "nincs kiválasztott mező,",
+          "a figura menüjének helyén",
+          "figura-létrehozó gombok",
+          "vannak - azok,",
+          "amelyekre",
+          "elég erőforrásod van,",
+          "színnel vannak jelölve."
+        ],
+        [
+          "Elég dollárodnak",
+          "kell lennie egy gyár",
+          "létrehozásához - kattints",
+          "a megfelelő gombra,",
+          "majd RMB-vel",
+          "válassz egy mezőt",
+          "az építkezéshez."
+        ],
+        [
+          "A gyalogság és a",
+          "tüzérség létrehozása",
+          "kicsit másképp működik - csak",
+          "termelő épületek",
+          "mellett építhetők."
+        ],
+        [
+          "Amikor a gyalogság",
+          "létrehozó gombjára kattintasz,",
+          "azok a városok lesznek",
+          "kiemelve, amelyek mellé",
+          "építhető."
+        ],
+        [
+          "Vedd figyelembe, hogy egy figurát nem",
+          "lehet nem megfelelő",
+          "terepre létrehozni, például -",
+          "nem tudsz",
+          "gyárat építeni a hegyekbe,",
+          "de a tüzérség ott",
+          "egész kényelmesen elvan."
+        ],
+        [
+          "Vedd figyelembe azt is: sok",
+          "figura igényel erőforrásokat",
+          "nemcsak megjelenéskor,",
+          "hanem minden körben",
+          "fogyasztja is azokat. A figurák által",
+          "minden körben",
+          "elfogyasztott erőforrásokat",
+          "a menüjében találod."
+        ],
+        [
+          "Ha egy kör elején",
+          "nincs elég erőforrás",
+          "a fenntartásra, a figura",
+          "eltávolításra kerül a mezőről - tehát",
+          "figyeld az egyenleget."
+        ],
+        [
+          "Ha egy gyárnak nincs",
+          "nyersanyaga,",
+          "nem tűnik el, csak",
+          "egyszerűen áll, nem",
+          "termel."
+        ],
+        [
+          "Az erőforrás-készlet",
+          "mellett a bal felső sarokban",
+          "a következő körre",
+          "várható növekedés is",
+          "látható (zárójelben),",
+          "de ne feledd:",
+          "az esetleges leállás",
+          "erőforrás-hiány miatt",
+          "nem kerül beszámításra",
+          "ebben az előrejelzésben."
+        ],
+        [
+          "A megszerzett tudást",
+          "felhasználva erősítsd",
+          "a gazdaságot, gyűjts",
+          "erős hadsereget, és",
+          "zúzd szét az ellenségeidet",
+          "ezen a gyönyörű",
+          "szigeten."
+        ]
+      ],
+      [
+        [
+          "Egy hozzáértő parancsnok",
+          "nemcsak erővel,",
+          "hanem furfanggal is",
+          "tud győzni. Miért",
+          "ontanál vért ott,",
+          "ahol a sajátodat harc",
+          "nélkül is megszerezheted?"
+        ],
+        [
+          "Ha sikerül",
+          "körbezá rni egy csoportot",
+          "ellenséges mezőt,",
+          "azaz teljesen",
+          "elvágni őket",
+          "az ellenség többi",
+          "birtokától,",
+          "akkor a kör",
+          "végén ezek a mezők",
+          "a tieid lesznek",
+          "annektálás révén."
+        ],
+        [
+          "Ez nagyon előnyös!",
+          "De van egy bökkenő -",
+          "csak azok a mezők",
+          "annektálódnak, amelyeket",
+          "az ellenség nem",
+          "kontrollál,",
+          "amelyeket ráadásul",
+          "az annexió után mi",
+          "tudunk kontrollálni."
+        ],
+        [
+          "A mezők kontrollját",
+          "fővárosok és gyalogság biztosítják.",
+          "Ha a körbezárt régióban",
+          "van ellenséges főváros,",
+          "akkor nem annektálódik.",
+          "És fordítva, még a nem körbezárt",
+          "mezők is",
+          "annektálódhatnak, ha",
+          "távol vannak",
+          "a legközelebbi fővárostól vagy",
+          "gyalogságtól."
+        ],
+        [
+          "Figyelembe kell azonban venni,",
+          "hogy a gyalogság csak",
+          "akkor ad",
+          "kontrollt, ",
+          "ha ugyanabban",
+          "a régióban van, mint",
+          "egy főváros, vagy pedig",
+          "(ha nincs főváros),",
+          "ha víz mellett",
+          "van - így",
+          "képessé válik",
+          "tengeri úton való",
+          "ellátásra."
+        ],
+        [
+          "Ha az annexió",
+          "mégis megtörténik,",
+          "akkor az összes ellenséges",
+          "gyalogság a",
+          "körbezáron belül",
+          "feloszlik (a katonák",
+          "haza",
+          "szélednek), és az összes",
+          "többi figura -",
+          "sértetlenül átkerül",
+          "a hadseregedbe."
+        ],
+        [
+          "Körbezárások létrehozásához",
+          "hasznos a nagy",
+          "mozgékonyság.",
+          "A közönséges gyalogság",
+          "kerekezhet -",
+          "felül",
+          "egy szállítóra, és",
+          "motorizált",
+          "gyalogsággá változik."
+        ],
+        [
+          "Ez óriási",
+          "előnyt ad: a harcképesség",
+          "készlete",
+          "a motorizált gyalogságnál sokkal",
+          "nagyobb, mint gyalog,",
+          "és képes",
+          "magához",
+          "csatlakoztatni a tüzérséget."
+        ],
+        [
+          "Ráadásul a motorizált",
+          "gyalogság, akárcsak",
+          "a közönséges gyalogság,",
+          "kontrollt ad",
+          "a mezők fölött - használd",
+          "ezt, hogy ne veszíts",
+          "hiába területet."
+        ],
+        [
+          "De van mínusz is -",
+          "ellenséges figurákat",
+          "elfoglalni",
+          "a motorizált gyalogság már",
+          "nem képes, ehhez",
+          "kifejezetten",
+          "gyalogos katonák kellenek."
+        ],
+        [
+          "Ez az egész sziget",
+          "sűrű erdővel borított,",
+          "amelyben a mi",
+          "tüzérségünk haszontalan.",
+          "Az ellenség ezt tudva jól",
+          "megerősítette magát, és elhozta",
+          "a motorizált gyalogságát, hogy",
+          "kifúrjon minket innen."
+        ],
+        [
+          "Sürgősen szedj össze kerekeket,",
+          "és tépd szét a földjeit",
+          "darabokra."
+        ]
+      ],
+      [
+        [
+          "Most a nehéz",
+          "technikáról. Az ellenséges",
+          "bunkert, amivel a gyalogság",
+          "nem bír el,",
+          "egy tank tudja",
+          "elpusztítani."
+        ],
+        [
+          "A tankokat, akárcsak a tüzérséget,",
+          "el lehet foglalni",
+          "gyalogsággal. A tank",
+          "támadhatja az ellenséget, de",
+          "csak a szomszédos",
+          "mezőn - közelről."
+        ],
+        [
+          "A tank ereje nő,",
+          "ha a közelben",
+          "gyalogság vagy motorizált gyalogság van:",
+          "a harcostársak fedezik",
+          "a páncélt, és a tank támadása és védelme",
+          "növekszik."
+        ],
+        [
+          "Egy magányos tank",
+          "viszont - könnyű",
+          "zsákmány. Még a közönséges",
+          "gyalogság is",
+          "el tudja pusztítani."
+        ],
+        [
+          "Saját tankot",
+          "létrehozni nem könnyű feladat -",
+          "a rendelkezésre álló",
+          "eszközökkel nem megy.",
+          "Ismerj meg egy új",
+          "erőforrást - nehézipari terméket, amelyet",
+          "nehéz gyárak termelnek,",
+          "dollárt és fogyasztási",
+          "cikkeket költve rá."
+        ],
+        [
+          "Egy nehéz gyár, akárcsak",
+          "egy gyár, bónuszt kap",
+          "a főváros",
+          "szomszédságából, és",
+          "az ellenséges nehéz gyárakat",
+          "el lehet foglalni gyalogsággal."
+        ],
+        [
+          "Ami a tankok",
+          "járhatóságát illeti - ők azon",
+          "kevesek egyike, akik a sivatagban",
+          "harcolhatnak, azonban hegyekben",
+          "és mocsarakban semmi",
+          "jót ne várj tőlük."
+        ],
+        [
+          "Nézd ezt a szegény",
+          "szigetet, már sok",
+          "éve örökös háború",
+          "dúl rajta - itt az idő,",
+          "hogy rendet tegyünk."
+        ]
+      ],
+      [
+        [
+          "A termelő épületeket nem mindig",
+          "neked kell felépítened.",
+          "Az erőforrás-termelők maguktól",
+          "is megjelenhetnek",
+          "a területeiden - a",
+          "privateers-ről beszélünk (a városok,",
+          "gyárak és nehéz gyárak",
+          "alternatív változatai)."
+        ],
+        [
+          "A megjelenéshez",
+          "üres síkságokra",
+          "és állami kontroll",
+          "hiányára van szükségük",
+          "(minél kevesebb",
+          "főváros, annál több",
+          "privateers)."
+        ],
+        [
+          "A privateers kevésbé hatékony,",
+          "mint a saját",
+          "birtokodban lévő termelés, mivel",
+          "nekik is profitot kell",
+          "termelniük.",
+          "Ugyanakkor minden privateers",
+          "megvásárolható - átváltható",
+          "rendes termelő épületté."
+        ],
+        [
+          "Egy másik különbség - a privateers",
+          "nem tűri el a termeléshez",
+          "szükséges erőforrások",
+          "hiányát -",
+          "hiány esetén feladja",
+          "a termelését."
+        ],
+        [
+          "Egy elhagyatott épület nemcsak",
+          "ingyen fogyasztja",
+          "az állami költségvetést, hanem",
+          "megfertőzi a környező",
+          "termelő",
+          "épületeket is."
+        ],
+        [
+          "Ettől a pillanattól kezdve",
+          "a fronttól nagy",
+          "távolságra lévő",
+          "bunkerek is",
+          "elhagyatottakká",
+          "válnak -",
+          "nincs értelme a hátországban építeni őket!"
+        ],
+        [
+          "A jó hír az,",
+          "hogy az elhagyatottakat, mint minden",
+          "szükségtelen épületet,",
+          "le lehet rombolni",
+          "tankok és tüzérség lövéseivel -",
+          "használd ezt,",
+          "hogy megakadályozd",
+          "terjedésüket."
+        ],
+        [
+          "És végül, a felesleges",
+          "gyalogság mindig",
+          "letelepedhet - alakítsd",
+          "településekké őket.",
+          "Ez segít megmenteni",
+          "a gazdaságot a nehéz",
+          "órában."
+        ]
+      ],
+      [
+        [
+          "Az ellenség ezen a szigeten",
+          "előre tudott az",
+          "érkezésünkről, és alaposan",
+          "fektethetett statikus",
+          "védelembe - szerencsénkre",
+          "volt egy emberünk",
+          "a nyugati tartományban, aki",
+          "szabotálta az építkezést."
+        ],
+        [
+          "Sajnos kelet felé",
+          "megszámlálhatatlan",
+          "bunkersoron kell áttörnünk. Itt jön",
+          "segítségünkre egy új",
+          "figura - a Grad. Minden lövésnél",
+          "egy kis fogyasztási cikket költve",
+          "3 célpontot semmisít meg egyszerre -",
+          "pont ez kell a sűrű beépítés ellen."
+        ],
+        [
+          "Csak vedd figyelembe, hogy a Grad",
+          "pontatlan fegyver, és pontosan arra a mezőre,",
+          "amelyre cézolsz,",
+          "soha nem fog eltalálni."
+        ],
+        [
+          "A Gradot ráadásul nem lehet",
+          "csak úgy felbérelni - létrehozásához",
+          "össze kell kombinálni",
+          "a motorizált gyalogságot a tüzérséggel.",
+          "Ez az átalakítás ráadásul",
+          "egy kis nehézipari terméket is igényel,",
+          "amit nem hoztunk magunkkal.",
+          "De biztosak vagyunk benne, hogy",
+          "megtalálod a kiutat ebből a helyzetből."
+        ],
+        [
+          "És még egy apróság - az építőink",
+          "valami sztrájkfélét",
+          "szerveztek, így ebben",
+          "és a következő küldetésben",
+          "nem tudsz új",
+          "figurákat létrehozni."
+        ]
+      ],
+      [
+        [
+          "Az a fránya logisztika!",
+          "A kérésben egyértelműen az állt -",
+          "szállítsatok egy tankot a folyótól",
+          "északra. Nélküle ezeken",
+          "a bunkereken át az ellenséges fővárosig",
+          "nem törünk át. Szerencsére",
+          "a mestereink nemrég",
+          "kifejlesztettek egy csodafegyvert - a Tarackot."
+        ],
+        [
+          "A tank járhatóságával és",
+          "a tüzérség hatótávolságával",
+          "ennek a szörnynek nincs párja.",
+          "Úgy jön létre, hogy",
+          "összekombinálunk egy tankot a tüzérséggel, de van",
+          "egy bökkenő - a tüzérséget sem",
+          "szállították nekünk. Vágd ki",
+          "magadat ebből a helyzetből, ahogy tudod."
+        ]
+      ],
+      [
+        [
+          "És most beszéljünk",
+          "komolyan - az ellenséges",
+          "hadsereg megsemmisítése nem mindig",
+          "elég a",
+          "döntő győzelemhez.",
+          "Ha az ellenség gazdasága",
+          "erős, akkor a",
+          "vereség után megnövekedett",
+          "erővel térnek vissza."
+        ],
+        [
+          "A probléma",
+          "megoldásához szükséged",
+          "lesz egy rakéta-",
+          "silóra - az képes",
+          "rakétákat indítani a",
+          "következő kódnéven:",
+          "\"Oreshnik\"."
+        ],
+        [
+          "Az \"Oreshnik\" egy",
+          "nagy hatótávolságú fegyver.",
+          "Ráadásul, ha egy ellenséges",
+          "siló megakad",
+          "a szemed,",
+          "tudd - el lehet foglalni",
+          "gyalogsággal, és",
+          "a korábbi tulajdonosa ellen",
+          "lehet használni."
+        ],
+        [
+          "Az \"Oreshnik\" indítása",
+          "bármelyik",
+          "ellenséges mezőre lehetséges,",
+          "amely legalább",
+          "tíz mező",
+          "távolságra van",
+          "a silótól."
+        ],
+        [
+          "A rakéta nemcsak",
+          "az általad",
+          "kiválasztott",
+          "célpontot találja el,",
+          "hanem",
+          "emellett",
+          "hat véletlenszerű",
+          "mezőt is eltalál",
+          "a környéken."
+        ],
+        [
+          "Sikerült megvetnünk",
+          "a lábunkat a kontinensen, de a szigetre",
+          "való partraszállás",
+          "teljes kudarcnak",
+          "bizonyult - a gyalogságunk",
+          "elakadt a sziget északi részének",
+          "sűrű erdeiben.",
+          "Itt lesz szükségünk",
+          "az \"Oreshnik\"-re - töröljük el",
+          "a fővárosaikat",
+          "Madagaszkáron, és akkor",
+          "az ellenség kapitulál."
+        ]
+      ],
+      [
+        [
+          "A közkatona-képzés",
+          "véget ért! Most már",
+          "tudsz mindent,",
+          "ami szükséges ahhoz,",
+          "hogy győzelemre vezesd",
+          "a csapataidat. És most",
+          "bizonyítsd be azzal,",
+          "hogy elfoglalod",
+          "az egész szigetet."
+        ],
+        [
+          "Ne feledd: a mechanikák ismerete",
+          "- a siker fele,",
+          "a másik fele -",
+          "a leleményességed.",
+          "Előre, a győzelmek felé!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Síkság",
+    "Mountain": "Hegy",
+    "Forest": "Erdő",
+    "Swamp": "Mocsár",
+    "Desert": "Sivatag",
+    "Water": "Víz",
+    "Infantry": "Gyalogság",
+    "Tank": "Tank",
+    "Artillery": "Tüzérség",
+    "Howitzer": "Tarack",
+    "Grad": "Grad",
+    "Motorization": "Motorizáció",
+    "Bunker": "Bunker",
+    "MissileSilo": "Rakétasiló",
+    "Town": "Város",
+    "LightFactory": "Könnyű gyár",
+    "HeavyFactory": "Nehéz gyár",
+    "TierOneCapital": "Főváros",
+    "TallCapital": "Magas Főváros",
+    "WideCapital": "Széles Főváros",
+    "Settlement": "Település",
+    "PrivateLightFactory": "Kézműves",
+    "PrivateHeavyFactory": "Magánvállalkozó",
+    "Abandonment": "Elhagyatott"
+  },
+  "resources": {
+    "Dollars": "Dollár",
+    "LightIndustryProducts": "Fogyasztási cikkek",
+    "HeavyIndustryProducts": "Nehézipar"
+  }
+}

@@ -1,0 +1,1123 @@
+{
+  "loading": {
+    "MAP_LOADING": "Ladataan karttaa...",
+    "INTERMEDIATE_PREPARING": "Välivalmistelu...",
+    "UI_MAKING": "Luodaan käyttöliittymää...",
+    "SPRITE_LOADING": "Ladataan spritejä..."
+  },
+  "maps": {
+    "last_save": "Jatka...",
+    "Level 1": "Gotlanti",
+    "Level 2": "Epsteinin saari",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sisilia",
+    "Level 5": "Haiti",
+    "Level 6": "Islanti",
+    "Level 7": "Kreeta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaskar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Kartat",
+    "CAMPAIGN": "Kampanja",
+    "PLAY": "Pelaa",
+    "EXIT": "Poistu",
+    "AUTHORS": "Tekijät",
+    "CYBER_DILF_ROLES": [
+      "Idean tekijä",
+      "Ohjelmoija",
+      "Kenttäsuunnittelija",
+      "Äänisuunnittelija"
+    ],
+    "DIVAN_ROLES": [
+      "Taiteilija",
+      "Taidesuunnittelija"
+    ],
+    "SETTINGS": "Asetukset",
+    "PAUSE": "Tauko",
+    "CONTINUE": "Jatka",
+    "SAVE_AND_QUIT": "Tallenna ja poistu",
+    "QUIT_WITHOUT_SAVING": "Poistu tallentamatta",
+    "RESTART_LEVEL": "Aloita alusta",
+    "MAKE_NEW_MAP": "Uusi",
+    "LOAD_EXISTING_MAP": "Avaa",
+    "MAP_EDITOR": "Karttamuokkain",
+    "OPEN_FILE_IN_EXPLORER": "Avaa Resurssienhallinnassa",
+    "SHARE_ONLINE": "Jaa",
+    "BACK": "Takaisin",
+    "END_TURN_BTN": "Lopeta vuoro",
+    "TO_MOTORIZATION": "Hanki pyörät",
+    "CAPTURE": "Valtaa",
+    "TO_INFANTRY": "Menetä pyörät",
+    "ATTACK": "Hyökkää",
+    "INITIATE_PULLING": "Kytke",
+    "TERMINATE_PULLING": "Irrota",
+    "TO_TALL_CAPITAL": "Korota",
+    "TO_WIDE_CAPITAL": "Laajenna",
+    "PURCHASE": "Osta",
+    "MOBILISE": "Mobilisoi",
+    "SETTLE": "Asutu",
+    "COMBINE": "Yhdistä",
+    "LAUNCH_ORESHNIK": "Laukaise \"Oreshnik\"",
+    "COST": "Hinta",
+    "FLOW": "Tase",
+    "SELECTED_PLAYERS": "Valitut pelaajat",
+    "NO_PLAYERS_SELECTED": "Ei valittuja pelaajia!",
+    "YOU_WON": "VOITTO",
+    "TO_NEXT_LEVEL": "Jatka",
+    "PAGE": "Sivu",
+    "NEXT": "Seuraava",
+    "MUSIC_VOLUME": "Musiikin voimakkuus",
+    "VOICE_VOLUME": "Äänien voimakkuus",
+    "EFFECTS_VOLUME": "Tehosteiden voimakkuus",
+    "SELECTED_LANGUAGE": "Käyttöliittymän kieli",
+    "GRAPHICS": "Grafiikka",
+    "SCREEN": "Näyttö",
+    "FULLSCREEN": "Koko näyttö",
+    "WINDOWED": "Ikkuna",
+    "WIDTH": "Leveys",
+    "HEIGHT": "Korkeus",
+    "AUDIO": "Ääni",
+    "OTHER": "Muut",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Bottien siirtoanimaatiot",
+    "ON": "Päällä",
+    "OFF": "Pois",
+    "APPLY": "Käytä",
+    "ADD_PLAYER": "Lisää pelaaja",
+    "FILL_HINT": "Täyttö: Shift + VNH",
+    "PLAYERS_NAME": "Pelaajan nimi",
+    "CLEAR": "Tyhjennä",
+    "PLAYERS_TOP": "Parhaat pelaajat",
+    "TERRITORIES": "Alueet",
+    "ECONOMY": "Talous",
+    "PLAYERS_MODE": "Pelaajat",
+    "PLAYERS_MODE_STATES": "Valtiot",
+    "PLAYERS_MODE_RANDOM": "Satunnainen",
+    "COUNT": "Määrä"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Voi vallata viereisen",
+        "vihollisen ajoneuvon.",
+        "Voidaan muuttaa",
+        "moottoroiduksi jalkaväeksi.",
+        "",
+        "Kaikki maastotyypit käytettävissä."
+      ],
+      "Tank": [
+        "Saa bonuksen",
+        "hyökkäykseen ja puolustukseen",
+        "viereiseltä jalkaväeltä",
+        "ja moottoroidulta jalkaväeltä.",
+        "",
+        "Vuoret ja suot eivät käytettävissä."
+      ],
+      "Artillery": [
+        "Voi hyökätä",
+        "vihollisen asemiin",
+        "kolmen ruudun etäisyydeltä.",
+        "Ei voi liikkua",
+        "itsestään.",
+        "",
+        "Metsät, suot",
+        "ja aavikot eivät käytettävissä."
+      ],
+      "Bunker": [
+        "Lisää viereisen",
+        "jalkaväen puolustusta.",
+        "",
+        "Metsät, suot",
+        "ja aavikot eivät käytettävissä."
+      ],
+      "MissileSilo": [
+        "Voi laukaista \"Oreshnik\"-",
+        "ohjuksia.",
+        "",
+        "Vain tasangot käytettävissä."
+      ],
+      "Town": [
+        "Tuottaa dollareita.",
+        "Voidaan muuttaa",
+        "jalkaväeksi.",
+        "",
+        "Vuoret, suot",
+        "ja aavikot eivät käytettävissä."
+      ],
+      "LightFactory": [
+        "Tuottaa kulutustavaroita,",
+        "kuluttaa dollareita.",
+        "",
+        "Vuoret, suot",
+        "ja aavikot eivät käytettävissä."
+      ],
+      "HeavyFactory": [
+        "Tuottaa raskasta teollisuutta,",
+        "kuluttaa kulutustavaroita",
+        "ja dollareita.",
+        "",
+        "Suot ja aavikot eivät käytettävissä."
+      ],
+      "TierOneCapital": [
+        "Kaksinkertaistaa",
+        "viereisten rakennusten",
+        "tuotannon ja estää",
+        "ympäröidyn alueen",
+        "annektoinnin, jossa se sijaitsee.",
+        "",
+        "Vain tasangot käytettävissä."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Tuhoaa heikomman",
+        "nappulan kolmen ruudun",
+        "etäisyydeltä."
+      ],
+      "HOWITZER_ATTACK": [
+        "Tuhoaa heikomman",
+        "nappulan kolmen ruudun",
+        "etäisyydeltä."
+      ],
+      "GRAD_ATTACK": [
+        "Tuhoaa heikompia nappuloita",
+        "kohderuudun ympäristössä."
+      ],
+      "TANK_ATTACK": [
+        "Tuhoaa heikomman",
+        "nappulan lähistöllä."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Kytkee tykistön",
+        "valittuun jalkaväkeen",
+        "tai moottoroituun jalkaväkeen."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Irrottaa tykistön",
+        "kytketystä nappulasta."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Laukaisee \"Oreshnik\"-ohjuksen",
+        "valittuun ruutuun ja",
+        "sen ympäristöön."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Muuttaa tämän nappulan",
+        "Korkeaksi Pääkaupungiksi,",
+        "lisää tuotanto-",
+        "bonusta naapureille."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Muuttaa tämän nappulan",
+        "Leveäksi Pääkaupungiksi,",
+        "laajentaa tuotanto-",
+        "bonuksen sädettä",
+        "kahteen ruutuun."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Imee viereisen",
+        "tykistön ja muuttaa",
+        "tämän nappulan Haupitsiksi.",
+        "",
+        "Vuoret ja suot eivät käytettävissä."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Imee viereisen",
+        "tykistön ja muuttaa",
+        "tämän nappulan Gradiksi.",
+        "",
+        "Vain tasangot käytettävissä."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Muuttaa tämän nappulan",
+        "kaupungiksi."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Muuttaa tämän nappulan",
+        "tehtaaksi."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Muuttaa tämän nappulan",
+        "raskaaksi tehtaaksi."
+      ],
+      "MOBILISE_TOWN": [
+        "Muuttaa tämän nappulan",
+        "jalkaväeksi."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Muuttaa tämän nappulan",
+        "jalkaväeksi."
+      ],
+      "INFANTRY_SETTLE": [
+        "Muuttaa tämän nappulan",
+        "asutukseksi."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Valtaa heikomman",
+        "nappulan lähistöltä."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Muuttaa tämän",
+        "nappulan jalkaväeksi.",
+        "",
+        "Kaikki maastotyypit käytettävissä."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Muuttaa tämän nappulan",
+        "moottoroiduksi jalkaväeksi. ",
+        "",
+        "Vuoret, suot",
+        "ja aavikot eivät käytettävissä."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Tervetuloa",
+          "peruskoulutus-",
+          "kurssille! Kun",
+          "se on ohi,",
+          "hallitset pelin",
+          "ydinmekaniikat.",
+          "Kaikki alkaa",
+          "yleiskatsauksesta."
+        ],
+        [
+          "Edessäsi",
+          "on taistelukenttä,",
+          "jaettuna",
+          "erillisiin ruutuihin.",
+          "Jokaisella ruudulla",
+          "on omistajansa -",
+          "pelaaja, ja ruuduissa",
+          "seisoo nappuloita."
+        ],
+        [
+          "Jotkin ruudut",
+          "ovat veden peitossa -",
+          "muista heti:",
+          "nappulat eivät voi",
+          "mennä veteen, se on",
+          "läpäisemätön vyöhyke."
+        ],
+        [
+          "Nähdäksesi",
+          "kaiken ympärilläsi mukavasti, liikuta",
+          "kameraa WASD-näppäimillä,",
+          "pyöritä näkymää ",
+          "QE-näppäimillä, ja hiiren rullalla",
+          "lähennä ja loitonna",
+          "kameraa."
+        ],
+        [
+          "Näetkö nappulan kentällä?",
+          "Napsauta sitä vasemmalla",
+          "hiiren painikkeella -",
+          "vasemmassa alakulmassa",
+          "sen valikko avautuu."
+        ],
+        [
+          "Sulkeaksesi nappulan",
+          "valikon, paina ESC",
+          "- tämä poistaa",
+          "valitun ruudun valinnan."
+        ],
+        [
+          "Monet nappulat",
+          "voivat liikkua",
+          "hyppäämällä viereisiin",
+          "ruutuihin. Hypätäksesi",
+          "valitse nappula (VNH)",
+          "ja napsauta oikealla",
+          "hiiren painikkeella",
+          "viereistä ruutua,",
+          "johon haluat",
+          "siirtyä."
+        ],
+        [
+          "Jos ruutu",
+          "kuuluu toiselle",
+          "pelaajalle, siitä tulee",
+          "hypyn jälkeen sinun.",
+          "Mutta et voi",
+          "hypätä ruutuun,",
+          "jossa joukkosi jo",
+          "ovat - se on varattu."
+        ],
+        [
+          "Tärkeää: jos",
+          "vihollisen ruudulla,",
+          "johon hyppäät,",
+          "seisoo jo vihollisen",
+          "nappula - se",
+          "katoaa, ja sinun",
+          "ottaa sen paikan."
+        ],
+        [
+          "Jokainen siirto",
+          "kuluttaa nappulan",
+          "taistelukykyä - sen",
+          "varasto näkyy nappulan valikossa."
+        ],
+        [
+          "Taistelukyky",
+          "voidaan palauttaa vain",
+          "yhdellä tavalla:",
+          "lopeta vuoro ja anna",
+          "sotilaiden levätä."
+        ],
+        [
+          "Pelaajat pelaavat vuorotellen,",
+          "joten kun kaikki",
+          "ovat tehneet siirtonsa,",
+          "ohjaus palaa",
+          "sinulle."
+        ],
+        [
+          "Ja lopuksi - nopea",
+          "siirto: välttääksesi",
+          "jokaisen reitin",
+          "ruudun napsauttamisen, pidä",
+          "Shift-näppäintä painettuna, osoita",
+          "kaukaista ruutua",
+          "ja paina OHN. Valittu",
+          "nappula piirtää itse",
+          "lyhyimmän reitin."
+        ],
+        [
+          "Ja katsotaanpa nyt,",
+          "oletko mihinkään",
+          "kelvollinen.",
+          "Ensimmäinen taistelu-",
+          "tehtäväsi - valtaa",
+          "vihollisen",
+          "pääkaupunkirakennus."
+        ]
+      ],
+      [
+        [
+          "Puhutaan nyt",
+          "luvuista, jotka",
+          "ratkaisevat taistelun lopputuloksen.",
+          "Jokaisella nappulalla",
+          "on kaksi keskeistä",
+          "parametria: hyökkäys ja",
+          "puolustus - ne ovat",
+          "valikossa, taistelu-",
+          "kyvyn vieressä."
+        ],
+        [
+          "Sääntö on yksinkertainen:",
+          "jos vihollisen ruudun",
+          "puolustus (kaikki",
+          "bonukset mukaan lukien)",
+          "on korkeampi kuin",
+          "nappulasi hyökkäys,",
+          "et voi hypätä",
+          "siihen ruutuun."
+        ],
+        [
+          "Lisäksi kaikki",
+          "nappulat projisoivat",
+          "puolustuksensa",
+          "viereisiin ruutuihin,",
+          "ikään kuin peittäen",
+          "tovereidensa selät."
+        ],
+        [
+          "Napsauta vihollisen",
+          "nappulaa nähdäksesi",
+          "sen hyökkäyksen",
+          "tai puolustuksen pienessä",
+          "ikkunassa vasemmassa alakulmassa. Jos",
+          "ikkunaa ei ole, valitulla",
+          "nappulalla ei ole hyökkäystä",
+          "eikä puolustusta - helppo kohde."
+        ],
+        [
+          "Ja kiinnitä nyt",
+          "huomiota taistelukenttään",
+          "- siellä on uusia",
+          "nappuloita: bunkkeri ja",
+          "tykistö."
+        ],
+        [
+          "Bunkkeri on puolustuksen",
+          "linnake: sillä ei ole",
+          "vain vaikuttavaa",
+          "puolustusta itsessään,",
+          "vaan se myös buffaa",
+          "viereisen",
+          "jalkaväen",
+          "puolustusta."
+        ],
+        [
+          "Tykistö iskee",
+          "kaukaa - se voi",
+          "hyökätä vihollisen kimppuun",
+          "jopa kolmen ruudun",
+          "etäisyydeltä ja tuhota",
+          "hänet ilman suoraa",
+          "kosketusta."
+        ],
+        [
+          "Bunkkeri, kaikesta ",
+          "voimastaan huolimatta,",
+          "ei ole este tykistölle -",
+          "yksi laukaus",
+          "siihen riittää."
+        ],
+        [
+          "Kuitenkin",
+          "tykistö ei voi",
+          "liikkua",
+          "itse - se täytyy",
+          "kytkeä jalkaväkeen.",
+          "Sitten kun",
+          "jalkaväki liikkuu, tykistö",
+          "rullaa tottelevaisesti",
+          "perässä."
+        ],
+        [
+          "Huomaa: kytketty",
+          "pari voi",
+          "tehdä hypyn",
+          "vain jos molemmilla",
+          "nappuloilla on tarpeeksi",
+          "taistelukykyä siihen."
+        ],
+        [
+          "Ja toinen tärkeä",
+          "temppu: vihollisen",
+          "tykistö voidaan",
+          "vallata jalkaväellämme.",
+          "Tätä varten",
+          "vie jalkaväki",
+          "vihollisen viereiseen ruutuun,",
+          "avaa sen valikko, paina",
+          "\"Valtaa\"-painiketta ja",
+          "napsauta OHN vihollisen",
+          "nappulaa."
+        ],
+        [
+          "Mutta ole varovainen:",
+          "valtausta ei voi",
+          "suorittaa, jos",
+          "kohteen vieressä",
+          "on vihollisen",
+          "jalkaväkeä tai bunkkeri -",
+          "ne estävät",
+          "operaation."
+        ],
+        [
+          "Ja lopuksi - kiinnitä",
+          "huomiota suoiseen",
+          "maastoon meistä",
+          "pohjoiseen. Älä missään tapauksessa",
+          "vie tykistöä",
+          "sinne - heti kun se",
+          "päätyy sinne,",
+          "se menettää kykynsä",
+          "hyökätä vihollisen kimppuun,",
+          "kunnes vedät",
+          "sen sieltä pois."
+        ],
+        [
+          "Ja hoida nyt",
+          "vihollinen tällä",
+          "oudolla",
+          "saarella - valtaa hänen",
+          "tykistönsä ja räjäytä",
+          "bunkkerit, joiden",
+          "taakse hän piiloutuu."
+        ]
+      ],
+      [
+        [
+          "Ja nyt siitä,",
+          "ilman mitä mikään armeija",
+          "ei ole olemassa - vankka",
+          "selusta. Nappulat eivät synny",
+          "tyhjästä, ne täytyy",
+          "luoda, ja se",
+          "vaatii resursseja."
+        ],
+        [
+          "Katso vasempaan ylä-",
+          "kulmaan - resurssisi",
+          "(dollarit ja kulutustavarat)",
+          "näet siellä.",
+          "Joka vuoro ne",
+          "tuodaan sinulle tuottavien",
+          "rakennusten toimesta."
+        ],
+        [
+          "Dollarit tuodaan",
+          "kaupungeista.",
+          "Kulutustavaroita tuottavat",
+          "tehtaat, jotka käyttävät",
+          "siihen dollareita."
+        ],
+        [
+          "Ja lopuksi, tehokkaan",
+          "talouden tärkein",
+          "salaisuus - pääkaupungin",
+          "rakennus. Se",
+          "kaksinkertaistaa",
+          "kaikkien viereisten",
+          "kaupunkien ja tehtaiden",
+          "tuotannon,",
+          "samalla - niiden",
+          "käyttämät resurssit pysyvät",
+          "ennallaan."
+        ],
+        [
+          "Vihollisen pääkaupungit,",
+          "kaupungit ja tehtaat",
+          "voidaan",
+          "vallata jalkaväellä",
+          "- aivan kuten",
+          "tykistö."
+        ],
+        [
+          "Yritetään nyt",
+          "käyttää resursseja",
+          "nappulan luomiseen. Kun",
+          "yhtään ruutua ei ole valittu,",
+          "nappulan valikon paikalla",
+          "on painikkeita",
+          "nappuloiden luomiseen - ne,",
+          "joihin",
+          "sinulla on tarpeeksi resursseja,",
+          "on merkitty värillä."
+        ],
+        [
+          "Sinulla pitäisi olla tarpeeksi",
+          "dollareita tehtaan",
+          "luomiseen - napsauta",
+          "vastaavaa painiketta,",
+          "ja valitse sitten OHN:llä",
+          "ruutu",
+          "rakentamista varten."
+        ],
+        [
+          "Jalkaväen ja",
+          "tykistön luominen toimii",
+          "hieman eri tavalla - ne",
+          "voidaan rakentaa vain",
+          "tuottavien",
+          "rakennusten viereen."
+        ],
+        [
+          "Kun napsautat",
+          "jalkaväen luontipainiketta,",
+          "sinulle korostetaan",
+          "kaupungit, joiden viereen",
+          "se voidaan rakentaa."
+        ],
+        [
+          "Huomaa, että nappulaa ei voi",
+          "luoda sopimattomaan",
+          "maastoon, esimerkiksi -",
+          "et voi",
+          "rakentaa tehdasta vuorille,",
+          "mutta tykistöllä on siellä",
+          "melko mukavaa."
+        ],
+        [
+          "Huomaa myös: monet",
+          "nappulat vaativat resursseja",
+          "paitsi ilmestyessään,",
+          "myös kuluttavat niitä",
+          "joka vuoro. Resurssit,",
+          "jotka nappula",
+          "kuluttaa joka vuoro, löydät",
+          "sen valikosta."
+        ],
+        [
+          "Jos vuoron alussa",
+          "resursseja ei ole tarpeeksi",
+          "ylläpitoon, nappula",
+          "poistetaan kentältä - joten",
+          "pidä silmällä tasetta."
+        ],
+        [
+          "Jos tehtaalta puuttuu",
+          "raaka-aineita,",
+          "se ei katoa, vaan",
+          "seisoo yksinkertaisesti ilman",
+          "tuotantoa."
+        ],
+        [
+          "Resurssivaraston lisäksi",
+          "vasemmassa yläkulmassa",
+          "näytetään myös odotettu",
+          "kasvu seuraavalle vuorolle",
+          "(suluissa),",
+          "mutta muista:",
+          "mahdollista seisokkia",
+          "resurssien puutteen vuoksi",
+          "ei oteta huomioon",
+          "tässä ennusteessa."
+        ],
+        [
+          "Käyttämällä hankittua",
+          "tietämystä, vahvista",
+          "taloutta, kokoa",
+          "vahva armeija ja",
+          "murskaa vihollisesi",
+          "tällä kauniilla",
+          "saarella."
+        ]
+      ],
+      [
+        [
+          "Pätevä komentaja",
+          "osaa voittaa paitsi",
+          "voimalla, myös",
+          "oveluudella. Miksi",
+          "vuodattaa verta siellä,",
+          "missä voit ottaa omasi",
+          "ilman taistelua?"
+        ],
+        [
+          "Jos onnistut",
+          "ympäröimään ryhmän",
+          "vihollisen ruutuja,",
+          "eli leikkaamaan ne",
+          "kokonaan irti",
+          "muusta vihollisen",
+          "omaisuudesta,",
+          "niin hänen",
+          "vuoronsa lopussa",
+          "nämä ruudut",
+          "annektoidaan sinulle."
+        ],
+        [
+          "Tämä on erittäin kannattavaa!",
+          "Mutta on yksi nyanssi -",
+          "vain ruudut, joita",
+          "vihollinen ei",
+          "valvo, annektoidaan,",
+          "joita me lisäksi",
+          "annektoinnin jälkeen",
+          "voimme valvoa."
+        ],
+        [
+          "Ruutujen valvonnan takaavat",
+          "pääkaupungit ja jalkaväki.",
+          "Jos ympäröidyllä alueella",
+          "on vihollisen pääkaupunki,",
+          "sitä ei annektoida.",
+          "Ja päinvastoin, jopa ympäröimättömät",
+          "ruudut voidaan",
+          "annektoida, jos",
+          "ne ovat kaukana",
+          "lähimmästä pääkaupungista tai",
+          "jalkaväestä."
+        ],
+        [
+          "On kuitenkin huomattava,",
+          "että jalkaväki antaa",
+          "valvonnan vain ",
+          "kun se on",
+          "samalla alueella kuin",
+          "pääkaupunki tai muuten",
+          "(jos pääkaupunkia ei ole),",
+          "kun se on veden",
+          "vieressä - näin se",
+          "saa kyvyn",
+          "tulla huolletuksi meritse."
+        ],
+        [
+          "Jos annektointi",
+          "todella tapahtuu,",
+          "kaikki vihollisen",
+          "jalkaväki",
+          "ympäröinnin sisällä",
+          "hajotetaan (sotilaat",
+          "hajaantuvat",
+          "koteihinsa), ja kaikki",
+          "muut nappulat -",
+          "siirtyvät sinun",
+          "armeijaasi terveinä ja turvassa."
+        ],
+        [
+          "Ympäröintien luomiseksi",
+          "on hyödyllistä olla",
+          "korkea liikkuvuus.",
+          "Tavallinen jalkaväki voi",
+          "hankkia pyörät -",
+          "nousta",
+          "kuljetusajoneuvoon ja",
+          "muuttua",
+          "moottoroiduksi jalkaväeksi."
+        ],
+        [
+          "Tämä antaa valtavan",
+          "edun: taistelukyvyn",
+          "varasto",
+          "moottoroidulla jalkaväellä on paljon",
+          "suurempi kuin jalkaisin,",
+          "ja se voi myös",
+          "kytkeä",
+          "tykistön."
+        ],
+        [
+          "Lisäksi moottoroitu",
+          "jalkaväki, aivan kuten",
+          "tavallinen jalkaväki,",
+          "antaa valvonnan",
+          "ruutuihin - käytä",
+          "tätä, jotta et menetä",
+          "aluetta turhaan."
+        ],
+        [
+          "Mutta on myös miinus -",
+          "vihollisen nappuloiden",
+          "valtaaminen",
+          "ei ole enää moottoroidun jalkaväen",
+          "kyky, siihen",
+          "tarvitaan nimenomaan",
+          "jalkaisin olevia sotilaita."
+        ],
+        [
+          "Koko tämä saari",
+          "on tiheän metsän peitossa,",
+          "jossa meidän",
+          "tykistömme on hyödytön.",
+          "Vihollinen, sen tietäen, on hyvin",
+          "linnoittautunut ja tuonut",
+          "moottoroidun jalkaväen",
+          "työntääkseen meidät pois täältä."
+        ],
+        [
+          "Kerää kiireesti pyöriä",
+          "ja revi heidän maansa",
+          "kappaleiksi."
+        ]
+      ],
+      [
+        [
+          "Nyt raskaasta",
+          "kalustosta. Vihollisen",
+          "bunkkeri, jota jalkaväki",
+          "ei saa murrettua,",
+          "voidaan tuhota",
+          "panssarivaunulla."
+        ],
+        [
+          "Panssarivaunut, kuten tykistö,",
+          "voidaan vallata",
+          "jalkaväellä. Panssarivaunu voi",
+          "hyökätä vihollisen kimppuun, mutta",
+          "vain viereisessä",
+          "ruudussa - lähietäisyydeltä."
+        ],
+        [
+          "Panssarivaunun voima kasvaa,",
+          "jos lähistöllä on",
+          "jalkaväkeä tai moottoroitua jalkaväkeä:",
+          "taistelutoverit peittävät",
+          "panssarin, ja panssarivaunun hyökkäys ja puolustus",
+          "kasvavat."
+        ],
+        [
+          "Yksinäinen panssarivaunu",
+          "sen sijaan - on helppo",
+          "saalis. Jopa tavallinen",
+          "jalkaväki voi",
+          "tuhota sen."
+        ],
+        [
+          "Oman panssarivaunun",
+          "luominen ei ole helppo tehtävä -",
+          "käytettävissä olevilla",
+          "keinoilla se ei onnistu.",
+          "Tutustu uuteen",
+          "resurssiin - raskaaseen teollisuuteen, sitä",
+          "tuottavat raskaat tehtaat,",
+          "käyttäen siihen",
+          "dollareita ja kulutustavaroita."
+        ],
+        [
+          "Raskas tehdas, aivan kuten",
+          "tehdas, saa bonuksen",
+          "pääkaupungin läheisyydestä,",
+          "ja vihollisen raskaat tehtaat voidaan",
+          "vallata jalkaväellä."
+        ],
+        [
+          "Mitä panssarivaunujen",
+          "kulkukelpoisuuteen tulee - ne ovat yksi",
+          "harvoista, jotka pystyvät taistelemaan",
+          "aavikolla, mutta vuorilla",
+          "ja soilla älä odota",
+          "niiltä mitään."
+        ],
+        [
+          "Katso tätä köyhää",
+          "saarta, se on monta",
+          "vuotta ollut ikuisen",
+          "sodan kourissa - on aika",
+          "luoda järjestys tänne."
+        ]
+      ],
+      [
+        [
+          "Tuottavia rakennuksia ei aina",
+          "tarvitse rakentaa itse.",
+          "Resurssien tuottajat voivat",
+          "ilmestyä itsestään",
+          "alueillesi - puhumme",
+          "privateers-tyypeistä (vaihtoehtoisia",
+          "versioita kaupungeista,",
+          "tehtaista ja raskaista tehtaista)."
+        ],
+        [
+          "Ilmestyäkseen ne tarvitsevat",
+          "miehittämättömiä tasankoja",
+          "ja valtion valvonnan",
+          "puuttumista (mitä vähemmän",
+          "pääkaupunkeja, sitä enemmän",
+          "privateers-tyyppejä)."
+        ],
+        [
+          "Privateers-tyypit ovat vähemmän tehokkaita",
+          "kuin tuotannot sinun",
+          "hallinnassasi, koska niiden on silti",
+          "tehtävä voittoa.",
+          "Samalla jokainen privateers-tyyppi",
+          "voidaan ostaa - muuttaa",
+          "tavalliseksi tuottavaksi rakennukseksi."
+        ],
+        [
+          "Toinen ero - privateers-tyyppi",
+          "ei siedä sen tarvitsemien",
+          "resurssien puutetta",
+          "tuotantoa varten -",
+          "pulatilanteessa se hylkää",
+          "tuotantonsa."
+        ],
+        [
+          "Hylätty rakennus ei vain",
+          "ilmaiseksi kuluta",
+          "valtion budjettia, se myös",
+          "tartuttaa tuottavia",
+          "rakennuksia lähistöllä."
+        ],
+        [
+          "Tästä hetkestä lähtien",
+          "myös bunkkerit,",
+          "jotka sijaitsevat kaukana",
+          "rintamasta,",
+          "muuttuvat hylätyiksi rakennuksiksi -",
+          "ei ole järkeä rakentaa niitä selustaan!"
+        ],
+        [
+          "Hyvä uutinen on,",
+          "että hylätyt rakennukset, kuten kaikki",
+          "tarpeettomat rakennukset,",
+          "voidaan purkaa",
+          "panssarivaunujen ja tykistön laukauksilla -",
+          "käytä tätä",
+          "estääksesi niiden",
+          "leviämisen."
+        ],
+        [
+          "Ja lopuksi, ylimääräinen",
+          "jalkaväki voi aina",
+          "asuttaa - muuttaa",
+          "ne asutuksiksi.",
+          "Tämä auttaa pelastamaan",
+          "talouden vaikealla",
+          "hetkellä."
+        ]
+      ],
+      [
+        [
+          "Vihollinen tällä saarella",
+          "tiesi etukäteen meidän",
+          "saapumisestamme ja pystyi investoimaan runsaasti",
+          "staattiseen",
+          "puolustukseen - onneksi",
+          "meillä oli miehemme",
+          "länsiprovinssissa, joka",
+          "sabotoi rakentamisen."
+        ],
+        [
+          "Valitettavasti itään meidän on",
+          "murtauduttava lukemattomien",
+          "bunkkeririvien läpi. Tässä uusi",
+          "nappula tulee",
+          "avuksi - Grad. Kuluttaen jokaiseen",
+          "laukaukseen hieman kulutustavaroita",
+          "se tuhoaa 3 kohdetta kerralla -",
+          "juuri sitä, mitä tarvitaan tiheää rakentamista vastaan."
+        ],
+        [
+          "Huomaa vain, että Grad on",
+          "epätarkka ase, eikä täsmälleen siihen ruutuun,",
+          "johon tähtäät,",
+          "se osu koskaan."
+        ],
+        [
+          "Gradia ei voi myöskään",
+          "yksinkertaisesti palkata - sen luomiseksi",
+          "on yhdistettävä",
+          "moottoroitu jalkaväki tykistöön.",
+          "Tämä muutos vaatii",
+          "lisäksi hieman raskasta teollisuutta,",
+          "jota emme ottaneet mukaan.",
+          "Mutta olemme varmoja, että löydät",
+          "tien ulos tästä tilanteesta."
+        ],
+        [
+          "Ja vielä yksi pikku juttu - meidän",
+          "rakentajamme ovat järjestäneet jotain",
+          "lakon tapaista, joten tässä",
+          "ja seuraavassa tehtävässä",
+          "et voi luoda",
+          "uusia nappuloita."
+        ]
+      ],
+      [
+        [
+          "Kirotut logistikot!",
+          "Pyynnössä sanottiin selvästi -",
+          "toimita panssarivaunu joen",
+          "pohjoispuolelle. Ilman sitä, näiden",
+          "bunkkerien läpi, vihollisen pääkaupunkiin",
+          "emme pääse. Onneksi",
+          "käsityöläisemme ovat äskettäin",
+          "kehittäneet ihmeaseen - Haupitsin."
+        ],
+        [
+          "Panssarivaunun kulkukelpoisuudella ja",
+          "tykistön kantamalla",
+          "tällä hirviöllä ei ole vertaa.",
+          "Se saadaan yhdistämällä",
+          "panssarivaunu tykistöön, mutta on",
+          "yksi nyanssi - tykistöä",
+          "ei myöskään toimitettu meille. Selviydy",
+          "tästä tilanteesta miten tiedät."
+        ]
+      ],
+      [
+        [
+          "Ja puhutaan nyt",
+          "vakavasti - vihollisen armeijan",
+          "tuhoaminen ei aina",
+          "riitä",
+          "ratkaisevaan voittoon.",
+          "Jos vihollisen talous",
+          "on vahva, he palaavat",
+          "tappion jälkeen",
+          "kasvaneella voimalla."
+        ],
+        [
+          "Ratkaistaksesi tämän",
+          "ongelman tarvitset",
+          "ohjus-",
+          "silon - se voi",
+          "laukaista ohjuksia",
+          "koodinimellä",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" on",
+          "kaukoase.",
+          "Lisäksi, jos vihollisen",
+          "silo osuu",
+          "silmääsi, tiedä - se",
+          "voidaan vallata",
+          "jalkaväellä ja käyttää",
+          "entistä omistajaansa vastaan."
+        ],
+        [
+          "\"Oreshnikin\" laukaisu",
+          "on mahdollista mitä tahansa",
+          "vihollisen ruutua",
+          "kohti, joka on",
+          "vähintään",
+          "kymmenen ruudun",
+          "etäisyydellä silosta."
+        ],
+        [
+          "Ohjus iskee",
+          "paitsi",
+          "valitsemaasi",
+          "kohteeseen, myös",
+          "lisäksi",
+          "se osuu kuuteen",
+          "satunnaiseen ruutuun",
+          "ympäristössä."
+        ],
+        [
+          "Onnistuimme juurtumaan",
+          "mantereelle, mutta maihinnousu",
+          "saarelle osoittautui",
+          "täydelliseksi epäonnistumiseksi -",
+          "jalkaväkemme juuttui tiheisiin",
+          "metsiin saaren pohjoisosassa.",
+          "Täällä tarvitsemme",
+          "\"Oreshnikin\" - tuhoa heidän",
+          "pääkaupunkinsa",
+          "Madagaskarilla, ja sitten",
+          "vihollinen antautuu."
+        ]
+      ],
+      [
+        [
+          "Peruskoulutus",
+          "on ohi! Nyt",
+          "tiedät kaiken",
+          "tarpeellisen",
+          "viedäksesi joukkosi",
+          "voittoon. Ja todista se nyt",
+          "valtaamalla",
+          "koko saari."
+        ],
+        [
+          "Muista: mekaniikkojen tuntemus",
+          "- on puoli menestystä,",
+          "toinen puoli -",
+          "älykkyytesi.",
+          "Eteenpäin, voittoihin!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Tasanko",
+    "Mountain": "Vuori",
+    "Forest": "Metsä",
+    "Swamp": "Suo",
+    "Desert": "Aavikko",
+    "Water": "Vesi",
+    "Infantry": "Jalkaväki",
+    "Tank": "Panssarivaunu",
+    "Artillery": "Tykistö",
+    "Howitzer": "Haupitsi",
+    "Grad": "Grad",
+    "Motorization": "Moottorointi",
+    "Bunker": "Bunkkeri",
+    "MissileSilo": "Ohjussilo",
+    "Town": "Kaupunki",
+    "LightFactory": "Kevyt tehdas",
+    "HeavyFactory": "Raskas tehdas",
+    "TierOneCapital": "Pääkaupunki",
+    "TallCapital": "Korkea Pääkaupunki",
+    "WideCapital": "Leveä Pääkaupunki",
+    "Settlement": "Asutus",
+    "PrivateLightFactory": "Käsityöläinen",
+    "PrivateHeavyFactory": "Yksityinen",
+    "Abandonment": "Hylätty rakennus"
+  },
+  "resources": {
+    "Dollars": "Dollarit",
+    "LightIndustryProducts": "Kulutustavarat",
+    "HeavyIndustryProducts": "Raskas teollisuus"
+  }
+}

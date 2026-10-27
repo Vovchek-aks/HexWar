@@ -1,0 +1,1124 @@
+{
+  "loading": {
+    "MAP_LOADING": "Se încarcă harta...",
+    "INTERMEDIATE_PREPARING": "Pregătire intermediară...",
+    "UI_MAKING": "Se creează interfața...",
+    "SPRITE_LOADING": "Se încarcă sprite-urile..."
+  },
+  "maps": {
+    "last_save": "Continuă...",
+    "Level 1": "Gotland",
+    "Level 2": "Insula Epstein",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sicilia",
+    "Level 5": "Haiti",
+    "Level 6": "Islanda",
+    "Level 7": "Creta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagascar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Hărți",
+    "CAMPAIGN": "Campanie",
+    "PLAY": "Joacă",
+    "EXIT": "Ieșire",
+    "AUTHORS": "Autori",
+    "CYBER_DILF_ROLES": [
+      "Autorul ideii",
+      "Programator",
+      "Designer de niveluri",
+      "Designer de sunet"
+    ],
+    "DIVAN_ROLES": [
+      "Artist",
+      "Designer grafic"
+    ],
+    "SETTINGS": "Setări",
+    "PAUSE": "Pauză",
+    "CONTINUE": "Continuă",
+    "SAVE_AND_QUIT": "Salvează și ieși",
+    "QUIT_WITHOUT_SAVING": "Ieși fără salvare",
+    "RESTART_LEVEL": "Reîncepe",
+    "MAKE_NEW_MAP": "Nou",
+    "LOAD_EXISTING_MAP": "Deschide",
+    "MAP_EDITOR": "Editor de hărți",
+    "OPEN_FILE_IN_EXPLORER": "Deschide în Explorer",
+    "SHARE_ONLINE": "Partajează",
+    "BACK": "Înapoi",
+    "END_TURN_BTN": "Sfârșește tura",
+    "TO_MOTORIZATION": "Înroti",
+    "CAPTURE": "Capturează",
+    "TO_INFANTRY": "Deroți",
+    "ATTACK": "Atacă",
+    "INITIATE_PULLING": "Atașează",
+    "TERMINATE_PULLING": "Detașează",
+    "TO_TALL_CAPITAL": "Înalță",
+    "TO_WIDE_CAPITAL": "Extinde",
+    "PURCHASE": "Cumpără",
+    "MOBILISE": "Mobilizează",
+    "SETTLE": "Așază",
+    "COMBINE": "Combină",
+    "LAUNCH_ORESHNIK": "Lansează \"Oreshnik\"",
+    "COST": "Cost",
+    "FLOW": "Balanță",
+    "SELECTED_PLAYERS": "Jucători selectați",
+    "NO_PLAYERS_SELECTED": "Niciun jucător selectat!",
+    "YOU_WON": "VICTORIE",
+    "TO_NEXT_LEVEL": "Continuă",
+    "PAGE": "Pagină",
+    "NEXT": "Următorul",
+    "MUSIC_VOLUME": "Volum muzică",
+    "VOICE_VOLUME": "Volum voci",
+    "EFFECTS_VOLUME": "Volum efecte",
+    "SELECTED_LANGUAGE": "Limba interfeței",
+    "GRAPHICS": "Grafică",
+    "SCREEN": "Ecran",
+    "FULLSCREEN": "Plin ecran",
+    "WINDOWED": "Fereastră",
+    "WIDTH": "Lățime",
+    "HEIGHT": "Înălțime",
+    "AUDIO": "Audio",
+    "OTHER": "Altele",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Animații mutări boți",
+    "ON": "Pornit",
+    "OFF": "Oprit",
+    "APPLY": "Aplică",
+    "ADD_PLAYER": "Adaugă jucător",
+    "FILL_HINT": "Umplere: Shift + Clic stânga",
+    "PLAYERS_NAME": "Numele jucătorului",
+    "CLEAR": "Golește",
+    "PLAYERS_TOP": "Cei mai buni jucători",
+    "TERRITORIES": "Teritorii",
+    "ECONOMY": "Econ.",
+    "PLAYERS_MODE": "Jucători",
+    "PLAYERS_MODE_STATES": "State",
+    "PLAYERS_MODE_RANDOM": "Aleatoriu",
+    "COUNT": "Cantitate"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Poate captura un vehicul",
+        "inamic adiacent.",
+        "Poate fi transformată",
+        "în infanterie motorizată.",
+        "",
+        "Toate tipurile de teren disponibile."
+      ],
+      "Tank": [
+        "Primește bonus la",
+        "atac și apărare de la",
+        "infanteria adiacentă",
+        "și motorizată.",
+        "",
+        "Munții și mlaștinile indisponibile."
+      ],
+      "Artillery": [
+        "Poate ataca",
+        "pozițiile inamice la",
+        "o distanță de trei căsuțe.",
+        "Nu se poate mișca",
+        "singură.",
+        "",
+        "Pădurile, mlaștinile",
+        "și deșerturile indisponibile."
+      ],
+      "Bunker": [
+        "Crește apărarea",
+        "infanteriei adiacente.",
+        "",
+        "Pădurile, mlaștinile",
+        "și deșerturile indisponibile."
+      ],
+      "MissileSilo": [
+        "Poate lansa rachete",
+        "\"Oreshnik\".",
+        "",
+        "Doar câmpiile disponibile."
+      ],
+      "Town": [
+        "Produce dolari.",
+        "Poate fi transformat",
+        "în infanterie.",
+        "",
+        "Munții, mlaștinile",
+        "și deșerturile indisponibile."
+      ],
+      "LightFactory": [
+        "Produce bunuri de consum,",
+        "consumă dolari.",
+        "",
+        "Munții, mlaștinile",
+        "și deșerturile indisponibile."
+      ],
+      "HeavyFactory": [
+        "Produce ind. grea,",
+        "consumă bunuri de consum",
+        "și dolari.",
+        "",
+        "Mlaștinile și deșerturile indisponibile."
+      ],
+      "TierOneCapital": [
+        "Dublează",
+        "producția clădirilor",
+        "adiacente și împiedică",
+        "anexarea regiunii",
+        "înconjurate în care se află.",
+        "",
+        "Doar câmpiile disponibile."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Distruge o piesă mai",
+        "slabă la o distanță",
+        "de 3 căsuțe."
+      ],
+      "HOWITZER_ATTACK": [
+        "Distruge o piesă mai",
+        "slabă la o distanță",
+        "de 3 căsuțe."
+      ],
+      "GRAD_ATTACK": [
+        "Distruge piese mai slabe în",
+        "vecinătatea căsuței țintă."
+      ],
+      "TANK_ATTACK": [
+        "Distruge o piesă mai",
+        "slabă în apropiere."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Atașează artileria",
+        "la infanteria selectată",
+        "sau motorizată."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Detașează artileria",
+        "de piesa atașată."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Lansează o rachetă \"Oreshnik\"",
+        "pe căsuța selectată și",
+        "vecinătățile ei."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Transformă această piesă în",
+        "o Capitală Înaltă,",
+        "crescând bonusul",
+        "de producție pentru vecini."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Transformă această piesă în",
+        "o Capitală Lată,",
+        "crescând raza",
+        "bonusului de producție",
+        "la două căsuțe."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorbind artileria",
+        "vecină, transformă",
+        "această piesă în Obuzier.",
+        "",
+        "Munții și mlaștinile indisponibile."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorbind artileria",
+        "vecină, transformă",
+        "această piesă în Grad.",
+        "",
+        "Doar câmpiile disponibile."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Transformă această piesă",
+        "într-un oraș."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Transformă această piesă",
+        "într-o fabrică."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Transformă această piesă",
+        "într-o fabrică grea."
+      ],
+      "MOBILISE_TOWN": [
+        "Transformă această piesă",
+        "în infanterie."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Transformă această piesă",
+        "în infanterie."
+      ],
+      "INFANTRY_SETTLE": [
+        "Transformă această piesă",
+        "într-o așezare."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Capturează o piesă mai",
+        "slabă în apropiere."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Transformă această",
+        "piesă în infanterie.",
+        "",
+        "Toate tipurile de teren disponibile."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Transformă această piesă",
+        "în infanterie motorizată. ",
+        "",
+        "Munții, mlaștinile",
+        "și deșerturile indisponibile."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Bun venit la",
+          "cursul de instrucție",
+          "militară! La",
+          "finalul lui",
+          "vei stăpâni principalele",
+          "mecanici ale jocului.",
+          "Totul începe cu",
+          "o privire de ansamblu."
+        ],
+        [
+          "În fața ta",
+          "se află câmpul",
+          "de luptă, împărțit",
+          "în căsuțe separate.",
+          "Fiecare căsuță",
+          "are proprietarul ei -",
+          "un jucător, iar în",
+          "căsuțe stau piesele."
+        ],
+        [
+          "Unele căsuțe",
+          "sunt ocupate de apă -",
+          "reține imediat:",
+          "piesele nu pot",
+          "intra pe apă, e",
+          "o zonă impracticabilă."
+        ],
+        [
+          "Pentru a privi",
+          "confortabil totul în jur, mișcă",
+          "camera cu WASD,",
+          "rotește privirea cu ",
+          "QE, iar cu rotița mouse-ului",
+          "apropie și depărtează",
+          "camera."
+        ],
+        [
+          "Vezi o piesă pe câmp?",
+          "Fă clic pe ea cu butonul",
+          "stâng al mouse-ului - în",
+          "colțul din stânga jos",
+          "se va deschide meniul ei."
+        ],
+        [
+          "Pentru a închide meniul",
+          "piesei, apasă ESC",
+          "- asta va deselecta",
+          "căsuța aleasă."
+        ],
+        [
+          "Multe piese",
+          "se pot mișca",
+          "sărind pe căsuțele",
+          "adiacente. Pentru a sări,",
+          "selectează o piesă (clic stânga)",
+          "și fă clic cu butonul drept",
+          "al mouse-ului pe",
+          "o căsuță adiacentă",
+          "în care vrei",
+          "să te muți."
+        ],
+        [
+          "Dacă o căsuță",
+          "aparține altui",
+          "jucător, după salt",
+          "va deveni a ta.",
+          "Dar nu poți",
+          "sări pe o căsuță",
+          "unde sunt deja",
+          "forțele tale - e ocupată."
+        ],
+        [
+          "Important: dacă",
+          "pe căsuța inamică",
+          "pe care sari",
+          "se află deja o piesă",
+          "inamică - ea",
+          "va dispărea, iar a ta",
+          "îi va lua locul."
+        ],
+        [
+          "Fiecare mișcare",
+          "consumă",
+          "capacitatea de luptă a piesei - rezerva",
+          "ei se vede în meniul piesei."
+        ],
+        [
+          "Capacitatea de luptă",
+          "poate fi restaurată doar",
+          "într-un singur mod:",
+          "încheie tura și lasă",
+          "soldații să se odihnească."
+        ],
+        [
+          "Jucătorii joacă pe rând,",
+          "așa că atunci când toți",
+          "și-au făcut mișcările,",
+          "controlul revine",
+          "la tine."
+        ],
+        [
+          "Și în final - mișcarea",
+          "rapidă: ca să nu",
+          "faci clic pe fiecare",
+          "căsuță a drumului, ține",
+          "apăsat Shift, indică",
+          "o căsuță îndepărtată",
+          "și apasă clic dreapta. Piesa",
+          "selectată va trasa",
+          "singură cea mai scurtă rută."
+        ],
+        [
+          "Și acum să vedem",
+          "dacă ești bun",
+          "de ceva.",
+          "Prima ta misiune",
+          "de luptă - capturează",
+          "clădirea",
+          "capitalei inamice."
+        ]
+      ],
+      [
+        [
+          "Acum să vorbim despre",
+          "numerele care",
+          "decid soarta bătăliei.",
+          "Fiecare piesă",
+          "are doi parametri",
+          "cheie: atac și",
+          "apărare - se află în",
+          "meniu, lângă",
+          "capacitatea de luptă."
+        ],
+        [
+          "Regula e simplă:",
+          "dacă apărarea",
+          "căsuței inamice (cu",
+          "toate bonusurile)",
+          "e mai mare decât",
+          "atacul piesei tale,",
+          "nu vei putea sări",
+          "pe acea căsuță."
+        ],
+        [
+          "În plus, toate",
+          "piesele proiectează",
+          "apărarea lor pe",
+          "căsuțele adiacente,",
+          "ca și cum ar acoperi",
+          "spatele camarazilor."
+        ],
+        [
+          "Fă clic pe o piesă",
+          "inamică pentru",
+          "a-i vedea atacul",
+          "sau apărarea în mica",
+          "fereastră din stânga jos. Dacă",
+          "nu există fereastră, piesa",
+          "selectată nu are nici atac,",
+          "nici apărare - o țintă ușoară."
+        ],
+        [
+          "Și acum acordă",
+          "atenție câmpului de luptă",
+          "- sunt piese noi",
+          "pe el: un buncăr și",
+          "artilerie."
+        ],
+        [
+          "Buncărul este un bastion",
+          "al apărării: nu",
+          "doar că are o apărare",
+          "impresionantă în sine,",
+          "dar și buffează",
+          "apărarea",
+          "infanteriei",
+          "adiacente."
+        ],
+        [
+          "Artileria lovește",
+          "de la distanță - poate",
+          "ataca inamicul la",
+          "o distanță de până la trei",
+          "căsuțe și îl distruge",
+          "fără contact",
+          "direct."
+        ],
+        [
+          "Buncărul, în ciuda ",
+          "întregii sale puteri,",
+          "nu e obstacol pentru artilerie -",
+          "un singur foc asupra",
+          "lui e suficient."
+        ],
+        [
+          "Totuși,",
+          "artileria nu poate",
+          "merge",
+          "singură - trebuie",
+          "atașată la infanterie.",
+          "Atunci când",
+          "infanteria se mișcă, artileria",
+          "se rostogolește ascultătoare",
+          "în urmă."
+        ],
+        [
+          "Observă: perechea",
+          "atașată poate",
+          "face un salt",
+          "doar dacă ambele",
+          "piese au suficientă",
+          "capacitate de luptă pentru asta."
+        ],
+        [
+          "Și un alt truc",
+          "important: artileria",
+          "inamică poate",
+          "fi capturată de infanteristul",
+          "nostru. Pentru asta",
+          "adu infanteria pe",
+          "căsuța adiacentă inamicului,",
+          "deschide-i meniul, apasă",
+          "butonul \"Capturează\" și",
+          "fă clic dreapta pe piesa",
+          "inamică."
+        ],
+        [
+          "Dar fii atent:",
+          "captura nu poate",
+          "fi efectuată dacă",
+          "lângă țintă",
+          "se află infanterie",
+          "inamică sau un buncăr -",
+          "vor împiedica",
+          "operațiunea."
+        ],
+        [
+          "Și în final - acordă",
+          "atenție terenului",
+          "mlăștinos la nord de",
+          "noi. Sub nicio formă",
+          "să nu duci",
+          "artileria acolo - odată ce",
+          "ajunge acolo,",
+          "își va pierde capacitatea",
+          "de a ataca inamicul,",
+          "până când",
+          "o scoți de acolo."
+        ],
+        [
+          "Și acum ocupă-te",
+          "de inamicul de pe",
+          "această stranie",
+          "insulă - capturează-i",
+          "artileria și sparge",
+          "buncărele din spatele",
+          "cărora se ascunde."
+        ]
+      ],
+      [
+        [
+          "Și acum despre ceea",
+          "fără de care nicio armată",
+          "nu există - un spate",
+          "solid. Piesele nu apar",
+          "din senin, trebuie",
+          "create, iar asta",
+          "necesită resurse."
+        ],
+        [
+          "Privește în colțul",
+          "din stânga sus - resursele tale",
+          "(dolari și bunuri de consum)",
+          "le vei vedea acolo.",
+          "În fiecare tură ți le",
+          "aduc clădirile",
+          "producătoare."
+        ],
+        [
+          "Dolarii sunt aduși",
+          "de orașe.",
+          "Bunurile de consum sunt produse",
+          "de fabrici, cheltuind",
+          "dolari pentru asta."
+        ],
+        [
+          "Și în final, principalul",
+          "secret al unei economii",
+          "eficiente - clădirea",
+          "capitalei. Aceasta",
+          "dublează",
+          "producția",
+          "tuturor orașelor",
+          "și fabricilor adiacente,",
+          "în timp ce - resursele",
+          "cheltuite de ele rămân",
+          "aceleași."
+        ],
+        [
+          "Capitalele,",
+          "orașele și fabricile",
+          "inamice pot",
+          "fi capturate",
+          "de infanterie - exact ca",
+          "artileria."
+        ],
+        [
+          "Să încercăm acum",
+          "să cheltuim resurse pentru",
+          "a crea o piesă. Când",
+          "nicio căsuță nu e selectată,",
+          "în locul meniului",
+          "piesei se află butoane",
+          "de creare a pieselor - cele",
+          "pentru care",
+          "ai suficiente resurse",
+          "sunt marcate cu culoare."
+        ],
+        [
+          "Ar trebui să ai suficienți",
+          "dolari pentru a crea",
+          "o fabrică - fă clic pe",
+          "butonul corespunzător,",
+          "apoi, cu clic dreapta,",
+          "alege o căsuță pentru",
+          "construcție."
+        ],
+        [
+          "Crearea infanteriei și",
+          "artileriei funcționează",
+          "puțin diferit - ele",
+          "pot fi construite doar",
+          "lângă clădiri",
+          "producătoare."
+        ],
+        [
+          "Când faci clic pe",
+          "butonul de creare a infanteriei,",
+          "îți vor fi evidențiate",
+          "orașele lângă care",
+          "poate fi construită."
+        ],
+        [
+          "Observă că o piesă nu poate",
+          "fi creată pe un teren",
+          "necorespunzător, de exemplu -",
+          "nu vei putea",
+          "construi o fabrică în munți,",
+          "dar artileria va fi",
+          "destul de confortabil acolo."
+        ],
+        [
+          "Observă de asemenea: multe",
+          "piese necesită resurse",
+          "nu doar la apariție,",
+          "ci le și consumă",
+          "în fiecare tură. Resursele",
+          "consumate de o piesă",
+          "în fiecare tură pot",
+          "fi găsite în meniul ei."
+        ],
+        [
+          "Dacă la începutul unei ture",
+          "nu sunt suficiente resurse",
+          "pentru întreținere, piesa va",
+          "fi eliminată de pe câmp - deci",
+          "urmărește balanța."
+        ],
+        [
+          "Dacă unei fabrici îi lipsesc",
+          "materii prime,",
+          "nu dispare, ci pur și simplu",
+          "stă degeaba fără",
+          "să producă."
+        ],
+        [
+          "Pe lângă stocul de resurse",
+          "din colțul din stânga sus",
+          "este afișată și creșterea",
+          "prevăzută pentru tura",
+          "următoare (în",
+          "paranteze), dar ține minte:",
+          "posibila staționare",
+          "din cauza lipsei de resurse",
+          "nu este luată în calcul",
+          "în această prognoză."
+        ],
+        [
+          "Folosind cunoștințele",
+          "dobândite, întărește",
+          "economia, adună",
+          "o armată puternică și",
+          "zdrobește-ți inamicii",
+          "pe această frumoasă",
+          "insulă."
+        ]
+      ],
+      [
+        [
+          "Un comandant competent",
+          "știe să câștige nu",
+          "doar prin forță, ci și",
+          "prin viclenie. De ce",
+          "să verși sânge acolo",
+          "unde poți lua al tău",
+          "fără luptă?"
+        ],
+        [
+          "Dacă reușești",
+          "să încerci un grup",
+          "de căsuțe inamice,",
+          "adică să le tai",
+          "complet",
+          "de restul",
+          "posesiunilor inamice,",
+          "atunci la",
+          "finalul turei sale",
+          "aceste căsuțe vor",
+          "fi anexate de tine."
+        ],
+        [
+          "Acest lucru e foarte avantajos!",
+          "Dar există o nuanță -",
+          "sunt anexate doar căsuțele",
+          "necontrolate de",
+          "inamic,",
+          "pe care, în plus,",
+          "după anexare vom",
+          "putea să le controlăm."
+        ],
+        [
+          "Controlul căsuțelor este asigurat",
+          "de capitale și infanterie.",
+          "Dacă în regiunea încercuită",
+          "există o capitală inamică,",
+          "atunci nu va fi anexată.",
+          "Și invers, chiar și căsuțele",
+          "neîncercuite pot",
+          "fi anexate, în cazul în care",
+          "sunt departe de",
+          "cea mai apropiată capitală sau",
+          "infanterie."
+        ],
+        [
+          "Totuși trebuie luat în calcul",
+          "că infanteria oferă",
+          "control doar ",
+          "atunci când se află în",
+          "aceeași regiune ca",
+          "o capitală sau altfel",
+          "(dacă nu există capitală),",
+          "când se află lângă",
+          "apă - astfel obține",
+          "capacitatea",
+          "de a fi aprovizionată pe mare."
+        ],
+        [
+          "Dacă anexarea",
+          "totuși are loc,",
+          "atunci toată infanteria",
+          "inamică din interiorul",
+          "încercuirii",
+          "este dizolvată (soldații",
+          "se împrăștie la",
+          "casele lor), iar toate",
+          "celelalte piese -",
+          "trec în armata",
+          "ta teafere și nevătămate."
+        ],
+        [
+          "Pentru a crea încercuiri",
+          "e util să ai",
+          "mobilitate ridicată.",
+          "Infanteria obișnuită se poate",
+          "înroti -",
+          "urca pe",
+          "un transport și",
+          "se transformă în",
+          "infanterie motorizată."
+        ],
+        [
+          "Asta oferă un uriaș",
+          "plus: rezerva",
+          "de capacitate de luptă la",
+          "infanteria motorizată e mult",
+          "mai mare decât pe jos,",
+          "și poate de asemenea",
+          "să atașeze la ea",
+          "artileria."
+        ],
+        [
+          "Mai mult, infanteria",
+          "motorizată, la fel ca",
+          "infanteria obișnuită,",
+          "oferă control asupra",
+          "căsuțelor - folosește-te",
+          "de asta ca să nu pierzi",
+          "teritoriu degeaba."
+        ],
+        [
+          "Dar există și un minus -",
+          "capturarea",
+          "pieselor inamice",
+          "nu mai este la îndemâna",
+          "infanteriei motorizate, pentru asta",
+          "sunt nevoie exact de",
+          "soldați pedeștri."
+        ],
+        [
+          "Toată această insulă",
+          "este acoperită de pădure deasă,",
+          "în care artileria",
+          "noastră e inutilă.",
+          "Inamicul, știind asta, s-a",
+          "fortificat bine și și-a adus",
+          "infanteria motorizată ca",
+          "să ne scoată de aici."
+        ],
+        [
+          "Adună urgent niște roți",
+          "și sfâșie-i pământurile",
+          "în bucăți."
+        ]
+      ],
+      [
+        [
+          "Acum despre tehnica",
+          "grea. Un buncăr",
+          "inamic pe care infanteria",
+          "nu-l poate face,",
+          "poate fi distrus",
+          "de un tanc."
+        ],
+        [
+          "Tancurile, ca și artileria,",
+          "pot fi capturate",
+          "de infanterie. Un tanc poate",
+          "ataca inamicul, dar",
+          "doar pe o căsuță",
+          "adiacentă - de aproape."
+        ],
+        [
+          "Puterea unui tanc crește",
+          "dacă în apropiere se află",
+          "infanterie sau motorizată:",
+          "tovarășii de luptă acoperă",
+          "blindajul, iar atacul și apărarea",
+          "tancurilor cresc."
+        ],
+        [
+          "Un tanc singuratic,",
+          "însă - este o pradă",
+          "ușoară. Chiar și infanteria",
+          "obișnuită îl poate",
+          "distruge."
+        ],
+        [
+          "Crearea propriului",
+          "tanc nu e o sarcină ușoară -",
+          "cu mijloacele",
+          "disponibile nu se poate.",
+          "Cunoaște o nouă",
+          "resursă - ind. grea, este",
+          "produsă de fabricile grele,",
+          "cheltuind pentru asta",
+          "dolari și bunuri de consum."
+        ],
+        [
+          "O fabrică grea, exact ca",
+          "o fabrică, primește un bonus",
+          "din vecinătatea",
+          "unei capitale, iar",
+          "fabricile grele inamice pot",
+          "fi capturate de infanterie."
+        ],
+        [
+          "Cât despre trecerea",
+          "tancurilor - ele sunt printre",
+          "puținele capabile să lupte",
+          "în deșert, însă în munți",
+          "și mlaștini nu te aștepta",
+          "la nimic de la ele."
+        ],
+        [
+          "Privește această biată",
+          "insulă, ea este de mulți",
+          "ani cuprinsă de veșnic",
+          "război - a venit timpul",
+          "să facem ordine aici."
+        ]
+      ],
+      [
+        [
+          "Clădirile producătoare nu trebuie",
+          "întotdeauna construite de tine.",
+          "Producătorii de resurse pot",
+          "apărea de la sine pe",
+          "teritoriile tale - vorbim",
+          "despre privateers (versiuni",
+          "alternative ale orașelor,",
+          "fabricilor și fabricilor grele)."
+        ],
+        [
+          "Pentru a apărea au nevoie",
+          "de câmpii neocupate",
+          "și de absența controlului",
+          "de stat (cu cât mai puține",
+          "capitale, cu atât mai mulți",
+          "privateers)."
+        ],
+        [
+          "Privateers sunt mai puțin eficienți",
+          "decât producțiile în",
+          "posesia ta, pentru că totuși",
+          "trebuie să facă profit.",
+          "În același timp, fiecare privateers",
+          "poate fi cumpărat - transformat",
+          "într-o clădire producătoare obișnuită."
+        ],
+        [
+          "O altă diferență - un privateers",
+          "nu va tolera lipsa",
+          "resurselor de care are",
+          "nevoie pentru producție -",
+          "în caz de deficit își va abandona",
+          "producția."
+        ],
+        [
+          "O abandonare nu doar",
+          "consumă gratuit",
+          "bugetul statului, ci și",
+          "infectează clădirile",
+          "producătoare din jur."
+        ],
+        [
+          "Din acest moment",
+          "și buncărele aflate",
+          "la mare distanță",
+          "de front se vor",
+          "transforma în abandonări -",
+          "n-are rost să le construiești în spate!"
+        ],
+        [
+          "Vestea bună este",
+          "că abandonările, ca toate",
+          "clădirile de care nu ai nevoie,",
+          "pot fi demolate cu focuri",
+          "de tancuri și artilerie -",
+          "folosește-te de asta",
+          "ca să le împiedici",
+          "răspândirea."
+        ],
+        [
+          "Și în final, infanteria",
+          "în exces se poate",
+          "întotdeauna așeza - transformați-o",
+          "în așezări.",
+          "Asta va ajuta să salvezi",
+          "economia într-un ceas",
+          "greu."
+        ]
+      ],
+      [
+        [
+          "Inamicul de pe această insulă",
+          "știa dinainte de sosirea",
+          "noastră și a putut investi mult",
+          "în apărare",
+          "statică - noroc pentru noi",
+          "că am avut omul nostru în",
+          "provincia vestică, care",
+          "a sabotat construcția."
+        ],
+        [
+          "Din păcate, spre est va trebui",
+          "să spargem nenumărate",
+          "rânduri de buncăre. Aici ne va veni",
+          "în ajutor o nouă",
+          "piesă - Gradul. Cheltuind la fiecare",
+          "foc puțin bunuri de consum",
+          "distruge 3 ținte deodată -",
+          "exact ce trebuie împotriva construcțiilor dese."
+        ],
+        [
+          "Doar că Gradul este o",
+          "armă imprecisă și exact căsuța",
+          "spre care țintești,",
+          "nu o va nimeri niciodată."
+        ],
+        [
+          "Gradul, de altfel, nu poate",
+          "fi pur și simplu angajat - pentru a-l",
+          "crea trebuie să combini",
+          "infanteria motorizată cu artileria.",
+          "Această transformare necesită,",
+          "în plus, puțină ind. grea,",
+          "pe care nu am adus-o cu noi.",
+          "Dar suntem siguri că vei găsi",
+          "o ieșire din această situație."
+        ],
+        [
+          "Și încă un lucru mic - constructorii",
+          "noștri au organizat ceva",
+          "ca o grevă, așa că la",
+          "această și următoarea misiune",
+          "nu vei putea crea",
+          "piese noi."
+        ]
+      ],
+      [
+        [
+          "La naiba cu logisticienii ăștia!",
+          "În cerere scria clar -",
+          "livrați un tanc la nord de",
+          "râu. Fără el, prin aceste",
+          "buncăre, la capitala inamică",
+          "nu vom sparge. Din fericire",
+          "meșterii noștri au dezvoltat",
+          "de curând o armă miracol - Obuzierul."
+        ],
+        [
+          "Cu trecerea unui tanc și",
+          "bătaia artileriei",
+          "acest monstru nu are egal.",
+          "Se obține combinând",
+          "un tanc cu artilerie, dar există",
+          "o nuanță - nici artileria",
+          "nu ne-a fost livrată. Descurcă-te",
+          "în această situație cum știi."
+        ]
+      ],
+      [
+        [
+          "Și acum să vorbim",
+          "serios - distrugerea",
+          "armatei inamice nu este mereu",
+          "suficientă pentru",
+          "o victorie decisivă.",
+          "Dacă economia inamicului",
+          "este puternică, după",
+          "înfrângere se vor întoarce",
+          "cu o forță sporită."
+        ],
+        [
+          "Pentru a rezolva această",
+          "problemă vei avea",
+          "nevoie de un siloz",
+          "de rachete - poate",
+          "lansa rachete sub",
+          "numele de cod",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" este o armă",
+          "cu rază lungă de acțiune.",
+          "Mai mult, dacă un siloz",
+          "inamic îți cade",
+          "sub ochi, știi - poate",
+          "fi capturat",
+          "de infanterie și folosit",
+          "împotriva fostului său proprietar."
+        ],
+        [
+          "Lansarea \"Oreshnik\"",
+          "este posibilă pe orice",
+          "căsuță inamică",
+          "care se află la",
+          "o distanță de cel puțin",
+          "zece căsuțe de",
+          "siloz."
+        ],
+        [
+          "Racheta lovește",
+          "nu doar în",
+          "ținta aleasă",
+          "de tine, ci",
+          "în plus",
+          "lovește șase",
+          "căsuțe aleatorii în",
+          "vecinătăți."
+        ],
+        [
+          "Am reușit să ne fixăm pe",
+          "continent, dar debarcarea",
+          "pe insulă s-a dovedit",
+          "un eșec total - infanteria",
+          "noastră a rămas blocată în pădurile",
+          "dease din nordul insulei.",
+          "Aici ne va trebui",
+          "\"Oreshnik\" - șterge-le",
+          "capitalele de pe",
+          "Madagascar și atunci",
+          "inamicul va capitula."
+        ]
+      ],
+      [
+        [
+          "Cursul de instrucție",
+          "militară s-a încheiat! Acum",
+          "știi tot",
+          "ce e necesar pentru",
+          "a-ți duce trupele la",
+          "victorie. Și acum",
+          "demonstrează asta luând",
+          "întreaga insulă."
+        ],
+        [
+          "Ține minte: cunoașterea mecanicilor",
+          "- e jumătate din succes,",
+          "cealaltă jumătate -",
+          "istețimea ta.",
+          "Înainte, spre victorii!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Câmpie",
+    "Mountain": "Munte",
+    "Forest": "Pădure",
+    "Swamp": "Mlaștină",
+    "Desert": "Deșert",
+    "Water": "Apă",
+    "Infantry": "Infanterie",
+    "Tank": "Tanc",
+    "Artillery": "Artilerie",
+    "Howitzer": "Obuzier",
+    "Grad": "Grad",
+    "Motorization": "Motorizare",
+    "Bunker": "Buncăr",
+    "MissileSilo": "Siloz de rachete",
+    "Town": "Oraș",
+    "LightFactory": "Fabrică ușoară",
+    "HeavyFactory": "Fabrică grea",
+    "TierOneCapital": "Capitală",
+    "TallCapital": "Capitală Înaltă",
+    "WideCapital": "Capitală Lată",
+    "Settlement": "Așezare",
+    "PrivateLightFactory": "Meșteșugar",
+    "PrivateHeavyFactory": "Privat",
+    "Abandonment": "Abandonare"
+  },
+  "resources": {
+    "Dollars": "Dolari",
+    "LightIndustryProducts": "Bunuri de consum",
+    "HeavyIndustryProducts": "Ind. grea"
+  }
+}

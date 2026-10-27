@@ -1,0 +1,1123 @@
+{
+  "loading": {
+    "MAP_LOADING": "Ładowanie mapy...",
+    "INTERMEDIATE_PREPARING": "Przygotowanie pośrednie...",
+    "UI_MAKING": "Tworzenie interfejsu...",
+    "SPRITE_LOADING": "Ładowanie sprite'ów..."
+  },
+  "maps": {
+    "last_save": "Kontynuuj...",
+    "Level 1": "Gotlandia",
+    "Level 2": "Wyspa Epsteina",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sycylia",
+    "Level 5": "Haiti",
+    "Level 6": "Islandia",
+    "Level 7": "Kreta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaskar",
+    "Level 10": "Wiktoria"
+  },
+  "ui": {
+    "MAPS": "Mapy",
+    "CAMPAIGN": "Kampania",
+    "PLAY": "Graj",
+    "EXIT": "Wyjdź",
+    "AUTHORS": "Autorzy",
+    "CYBER_DILF_ROLES": [
+      "Autor pomysłu",
+      "Programista",
+      "Projektant poziomów",
+      "Projektant dźwięku"
+    ],
+    "DIVAN_ROLES": [
+      "Artysta",
+      "Projektant grafiki"
+    ],
+    "SETTINGS": "Ustawienia",
+    "PAUSE": "Pauza",
+    "CONTINUE": "Kontynuuj",
+    "SAVE_AND_QUIT": "Zapisz i wyjdź",
+    "QUIT_WITHOUT_SAVING": "Wyjdź bez zapisu",
+    "RESTART_LEVEL": "Zacznij od nowa",
+    "MAKE_NEW_MAP": "Nowa",
+    "LOAD_EXISTING_MAP": "Otwórz",
+    "MAP_EDITOR": "Edytor map",
+    "OPEN_FILE_IN_EXPLORER": "Otwórz w Eksploratorze",
+    "SHARE_ONLINE": "Udostępnij",
+    "BACK": "Wstecz",
+    "END_TURN_BTN": "Zakończ turę",
+    "TO_MOTORIZATION": "Zakółkować się",
+    "CAPTURE": "Przejąć",
+    "TO_INFANTRY": "Odkółkować się",
+    "ATTACK": "Atakować",
+    "INITIATE_PULLING": "Przyczepić",
+    "TERMINATE_PULLING": "Odczepić",
+    "TO_TALL_CAPITAL": "Wyniesień się",
+    "TO_WIDE_CAPITAL": "Rozszerz się",
+    "PURCHASE": "Wykupić",
+    "MOBILISE": "Zmobilizować",
+    "SETTLE": "Osiedlić",
+    "COMBINE": "Połączyć",
+    "LAUNCH_ORESHNIK": "Odpalić \"Oriesznik\"",
+    "COST": "Koszt",
+    "FLOW": "Bilans",
+    "SELECTED_PLAYERS": "Wybrani gracze",
+    "NO_PLAYERS_SELECTED": "Nie wybrano graczy!",
+    "YOU_WON": "ZWYCIĘSTWO",
+    "TO_NEXT_LEVEL": "Kontynuuj",
+    "PAGE": "Strona",
+    "NEXT": "Dalej",
+    "MUSIC_VOLUME": "Głośność muzyki",
+    "VOICE_VOLUME": "Głośność głosów",
+    "EFFECTS_VOLUME": "Głośność efektów",
+    "SELECTED_LANGUAGE": "Język interfejsu",
+    "GRAPHICS": "Grafika",
+    "SCREEN": "Ekran",
+    "FULLSCREEN": "Pełny",
+    "WINDOWED": "Okienny",
+    "WIDTH": "Szerokość",
+    "HEIGHT": "Wysokość",
+    "AUDIO": "Dźwięk",
+    "OTHER": "Inne",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Animacje ruchów botów",
+    "ON": "Wł.",
+    "OFF": "Wył.",
+    "APPLY": "Zastosuj",
+    "ADD_PLAYER": "Dodaj gracza",
+    "FILL_HINT": "Wypełnianie: Shift + LPM",
+    "PLAYERS_NAME": "Imię gracza",
+    "CLEAR": "Wyczyść",
+    "PLAYERS_TOP": "Najlepsi gracze",
+    "TERRITORIES": "Terytoria",
+    "ECONOMY": "Gosp.",
+    "PLAYERS_MODE": "Gracze",
+    "PLAYERS_MODE_STATES": "Państwa",
+    "PLAYERS_MODE_RANDOM": "Losowo",
+    "COUNT": "Ilość"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Może przejąć sąsiedni",
+        "wrogi pojazd.",
+        "Można zmienić",
+        "w piechotę zmotoryzowaną.",
+        "",
+        "Wszystkie typy terenu dostępne."
+      ],
+      "Tank": [
+        "Otrzymuje bonus do",
+        "ataku i obrony od",
+        "sąsiedniej piechoty",
+        "i piechoty zmotoryzowanej.",
+        "",
+        "Góry i bagna niedostępne."
+      ],
+      "Artillery": [
+        "Może atakować",
+        "pozycje wroga na",
+        "dystansie trzech pól.",
+        "Nie może sama",
+        "się poruszać.",
+        "",
+        "Lasy, bagna",
+        "i pustynie niedostępne."
+      ],
+      "Bunker": [
+        "Zwiększa obronę",
+        "sąsiedniej piechoty.",
+        "",
+        "Lasy, bagna",
+        "i pustynie niedostępne."
+      ],
+      "MissileSilo": [
+        "Może odpalać rakiety",
+        "\"Oriesznik\".",
+        "",
+        "Tylko równiny dostępne."
+      ],
+      "Town": [
+        "Produkuje dolary.",
+        "Można zmienić",
+        "w piechotę.",
+        "",
+        "Góry, bagna",
+        "i pustynie niedostępne."
+      ],
+      "LightFactory": [
+        "Produkuje dobra konsumpcyjne,",
+        "zużywa dolary.",
+        "",
+        "Góry, bagna",
+        "i pustynie niedostępne."
+      ],
+      "HeavyFactory": [
+        "Produkuje przemysł ciężki,",
+        "zużywa dobra konsumpcyjne",
+        "i dolary.",
+        "",
+        "Bagna i pustynie niedostępne."
+      ],
+      "TierOneCapital": [
+        "Podwaja",
+        "produkcję sąsiednich",
+        "budynków i zapobiega",
+        "aneksji otoczonego",
+        "regionu, w którym się znajduje.",
+        "",
+        "Tylko równiny dostępne."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Niszczy słabszą",
+        "figurę na dystansie",
+        "3 pól."
+      ],
+      "HOWITZER_ATTACK": [
+        "Niszczy słabszą",
+        "figurę na dystansie",
+        "3 pól."
+      ],
+      "GRAD_ATTACK": [
+        "Niszczy słabsze figury w",
+        "okolicach wybranego pola."
+      ],
+      "TANK_ATTACK": [
+        "Niszczy słabszą",
+        "figurę w pobliżu."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Przyczepia artylerię",
+        "do wybranej piechoty",
+        "lub piechoty zmotoryzowanej."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Odczepia artylerię",
+        "od przyczepionej figury."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Odpala rakietę \"Oriesznik\"",
+        "na wybrane pole i",
+        "jego okolice."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Zmienia tę figurę",
+        "w Wysoką Stolicę,",
+        "zwiększając bonus",
+        "produkcji dla sąsiadów."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Zmienia tę figurę",
+        "w Szeroką Stolicę,",
+        "zwiększając promień",
+        "bonusu produkcji",
+        "do dwóch pól."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Pochłaniając sąsiednią",
+        "artylerię, zmienia",
+        "tę figurę w Haubicę.",
+        "",
+        "Góry i bagna niedostępne."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Pochłaniając sąsiednią",
+        "artylerię, zmienia",
+        "tę figurę w Grad.",
+        "",
+        "Tylko równiny dostępne."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Zmienia tę figurę",
+        "w miasto."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Zmienia tę figurę",
+        "w fabrykę."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Zmienia tę figurę",
+        "w ciężką fabrykę."
+      ],
+      "MOBILISE_TOWN": [
+        "Zmienia tę figurę",
+        "w piechotę."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Zmienia tę figurę",
+        "w piechotę."
+      ],
+      "INFANTRY_SETTLE": [
+        "Zmienia tę figurę",
+        "w osadę."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Przejmuje słabszą",
+        "figurę w pobliżu."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Zmienia tę",
+        "figurę w piechotę.",
+        "",
+        "Wszystkie typy terenu dostępne."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Zmienia tę figurę",
+        "w piechotę zmotoryzowaną. ",
+        "",
+        "Góry, bagna",
+        "i pustynie niedostępne."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Witaj na",
+          "kursie młodego",
+          "żołnierza! Po jego",
+          "ukończeniu",
+          "opanujesz główne",
+          "mechaniki gry.",
+          "Wszystko zaczyna się od",
+          "przeglądu."
+        ],
+        [
+          "Przed tobą",
+          "znajduje się pole",
+          "bitwy, podzielone",
+          "na osobne pola.",
+          "Każde pole",
+          "ma swojego właściciela -",
+          "gracza, a wewnątrz",
+          "pól stoją figury."
+        ],
+        [
+          "Niektóre pola",
+          "są zajęte przez wodę -",
+          "zapamiętaj od razu:",
+          "figury nie mogą",
+          "wchodzić do wody, to",
+          "strefa nieprzechodnia."
+        ],
+        [
+          "Aby wygodnie obejrzeć",
+          "wszystko wokół, poruszaj",
+          "kamerą klawiszami WASD,",
+          "obracaj widok za pomocą ",
+          "QE, a kółkiem myszy",
+          "przybliżaj i oddalaj",
+          "kamerę."
+        ],
+        [
+          "Widzisz figurę na polu?",
+          "Kliknij na nią lewym",
+          "przyciskiem myszy - w",
+          "lewym dolnym rogu",
+          "otworzy się jej menu."
+        ],
+        [
+          "Aby zamknąć menu",
+          "figury, naciśnij ESC",
+          "- to odznaczy",
+          "wybrane pole."
+        ],
+        [
+          "Wiele figur",
+          "potrafi się poruszać",
+          "skacząc na sąsiednie",
+          "pola. Aby skoczyć,",
+          "zaznacz figurę (LPM)",
+          "i kliknij prawym",
+          "przyciskiem myszy",
+          "na sąsiednie pole,",
+          "na które chcesz",
+          "się przemieścić."
+        ],
+        [
+          "Jeśli pole",
+          "należy do innego",
+          "gracza, po skoku",
+          "stanie się twoje.",
+          "Ale nie możesz",
+          "wskoczyć na pole,",
+          "na którym już stoją",
+          "twoje siły - jest zajęte."
+        ],
+        [
+          "Ważne: jeśli",
+          "na wrogim polu,",
+          "na które skaczesz,",
+          "już stoi figura",
+          "wroga - zniknie, a twoja",
+          "zajmie jej miejsce."
+        ],
+        [
+          "Każdy ruch",
+          "zużywa zdolność",
+          "bojową figury - jej zapas",
+          "znajdziesz w menu figury."
+        ],
+        [
+          "Zdolność bojową",
+          "można odzyskać tylko",
+          "w jeden sposób:",
+          "zakończ turę i pozwól",
+          "żołnierzom odpocząć."
+        ],
+        [
+          "Gracze chodzą na zmianę,",
+          "więc gdy wszyscy",
+          "wykonają swoje ruchy,",
+          "kontrola wróci",
+          "do ciebie."
+        ],
+        [
+          "I na koniec - szybkie",
+          "przemieszczanie: aby nie",
+          "klikać na każde",
+          "pole ścieżki, przytrzymaj",
+          "klawisz Shift, najedź",
+          "na odległe pole",
+          "i naciśnij PPM. Wybrana",
+          "figura sama wyznaczy",
+          "najkrótszą trasę."
+        ],
+        [
+          "A teraz zobaczmy,",
+          "czy nadajesz się",
+          "chociaż na coś.",
+          "Twoje pierwsze zadanie",
+          "bojowe - przejmij",
+          "wrogi",
+          "budynek stolicy."
+        ]
+      ],
+      [
+        [
+          "Teraz porozmawiajmy o",
+          "liczbach, które",
+          "decydują o wyniku bitwy.",
+          "Każda figura",
+          "ma dwa kluczowe",
+          "parametry: atak i",
+          "obronę - znajdują się",
+          "w menu, obok",
+          "zdolności bojowej."
+        ],
+        [
+          "Zasada jest prosta:",
+          "jeśli obrona",
+          "wrogiego pola (z",
+          "uwzględnieniem wszystkich bonusów)",
+          "jest wyższa niż",
+          "atak twojej figury,",
+          "nie uda ci się wskoczyć",
+          "na to pole."
+        ],
+        [
+          "Ponadto wszystkie",
+          "figury rzutują",
+          "swoją obronę na",
+          "sąsiednie pola,",
+          "jakby osłaniając",
+          "plecy towarzyszy."
+        ],
+        [
+          "Kliknij na wrogą",
+          "figurę, aby",
+          "zobaczyć jej atak",
+          "lub obronę w małym",
+          "okienku po lewej na dole. Jeśli",
+          "okienka nie ma, wybrana",
+          "figura nie ma ani ataku,",
+          "ani obrony - łatwy cel."
+        ],
+        [
+          "A teraz zwróć",
+          "uwagę na pole bitwy",
+          "- są na nim nowe",
+          "figury: bunkier i",
+          "artyleria."
+        ],
+        [
+          "Bunkier to bastion",
+          "obrony: nie tylko",
+          "sam ma imponującą",
+          "obronę,",
+          "ale także wzmacnia",
+          "obronę",
+          "sąsiedniej",
+          "piechoty."
+        ],
+        [
+          "Artyleria uderza",
+          "z daleka - może",
+          "atakować wroga na",
+          "dystansie do trzech",
+          "pól i niszczyć",
+          "go bez bezpośredniego",
+          "kontaktu."
+        ],
+        [
+          "Bunkier, mimo ",
+          "całej swojej potęgi,",
+          "nie jest przeszkodą dla artylerii -",
+          "jeden strzał",
+          "wystarczy."
+        ],
+        [
+          "Jednak",
+          "artyleria nie potrafi",
+          "sama",
+          "chodzić - trzeba",
+          "ją przyczepić do piechoty.",
+          "Wtedy gdy",
+          "piechota się porusza, artyleria",
+          "posłusznie toczy się",
+          "za nią."
+        ],
+        [
+          "Uwaga: przyczepiona",
+          "para może",
+          "wykonać skok",
+          "tylko jeśli obie",
+          "figury mają dość",
+          "zdolności bojowej, by to zrobić."
+        ],
+        [
+          "I jeszcze jedna ważna",
+          "sztuczka: wrogą",
+          "artylerię można",
+          "przejąć naszym",
+          "piechurem. Aby to zrobić,",
+          "podprowadź piechotę na",
+          "pole sąsiadujące z wrogiem,",
+          "otwórz jej menu, naciśnij",
+          "przycisk \"Przejąć\" i",
+          "kliknij PPM na wrogą",
+          "figurę."
+        ],
+        [
+          "Ale bądź ostrożny:",
+          "przejęcia nie można",
+          "wykonać, jeśli",
+          "obok celu",
+          "znajduje się wroga",
+          "piechota lub bunkier -",
+          "będą przeszkadzać",
+          "w operacji."
+        ],
+        [
+          "I na koniec - zwróć",
+          "uwagę na bagnisty",
+          "teren na północ od",
+          "nas. W żadnym wypadku",
+          "nie wprowadzaj",
+          "tam artylerii - gdy tylko",
+          "się tam znajdzie,",
+          "straci zdolność",
+          "atakowania wroga,",
+          "dopóki jej",
+          "stamtąd nie wyciągniesz."
+        ],
+        [
+          "A teraz rozpraw się",
+          "z wrogiem na",
+          "tej dziwnej",
+          "wyspie - przejmij jego",
+          "artylerię i otwórz",
+          "bunkry, za którymi",
+          "się ukrywa."
+        ]
+      ],
+      [
+        [
+          "A teraz o tym,",
+          "bez czego nie istnieje",
+          "żadna armia - solidne",
+          "zaplecze. Figury nie biorą",
+          "się znikąd, trzeba",
+          "je tworzyć, a to",
+          "wymaga zasobów."
+        ],
+        [
+          "Spójrz w lewy górny",
+          "róg - swoje zasoby",
+          "(dolary i dobra konsumpcyjne)",
+          "zobaczysz tam.",
+          "Co turę przynoszą",
+          "ci je budynki",
+          "produkujące."
+        ],
+        [
+          "Dolary przynoszą",
+          "miasta.",
+          "Dobra konsumpcyjne produkują",
+          "fabryki, zużywając",
+          "na to dolary."
+        ],
+        [
+          "I wreszcie, główny",
+          "sekret wydajnej",
+          "gospodarki - budynek",
+          "stolicy. Podwaja",
+          "produkcję",
+          "wszystkich sąsiednich",
+          "miast i fabryk,",
+          "przy czym - zużywane",
+          "przez nie zasoby pozostają",
+          "te same."
+        ],
+        [
+          "Wrogie stolice,",
+          "miasta i fabryki",
+          "można",
+          "przejmować",
+          "piechotą - dokładnie tak,",
+          "jak artylerię."
+        ],
+        [
+          "Spróbujmy teraz",
+          "wydać zasoby na",
+          "stworzenie figury. Gdy",
+          "żadne pole nie jest wybrane,",
+          "w miejscu menu",
+          "figury znajdują się przyciski",
+          "tworzenia figur - te,",
+          "na które",
+          "masz wystarczająco zasobów,",
+          "są oznaczone kolorem."
+        ],
+        [
+          "Powinieneś mieć dość",
+          "dolarów, by stworzyć",
+          "fabrykę - kliknij",
+          "odpowiedni przycisk,",
+          "a następnie PPM",
+          "wybierz pole pod",
+          "budowę."
+        ],
+        [
+          "Tworzenie piechoty i",
+          "artylerii działa",
+          "nieco inaczej - można",
+          "je budować tylko",
+          "obok budynków",
+          "produkujących."
+        ],
+        [
+          "Kiedy klikniesz",
+          "przycisk tworzenia piechoty,",
+          "zostaną ci podświetlone",
+          "miasta, obok których",
+          "można ją zbudować."
+        ],
+        [
+          "Uwaga: figury nie można",
+          "stworzyć na nieodpowiednim",
+          "terenie, na przykład -",
+          "nie uda ci się",
+          "zbudować fabryki w górach,",
+          "ale artyleria będzie tam",
+          "całkiem komfortowo."
+        ],
+        [
+          "Uwaga też: wiele",
+          "figur wymaga zasobów",
+          "nie tylko przy pojawieniu się,",
+          "ale także zużywa je",
+          "co turę. Zasoby",
+          "zużywane przez figurę",
+          "co turę można",
+          "znaleźć w jej menu."
+        ],
+        [
+          "Jeśli na początku tury",
+          "nie ma dość zasobów",
+          "na utrzymanie, figura zostanie",
+          "usunięta z pola - więc",
+          "pilnuj bilansu."
+        ],
+        [
+          "Jeśli fabryce brakuje",
+          "surowców,",
+          "nie znika, tylko",
+          "po prostu stoi bezczynnie,",
+          "nie produkując."
+        ],
+        [
+          "Oprócz zapasu zasobów",
+          "w lewym górnym rogu",
+          "wyświetlany jest także",
+          "przewidywany przyrost",
+          "na następną turę (w",
+          "nawiasach), ale pamiętaj:",
+          "możliwy przestój",
+          "z powodu braku zasobów",
+          "nie jest uwzględniany",
+          "w tej prognozie."
+        ],
+        [
+          "Wykorzystując zdobytą",
+          "wiedzę, wzmocnij",
+          "gospodarkę, zbierz",
+          "silną armię i",
+          "rozbij swoich wrogów",
+          "na tej pięknej",
+          "wyspie."
+        ]
+      ],
+      [
+        [
+          "Zdolny dowódca",
+          "potrafi zwyciężać nie",
+          "tylko siłą, ale też",
+          "podstępem. Po co",
+          "przelewać krew tam,",
+          "gdzie swoje można wziąć",
+          "bez walki?"
+        ],
+        [
+          "Jeśli uda ci się",
+          "otoczyć grupę",
+          "wrogich pól,",
+          "czyli całkowicie",
+          "odciąć je od",
+          "reszty wrogich",
+          "posiadłości,",
+          "to pod",
+          "koniec jego tury",
+          "te pola zostaną",
+          "przez ciebie anektowane."
+        ],
+        [
+          "To bardzo opłacalne!",
+          "Ale jest niuans -",
+          "anektowane są tylko pola",
+          "niekontrolowane przez",
+          "wroga,",
+          "które dodatkowo",
+          "po aneksji będziemy",
+          "mogli kontrolować."
+        ],
+        [
+          "Kontrolę nad polami zapewniają",
+          "stolice i piechota.",
+          "Jeśli w otoczonym regionie",
+          "jest wroga stolica,",
+          "to nie zostanie anektowany.",
+          "I odwrotnie, nawet nieotoczone",
+          "pola mogą",
+          "zostać anektowane, jeśli",
+          "znajdują się daleko od",
+          "najbliższej stolicy lub",
+          "piechoty."
+        ],
+        [
+          "Należy jednak pamiętać,",
+          "że piechota daje",
+          "kontrolę tylko ",
+          "gdy znajduje się w",
+          "tym samym regionie co",
+          "stolica, lub też",
+          "(jeśli nie ma stolicy),",
+          "gdy znajduje się obok",
+          "wody - w ten sposób",
+          "zyskuje zdolność",
+          "zaopatrzenia drogą morską."
+        ],
+        [
+          "Jeśli aneksja",
+          "jednak nastąpi,",
+          "to cała wroga",
+          "piechota wewnątrz",
+          "okrążenia",
+          "zostaje rozwiązana (żołnierze",
+          "rozchodzą się do",
+          "domów), a wszystkie",
+          "pozostałe figury -",
+          "przechodzą do twojej",
+          "armii całe i zdrowe."
+        ],
+        [
+          "Do tworzenia okrążeń",
+          "przydaje się",
+          "wysoka mobilność.",
+          "Zwykła piechota może",
+          "zakółkować się -",
+          "przesiąść się na",
+          "transport i",
+          "zmienić w",
+          "piechotę zmotoryzowaną."
+        ],
+        [
+          "To daje ogromny",
+          "plus: zapas",
+          "zdolności bojowej",
+          "piechoty zmotoryzowanej jest znacznie",
+          "większy niż pieszego,",
+          "a także potrafi",
+          "przyczepić do siebie",
+          "artylerię."
+        ],
+        [
+          "Co więcej, piechota",
+          "zmotoryzowana, podobnie jak",
+          "zwykła piechota,",
+          "daje kontrolę nad",
+          "polami - korzystaj",
+          "z tego, by nie tracić",
+          "terytorium na darmo."
+        ],
+        [
+          "Ale jest też minus -",
+          "przejmowanie",
+          "wrogich figur",
+          "nie jest już w gestii",
+          "piechoty zmotoryzowanej, do tego",
+          "potrzebni są dokładnie",
+          "piesi żołnierze."
+        ],
+        [
+          "Cała ta wyspa",
+          "jest porośnięta gęstym lasem,",
+          "w którym nasza",
+          "artyleria jest bezużyteczna.",
+          "Wróg, wiedząc to, dobrze",
+          "się ufortyfikował i sprowadził",
+          "swoją piechotę zmotoryzowaną, aby",
+          "nas stąd wyprzeć."
+        ],
+        [
+          "Pilnie zbierz kółka",
+          "i rozerwij jego ziemie",
+          "na strzępy."
+        ]
+      ],
+      [
+        [
+          "Teraz o ciężkim",
+          "sprzęcie. Wrogi",
+          "bunkier, którego piechota",
+          "nie da rady,",
+          "można zniszczyć",
+          "czołgiem."
+        ],
+        [
+          "Czołgi, podobnie jak artylerię,",
+          "można przejmować",
+          "piechotą. Czołg potrafi",
+          "atakować wroga, ale",
+          "tylko na sąsiednim",
+          "polu - z bliska."
+        ],
+        [
+          "Siła czołgu rośnie,",
+          "jeśli w pobliżu jest",
+          "piechota lub piechota zmotoryzowana:",
+          "towarzysze broni osłaniają",
+          "pancerz, a atak i obrona",
+          "czołgu rosną."
+        ],
+        [
+          "Samotny czołg",
+          "tymczasem - jest łatwym",
+          "łupem. Nawet zwykła",
+          "piechota może",
+          "go zniszczyć."
+        ],
+        [
+          "Stworzenie własnego",
+          "czołgu to niełatwe zadanie -",
+          "dostępnymi środkami",
+          "tu nie wystarczy.",
+          "Poznaj nowy",
+          "zasób - przemysł ciężki, produkują",
+          "go ciężkie fabryki,",
+          "zużywając na to",
+          "dolary i dobra konsumpcyjne."
+        ],
+        [
+          "Ciężka fabryka, podobnie jak",
+          "fabryka, otrzymuje bonus",
+          "od sąsiedztwa",
+          "stolicy, a",
+          "wrogie ciężkie fabryki można",
+          "przejmować piechotą."
+        ],
+        [
+          "Jeśli chodzi o przechodniość",
+          "czołgów - są jednymi z",
+          "nielicznych zdolnych do walki",
+          "na pustyni, jednak w górach",
+          "i na bagnach nic po nich",
+          "nie oczekuj."
+        ],
+        [
+          "Spójrz na tę biedną",
+          "wyspę, od wielu",
+          "lat jest pogrążona w wiecznej",
+          "wojnie - czas",
+          "zaprowadzić tu porządek."
+        ]
+      ],
+      [
+        [
+          "Budynki produkujące nie zawsze",
+          "muszą być przez ciebie budowane.",
+          "Producenci zasobów mogą",
+          "sami pojawiać się na twoich",
+          "terytoriach - mówimy",
+          "o privateers (alternatywnych",
+          "wersjach miast,",
+          "fabryk i ciężkich fabryk)."
+        ],
+        [
+          "Do pojawienia się potrzebują",
+          "niezajętych równin",
+          "i braku kontroli",
+          "państwowej (im mniej",
+          "stolic, tym więcej",
+          "privateers)."
+        ],
+        [
+          "Privateers są mniej wydajni",
+          "niż produkcje w twoim",
+          "posiadaniu, ponieważ muszą",
+          "jednak osiągać zysk.",
+          "Jednocześnie każdego privateers",
+          "można wykupić - zmienić",
+          "w zwykły budynek produkujący."
+        ],
+        [
+          "Inna różnica - privateers",
+          "nie zniesie braku",
+          "potrzebnych mu",
+          "do produkcji zasobów -",
+          "w razie deficytu porzuci",
+          "swoją produkcję."
+        ],
+        [
+          "Porzucenie nie tylko",
+          "bezpłatnie zużywa",
+          "budżet państwa, ale także",
+          "zaraża budynki",
+          "produkujące w okolicy."
+        ],
+        [
+          "Od tego momentu",
+          "także bunkry",
+          "znajdujące się w dużej",
+          "odległości od frontu",
+          "będą zmieniać się",
+          "w porzucenia -",
+          "nie ma sensu budować ich na tyłach!"
+        ],
+        [
+          "Dobra wiadomość jest taka,",
+          "że porzucenia, jak wszystkie",
+          "niepotrzebne ci budynki,",
+          "można burzyć strzałami",
+          "czołgów i artylerii -",
+          "korzystaj z tego, by",
+          "zapobiegać ich",
+          "rozprzestrzenianiu."
+        ],
+        [
+          "I na koniec, zbędną",
+          "piechotą zawsze można",
+          "się osiedlić - zmienić",
+          "ją w osady.",
+          "To pomoże uratować",
+          "gospodarkę w trudnej",
+          "chwili."
+        ]
+      ],
+      [
+        [
+          "Wróg na tej wyspie",
+          "z góry wiedział o naszym",
+          "przybyciu i mógł dużo zainwestować",
+          "w statyczną",
+          "obronę - na nasze szczęście",
+          "mieliśmy swojego człowieka",
+          "w zachodniej prowincji, który",
+          "sabotował budowę."
+        ],
+        [
+          "Niestety, na wschód musimy",
+          "przebijać się przez niezliczone",
+          "rzędy bunkrów. Tu z pomocą",
+          "przyjdzie nam nowa",
+          "figura - Grad. Zużywając przy każdym",
+          "strzale trochę dóbr konsumpcyjnych,",
+          "niszczy 3 cele naraz -",
+          "w sam raz na gęstą zabudowę."
+        ],
+        [
+          "Uwaga tylko, że Grad to",
+          "broń nieprecyzyjna, i dokładnie w to pole,",
+          "w które celujesz,",
+          "nigdy nie trafi."
+        ],
+        [
+          "Grada zresztą nie można",
+          "po prostu wynająć - by go stworzyć,",
+          "trzeba połączyć",
+          "piechotę zmotoryzowaną z artylerią.",
+          "Ta przemiana wymaga",
+          "dodatkowo trochę przemysłu ciężkiego,",
+          "którego nie zabraliśmy ze sobą.",
+          "Ale jesteśmy pewni, że znajdziesz",
+          "wyjście z tej sytuacji."
+        ],
+        [
+          "I jeszcze jedna drobnostka - nasi",
+          "budowniczowie zorganizowali coś",
+          "w rodzaju strajku, więc w",
+          "tym i następnym zadaniu",
+          "nie uda ci się stworzyć",
+          "nowych figur."
+        ]
+      ],
+      [
+        [
+          "Niech to szlag, ci logistycy!",
+          "W zamówieniu było jasno napisane -",
+          "dostarczyć czołg na północ od",
+          "rzeki. Bez niego, przez te",
+          "bunkry, do wrogiej stolicy",
+          "się nie przebijemy. Na szczęście",
+          "nasi rzemieślnicy niedawno",
+          "opracowali cudowną broń - Haubicę."
+        ],
+        [
+          "Z przechodniością czołgu i",
+          "zasięgiem artylerii",
+          "ten potwór nie ma sobie równych.",
+          "Powstaje przez połączenie",
+          "czołgu z artylerią, ale jest",
+          "niuans - artylerii też",
+          "nam nie dostarczyli. Wybrnij",
+          "z tej sytuacji, jak potrafisz."
+        ]
+      ],
+      [
+        [
+          "A teraz porozmawiajmy",
+          "poważnie - zniszczenie",
+          "wrogiej armii nie zawsze",
+          "wystarcza do",
+          "zdecydowanego zwycięstwa.",
+          "Jeśli gospodarka wroga",
+          "jest silna, to po",
+          "porażce wróci",
+          "ze zwiększoną siłą."
+        ],
+        [
+          "Aby rozwiązać ten",
+          "problem, będziesz",
+          "potrzebować silosu",
+          "rakietowego - potrafi",
+          "odpalać rakiety pod",
+          "nazwą kodową",
+          "\"Oriesznik\"."
+        ],
+        [
+          "\"Oriesznik\" to broń",
+          "dalekiego zasięgu.",
+          "Co więcej, jeśli wrogi",
+          "silos wpadnie ci w",
+          "oko, wiedz - można",
+          "go przejąć",
+          "piechotą i użyć",
+          "przeciw byłemu właścicielowi."
+        ],
+        [
+          "Odpalenie \"Oriesznika\"",
+          "jest możliwe na dowolne",
+          "wrogie pole,",
+          "które znajduje się w",
+          "odległości nie mniejszej niż",
+          "dziesięć pól od",
+          "silosu."
+        ],
+        [
+          "Rakieta uderza",
+          "nie tylko w",
+          "wybrany przez ciebie",
+          "cel, ale także",
+          "dodatkowo",
+          "trafia sześć",
+          "losowych pól w",
+          "okolicy."
+        ],
+        [
+          "Udało nam się umocnić na",
+          "kontynencie, ale desant",
+          "na wyspę okazał się",
+          "kompletną porażką - nasza",
+          "piechota utknęła w gęstych",
+          "lasach na północy wyspy.",
+          "Tu przyda nam się",
+          "\"Oriesznik\" - zmieć ich",
+          "stolice na",
+          "Madagaskarze, a wtedy",
+          "wróg skapituluje."
+        ]
+      ],
+      [
+        [
+          "Kurs młodego",
+          "żołnierza ukończony! Teraz",
+          "wiesz wszystko,",
+          "co niezbędne, by",
+          "prowadzić swoje wojska do",
+          "zwycięstwa. A teraz",
+          "udowodnij to, zajmując",
+          "całą wyspę."
+        ],
+        [
+          "Pamiętaj: znajomość mechanik",
+          "- to połowa sukcesu,",
+          "druga połowa -",
+          "twoja sprytność.",
+          "Naprzód, ku zwycięstwom!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Równina",
+    "Mountain": "Góra",
+    "Forest": "Las",
+    "Swamp": "Bagno",
+    "Desert": "Pustynia",
+    "Water": "Woda",
+    "Infantry": "Piechota",
+    "Tank": "Czołg",
+    "Artillery": "Artyleria",
+    "Howitzer": "Haubica",
+    "Grad": "Grad",
+    "Motorization": "Motoryzacja",
+    "Bunker": "Bunkier",
+    "MissileSilo": "Silos rakietowy",
+    "Town": "Miasto",
+    "LightFactory": "Lekka fabryka",
+    "HeavyFactory": "Ciężka fabryka",
+    "TierOneCapital": "Stolica",
+    "TallCapital": "Wysoka Stolica",
+    "WideCapital": "Szeroka Stolica",
+    "Settlement": "Osada",
+    "PrivateLightFactory": "Rzemieślnik",
+    "PrivateHeavyFactory": "Prywatny",
+    "Abandonment": "Porzucenie"
+  },
+  "resources": {
+    "Dollars": "Dolary",
+    "LightIndustryProducts": "Dobra konsumpcyjne",
+    "HeavyIndustryProducts": "Przemysł ciężki"
+  }
+}

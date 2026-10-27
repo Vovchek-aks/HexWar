@@ -1,0 +1,1124 @@
+{
+  "loading": {
+    "MAP_LOADING": "Laddar karta...",
+    "INTERMEDIATE_PREPARING": "Mellanförberedelse...",
+    "UI_MAKING": "Skapar användargränssnitt...",
+    "SPRITE_LOADING": "Laddar sprites..."
+  },
+  "maps": {
+    "last_save": "Fortsätt...",
+    "Level 1": "Gotland",
+    "Level 2": "Epstein ö",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sicilien",
+    "Level 5": "Haiti",
+    "Level 6": "Island",
+    "Level 7": "Kreta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaskar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Kartor",
+    "CAMPAIGN": "Kampanj",
+    "PLAY": "Spela",
+    "EXIT": "Avsluta",
+    "AUTHORS": "Upphovsmän",
+    "CYBER_DILF_ROLES": [
+      "Idéförfattare",
+      "Programmerare",
+      "Leveldesigner",
+      "Ljuddesigner"
+    ],
+    "DIVAN_ROLES": [
+      "Konstnär",
+      "Artdesigner"
+    ],
+    "SETTINGS": "Inställningar",
+    "PAUSE": "Paus",
+    "CONTINUE": "Fortsätt",
+    "SAVE_AND_QUIT": "Spara och avsluta",
+    "QUIT_WITHOUT_SAVING": "Avsluta utan att spara",
+    "RESTART_LEVEL": "Starta om",
+    "MAKE_NEW_MAP": "Ny",
+    "LOAD_EXISTING_MAP": "Öppna",
+    "MAP_EDITOR": "Kartredigerare",
+    "OPEN_FILE_IN_EXPLORER": "Öppna i Utforskaren",
+    "SHARE_ONLINE": "Dela",
+    "BACK": "Tillbaka",
+    "END_TURN_BTN": "Avsluta drag",
+    "TO_MOTORIZATION": "Få hjul",
+    "CAPTURE": "Ta över",
+    "TO_INFANTRY": "Tappa hjul",
+    "ATTACK": "Anfall",
+    "INITIATE_PULLING": "Koppla",
+    "TERMINATE_PULLING": "Koppla loss",
+    "TO_TALL_CAPITAL": "Höj",
+    "TO_WIDE_CAPITAL": "Bredda",
+    "PURCHASE": "Köp",
+    "MOBILISE": "Mobilisera",
+    "SETTLE": "Bosätt",
+    "COMBINE": "Kombinera",
+    "LAUNCH_ORESHNIK": "Skjut \"Oreshnik\"",
+    "COST": "Kostnad",
+    "FLOW": "Balans",
+    "SELECTED_PLAYERS": "Valda spelare",
+    "NO_PLAYERS_SELECTED": "Inga spelare valda!",
+    "YOU_WON": "SEGER",
+    "TO_NEXT_LEVEL": "Fortsätt",
+    "PAGE": "Sida",
+    "NEXT": "Nästa",
+    "MUSIC_VOLUME": "Musikvolym",
+    "VOICE_VOLUME": "Röstvolym",
+    "EFFECTS_VOLUME": "Effektvolym",
+    "SELECTED_LANGUAGE": "Gränssnittsspråk",
+    "GRAPHICS": "Grafik",
+    "SCREEN": "Skärm",
+    "FULLSCREEN": "Helskärm",
+    "WINDOWED": "Fönster",
+    "WIDTH": "Bredd",
+    "HEIGHT": "Höjd",
+    "AUDIO": "Ljud",
+    "OTHER": "Övrigt",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Bottdragsanimationer",
+    "ON": "På",
+    "OFF": "Av",
+    "APPLY": "Tillämpa",
+    "ADD_PLAYER": "Lägg till spelare",
+    "FILL_HINT": "Fyll: Shift + LMB",
+    "PLAYERS_NAME": "Spelarnamn",
+    "CLEAR": "Rensa",
+    "PLAYERS_TOP": "Toppspelare",
+    "TERRITORIES": "Områden",
+    "ECONOMY": "Ekon.",
+    "PLAYERS_MODE": "Spelare",
+    "PLAYERS_MODE_STATES": "Stater",
+    "PLAYERS_MODE_RANDOM": "Slumpmässig",
+    "COUNT": "Antal"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Kan ta över ett intilliggande",
+        "fientligt fordon.",
+        "Kan förvandlas",
+        "till motoriserat infanteri.",
+        "",
+        "Alla terrängtyper tillgängliga."
+      ],
+      "Tank": [
+        "Får bonus på",
+        "anfall och försvar från",
+        "intilliggande infanteri",
+        "och motoriserat infanteri.",
+        "",
+        "Berg och träsk otillgängliga."
+      ],
+      "Artillery": [
+        "Kan anfalla",
+        "fientliga ställningar på",
+        "ett avstånd av tre rutor.",
+        "Kan inte röra sig",
+        "själv.",
+        "",
+        "Skogar, träsk",
+        "och öknar otillgängliga."
+      ],
+      "Bunker": [
+        "Ökar försvaret hos",
+        "intilliggande infanteri.",
+        "",
+        "Skogar, träsk",
+        "och öknar otillgängliga."
+      ],
+      "MissileSilo": [
+        "Kan avfyra \"Oreshnik\"-",
+        "missiler.",
+        "",
+        "Endast slätter tillgängliga."
+      ],
+      "Town": [
+        "Producerar dollar.",
+        "Kan förvandlas",
+        "till infanteri.",
+        "",
+        "Berg, träsk",
+        "och öknar otillgängliga."
+      ],
+      "LightFactory": [
+        "Producerar konsumtionsvaror,",
+        "förbrukar dollar.",
+        "",
+        "Berg, träsk",
+        "och öknar otillgängliga."
+      ],
+      "HeavyFactory": [
+        "Producerar tung ind.,",
+        "förbrukar konsumtionsvaror",
+        "och dollar.",
+        "",
+        "Träsk och öknar otillgängliga."
+      ],
+      "TierOneCapital": [
+        "Fördubblar",
+        "produktionen hos intilliggande",
+        "byggnader och förhindrar",
+        "annekteringen av den omringade",
+        "regionen där den står.",
+        "",
+        "Endast slätter tillgängliga."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Förstör en svagare",
+        "pjäs på ett avstånd",
+        "av 3 rutor."
+      ],
+      "HOWITZER_ATTACK": [
+        "Förstör en svagare",
+        "pjäs på ett avstånd",
+        "av 3 rutor."
+      ],
+      "GRAD_ATTACK": [
+        "Förstör svagare pjäser i",
+        "omgivningen av målrutan."
+      ],
+      "TANK_ATTACK": [
+        "Förstör en svagare",
+        "pjäs i närheten."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Kopplar artilleriet",
+        "till det valda infanteriet",
+        "eller motoriserade infanteriet."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Kopplar loss artilleriet",
+        "från den kopplade pjäsen."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Avfyrar en \"Oreshnik\"-missil",
+        "mot den valda rutan och",
+        "dess omgivning."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Förvandlar denna pjäs till",
+        "en Hög Huvudstad,",
+        "ökar produktions-",
+        "bonusen för grannar."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Förvandlar denna pjäs till",
+        "en Bred Huvudstad,",
+        "ökar radien för",
+        "produktions-",
+        "bonusen till två rutor."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorberar intilliggande",
+        "artilleri och förvandlar",
+        "denna pjäs till en Haubits.",
+        "",
+        "Berg och träsk otillgängliga."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorberar intilliggande",
+        "artilleri och förvandlar",
+        "denna pjäs till en Grad.",
+        "",
+        "Endast slätter tillgängliga."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Förvandlar denna pjäs",
+        "till en stad."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Förvandlar denna pjäs",
+        "till en fabrik."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Förvandlar denna pjäs",
+        "till en tung fabrik."
+      ],
+      "MOBILISE_TOWN": [
+        "Förvandlar denna pjäs",
+        "till infanteri."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Förvandlar denna pjäs",
+        "till infanteri."
+      ],
+      "INFANTRY_SETTLE": [
+        "Förvandlar denna pjäs",
+        "till en bosättning."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Tar över en svagare",
+        "pjäs i närheten."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Förvandlar denna",
+        "pjäs till infanteri.",
+        "",
+        "Alla terrängtyper tillgängliga."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Förvandlar denna pjäs",
+        "till motoriserat infanteri. ",
+        "",
+        "Berg, träsk",
+        "och öknar otillgängliga."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Välkommen till",
+          "grundutbildnings-",
+          "kursen! När",
+          "den är klar",
+          "behärskar du spelets",
+          "kärnmekaniker.",
+          "Allt börjar med",
+          "en översikt."
+        ],
+        [
+          "Framför dig",
+          "ligger slagfältet,",
+          "uppdelat i",
+          "separata rutor.",
+          "Varje ruta",
+          "har sin ägare -",
+          "en spelare, och i",
+          "rutorna står pjäser."
+        ],
+        [
+          "Vissa rutor",
+          "är täckta av vatten -",
+          "kom ihåg direkt:",
+          "pjäser kan inte",
+          "gå ut i vatten, det är",
+          "en oframkomlig zon."
+        ],
+        [
+          "För att bekvämt",
+          "se allt omkring, flytta",
+          "kameran med WASD,",
+          "rotera vyn med ",
+          "QE, och med mushjulet",
+          "zooma in och ut",
+          "kameran."
+        ],
+        [
+          "Ser du en pjäs på fältet?",
+          "Klicka på den med vänster",
+          "musknapp - i",
+          "nedre vänstra hörnet",
+          "öppnas dess meny."
+        ],
+        [
+          "För att stänga pjäsens",
+          "meny tryck ESC",
+          "- detta avmarkerar",
+          "den valda rutan."
+        ],
+        [
+          "Många pjäser",
+          "kan röra sig",
+          "genom att hoppa till intilliggande",
+          "rutor. För att hoppa",
+          "markera en pjäs (LMB)",
+          "och klicka med höger",
+          "musknapp på",
+          "en intilliggande ruta",
+          "som du vill",
+          "flytta till."
+        ],
+        [
+          "Om en ruta",
+          "tillhör en annan",
+          "spelare, blir den efter",
+          "hoppet din.",
+          "Men du kan inte",
+          "hoppa till en ruta",
+          "där dina styrkor redan",
+          "står - den är upptagen."
+        ],
+        [
+          "Viktigt: om",
+          "på den fientliga ruta",
+          "du hoppar till",
+          "redan står en fientlig",
+          "pjäs - försvinner den, och din",
+          "tar dess plats."
+        ],
+        [
+          "Varje förflyttning",
+          "förbrukar pjäsens",
+          "stridsförmåga - dess",
+          "förråd syns i pjäsens meny."
+        ],
+        [
+          "Stridsförmåga",
+          "kan bara återställas",
+          "på ett sätt:",
+          "avsluta draget och låt",
+          "soldaterna vila."
+        ],
+        [
+          "Spelare turas om,",
+          "så när alla",
+          "har gjort sina drag,",
+          "återgår kontrollen",
+          "till dig."
+        ],
+        [
+          "Och till sist - snabb",
+          "förflyttning: för att slippa",
+          "klicka på varje",
+          "ruta på vägen, håll",
+          "Shift intryckt, peka",
+          "på en avlägsen ruta",
+          "och tryck RMB. Den valda",
+          "pjäsens ritar själv",
+          "den kortaste vägen."
+        ],
+        [
+          "Och nu ska vi se",
+          "om du duger",
+          "till något alls.",
+          "Ditt första strids-",
+          "uppdrag - ta över",
+          "den fientliga",
+          "huvudstadsbyggnaden."
+        ]
+      ],
+      [
+        [
+          "Nu ska vi prata om",
+          "talen som",
+          "avgör stridens utgång.",
+          "Varje pjäs",
+          "har två viktiga",
+          "parametrar: anfall och",
+          "försvar - de finns i",
+          "menyn, bredvid",
+          "stridsförmågan."
+        ],
+        [
+          "Regeln är enkel:",
+          "om försvaret",
+          "hos den fientliga rutan (med",
+          "alla bonusar)",
+          "är högre än",
+          "din pjäs anfall,",
+          "kan du inte hoppa",
+          "till den rutan."
+        ],
+        [
+          "Dessutom projicerar",
+          "alla pjäser",
+          "sitt försvar på",
+          "intilliggande rutor,",
+          "som om de täckte",
+          "kamraternas ryggar."
+        ],
+        [
+          "Klicka på en fientlig",
+          "pjäs för att",
+          "se dess anfall",
+          "eller försvar i det lilla",
+          "fönstret nere till vänster. Om",
+          "det inte finns något fönster, har den valda",
+          "pjäsens varken anfall",
+          "eller försvar - ett lätt mål."
+        ],
+        [
+          "Och lägg nu",
+          "märke till slagfältet",
+          "- där finns nya",
+          "pjäser: en bunker och",
+          "artilleri."
+        ],
+        [
+          "Bunkern är ett fäste",
+          "för försvaret: den har inte",
+          "bara ett imponerande",
+          "försvar i sig,",
+          "utan buffar också",
+          "försvaret hos",
+          "intilliggande",
+          "infanteri."
+        ],
+        [
+          "Artilleriet slår",
+          "på avstånd - det kan",
+          "anfalla fienden på",
+          "ett avstånd av upp till tre",
+          "rutor och förgöra",
+          "honom utan direkt",
+          "kontakt."
+        ],
+        [
+          "Bunkern, trots ",
+          "all sin kraft,",
+          "är inget hinder för artilleriet -",
+          "ett enda skott på",
+          "den räcker."
+        ],
+        [
+          "Dock",
+          "kan artilleriet inte",
+          "röra sig",
+          "själv - det måste",
+          "kopplas till infanteri.",
+          "Då, när",
+          "infanteriet rör sig, rullar",
+          "artilleriet lydigt",
+          "efter."
+        ],
+        [
+          "Observera: det kopplade",
+          "paret kan",
+          "göra ett hopp",
+          "bara om båda",
+          "pjäserna har tillräckligt",
+          "med stridsförmåga för det."
+        ],
+        [
+          "Och ytterligare ett viktigt",
+          "knep: fientligt",
+          "artilleri kan",
+          "tas över av vår",
+          "infanterist. För detta",
+          "för infanteriet till",
+          "rutan intill fienden,",
+          "öppna dess meny, tryck",
+          "på knappen \"Ta över\" och",
+          "klicka RMB på den fientliga",
+          "pjäsen."
+        ],
+        [
+          "Men var försiktig:",
+          "övertagandet kan inte",
+          "utföras om",
+          "bredvid målet",
+          "finns fientligt",
+          "infanteri eller en bunker -",
+          "de kommer att hindra",
+          "operationen."
+        ],
+        [
+          "Och till sist - lägg",
+          "märke till det träskiga",
+          "terrängen norr om",
+          "oss. Under inga omständigheter",
+          "ska du föra in",
+          "artilleri där - så fort det",
+          "hamnar där,",
+          "förlorar det förmågan",
+          "att anfalla fienden,",
+          "tills du",
+          "drar ut det därifrån."
+        ],
+        [
+          "Och gör nu upp",
+          "med fienden på",
+          "denna märkliga",
+          "ö - ta över hans",
+          "artilleri och spräng",
+          "bunkrarna som",
+          "han gömmer sig bakom."
+        ]
+      ],
+      [
+        [
+          "Och nu om det",
+          "som ingen armé",
+          "existerar utan - en solid",
+          "bakre linje. Pjäser uppstår inte",
+          "ur tomma luften, de måste",
+          "skapas, och det",
+          "kräver resurser."
+        ],
+        [
+          "Titta i övre vänstra",
+          "hörnet - dina resurser",
+          "(dollar och konsumtionsvaror)",
+          "ser du där.",
+          "Varje drag förses du",
+          "med dem av producerande",
+          "byggnader."
+        ],
+        [
+          "Dollar kommer från",
+          "städer.",
+          "Konsumtionsvaror produceras",
+          "av fabriker, som spenderar",
+          "dollar på det."
+        ],
+        [
+          "Och till sist, den största",
+          "hemligheten för en effektiv",
+          "ekonomi - huvudstads-",
+          "byggnaden. Den",
+          "fördubblar",
+          "produktionen",
+          "hos alla intilliggande",
+          "städer och fabriker,",
+          "samtidigt - resurserna",
+          "de spenderar förblir",
+          "desamma."
+        ],
+        [
+          "Fientliga huvudstäder,",
+          "städer och fabriker",
+          "kan",
+          "tas över av infanteri",
+          "- precis som",
+          "artilleri."
+        ],
+        [
+          "Låt oss nu prova",
+          "att spendera resurser på",
+          "att skapa en pjäs. När",
+          "ingen ruta är vald,",
+          "finns på platsen för pjäsens",
+          "meny knappar",
+          "för att skapa pjäser - de",
+          "som du",
+          "har tillräckligt med resurser för",
+          "är markerade med färg."
+        ],
+        [
+          "Du bör ha tillräckligt",
+          "med dollar för att skapa",
+          "en fabrik - klicka på",
+          "motsvarande knapp,",
+          "och välj sedan, med RMB,",
+          "en ruta för",
+          "bygget."
+        ],
+        [
+          "Att skapa infanteri och",
+          "artilleri fungerar",
+          "något annorlunda - de",
+          "kan bara byggas",
+          "bredvid producerande",
+          "byggnader."
+        ],
+        [
+          "När du klickar på",
+          "knappen för att skapa infanteri,",
+          "markeras de städer",
+          "som det kan byggas bredvid",
+          "för dig."
+        ],
+        [
+          "Observera att en pjäs inte",
+          "kan skapas på olämplig",
+          "terräng, till exempel -",
+          "du kan inte",
+          "bygga en fabrik i bergen,",
+          "men artilleri kommer att",
+          "ha det ganska bekvämt där."
+        ],
+        [
+          "Observera också: många",
+          "pjäser kräver resurser",
+          "inte bara vid uppträdandet,",
+          "utan förbrukar dem också",
+          "varje drag. Resurserna",
+          "som en pjäs",
+          "förbrukar varje drag kan",
+          "hittas i dess meny."
+        ],
+        [
+          "Om det i början av ett drag",
+          "inte finns tillräckligt med resurser",
+          "för underhållet, tas pjäsen",
+          "bort från fältet - så",
+          "håll koll på balansen."
+        ],
+        [
+          "Om en fabrik saknar",
+          "råvaror,",
+          "försvinner den inte, utan",
+          "står helt enkelt stilla utan",
+          "att producera."
+        ],
+        [
+          "Förutom resursförrådet",
+          "i det övre vänstra hörnet",
+          "visas också den förväntade",
+          "tillväxten för nästa drag",
+          "(inom",
+          "parenteser), men kom ihåg:",
+          "möjlig stillestånd",
+          "på grund av resursbrist",
+          "tas inte med i",
+          "denna prognos."
+        ],
+        [
+          "Använd kunskapen",
+          "du har fått, stärk",
+          "ekonomin, samla",
+          "en stark armé och",
+          "krossa dina fiender",
+          "på denna vackra",
+          "ö."
+        ]
+      ],
+      [
+        [
+          "En skicklig befälhavare",
+          "kan vinna inte bara",
+          "med kraft, utan också",
+          "med list. Varför",
+          "spilla blod där",
+          "du kan ta ditt",
+          "utan strid?"
+        ],
+        [
+          "Om du lyckas",
+          "omringa en grupp",
+          "fientliga rutor,",
+          "det vill säga helt",
+          "skära av dem från",
+          "resten av fiendens",
+          "ägodelar,",
+          "kommer vid",
+          "slutet av hans drag",
+          "dessa rutor att",
+          "annekteras av dig."
+        ],
+        [
+          "Det här är mycket fördelaktigt!",
+          "Men det finns en hake -",
+          "endast rutor som inte",
+          "kontrolleras av",
+          "fienden annekteras,",
+          "vilka vi dessutom",
+          "efter annekteringen",
+          "kommer att kunna kontrollera."
+        ],
+        [
+          "Kontroll över rutor säkerställs",
+          "av huvudstäder och infanteri.",
+          "Om det i den omringade regionen",
+          "finns en fientlig huvudstad,",
+          "kommer den inte att annekteras.",
+          "Och tvärtom, även icke-omringade",
+          "rutor kan",
+          "annekteras, om",
+          "de ligger långt från",
+          "närmaste huvudstad eller",
+          "infanteri."
+        ],
+        [
+          "Det bör dock noteras",
+          "att infanteri ger",
+          "kontroll endast ",
+          "när det är i",
+          "samma region som",
+          "en huvudstad eller annars",
+          "(om det inte finns någon huvudstad),",
+          "när det är bredvid",
+          "vatten - så får det",
+          "förmågan",
+          "att försörjas sjövägen."
+        ],
+        [
+          "Om annekteringen",
+          "verkligen sker,",
+          "upplöses allt fientligt",
+          "infanteri inom",
+          "omringningen",
+          "(soldaterna",
+          "skingras till sina",
+          "hem), och alla",
+          "andra pjäser -",
+          "går över i din",
+          "armé hela och oskadda."
+        ],
+        [
+          "För att skapa omringningar",
+          "är det bra att ha",
+          "hög rörlighet.",
+          "Vanligt infanteri kan",
+          "få hjul -",
+          "sätta sig på",
+          "en transport och",
+          "förvandlas till",
+          "motoriserat infanteri."
+        ],
+        [
+          "Det ger en enorm",
+          "fördel: förrådet",
+          "av stridsförmåga hos",
+          "motoriserat infanteri är mycket",
+          "större än till fots,",
+          "och det kan också",
+          "koppla till sig",
+          "artilleri."
+        ],
+        [
+          "Dessutom ger motoriserat",
+          "infanteri, precis som",
+          "vanligt infanteri,",
+          "kontroll över",
+          "rutor - använd",
+          "detta för att inte förlora",
+          "territorium i onödan."
+        ],
+        [
+          "Men det finns också en nackdel -",
+          "att ta över",
+          "fientliga pjäser",
+          "är motoriserat infanteri inte längre",
+          "kapabelt till, för det",
+          "behövs just",
+          "soldater till fots."
+        ],
+        [
+          "Hela denna ö",
+          "är övervuxen med tät skog,",
+          "där vårt",
+          "artilleri är värdelöst.",
+          "Fienden, som vet detta, har",
+          "befäst sig väl och tagit dit sitt",
+          "motoriserade infanteri för",
+          "att driva ut oss härifrån."
+        ],
+        [
+          "Samla snabbt ihop lite hjul",
+          "och slita deras länder",
+          "i stycken."
+        ]
+      ],
+      [
+        [
+          "Nu om tung",
+          "materiel. En fientlig",
+          "bunker som infanteriet",
+          "inte klarar av,",
+          "kan förstöras",
+          "av en stridsvagn."
+        ],
+        [
+          "Stridsvagnar, precis som artilleri,",
+          "får tas över",
+          "av infanteri. En stridsvagn kan",
+          "anfalla fienden, men",
+          "endast på en intilliggande",
+          "ruta - på nära håll."
+        ],
+        [
+          "En stridsvagns styrka växer",
+          "om det i närheten finns",
+          "infanteri eller motoriserat infanteri:",
+          "stridskamrater täcker",
+          "pansaret, och stridsvagnens anfall och försvar",
+          "ökar."
+        ],
+        [
+          "En ensam stridsvagn,",
+          "däremot - är ett lätt",
+          "byte. Till och med vanligt",
+          "infanteri kan",
+          "förgöra den."
+        ],
+        [
+          "Att skapa en egen",
+          "stridsvagn är ingen lätt uppgift -",
+          "med tillgängliga medel",
+          "går det inte.",
+          "Lär känna en ny",
+          "resurs - tung ind., den",
+          "produceras av tunga fabriker,",
+          "som spenderar",
+          "dollar och konsumtionsvaror på det."
+        ],
+        [
+          "En tung fabrik, precis som",
+          "en fabrik, får en bonus",
+          "från närhet till",
+          "en huvudstad, och",
+          "fientliga tunga fabriker kan",
+          "tas över av infanteri."
+        ],
+        [
+          "Vad gäller framkomligheten",
+          "för stridsvagnar - de är bland",
+          "de få som kan strida",
+          "i öknen, men i berg",
+          "och träsk ska du inte förvänta dig",
+          "något av dem."
+        ],
+        [
+          "Titta på denna stackars",
+          "ö, den har i många",
+          "år varit indragen i evigt",
+          "krig - det är dags",
+          "att skapa ordning här."
+        ]
+      ],
+      [
+        [
+          "Producerande byggnader behöver inte",
+          "alltid byggas av dig.",
+          "Resursproducenter kan",
+          "dyka upp av sig själva på dina",
+          "territorier - vi pratar",
+          "om privateers (alternativa",
+          "versioner av städer,",
+          "fabriker och tunga fabriker)."
+        ],
+        [
+          "För att dyka upp behöver de",
+          "obemannade slätter",
+          "och frånvaro av statlig",
+          "kontroll (ju färre",
+          "huvudstäder, desto fler",
+          "privateers)."
+        ],
+        [
+          "Privateers är mindre effektiva",
+          "än produktioner i din",
+          "ägo, eftersom de ändå",
+          "måste göra vinst.",
+          "Samtidigt kan varje privateer",
+          "köpas - förvandlas",
+          "till en vanlig producerande byggnad."
+        ],
+        [
+          "En annan skillnad - en privateer",
+          "tolererar inte bristen på",
+          "de resurser den behöver",
+          "för produktionen -",
+          "vid underskott överger den",
+          "sin produktion."
+        ],
+        [
+          "En övergivenhet förbrukar inte bara",
+          "kostnadsfritt",
+          "statsbudgeten, den",
+          "smittar också producerande",
+          "byggnader i närheten."
+        ],
+        [
+          "Från och med detta ögonblick",
+          "kommer även bunkrar",
+          "som ligger på stort avstånd",
+          "från fronten att",
+          "förvandlas till övergivenheter -",
+          "ingen idé att bygga dem i bakre ledet!"
+        ],
+        [
+          "Den goda nyheten är",
+          "att övergivenheter, precis som alla",
+          "byggnader du inte behöver,",
+          "kan rivas med skott",
+          "från stridsvagnar och artilleri -",
+          "använd detta för",
+          "att förhindra deras",
+          "spridning."
+        ],
+        [
+          "Och till sist, överskotts-",
+          "infanteri kan alltid",
+          "bosätta sig - förvandlas",
+          "till bosättningar.",
+          "Detta hjälper till att rädda",
+          "ekonomin i en svår",
+          "stund."
+        ]
+      ],
+      [
+        [
+          "Fienden på denna ö",
+          "visste i förväg om vår",
+          "ankomst och kunde satsa stort",
+          "på statiskt",
+          "försvar - lyckligtvis för oss",
+          "hade vi vår man i",
+          "den västra provinsen som",
+          "saboterade bygget."
+        ],
+        [
+          "Ack, till öster måste vi",
+          "bryta igenom otaliga",
+          "rader av bunkrar. Här kommer en ny",
+          "pjäs till vår",
+          "hjälp - Graden. Genom att spendera lite konsumtionsvaror",
+          "per skott",
+          "förgör den 3 mål åt gången -",
+          "precis vad som behövs mot tät bebyggelse."
+        ],
+        [
+          "Observera bara att Graden är ett",
+          "oprecist vapen, och exakt den ruta",
+          "du siktar på,",
+          "kommer den aldrig att träffa."
+        ],
+        [
+          "Graden kan dessutom inte",
+          "bara anlitas - för att skapa",
+          "den måste du kombinera",
+          "motoriserat infanteri med artilleri.",
+          "Denna förvandling kräver",
+          "dessutom lite tung ind.,",
+          "som vi inte tog med oss.",
+          "Men vi är säkra på att du hittar",
+          "en väg ut ur denna situation."
+        ],
+        [
+          "Och en annan liten sak - våra",
+          "byggare har anordnat något",
+          "som en strejk, så vid",
+          "detta och nästa uppdrag",
+          "kan du inte skapa",
+          "nya pjäser."
+        ]
+      ],
+      [
+        [
+          "Förbannade logistiker!",
+          "I begäran stod det tydligt -",
+          "leverera en stridsvagn norr om",
+          "floden. Utan den, genom dessa",
+          "bunkrar, till den fientliga huvudstaden",
+          "tar vi oss inte igenom. Lyckligtvis",
+          "har våra hantverkare nyligen",
+          "utvecklat ett underverk till vapen - Haubitsen."
+        ],
+        [
+          "Med en stridsvagns framkomlighet och",
+          "artilleriets räckvidd",
+          "har detta monster ingen like.",
+          "Den erhålls genom att kombinera",
+          "en stridsvagn med artilleri, men det finns",
+          "en hake - artilleriet levererades",
+          "inte heller till oss. Ta dig ur",
+          "denna situation bäst du kan."
+        ]
+      ],
+      [
+        [
+          "Och låt oss nu prata",
+          "allvar - att förgöra",
+          "den fientliga armén är inte alltid",
+          "tillräckligt för",
+          "en avgörande seger.",
+          "Om fiendens ekonomi",
+          "är stark, kommer de efter",
+          "nederlaget tillbaka",
+          "med ökad styrka."
+        ],
+        [
+          "För att lösa detta",
+          "problem behöver du",
+          "en raket-",
+          "silo - den kan",
+          "avfyra raketer under",
+          "kodnamnet",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" är ett",
+          "långdistansvapen.",
+          "Dessutom, om en fientlig",
+          "silo fångar ditt",
+          "öga, vet - den",
+          "kan tas över",
+          "av infanteri och användas",
+          "mot sin tidigare ägare."
+        ],
+        [
+          "Avfyrning av \"Oreshnik\"",
+          "är möjlig mot vilken",
+          "fientlig ruta",
+          "som helst",
+          "som ligger på",
+          "ett avstånd av inte mindre än",
+          "tio rutor från",
+          "silon."
+        ],
+        [
+          "Raketen slår",
+          "inte bara mot",
+          "det mål du har",
+          "valt, utan",
+          "dessutom",
+          "träffar den sex",
+          "slumpmässiga rutor i",
+          "omgivningen."
+        ],
+        [
+          "Vi lyckades etablera oss på",
+          "kontinenten, men landstigningen",
+          "på ön visade sig",
+          "vara ett totalt misslyckande - vårt",
+          "infanteri fastnade i de täta",
+          "skogarna i norra delen av ön.",
+          "Här behöver vi",
+          "\"Oreshnik\" - utplåna deras",
+          "huvudstäder på",
+          "Madagaskar och då",
+          "kapitulerar fienden."
+        ]
+      ],
+      [
+        [
+          "Grundutbildningen",
+          "är över! Nu",
+          "vet du allt",
+          "som behövs för",
+          "att leda dina trupper till",
+          "seger. Och bevisa det nu",
+          "genom att ta",
+          "hela ön."
+        ],
+        [
+          "Kom ihåg: kunskap om mekanikerna",
+          "- är halva framgången,",
+          "den andra halvan -",
+          "din klurighet.",
+          "Framåt, mot segrar!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Slätt",
+    "Mountain": "Berg",
+    "Forest": "Skog",
+    "Swamp": "Träsk",
+    "Desert": "Öken",
+    "Water": "Vatten",
+    "Infantry": "Infanteri",
+    "Tank": "Stridsvagn",
+    "Artillery": "Artilleri",
+    "Howitzer": "Haubits",
+    "Grad": "Grad",
+    "Motorization": "Motorisering",
+    "Bunker": "Bunker",
+    "MissileSilo": "Raketsilo",
+    "Town": "Stad",
+    "LightFactory": "Lätt fabrik",
+    "HeavyFactory": "Tung fabrik",
+    "TierOneCapital": "Huvudstad",
+    "TallCapital": "Hög Huvudstad",
+    "WideCapital": "Bred Huvudstad",
+    "Settlement": "Bosättning",
+    "PrivateLightFactory": "Hantverkare",
+    "PrivateHeavyFactory": "Privat",
+    "Abandonment": "Övergivenhet"
+  },
+  "resources": {
+    "Dollars": "Dollar",
+    "LightIndustryProducts": "Konsumtionsvaror",
+    "HeavyIndustryProducts": "Tung ind."
+  }
+}

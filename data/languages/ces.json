@@ -1,0 +1,1123 @@
+{
+  "loading": {
+    "MAP_LOADING": "Načítání mapy...",
+    "INTERMEDIATE_PREPARING": "Mezilehlá příprava...",
+    "UI_MAKING": "Vytváření rozhraní...",
+    "SPRITE_LOADING": "Načítání spritů..."
+  },
+  "maps": {
+    "last_save": "Pokračovat...",
+    "Level 1": "Gotland",
+    "Level 2": "Epsteinův ostrov",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sicílie",
+    "Level 5": "Haiti",
+    "Level 6": "Island",
+    "Level 7": "Kréta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaskar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Mapy",
+    "CAMPAIGN": "Kampaň",
+    "PLAY": "Hrát",
+    "EXIT": "Ukončit",
+    "AUTHORS": "Autoři",
+    "CYBER_DILF_ROLES": [
+      "Autor nápadu",
+      "Programátor",
+      "Level designér",
+      "Zvukový designér"
+    ],
+    "DIVAN_ROLES": [
+      "Umělec",
+      "Art designér"
+    ],
+    "SETTINGS": "Nastavení",
+    "PAUSE": "Pauza",
+    "CONTINUE": "Pokračovat",
+    "SAVE_AND_QUIT": "Uložit a ukončit",
+    "QUIT_WITHOUT_SAVING": "Ukončit bez uložení",
+    "RESTART_LEVEL": "Začít znovu",
+    "MAKE_NEW_MAP": "Nová",
+    "LOAD_EXISTING_MAP": "Otevřít",
+    "MAP_EDITOR": "Editor map",
+    "OPEN_FILE_IN_EXPLORER": "Otevřít v Průzkumníku",
+    "SHARE_ONLINE": "Sdílet",
+    "BACK": "Zpět",
+    "END_TURN_BTN": "Ukončit tah",
+    "TO_MOTORIZATION": "Nabrat kola",
+    "CAPTURE": "Obsadit",
+    "TO_INFANTRY": "Ztratit kola",
+    "ATTACK": "Zaútočit",
+    "INITIATE_PULLING": "Připojit",
+    "TERMINATE_PULLING": "Odpojit",
+    "TO_TALL_CAPITAL": "Povýšit",
+    "TO_WIDE_CAPITAL": "Rozšířit",
+    "PURCHASE": "Vykoupit",
+    "MOBILISE": "Mobilizovat",
+    "SETTLE": "Usadit se",
+    "COMBINE": "Spojit",
+    "LAUNCH_ORESHNIK": "Odpálit \"Oreshnik\"",
+    "COST": "Cena",
+    "FLOW": "Bilance",
+    "SELECTED_PLAYERS": "Vybraní hráči",
+    "NO_PLAYERS_SELECTED": "Nejsou vybráni žádní hráči!",
+    "YOU_WON": "VÍTĚZSTVÍ",
+    "TO_NEXT_LEVEL": "Pokračovat",
+    "PAGE": "Strana",
+    "NEXT": "Další",
+    "MUSIC_VOLUME": "Hlasitost hudby",
+    "VOICE_VOLUME": "Hlasitost hlasů",
+    "EFFECTS_VOLUME": "Hlasitost efektů",
+    "SELECTED_LANGUAGE": "Jazyk rozhraní",
+    "GRAPHICS": "Grafika",
+    "SCREEN": "Obrazovka",
+    "FULLSCREEN": "Celá obrazovka",
+    "WINDOWED": "Okno",
+    "WIDTH": "Šířka",
+    "HEIGHT": "Výška",
+    "AUDIO": "Zvuk",
+    "OTHER": "Ostatní",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Animace tahů botů",
+    "ON": "Zap.",
+    "OFF": "Vyp.",
+    "APPLY": "Použít",
+    "ADD_PLAYER": "Přidat hráče",
+    "FILL_HINT": "Vyplnění: Shift + LMB",
+    "PLAYERS_NAME": "Jméno hráče",
+    "CLEAR": "Vymazat",
+    "PLAYERS_TOP": "Nejlepší hráči",
+    "TERRITORIES": "Území",
+    "ECONOMY": "Ekon.",
+    "PLAYERS_MODE": "Hráči",
+    "PLAYERS_MODE_STATES": "Státy",
+    "PLAYERS_MODE_RANDOM": "Náhodně",
+    "COUNT": "Počet"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Může obsadit sousední",
+        "nepřátelské vozidlo.",
+        "Lze přeměnit",
+        "na motorizovanou pěchotu.",
+        "",
+        "Všechny typy terénu dostupné."
+      ],
+      "Tank": [
+        "Získává bonus k",
+        "útoku a obraně od",
+        "sousední pěchoty",
+        "a motorizované pěchoty.",
+        "",
+        "Hory a bažiny nedostupné."
+      ],
+      "Artillery": [
+        "Může útočit na",
+        "nepřátelské pozice na",
+        "vzdálenost tří polí.",
+        "Nemůže se sama",
+        "pohybovat.",
+        "",
+        "Lesy, bažiny",
+        "a pouště nedostupné."
+      ],
+      "Bunker": [
+        "Zvyšuje obranu",
+        "sousední pěchoty.",
+        "",
+        "Lesy, bažiny",
+        "a pouště nedostupné."
+      ],
+      "MissileSilo": [
+        "Může odpalovat",
+        "rakety \"Oreshnik\".",
+        "",
+        "Pouze pláně dostupné."
+      ],
+      "Town": [
+        "Produkuje dolary.",
+        "Lze přeměnit",
+        "na pěchotu.",
+        "",
+        "Hory, bažiny",
+        "a pouště nedostupné."
+      ],
+      "LightFactory": [
+        "Produkuje spotřební zboží,",
+        "spotřebovává dolary.",
+        "",
+        "Hory, bažiny",
+        "a pouště nedostupné."
+      ],
+      "HeavyFactory": [
+        "Produkuje těžký průmysl,",
+        "spotřebovává spotřební zboží",
+        "a dolary.",
+        "",
+        "Bažiny a pouště nedostupné."
+      ],
+      "TierOneCapital": [
+        "Zdvojnásobuje",
+        "produkci sousedních",
+        "budov a zabraňuje",
+        "anexi obklíčeného",
+        "regionu, ve kterém se nachází.",
+        "",
+        "Pouze pláně dostupné."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Ničí slabší",
+        "figurku na vzdálenost",
+        "3 polí."
+      ],
+      "HOWITZER_ATTACK": [
+        "Ničí slabší",
+        "figurku na vzdálenost",
+        "3 polí."
+      ],
+      "GRAD_ATTACK": [
+        "Ničí slabší figurky v",
+        "okolí cílového pole."
+      ],
+      "TANK_ATTACK": [
+        "Ničí slabší",
+        "figurku poblíž."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Připojí dělostřelectvo",
+        "k vybrané pěchotě",
+        "nebo motorizované pěchotě."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Odpojí dělostřelectvo",
+        "od připojené figurky."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Odpálí raketu \"Oreshnik\"",
+        "na vybrané pole a",
+        "jeho okolí."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Promění tuto figurku",
+        "ve Vysoké Hlavní město,",
+        "zvýší bonus",
+        "produkce pro sousedy."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Promění tuto figurku",
+        "v Široké Hlavní město,",
+        "zvýší poloměr",
+        "bonusu produkce",
+        "na dvě pole."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorbuje sousední",
+        "dělostřelectvo a promění",
+        "tuto figurku v Houfnici.",
+        "",
+        "Hory a bažiny nedostupné."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorbuje sousední",
+        "dělostřelectvo a promění",
+        "tuto figurku v Grad.",
+        "",
+        "Pouze pláně dostupné."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Promění tuto figurku",
+        "v město."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Promění tuto figurku",
+        "v továrnu."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Promění tuto figurku",
+        "v těžkou továrnu."
+      ],
+      "MOBILISE_TOWN": [
+        "Promění tuto figurku",
+        "v pěchotu."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Promění tuto figurku",
+        "v pěchotu."
+      ],
+      "INFANTRY_SETTLE": [
+        "Promění tuto figurku",
+        "v osadu."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Obsadí slabší",
+        "figurku poblíž."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Promění tuto",
+        "figurku v pěchotu.",
+        "",
+        "Všechny typy terénu dostupné."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Promění tuto figurku",
+        "v motorizovanou pěchotu. ",
+        "",
+        "Hory, bažiny",
+        "a pouště nedostupné."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Vítej na",
+          "kurzu mladého",
+          "vojáka! Po jeho",
+          "dokončení",
+          "ovládneš hlavní",
+          "mechaniky hry.",
+          "Vše začíná",
+          "přehledem."
+        ],
+        [
+          "Před tebou",
+          "se nachází bojiště,",
+          "rozdělené",
+          "na jednotlivá pole.",
+          "Každé pole",
+          "má svého vlastníka -",
+          "hráče, a uvnitř",
+          "polí stojí figurky."
+        ],
+        [
+          "Některá pole",
+          "jsou obsazena vodou -",
+          "zapamatuj si hned:",
+          "figurky nemohou",
+          "vstoupit do vody, je to",
+          "neprůchodná zóna."
+        ],
+        [
+          "Aby ses pohodlně",
+          "rozhlédl, pohybuj",
+          "kamerou klávesami WASD,",
+          "otáčej pohled pomocí ",
+          "QE, a kolečkem myši",
+          "přibližuj a oddaluj",
+          "kameru."
+        ],
+        [
+          "Vidíš figurku na poli?",
+          "Klikni na ni levým",
+          "tlačítkem myši - v",
+          "levém dolním rohu",
+          "se otevře její menu."
+        ],
+        [
+          "Pro zavření menu",
+          "figurky stiskni ESC",
+          "- to zruší",
+          "výběr pole."
+        ],
+        [
+          "Mnoho figurek",
+          "se umí pohybovat",
+          "skákáním na sousední",
+          "pole. Pro skok",
+          "vyber figurku (LMB)",
+          "a klikni pravým",
+          "tlačítkem myši",
+          "na sousední pole,",
+          "na které se chceš",
+          "přesunout."
+        ],
+        [
+          "Pokud pole",
+          "patří jinému",
+          "hráči, po skoku",
+          "se stane tvým.",
+          "Ale nemůžeš",
+          "skočit na pole,",
+          "kde už stojí",
+          "tvoje síly - je obsazené."
+        ],
+        [
+          "Důležité: pokud",
+          "na nepřátelském poli,",
+          "na které skáčeš,",
+          "už stojí nepřátelská",
+          "figurka - zmizí a tvoje",
+          "zaujme její místo."
+        ],
+        [
+          "Každý pohyb",
+          "spotřebovává",
+          "bojeschopnost figurky - její",
+          "zásobu najdeš v menu figurky."
+        ],
+        [
+          "Bojeschopnost",
+          "lze obnovit pouze",
+          "jedním způsobem:",
+          "ukonči tah a nech",
+          "vojáky odpočívat."
+        ],
+        [
+          "Hráči hrají postupně,",
+          "takže když všichni",
+          "udělají své tahy,",
+          "kontrola se vrátí",
+          "k tobě."
+        ],
+        [
+          "A nakonec - rychlý",
+          "pohyb: abys nemusel",
+          "klikat na každé",
+          "pole cesty, podrž",
+          "klávesu Shift, najeď",
+          "na vzdálené pole",
+          "a stiskni PMB. Vybraná",
+          "figurka sama",
+          "nakreslí nejkratší trasu."
+        ],
+        [
+          "A teď se podívejme,",
+          "jestli vůbec",
+          "něco zmůžeš.",
+          "Tvůj první bojový",
+          "úkol - obsadit",
+          "nepřátelskou",
+          "budovu hlavního města."
+        ]
+      ],
+      [
+        [
+          "Teď si povíme o",
+          "číslech, která",
+          "rozhodují o výsledku bitvy.",
+          "Každá figurka",
+          "má dva klíčové",
+          "parametry: útok a",
+          "obranu - najdeš je",
+          "v menu, vedle",
+          "bojeschopnosti."
+        ],
+        [
+          "Pravidlo je jednoduché:",
+          "pokud obrana",
+          "nepřátelského pole (se",
+          "všemi bonusy)",
+          "je vyšší než",
+          "útok tvé figurky,",
+          "nemůžeš na to pole",
+          "skočit."
+        ],
+        [
+          "Kromě toho všechny",
+          "figurky promítají",
+          "svou obranu na",
+          "sousední pole,",
+          "jako by kryly",
+          "záda kamarádů."
+        ],
+        [
+          "Klikni na nepřátelskou",
+          "figurku, abys",
+          "viděl její útok",
+          "nebo obranu v malém",
+          "okénku vlevo dole. Pokud",
+          "okénko není, vybraná",
+          "figurka nemá ani útok,",
+          "ani obranu - snadný cíl."
+        ],
+        [
+          "A teď věnuj",
+          "pozornost bojišti",
+          "- jsou na něm nové",
+          "figurky: bunkr a",
+          "dělostřelectvo."
+        ],
+        [
+          "Bunkr je bašta",
+          "obrany: nejen",
+          "sám má impozantní",
+          "obranu,",
+          "ale také posiluje",
+          "obranu",
+          "sousední",
+          "pěchoty."
+        ],
+        [
+          "Dělostřelectvo udeří",
+          "zdaleka - může",
+          "zaútočit na nepřítele na",
+          "vzdálenost až tří",
+          "polí a zničit",
+          "ho bez přímého",
+          "kontaktu."
+        ],
+        [
+          "Bunkr, i přes ",
+          "veškerou svou sílu,",
+          "není pro dělostřelectvo překážkou -",
+          "jeden výstřel na",
+          "něj stačí."
+        ],
+        [
+          "Ovšem",
+          "dělostřelectvo samo",
+          "neumí",
+          "chodit - musí se",
+          "připojit k pěchotě.",
+          "Pak když se",
+          "pěchota pohne, dělostřelectvo",
+          "poslušně popojede",
+          "za ní."
+        ],
+        [
+          "Všimni si: připojená",
+          "dvojice může",
+          "udělat skok",
+          "jen pokud obě",
+          "figurky mají dost",
+          "bojeschopnosti."
+        ],
+        [
+          "A ještě jeden důležitý",
+          "trik: nepřátelské",
+          "dělostřelectvo může",
+          "být obsazeno naším",
+          "pěšákem. K tomu",
+          "přiveď pěchotu na",
+          "pole sousedící s nepřítelem,",
+          "otevři její menu, stiskni",
+          "tlačítko \"Obsadit\" a",
+          "klikni PMB na nepřátelskou",
+          "figurku."
+        ],
+        [
+          "Ale buď opatrný:",
+          "obsazení nelze",
+          "provést, pokud",
+          "vedle cíle",
+          "je nepřátelská",
+          "pěchota nebo bunkr -",
+          "budou bránit",
+          "operaci."
+        ],
+        [
+          "A nakonec - věnuj",
+          "pozornost bažinatému",
+          "terénu na sever od",
+          "nás. V žádném případě",
+          "nevoz do něj",
+          "dělostřelectvo - jakmile se",
+          "tam ocitne,",
+          "ztratí schopnost",
+          "útočit na nepřítele,",
+          "dokud ho",
+          "odtamtud nevytáhneš."
+        ],
+        [
+          "A teď se vypořádej",
+          "s nepřítelem na",
+          "tomto podivném",
+          "ostrově - obsadi jeho",
+          "dělostřelectvo a otevři",
+          "bunkry, za kterými",
+          "se skrývá."
+        ]
+      ],
+      [
+        [
+          "A teď o tom,",
+          "bez čeho neexistuje",
+          "žádná armáda - solidní",
+          "týl. Figurky nevznikají",
+          "z ničeho, je třeba",
+          "je vytvářet, a to",
+          "vyžaduje zdroje."
+        ],
+        [
+          "Podívej se do levého horního",
+          "rohu - své zdroje",
+          "(dolary a spotřební zboží)",
+          "uvidíš tam.",
+          "Každý tah ti je",
+          "přinášejí produkující",
+          "budovy."
+        ],
+        [
+          "Dolary přinášejí",
+          "města.",
+          "Spotřební zboží produkují",
+          "továrny, utrácejí",
+          "za to dolary."
+        ],
+        [
+          "A konečně, hlavní",
+          "tajemství efektivní",
+          "ekonomiky - budova",
+          "hlavního města. Zdvojnásobuje",
+          "produkci",
+          "všech sousedních",
+          "měst a továren,",
+          "a navíc - zdroje,",
+          "které utrácejí, zůstávají",
+          "stejné."
+        ],
+        [
+          "Nepřátelská hlavní města,",
+          "města a továrny",
+          "lze",
+          "obsadit",
+          "pěchotou - přesně tak,",
+          "jako dělostřelectvo."
+        ],
+        [
+          "Zkusme teď",
+          "utratit zdroje za",
+          "vytvoření figurky. Když",
+          "není vybráno žádné pole,",
+          "na místě menu",
+          "figurky jsou tlačítka",
+          "vytváření figurek - ta,",
+          "na která",
+          "máš dost zdrojů,",
+          "jsou označena barvou."
+        ],
+        [
+          "Měl bys mít dost",
+          "dolarů na vytvoření",
+          "továrny - klikni na",
+          "příslušné tlačítko,",
+          "a potom PMB",
+          "vyber pole pro",
+          "stavbu."
+        ],
+        [
+          "Vytváření pěchoty a",
+          "dělostřelectva funguje",
+          "trochu jinak - lze",
+          "je postavit pouze",
+          "vedle produkujících",
+          "budov."
+        ],
+        [
+          "Když klikneš na",
+          "tlačítko vytvoření pěchoty,",
+          "zvýrazní se ti",
+          "města, vedle kterých",
+          "ji lze postavit."
+        ],
+        [
+          "Všimni si, že figurku nelze",
+          "vytvořit na nevhodném",
+          "terénu, například -",
+          "nemůžeš",
+          "postavit továrnu v horách,",
+          "ale dělostřelectvo tam bude",
+          "celkem komfortní."
+        ],
+        [
+          "Všimni si také: mnoho",
+          "figurek vyžaduje zdroje",
+          "nejen při objevení,",
+          "ale také je spotřebovává",
+          "každý tah. Zdroje,",
+          "které figurka",
+          "spotřebovává každý tah,",
+          "najdeš v jejím menu."
+        ],
+        [
+          "Pokud na začátku tahu",
+          "není dost zdrojů",
+          "na údržbu, figurka bude",
+          "odstraněna z pole - takže",
+          "sleduj bilanci."
+        ],
+        [
+          "Pokud továrně chybí",
+          "suroviny,",
+          "nemizí, ale prostě",
+          "stojí bez",
+          "produkce."
+        ],
+        [
+          "Kromě zásoby zdrojů",
+          "v levém horním rohu",
+          "zobrazuje se také",
+          "očekávaný přírůstek",
+          "na další tah (v",
+          "závorkách), ale pamatuj:",
+          "možná odstávka",
+          "kvůli nedostatku zdrojů",
+          "se v této prognóze",
+          "nezohledňuje."
+        ],
+        [
+          "S využitím nabytých",
+          "znalostí posil",
+          "ekonomiku, shromáždi",
+          "silnou armádu a",
+          "rozdrob své nepřátele",
+          "na tomto krásném",
+          "ostrově."
+        ]
+      ],
+      [
+        [
+          "Schopný velitel",
+          "umí vítězit nejen",
+          "silou, ale i",
+          "lstí. Proč",
+          "prolévat krev tam,",
+          "kde své lze vzít",
+          "bez boje?"
+        ],
+        [
+          "Pokud se ti podaří",
+          "obejmout skupinu",
+          "nepřátelských polí,",
+          "tedy je zcela",
+          "odříznout od",
+          "zbytku nepřátelských",
+          "držav,",
+          "pak na",
+          "konci jeho tahu",
+          "tato pole budou",
+          "tebou anektována."
+        ],
+        [
+          "To je velmi výhodné!",
+          "Ale je tu nuance -",
+          "anektována jsou pouze pole",
+          "nekontrolovaná",
+          "nepřítelem,",
+          "která navíc",
+          "po anexi budeme",
+          "moci kontrolovat."
+        ],
+        [
+          "Kontrolu nad poli zajišťují",
+          "hlavní města a pěchota.",
+          "Pokud v obklíčeném regionu",
+          "je nepřátelské hlavní město,",
+          "pak nebude anektován.",
+          "A naopak, i neobklíčená",
+          "pole mohou",
+          "být anektována, pokud",
+          "jsou daleko od",
+          "nejbližšího hlavního města nebo",
+          "pěchoty."
+        ],
+        [
+          "Je však třeba vzít v úvahu,",
+          "že pěchota dává",
+          "kontrolu pouze ",
+          "když je ve",
+          "stejném regionu jako",
+          "hlavní město, nebo jinak",
+          "(pokud žádné hlavní město není),",
+          "když je vedle",
+          "vody - tak získává",
+          "schopnost",
+          "zásobování po moři."
+        ],
+        [
+          "Pokud k anexi",
+          "přece jen dojde,",
+          "pak všechna nepřátelská",
+          "pěchota uvnitř",
+          "obklíčení",
+          "se rozpustí (vojáci",
+          "se rozprchnou",
+          "domů), a všechny",
+          "ostatní figurky -",
+          "přecházejí do tvé",
+          "armády celé a zdravé."
+        ],
+        [
+          "Pro vytváření obklíčení",
+          "je užitečné mít",
+          "vysokou mobilitu.",
+          "Obyčejná pěchota se může",
+          "nabrat kola -",
+          "přesednout na",
+          "transport a",
+          "proměnit se v",
+          "motorizovanou pěchotu."
+        ],
+        [
+          "To dává obrovskou",
+          "výhodu: zásoba",
+          "bojeschopnosti",
+          "motorizované pěchoty je mnohem",
+          "větší než u pěší,",
+          "a také dokáže",
+          "k sobě připojit",
+          "dělostřelectvo."
+        ],
+        [
+          "Navíc motorizovaná",
+          "pěchota, stejně jako",
+          "obyčejná pěchota,",
+          "dává kontrolu nad",
+          "poli - využívej",
+          "to, abys neztrácel",
+          "území zbytečně."
+        ],
+        [
+          "Ale je tu i mínus -",
+          "obsazovat",
+          "nepřátelské figurky",
+          "motorizovaná pěchota už",
+          "neumí, k tomu",
+          "jsou potřeba právě",
+          "pěší vojáci."
+        ],
+        [
+          "Celý tento ostrov",
+          "je porostlý hustým lesem,",
+          "v němž je naše",
+          "dělostřelectvo bezmocné.",
+          "Nepřítel, který to ví, se dobře",
+          "opevnil a přivedl svou",
+          "motorizovanou pěchotu, aby",
+          "nás odsud vytlačil."
+        ],
+        [
+          "Narychlo nasbírej kola",
+          "a roztrhej jeho země",
+          "na kusy."
+        ]
+      ],
+      [
+        [
+          "Teď o těžké",
+          "technice. Nepřátelský",
+          "bunkr, na který pěchota",
+          "nestačí,",
+          "lze zničit",
+          "tankem."
+        ],
+        [
+          "Tanky, stejně jako dělostřelectvo,",
+          "lze obsazovat",
+          "pěchotou. Tank umí",
+          "útočit na nepřítele, ale",
+          "pouze na sousedním",
+          "poli - zblízka."
+        ],
+        [
+          "Síla tanku roste,",
+          "pokud je poblíž",
+          "pěchota nebo motorizovaná pěchota:",
+          "bojoví soudruzi kryjí",
+          "pancéřování a útok i obrana",
+          "tanku rostou."
+        ],
+        [
+          "Osamocený tank",
+          "je ovšem - snadnou",
+          "kořistí. Dokonce i obyčejná",
+          "pěchota ho může",
+          "zničit."
+        ],
+        [
+          "Vytvořit vlastní",
+          "tank není snadný úkol -",
+          "dostupnými prostředky",
+          "to nejde.",
+          "Seznam se s novým",
+          "zdrojem - těžkým průmyslem, ten",
+          "produkují těžké továrny,",
+          "utrácejí za to",
+          "dolary a spotřební zboží."
+        ],
+        [
+          "Těžká továrna, stejně jako",
+          "továrna, dostává bonus",
+          "ze sousedství",
+          "hlavního města, a",
+          "nepřátelské těžké továrny lze",
+          "obsadit pěchotou."
+        ],
+        [
+          "Co se týče průchodnosti",
+          "tanků - jsou jedněmi z",
+          "mála schopných bojovat",
+          "v poušti, avšak v horách",
+          "a bažinách od nich nic",
+          "nečekej."
+        ],
+        [
+          "Podívej se na ten ubohý",
+          "ostrov, už mnoho",
+          "let je pohlcen věčnou",
+          "válkou - je čas",
+          "tady zavést pořádek."
+        ]
+      ],
+      [
+        [
+          "Produkující budovy nemusí",
+          "vždy stavět jen ty.",
+          "Producenti zdrojů se mohou",
+          "sami objevit na tvých",
+          "územích - mluvíme",
+          "o privateers (alternativních",
+          "verzích měst,",
+          "továren a těžkých továren)."
+        ],
+        [
+          "K objevení potřebují",
+          "neobsazené pláně",
+          "a nepřítomnost státní",
+          "kontroly (čím méně",
+          "hlavních měst, tím více",
+          "privateers)."
+        ],
+        [
+          "Privateers jsou méně efektivní",
+          "než produkce v tvém",
+          "vlastnictví, protože musí",
+          "přece jen vytvářet zisk.",
+          "Přitom každého privateers",
+          "lze vykoupit - proměnit",
+          "v běžnou produkující budovu."
+        ],
+        [
+          "Další rozdíl - privateers",
+          "netoleruje nedostatek",
+          "zdrojů, které potřebuje",
+          "k produkci -",
+          "při deficitu opustí",
+          "svou produkci."
+        ],
+        [
+          "Opuštěnost nejen",
+          "bezplatně spotřebovává",
+          "státní rozpočet, ale také",
+          "infikuje produkující",
+          "budovy v okolí."
+        ],
+        [
+          "Od tohoto okamžiku",
+          "se také bunkry",
+          "nacházející se ve velké",
+          "vzdálenosti od fronty",
+          "budou měnit",
+          "v opuštěnosti -",
+          "nemá smysl je stavět v týlu!"
+        ],
+        [
+          "Dobrá zpráva je,",
+          "že opuštěnosti, jako všechny",
+          "budovy, které nepotřebuješ,",
+          "lze bourat výstřely",
+          "tanků a dělostřelectva -",
+          "využívej to k",
+          "zabránění jejich",
+          "šíření."
+        ],
+        [
+          "A nakonec, přebytečnou",
+          "pěchotou se lze vždy",
+          "usadit - proměnit",
+          "ji v osady.",
+          "To pomůže zachránit",
+          "ekonomiku v těžké",
+          "chvíli."
+        ]
+      ],
+      [
+        [
+          "Nepřítel na tomto ostrově",
+          "předem věděl o našem",
+          "příchodu a mohl hodně investovat",
+          "do statické",
+          "obrany - naštěstí pro nás",
+          "jsme měli svého člověka",
+          "v západní provincii, který",
+          "sabotoval stavbu."
+        ],
+        [
+          "Bohužel, na východ se musíme",
+          "probíjet přes nesčetné",
+          "řady bunkrů. Zde nám přijde na",
+          "pomoc nová",
+          "figurka - Grad. Při každém",
+          "výstřelu spotřebuje trochu spotřebního zboží",
+          "a ničí 3 cíle najednou -",
+          "přesně to, co je potřeba proti husté zástavbě."
+        ],
+        [
+          "Všimni si jen, že Grad je",
+          "nepřesná zbraň, a přesně na to pole,",
+          "na které míříš,",
+          "nikdy netrefí."
+        ],
+        [
+          "Grada navíc nelze",
+          "prostě najmout - k jeho vytvoření",
+          "je třeba zkombinovat",
+          "motorizovanou pěchotu s dělostřelectvem.",
+          "Tato přeměna navíc",
+          "vyžaduje trochu těžkého průmyslu,",
+          "který jsme si nevzali.",
+          "Ale jsme si jisti, že najdeš",
+          "východisko z této situace."
+        ],
+        [
+          "A ještě jedna drobnost - naši",
+          "stavitelé zorganizovali něco",
+          "jako stávku, takže při",
+          "této a příští misi",
+          "nedokážeš vytvořit",
+          "nové figurky."
+        ]
+      ],
+      [
+        [
+          "K čertu s těmi logistiky!",
+          "V objednávce bylo jasně napsáno -",
+          "doručit tank na sever od",
+          "řeky. Bez něj se přes tyto",
+          "bunkry k nepřátelskému hlavnímu městu",
+          "neprobojujeme. Naštěstí",
+          "naši řemeslníci nedávno",
+          "vyvinuli zázračnou zbraň - Houfnici."
+        ],
+        [
+          "S průchodností tanku a",
+          "dostřelem dělostřelectva",
+          "tomuto monstru není rovno.",
+          "Vzniká spojením",
+          "tanku s dělostřelectvem, ale je tu",
+          "nuance - dělostřelectvo nám",
+          "také nedodali. Vymotkej se",
+          "z této situace, jak umíš."
+        ]
+      ],
+      [
+        [
+          "A teď mluvme",
+          "vážně - zničení",
+          "nepřátelské armády ne vždy",
+          "stačí k",
+          "rozhodujícímu vítězství.",
+          "Pokud je nepřátelská ekonomika",
+          "silná, po",
+          "porážce se vrátí",
+          "s rostoucí silou."
+        ],
+        [
+          "K vyřešení tohoto",
+          "problému budeš",
+          "potřebovat raketové",
+          "silo - umí",
+          "odpalovat rakety pod",
+          "kódovým označením",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" je",
+          "zbraň dalekého dosahu.",
+          "Navíc, pokud ti nepřátelské",
+          "silo padne do",
+          "oka, věz - lze",
+          "ho obsadit",
+          "pěchotou a použít",
+          "proti bývalému majiteli."
+        ],
+        [
+          "Odpálení \"Oreshniku\"",
+          "je možné na jakékoli",
+          "nepřátelské pole,",
+          "které se nachází ve",
+          "vzdálenosti ne menší než",
+          "deset polí od",
+          "sila."
+        ],
+        [
+          "Raketa zasáhne",
+          "nejen",
+          "tebou vybraný",
+          "cíl, ale také",
+          "navíc",
+          "zasáhne šest",
+          "náhodných polí v",
+          "okolí."
+        ],
+        [
+          "Podařilo se nám uchytit na",
+          "kontinentu, ale vylodění",
+          "na ostrově se ukázalo",
+          "naprostým fiaskem - naše",
+          "pěchota uvízla v hustých",
+          "lesích na severu ostrova.",
+          "Tady budeme potřebovat",
+          "\"Oreshnik\" - smeť jejich",
+          "hlavní města na",
+          "Madagaskaru, a pak",
+          "nepřítel kapituluje."
+        ]
+      ],
+      [
+        [
+          "Kurz mladého",
+          "vojáka skončil! Teď",
+          "víš všechno,",
+          "co je potřeba k",
+          "vedení svých vojsk k",
+          "vítězství. A teď",
+          "to dokaž tím, že obsadíš",
+          "celý ostrov."
+        ],
+        [
+          "Pamatuj: znalost mechanik",
+          "- je polovina úspěchu,",
+          "druhá polovina -",
+          "tvoje důvtipnost.",
+          "Vpřed, k vítězstvím!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Pláň",
+    "Mountain": "Hora",
+    "Forest": "Les",
+    "Swamp": "Bažina",
+    "Desert": "Poušť",
+    "Water": "Voda",
+    "Infantry": "Pěchota",
+    "Tank": "Tank",
+    "Artillery": "Dělostřelectvo",
+    "Howitzer": "Houfnice",
+    "Grad": "Grad",
+    "Motorization": "Motorizace",
+    "Bunker": "Bunkr",
+    "MissileSilo": "Raketové silo",
+    "Town": "Město",
+    "LightFactory": "Lehká továrna",
+    "HeavyFactory": "Těžká továrna",
+    "TierOneCapital": "Hlavní město",
+    "TallCapital": "Vysoké Hlavní město",
+    "WideCapital": "Široké Hlavní město",
+    "Settlement": "Osada",
+    "PrivateLightFactory": "Řemeslník",
+    "PrivateHeavyFactory": "Soukromník",
+    "Abandonment": "Opuštěnost"
+  },
+  "resources": {
+    "Dollars": "Dolary",
+    "LightIndustryProducts": "Spotřební zboží",
+    "HeavyIndustryProducts": "Těžký průmysl"
+  }
+}

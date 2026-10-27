@@ -1,0 +1,1124 @@
+{
+  "loading": {
+    "MAP_LOADING": "Karte wird geladen...",
+    "INTERMEDIATE_PREPARING": "Zwischenvorbereitung...",
+    "UI_MAKING": "Benutzeroberfläche wird erstellt...",
+    "SPRITE_LOADING": "Sprites werden geladen..."
+  },
+  "maps": {
+    "last_save": "Fortsetzen...",
+    "Level 1": "Gotland",
+    "Level 2": "Epstein I.",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sizilien",
+    "Level 5": "Haiti",
+    "Level 6": "Island",
+    "Level 7": "Kreta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagaskar",
+    "Level 10": "Victoria"
+  },
+  "ui": {
+    "MAPS": "Karten",
+    "CAMPAIGN": "Kampagne",
+    "PLAY": "Spielen",
+    "EXIT": "Beenden",
+    "AUTHORS": "Autoren",
+    "CYBER_DILF_ROLES": [
+      "Ideengeber",
+      "Programmierer",
+      "Level-Designer",
+      "Sound-Designer"
+    ],
+    "DIVAN_ROLES": [
+      "Künstler",
+      "Art-Designer"
+    ],
+    "SETTINGS": "Einstellungen",
+    "PAUSE": "Pause",
+    "CONTINUE": "Fortsetzen",
+    "SAVE_AND_QUIT": "Speichern und beenden",
+    "QUIT_WITHOUT_SAVING": "Ohne Speichern beenden",
+    "RESTART_LEVEL": "Neu starten",
+    "MAKE_NEW_MAP": "Neu",
+    "LOAD_EXISTING_MAP": "Öffnen",
+    "MAP_EDITOR": "Karteneditor",
+    "OPEN_FILE_IN_EXPLORER": "Im Explorer öffnen",
+    "SHARE_ONLINE": "Teilen",
+    "BACK": "Zurück",
+    "END_TURN_BTN": "Zug beenden",
+    "TO_MOTORIZATION": "Räder bekommen",
+    "CAPTURE": "Einnehmen",
+    "TO_INFANTRY": "Räder verlieren",
+    "ATTACK": "Angreifen",
+    "INITIATE_PULLING": "Anhängen",
+    "TERMINATE_PULLING": "Abhängen",
+    "TO_TALL_CAPITAL": "Erhöhen",
+    "TO_WIDE_CAPITAL": "Erweitern",
+    "PURCHASE": "Kaufen",
+    "MOBILISE": "Mobilisieren",
+    "SETTLE": "Ansiedeln",
+    "COMBINE": "Kombinieren",
+    "LAUNCH_ORESHNIK": "\"Oreshnik\" starten",
+    "COST": "Kosten",
+    "FLOW": "Bilanz",
+    "SELECTED_PLAYERS": "Ausgewählte Spieler",
+    "NO_PLAYERS_SELECTED": "Keine Spieler ausgewählt!",
+    "YOU_WON": "SIEG",
+    "TO_NEXT_LEVEL": "Fortsetzen",
+    "PAGE": "Seite",
+    "NEXT": "Weiter",
+    "MUSIC_VOLUME": "Musiklautstärke",
+    "VOICE_VOLUME": "Stimmenlautstärke",
+    "EFFECTS_VOLUME": "Effektlautstärke",
+    "SELECTED_LANGUAGE": "Sprache der Oberfläche",
+    "GRAPHICS": "Grafik",
+    "SCREEN": "Bildschirm",
+    "FULLSCREEN": "Vollbild",
+    "WINDOWED": "Fenster",
+    "WIDTH": "Breite",
+    "HEIGHT": "Höhe",
+    "AUDIO": "Audio",
+    "OTHER": "Sonstiges",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Bot-Zug-Animationen",
+    "ON": "An",
+    "OFF": "Aus",
+    "APPLY": "Anwenden",
+    "ADD_PLAYER": "Spieler hinzufügen",
+    "FILL_HINT": "Füllen: Shift + LMB",
+    "PLAYERS_NAME": "Spielername",
+    "CLEAR": "Leeren",
+    "PLAYERS_TOP": "Top-Spieler",
+    "TERRITORIES": "Gebiete",
+    "ECONOMY": "Wirt.",
+    "PLAYERS_MODE": "Spieler",
+    "PLAYERS_MODE_STATES": "Staaten",
+    "PLAYERS_MODE_RANDOM": "Zufällig",
+    "COUNT": "Anzahl"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Kann benachbarte",
+        "feindliche Fahrzeuge einnehmen.",
+        "Kann in Motor-",
+        "infanterie verwandelt werden.",
+        "",
+        "Alle Geländearten verfügbar."
+      ],
+      "Tank": [
+        "Erhält Bonus auf",
+        "Angriff und Verteidigung",
+        "durch benachbarte Infanterie",
+        "und Motorinfanterie.",
+        "",
+        "Berge und Sümpfe nicht verfügbar."
+      ],
+      "Artillery": [
+        "Kann feindliche",
+        "Stellungen auf",
+        "drei Feldern angreifen.",
+        "Kann sich nicht",
+        "selbst bewegen.",
+        "",
+        "Wälder, Sümpfe",
+        "und Wüsten nicht verfügbar."
+      ],
+      "Bunker": [
+        "Erhöht die Verteidigung",
+        "benachbarter Infanterie.",
+        "",
+        "Wälder, Sümpfe",
+        "und Wüsten nicht verfügbar."
+      ],
+      "MissileSilo": [
+        "Kann \"Oreshnik\"-",
+        "Raketen starten.",
+        "",
+        "Nur Ebenen verfügbar."
+      ],
+      "Town": [
+        "Produziert Dollar.",
+        "Kann in",
+        "Infanterie verwandelt werden.",
+        "",
+        "Berge, Sümpfe",
+        "und Wüsten nicht verfügbar."
+      ],
+      "LightFactory": [
+        "Produziert Konsumgüter,",
+        "verbraucht Dollar.",
+        "",
+        "Berge, Sümpfe",
+        "und Wüsten nicht verfügbar."
+      ],
+      "HeavyFactory": [
+        "Produziert Schwerind.,",
+        "verbraucht Konsumgüter",
+        "und Dollar.",
+        "",
+        "Sümpfe und Wüsten nicht verfügbar."
+      ],
+      "TierOneCapital": [
+        "Verdoppelt den",
+        "Ausstoß benachbarter",
+        "Gebäude und verhindert",
+        "die Annexion der umzingelten",
+        "Region, in der es steht.",
+        "",
+        "Nur Ebenen verfügbar."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Zerstört eine schwächere",
+        "Figur auf eine Distanz",
+        "von 3 Feldern."
+      ],
+      "HOWITZER_ATTACK": [
+        "Zerstört eine schwächere",
+        "Figur auf eine Distanz",
+        "von 3 Feldern."
+      ],
+      "GRAD_ATTACK": [
+        "Zerstört schwächere Figuren in",
+        "der Umgebung des Zielfeldes."
+      ],
+      "TANK_ATTACK": [
+        "Zerstört eine schwächere",
+        "Figur in der Nähe."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Hängt die Artillerie",
+        "an die ausgewählte Infanterie",
+        "oder Motorinfanterie an."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Hängt die Artillerie",
+        "von der angehängten Figur ab."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Startet eine \"Oreshnik\"-Rakete",
+        "auf das ausgewählte Feld und",
+        "seine Umgebung."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Verwandelt diese Figur in",
+        "eine Hohe Hauptstadt,",
+        "erhöht den Ausstoß-",
+        "Bonus für Nachbarn."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Verwandelt diese Figur in",
+        "eine Breite Hauptstadt,",
+        "erhöht den Radius des",
+        "Ausstoß-",
+        "Bonus auf zwei Felder."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorbiert benachbarte",
+        "Artillerie und verwandelt",
+        "diese Figur in eine Haubitze.",
+        "",
+        "Berge und Sümpfe nicht verfügbar."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorbiert benachbarte",
+        "Artillerie und verwandelt",
+        "diese Figur in einen Grad.",
+        "",
+        "Nur Ebenen verfügbar."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Verwandelt diese Figur",
+        "in eine Stadt."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Verwandelt diese Figur",
+        "in eine Fabrik."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Verwandelt diese Figur",
+        "in eine Schwerfabrik."
+      ],
+      "MOBILISE_TOWN": [
+        "Verwandelt diese Figur",
+        "in Infanterie."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Verwandelt diese Figur",
+        "in Infanterie."
+      ],
+      "INFANTRY_SETTLE": [
+        "Verwandelt diese Figur",
+        "in eine Siedlung."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Nimmt eine schwächere",
+        "Figur in der Nähe ein."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Verwandelt diese",
+        "Figur in Infanterie.",
+        "",
+        "Alle Geländearten verfügbar."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Verwandelt diese Figur",
+        "in Motorinfanterie. ",
+        "",
+        "Berge, Sümpfe",
+        "und Wüsten nicht verfügbar."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Willkommen beim",
+          "Grundausbildungs-",
+          "kurs! Am Ende",
+          "wirst du die",
+          "wichtigsten Mechaniken",
+          "des Spiels beherrschen.",
+          "Alles beginnt mit",
+          "einem Überblick."
+        ],
+        [
+          "Vor dir",
+          "liegt das Schlachtfeld,",
+          "in einzelne Felder",
+          "aufgeteilt.",
+          "Jedes Feld",
+          "hat seinen Besitzer -",
+          "einen Spieler, und auf",
+          "den Feldern stehen Figuren."
+        ],
+        [
+          "Einige Felder",
+          "sind von Wasser bedeckt -",
+          "merk dir gleich:",
+          "Figuren können",
+          "kein Wasser betreten, es",
+          "ist eine unpassierbare Zone."
+        ],
+        [
+          "Um bequem",
+          "alles zu betrachten, beweg",
+          "die Kamera mit WASD,",
+          "dreh die Sicht mit ",
+          "QE, und mit dem Mausrad",
+          "zoom die Kamera",
+          "rein und raus."
+        ],
+        [
+          "Siehst du eine Figur?",
+          "Klick sie mit der linken",
+          "Maustaste an - in",
+          "der unteren linken Ecke",
+          "öffnet sich ihr Menü."
+        ],
+        [
+          "Um das Menü der Figur",
+          "zu schließen, drücke ESC",
+          "- das hebt die",
+          "Feldauswahl auf."
+        ],
+        [
+          "Viele Figuren",
+          "können sich",
+          "springend auf benachbarte",
+          "Felder bewegen. Zum Sprung",
+          "wähle eine Figur (LMB)",
+          "und klicke mit der rechten",
+          "Maustaste auf",
+          "ein benachbartes Feld,",
+          "zu dem du",
+          "ziehen willst."
+        ],
+        [
+          "Gehört ein Feld",
+          "einem anderen",
+          "Spieler, wird es nach",
+          "dem Sprung deins.",
+          "Doch du kannst nicht",
+          "auf ein Feld springen,",
+          "auf dem deine Truppen schon",
+          "stehen - es ist besetzt."
+        ],
+        [
+          "Wichtig: wenn",
+          "auf dem feindlichen Feld,",
+          "auf das du springst,",
+          "eine feindliche Figur",
+          "schon steht - sie",
+          "verschwindet, und deine",
+          "nimmt ihren Platz ein."
+        ],
+        [
+          "Jede Bewegung",
+          "verbraucht die",
+          "Kampffähigkeit der Figur - ihren",
+          "Vorrat findest du im Figurenmenü."
+        ],
+        [
+          "Kampffähigkeit",
+          "lässt sich nur auf",
+          "eine Weise wiederherstellen:",
+          "beende den Zug und lass",
+          "die Soldaten ausruhen."
+        ],
+        [
+          "Spieler ziehen abwechselnd,",
+          "wenn alle ihre Züge",
+          "gemacht haben,",
+          "kehrt die Kontrolle",
+          "zu dir zurück."
+        ],
+        [
+          "Und zuletzt - schnelle",
+          "Bewegung: um nicht",
+          "jedes Feld des Wegs",
+          "anzuklicken, halte",
+          "Shift gedrückt, zeig",
+          "auf ein fernes Feld",
+          "und drücke RMB. Die gewählte",
+          "Figur legt selbst",
+          "die kürzeste Route an."
+        ],
+        [
+          "Und nun lass uns sehn,",
+          "ob du überhaupt",
+          "zu etwas taugst.",
+          "Deine erste Kampf-",
+          "aufgabe - nimm",
+          "das feindliche",
+          "Hauptstadtgebäude ein."
+        ]
+      ],
+      [
+        [
+          "Jetzt zu den",
+          "Zahlen, die",
+          "den Kampf entscheiden.",
+          "Jede Figur",
+          "hat zwei wichtige",
+          "Parameter: Angriff und",
+          "Verteidigung - sie sind",
+          "im Menü, neben",
+          "der Kampffähigkeit."
+        ],
+        [
+          "Die Regel ist einfach:",
+          "ist die Verteidigung",
+          "des feindlichen Feldes (mit",
+          "allen Boni)",
+          "höher als",
+          "der Angriff deiner Figur,",
+          "kannst du nicht auf",
+          "dieses Feld springen."
+        ],
+        [
+          "Außerdem projizieren",
+          "alle Figuren",
+          "ihre Verteidigung auf",
+          "benachbarte Felder,",
+          "als würden sie",
+          "die Rücken der Kameraden decken."
+        ],
+        [
+          "Klick eine feindliche",
+          "Figur an, um",
+          "ihren Angriff",
+          "oder ihre Verteidigung im kleinen",
+          "Fenster unten links zu sehn. Ist",
+          "kein Fenster da, hat die gewählte",
+          "Figur weder Angriff",
+          "noch Verteidigung - ein leichtes Ziel."
+        ],
+        [
+          "Und jetzt achte",
+          "aufs Schlachtfeld",
+          "- dort sind neue",
+          "Figuren: ein Bunker und",
+          "Artillerie."
+        ],
+        [
+          "Der Bunker ist eine Bastion",
+          "der Verteidigung: er hat nicht",
+          "nur selbst beeindruckende",
+          "Verteidigung,",
+          "sondern bufft auch",
+          "die Verteidigung",
+          "benachbarter",
+          "Infanterie."
+        ],
+        [
+          "Artillerie schlägt",
+          "aus der Ferne - sie kann",
+          "den Feind auf",
+          "bis zu drei Feldern",
+          "Entfernung angreifen und",
+          "ihn ohne direkten",
+          "Kontakt vernichten."
+        ],
+        [
+          "Der Bunker, trotz ",
+          "all seiner Macht,",
+          "ist für Artillerie kein Hindernis -",
+          "ein Schuss auf",
+          "ihn reicht."
+        ],
+        [
+          "Doch",
+          "kann Artillerie nicht",
+          "selbst",
+          "gehen - sie muss",
+          "an Infanterie angehängt werden.",
+          "Dann, wenn die",
+          "Infanterie zieht, rollt",
+          "die Artillerie brav",
+          "hinterher."
+        ],
+        [
+          "Beachte: das angehängte",
+          "Paar kann",
+          "einen Sprung machen,",
+          "nur wenn beide",
+          "Figuren genug",
+          "Kampffähigkeit dafür haben."
+        ],
+        [
+          "Und noch ein wichtiger",
+          "Trick: feindliche",
+          "Artillerie kann",
+          "von unserem Infanteristen",
+          "eingenommen werden. Dafür",
+          "bring die Infanterie auf",
+          "das Feld neben dem Feind,",
+          "öffne ihr Menü, drücke",
+          "die Schaltfläche \"Einnehmen\" und",
+          "klicke RMB auf die feindliche",
+          "Figur."
+        ],
+        [
+          "Aber sei vorsichtig:",
+          "die Einnahme kann nicht",
+          "durchgeführt werden, wenn",
+          "neben dem Ziel",
+          "feindliche",
+          "Infanterie oder ein Bunker steht -",
+          "sie werden",
+          "die Operation behindern."
+        ],
+        [
+          "Und zuletzt - achte",
+          "auf das sumpfige",
+          "Gelände im Norden von",
+          "uns. Auf keinen Fall",
+          "solltest du Artillerie",
+          "hineinbringen - sobald sie",
+          "dort ist, verliert sie",
+          "die Fähigkeit,",
+          "den Feind anzugreifen,",
+          "bis du sie",
+          "wieder rausziehst."
+        ],
+        [
+          "Und nun mach",
+          "mit dem Feind auf",
+          "dieser seltsamen",
+          "Insel kurzen Prozess - nimm seine",
+          "Artillerie ein und knack",
+          "die Bunker, hinter",
+          "denen er sich versteckt."
+        ]
+      ],
+      [
+        [
+          "Und nun zu dem, ohne",
+          "das keine Armee",
+          "existiert - einem soliden",
+          "Hinterland. Figuren entstehen nicht",
+          "aus dem Nichts, sie müssen",
+          "erschaffen werden, und das",
+          "braucht Ressourcen."
+        ],
+        [
+          "Schau in die linke obere",
+          "Ecke - deine Ressourcen",
+          "(Dollar und Konsumgüter)",
+          "siehst du dort.",
+          "Jeden Zug bringen",
+          "sie dir produzierende",
+          "Gebäude ein."
+        ],
+        [
+          "Dollar bringen",
+          "Städte ein.",
+          "Konsumgüter produzieren",
+          "Fabriken, wobei sie",
+          "Dollar dafür ausgeben."
+        ],
+        [
+          "Und schließlich das wichtigste",
+          "Geheimnis einer effizienten",
+          "Wirtschaft - das",
+          "Hauptstadtgebäude. Es",
+          "verdoppelt",
+          "den Ausstoß",
+          "aller benachbarten",
+          "Städte und Fabriken,",
+          "wobei - die von ihnen",
+          "verbrauchten Ressourcen",
+          "gleich bleiben."
+        ],
+        [
+          "Feindliche Hauptstädte,",
+          "Städte und Fabriken",
+          "können",
+          "von Infanterie eingenommen",
+          "werden - genau wie",
+          "Artillerie."
+        ],
+        [
+          "Jetzt lass uns versuchen,",
+          "Ressourcen für",
+          "die Erschaffung einer Figur auszugeben.",
+          "Wenn kein Feld gewählt ist,",
+          "siehst du an Stelle des",
+          "Figurenmenüs Schaltflächen",
+          "zum Erschaffen von Figuren - die,",
+          "für die du",
+          "genug Ressourcen hast,",
+          "sind farbig markiert."
+        ],
+        [
+          "Du solltest genug",
+          "Dollar haben, um",
+          "eine Fabrik zu bauen - klick auf",
+          "die entsprechende Schaltfläche",
+          "und dann, mit RMB,",
+          "wähle ein Feld",
+          "zum Bau."
+        ],
+        [
+          "Das Erschaffen von Infanterie und",
+          "Artillerie funktioniert",
+          "etwas anders - sie",
+          "können nur",
+          "neben produzierenden",
+          "Gebäuden gebaut werden."
+        ],
+        [
+          "Wenn du auf",
+          "die Schaltfläche zum Erschaffen von Infanterie klickst,",
+          "werden die Städte, neben denen",
+          "sie gebaut werden kann,",
+          "für dich",
+          "hervorgehoben."
+        ],
+        [
+          "Beachte, dass eine Figur nicht",
+          "auf unpassendem",
+          "Gelände erschaffen werden kann, z.B. -",
+          "kannst du keine",
+          "Fabrik in den Bergen bauen,",
+          "aber Artillerie wird dort",
+          "recht komfortabel sein."
+        ],
+        [
+          "Beachte auch: viele",
+          "Figuren brauchen Ressourcen",
+          "nicht nur beim Erscheinen,",
+          "sondern verbrauchen sie",
+          "jeden Zug. Die Ressourcen,",
+          "die eine Figur",
+          "jeden Zug verbraucht, findest du",
+          "in ihrem Menü."
+        ],
+        [
+          "Wenn zu Beginn eines Zuges",
+          "nicht genug Ressourcen",
+          "für den Unterhalt da sind, wird die Figur",
+          "vom Feld entfernt - also",
+          "behalte die Bilanz im Auge."
+        ],
+        [
+          "Wenn einer Fabrik",
+          "Rohstoffe fehlen,",
+          "verschwindet sie nicht, sondern",
+          "steht einfach still,",
+          "ohne Produktion."
+        ],
+        [
+          "Außer dem Ressourcenvorrat",
+          "oben links",
+          "wird auch das erwartete",
+          "Wachstum für den nächsten Zug",
+          "angezeigt (in",
+          "Klammern), aber denk dran:",
+          "möglicher Leerlauf",
+          "wegen Ressourcenmangels",
+          "wird in dieser Prognose",
+          "nicht berücksichtigt."
+        ],
+        [
+          "Nutze das Wissen,",
+          "das du erlangt hast, stärke",
+          "die Wirtschaft, sammle",
+          "eine starke Armee und",
+          "zerschmettere deine Feinde",
+          "auf dieser schönen",
+          "Insel."
+        ]
+      ],
+      [
+        [
+          "Ein fähiger Kommandant",
+          "gewinnt nicht nur",
+          "mit Gewalt, sondern auch",
+          "mit List. Warum",
+          "Blut vergießen, wo",
+          "du deins ohne",
+          "Kampf holen kannst?"
+        ],
+        [
+          "Wenn es dir gelingt,",
+          "eine Gruppe feindlicher",
+          "Felder einzukreisen,",
+          "also vollständig",
+          "vom Rest des feindlichen",
+          "Besitzes abzuschneiden,",
+          "dann werden am",
+          "Ende seines Zuges",
+          "diese Felder",
+          "von dir annektiert."
+        ],
+        [
+          "Das ist sehr vorteilhaft!",
+          "Aber es gibt einen Haken -",
+          "annektiert werden nur Felder, die nicht",
+          "vom Feind",
+          "kontrolliert werden,",
+          "die wir außerdem",
+          "nach der Annexion",
+          "kontrollieren können."
+        ],
+        [
+          "Die Kontrolle über Felder wird",
+          "von Hauptstädten und Infanterie gewährleistet.",
+          "Wenn in der umzingelten Region",
+          "eine feindliche Hauptstadt",
+          "steht, wird sie nicht annektiert.",
+          "Und umgekehrt können sogar",
+          "nicht umzingelte Felder",
+          "annektiert werden, falls",
+          "sie weit von",
+          "der nächsten Hauptstadt oder",
+          "Infanterie entfernt sind."
+        ],
+        [
+          "Jedoch sollte man bedenken,",
+          "dass Infanterie",
+          "Kontrolle nur ",
+          "gibt, wenn sie",
+          "in derselben Region wie",
+          "eine Hauptstadt ist, oder",
+          "(wenn keine Hauptstadt da ist),",
+          "wenn sie neben",
+          "Wasser steht - so",
+          "bekommt sie",
+          "die Möglichkeit,",
+          "per See versorgt zu werden."
+        ],
+        [
+          "Wenn die Annexion",
+          "tatsächlich geschieht,",
+          "wird die gesamte feindliche",
+          "Infanterie innerhalb",
+          "der Einkreisung",
+          "aufgelöst (die Soldaten",
+          "zerstreuen sich nach",
+          "Hause), und alle",
+          "anderen Figuren -",
+          "gehen wohlbehalten in deine",
+          "Armee über."
+        ],
+        [
+          "Um Einkreisungen zu schaffen,",
+          "ist hohe Mobilität",
+          "nützlich.",
+          "Normale Infanterie kann",
+          "Räder bekommen -",
+          "auf einen",
+          "Transporter steigen und",
+          "sich in",
+          "Motorinfanterie verwandeln."
+        ],
+        [
+          "Das gibt einen riesigen",
+          "Vorteil: der Vorrat",
+          "an Kampffähigkeit bei",
+          "Motorinfanterie ist viel",
+          "größer als zu Fuß,",
+          "und sie kann auch",
+          "Artillerie an sich",
+          "anhängen."
+        ],
+        [
+          "Außerdem gibt Motor-",
+          "infanterie, genau wie",
+          "normale Infanterie,",
+          "Kontrolle über",
+          "Felder - nutze",
+          "das, um nicht",
+          "umsonst Territorium zu verlieren."
+        ],
+        [
+          "Aber es gibt auch einen Minuspunkt -",
+          "feindliche Figuren",
+          "einzunehmen,",
+          "dazu ist Motorinfanterie nicht mehr",
+          "fähig, dafür",
+          "braucht man ausdrücklich",
+          "Soldaten zu Fuß."
+        ],
+        [
+          "Diese ganze Insel",
+          "ist von dichtem Wald",
+          "überwuchert, in dem unsere",
+          "Artillerie nutzlos ist.",
+          "Der Feind, das wissend, hat sich gut",
+          "verschanzt und seine",
+          "Motorinfanterie gebracht, um",
+          "uns hier rauszuwerfen."
+        ],
+        [
+          "Schnell, sammle ein paar Räder",
+          "und zerreiß seine Ländereien",
+          "in Stücke."
+        ]
+      ],
+      [
+        [
+          "Jetzt zur schweren",
+          "Ausrüstung. Ein feindlicher",
+          "Bunker, den Infanterie",
+          "nicht knackt,",
+          "kann von einem Panzer",
+          "zerstört werden."
+        ],
+        [
+          "Panzer, wie Artillerie,",
+          "dürfen von Infanterie",
+          "eingenommen werden. Ein Panzer kann",
+          "den Feind angreifen, aber",
+          "nur auf einem benachbarten",
+          "Feld - auf kürzeste Distanz."
+        ],
+        [
+          "Die Stärke eines Panzers wächst,",
+          "wenn in der Nähe",
+          "Infanterie oder Motorinfanterie ist:",
+          "Kampfkameraden decken",
+          "die Panzerung, und Angriff wie Verteidigung",
+          "des Panzers steigen."
+        ],
+        [
+          "Ein einsamer Panzer",
+          "ist dabei - eine leichte",
+          "Beute. Selbst normale",
+          "Infanterie kann",
+          "ihn zerstören."
+        ],
+        [
+          "Einen eigenen Panzer",
+          "zu bauen ist keine leichte Aufgabe -",
+          "mit den vorhandenen Mitteln",
+          "geht das nicht.",
+          "Lerne eine neue",
+          "Ressource kennen - Schwerind., sie wird",
+          "von Schwerfabriken produziert,",
+          "wobei sie dafür",
+          "Dollar und Konsumgüter ausgeben."
+        ],
+        [
+          "Eine Schwerfabrik, genau wie",
+          "eine Fabrik, erhält einen Bonus",
+          "durch die Nachbarschaft zu",
+          "einer Hauptstadt, und",
+          "feindliche Schwerfabriken können",
+          "von Infanterie eingenommen werden."
+        ],
+        [
+          "Was die Passierbarkeit",
+          "von Panzern angeht - sie gehören zu",
+          "den wenigen, die in der Wüste",
+          "kämpfen können, doch in Bergen",
+          "und Sümpfen erwarte",
+          "nichts von ihnen."
+        ],
+        [
+          "Schau dir diese arme",
+          "Insel an, sie ist seit vielen",
+          "Jahren in ewigen Krieg",
+          "verwickelt - es ist Zeit,",
+          "hier Ordnung zu schaffen."
+        ]
+      ],
+      [
+        [
+          "Produzierende Gebäude müssen nicht",
+          "immer von dir gebaut werden.",
+          "Ressourcenproduzenten können",
+          "von selbst auf deinen",
+          "Territorien erscheinen - wir sprechen",
+          "von Privateers (alternativen",
+          "Versionen von Städten,",
+          "Fabriken und Schwerfabriken)."
+        ],
+        [
+          "Um zu erscheinen, brauchen sie",
+          "unbesetzte Ebenen",
+          "und die Abwesenheit staatlicher",
+          "Kontrolle (je weniger",
+          "Hauptstädte, desto mehr",
+          "Privateers)."
+        ],
+        [
+          "Privateers sind weniger effizient",
+          "als Produktionen in deinem",
+          "Besitz, da sie trotzdem",
+          "Gewinn machen müssen.",
+          "Dabei kann jeder Privateer",
+          "gekauft werden - verwandelt",
+          "in ein normales produzierendes Gebäude."
+        ],
+        [
+          "Ein weiterer Unterschied - ein Privateer",
+          "toleriert nicht das Fehlen",
+          "der Ressourcen, die er",
+          "zur Produktion braucht -",
+          "bei Defizit gibt er",
+          "seine Produktion auf."
+        ],
+        [
+          "Eine Ruine verbraucht nicht nur",
+          "kostenlos",
+          "den Staatshaushalt, sie",
+          "infiziert auch produzierende",
+          "Gebäude in der Nähe."
+        ],
+        [
+          "Ab diesem Moment",
+          "werden auch Bunker,",
+          "die weit von der Front",
+          "entfernt stehen,",
+          "zu Ruinen -",
+          "es hat keinen Sinn, sie im Hinterland zu bauen!"
+        ],
+        [
+          "Die gute Nachricht ist,",
+          "dass Ruinen, wie alle",
+          "Gebäude, die du nicht brauchst,",
+          "durch Schüsse",
+          "von Panzern und Artillerie abgerissen",
+          "werden können - nutze das,",
+          "um ihre",
+          "Ausbreitung zu verhindern."
+        ],
+        [
+          "Und schließlich kann überzählige",
+          "Infanterie sich immer",
+          "ansiedeln - verwandle",
+          "sie in Siedlungen.",
+          "Das hilft, die Wirtschaft in schwieriger",
+          "Stunde zu retten."
+        ]
+      ],
+      [
+        [
+          "Der Feind auf dieser Insel",
+          "wusste im Voraus von unserer",
+          "Ankunft und konnte kräftig",
+          "in statische",
+          "Verteidigung investieren - zum Glück für uns",
+          "hatten wir unseren Mann in",
+          "der westlichen Provinz, der",
+          "den Bau sabotierte."
+        ],
+        [
+          "Leider müssen wir nach Osten",
+          "durch unzählige",
+          "Reihen von Bunkern durchbrechen. Hier kommt eine neue",
+          "Figur zu unserer",
+          "Hilfe - der Grad. Er gibt pro",
+          "Schuss ein wenig Konsumgüter aus",
+          "und zerstört 3 Ziele auf einmal -",
+          "genau das Richtige gegen dichte Bebauung."
+        ],
+        [
+          "Beachte nur, dass der Grad eine",
+          "ungenauen Waffe ist, und genau das Feld,",
+          "auf das du zielst,",
+          "wird er nie treffen."
+        ],
+        [
+          "Der Grad kann außerdem nicht",
+          "einfach angeheuert werden - um ihn",
+          "zu erschaffen, musst du",
+          "Motorinfanterie mit Artillerie kombinieren.",
+          "Diese Verwandlung erfordert",
+          "zudem ein wenig Schwerind.,",
+          "das wir nicht mitgebracht haben.",
+          "Aber wir sind sicher, du findest",
+          "einen Ausweg aus dieser Situation."
+        ],
+        [
+          "Und noch eine Kleinigkeit - unsere",
+          "Stammbauer haben so etwas",
+          "wie einen Streik veranstaltet, also",
+          "bei dieser und der nächsten Mission",
+          "kannst du keine neuen Figuren",
+          "erschaffen."
+        ]
+      ],
+      [
+        [
+          "Verdammt diese Logistiker!",
+          "In der Anfrage stand klar -",
+          "einen Panzer nördlich des",
+          "Flusses liefern. Ohne ihn, durch diese",
+          "Bunker, zur feindlichen Hauptstadt",
+          "kommen wir nicht durch. Zum Glück",
+          "haben unsere Handwerker kürzlich",
+          "eine Wunderwaffe entwickelt - die Haubitze."
+        ],
+        [
+          "Mit der Passierbarkeit eines Panzers und",
+          "der Reichweite der Artillerie",
+          "hat dieses Monster seinesgleichen nicht.",
+          "Sie entsteht durch Kombination",
+          "eines Panzers mit Artillerie, aber es gibt",
+          "einen Haken - auch die Artillerie",
+          "haben sie uns nicht geliefert. Komm aus",
+          "dieser Situation raus, wie du kannst."
+        ]
+      ],
+      [
+        [
+          "Und jetzt reden wir",
+          "ernsthaft - die Zerstörung",
+          "der feindlichen Armee reicht nicht immer",
+          "für einen",
+          "entscheidenden Sieg.",
+          "Wenn die Wirtschaft des Feindes",
+          "stark ist, kommen sie nach",
+          "der Niederlage mit",
+          "gewachsener Kraft zurück."
+        ],
+        [
+          "Um dieses",
+          "Problem zu lösen,",
+          "brauchst du ein Raketensilo",
+          "- es kann",
+          "Raketen unter",
+          "dem Codenamen",
+          "\"Oreshnik\" starten."
+        ],
+        [
+          "\"Oreshnik\" ist eine",
+          "Fernwaffe.",
+          "Dabei, wenn ein feindliches",
+          "Silo dir ins",
+          "Auge fällt, wisse - es",
+          "kann von Infanterie",
+          "eingenommen und gegen",
+          "seinen ehemaligen Besitzer verwendet werden."
+        ],
+        [
+          "Der Start von \"Oreshnik\"",
+          "ist auf jedem",
+          "feindlichen Feld möglich,",
+          "das sich in",
+          "einer Entfernung von nicht weniger als",
+          "zehn Feldern vom",
+          "Silo befindet."
+        ],
+        [
+          "Die Rakete schlägt",
+          "nicht nur am",
+          "von dir gewählten",
+          "Ziel ein, sondern",
+          "zusätzlich",
+          "trifft sie sechs",
+          "zufällige Felder in",
+          "der Umgebung."
+        ],
+        [
+          "Wir konnten uns auf",
+          "dem Kontinent festsetzen, aber die Landung",
+          "auf der Insel erwies sich",
+          "als völliger Fehlschlag - unsere",
+          "Infanterie steckte in den dichten",
+          "Wäldern im Norden der Insel fest.",
+          "Hier brauchen wir",
+          "\"Oreshnik\" - vernichte ihre",
+          "Hauptstädte auf",
+          "Madagaskar, und dann",
+          "kapituliert der Feind."
+        ]
+      ],
+      [
+        [
+          "Die Grundausbildung",
+          "ist vorbei! Jetzt",
+          "weißt du alles,",
+          "was nötig ist,",
+          "um deine Truppen zum",
+          "Sieg zu führen. Und jetzt",
+          "beweise es, indem du",
+          "die ganze Insel einnimmst."
+        ],
+        [
+          "Denk dran: Mechanikkenntnis",
+          "- ist die halbe Miete,",
+          "die andere Hälfte -",
+          "dein Köpfchen.",
+          "Vorwärts, zum Sieg!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Ebene",
+    "Mountain": "Berg",
+    "Forest": "Wald",
+    "Swamp": "Sumpf",
+    "Desert": "Wüste",
+    "Water": "Wasser",
+    "Infantry": "Infanterie",
+    "Tank": "Panzer",
+    "Artillery": "Artillerie",
+    "Howitzer": "Haubitze",
+    "Grad": "Grad",
+    "Motorization": "Motorisierung",
+    "Bunker": "Bunker",
+    "MissileSilo": "Raketensilo",
+    "Town": "Stadt",
+    "LightFactory": "Leichtfabrik",
+    "HeavyFactory": "Schwerfabrik",
+    "TierOneCapital": "Hauptstadt",
+    "TallCapital": "Hohe Hauptstadt",
+    "WideCapital": "Breite Hauptstadt",
+    "Settlement": "Siedlung",
+    "PrivateLightFactory": "Handwerker",
+    "PrivateHeavyFactory": "Privatier",
+    "Abandonment": "Ruine"
+  },
+  "resources": {
+    "Dollars": "Dollar",
+    "LightIndustryProducts": "Konsumgüter",
+    "HeavyIndustryProducts": "Schwerind."
+  }
+}

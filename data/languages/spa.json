@@ -1,0 +1,1124 @@
+{
+  "loading": {
+    "MAP_LOADING": "Carregando mapa...",
+    "INTERMEDIATE_PREPARING": "Preparação intermediária...",
+    "UI_MAKING": "Criando interface...",
+    "SPRITE_LOADING": "Carregando sprites..."
+  },
+  "maps": {
+    "last_save": "Continuar...",
+    "Level 1": "Gotland",
+    "Level 2": "Ilha de Epstein",
+    "Level 3": "Hokkaido",
+    "Level 4": "Sicília",
+    "Level 5": "Haiti",
+    "Level 6": "Islândia",
+    "Level 7": "Creta",
+    "Level 8": "Kalimantan",
+    "Level 9": "Madagáscar",
+    "Level 10": "Vitória"
+  },
+  "ui": {
+    "MAPS": "Mapas",
+    "CAMPAIGN": "Campanha",
+    "PLAY": "Jogar",
+    "EXIT": "Sair",
+    "AUTHORS": "Autores",
+    "CYBER_DILF_ROLES": [
+      "Autor da ideia",
+      "Programador",
+      "Designer de níveis",
+      "Designer de som"
+    ],
+    "DIVAN_ROLES": [
+      "Artista",
+      "Designer de arte"
+    ],
+    "SETTINGS": "Configurações",
+    "PAUSE": "Pausa",
+    "CONTINUE": "Continuar",
+    "SAVE_AND_QUIT": "Salvar e sair",
+    "QUIT_WITHOUT_SAVING": "Sair sem salvar",
+    "RESTART_LEVEL": "Reiniciar",
+    "MAKE_NEW_MAP": "Novo",
+    "LOAD_EXISTING_MAP": "Abrir",
+    "MAP_EDITOR": "Editor de mapas",
+    "OPEN_FILE_IN_EXPLORER": "Abrir no explorador",
+    "SHARE_ONLINE": "Compartilhar",
+    "BACK": "Voltar",
+    "END_TURN_BTN": "Encerrar turno",
+    "TO_MOTORIZATION": "Ganhar rodas",
+    "CAPTURE": "Capturar",
+    "TO_INFANTRY": "Perder rodas",
+    "ATTACK": "Atacar",
+    "INITIATE_PULLING": "Engatar",
+    "TERMINATE_PULLING": "Desengatar",
+    "TO_TALL_CAPITAL": "Elevar",
+    "TO_WIDE_CAPITAL": "Expandir",
+    "PURCHASE": "Comprar",
+    "MOBILISE": "Mobilizar",
+    "SETTLE": "Assentar",
+    "COMBINE": "Combinar",
+    "LAUNCH_ORESHNIK": "Lançar \"Oreshnik\"",
+    "COST": "Custo",
+    "FLOW": "Saldo",
+    "SELECTED_PLAYERS": "Jogadores selecionados",
+    "NO_PLAYERS_SELECTED": "Nenhum jogador selecionado!",
+    "YOU_WON": "VITÓRIA",
+    "TO_NEXT_LEVEL": "Continuar",
+    "PAGE": "Página",
+    "NEXT": "Próximo",
+    "MUSIC_VOLUME": "Volume da música",
+    "VOICE_VOLUME": "Volume das vozes",
+    "EFFECTS_VOLUME": "Volume dos efeitos",
+    "SELECTED_LANGUAGE": "Idioma da interface",
+    "GRAPHICS": "Gráficos",
+    "SCREEN": "Tela",
+    "FULLSCREEN": "Tela cheia",
+    "WINDOWED": "Janela",
+    "WIDTH": "Largura",
+    "HEIGHT": "Altura",
+    "AUDIO": "Áudio",
+    "OTHER": "Outros",
+    "NEED_TO_PLAY_BOT_MOVE_ANIMATIONS": "Animações de bots",
+    "ON": "Ativado",
+    "OFF": "Desativado",
+    "APPLY": "Aplicar",
+    "ADD_PLAYER": "Adicionar jogador",
+    "FILL_HINT": "Preencher: Shift + Clique esq.",
+    "PLAYERS_NAME": "Nome do jogador",
+    "CLEAR": "Limpar",
+    "PLAYERS_TOP": "Melhores jogadores",
+    "TERRITORIES": "Territórios",
+    "ECONOMY": "Eco.",
+    "PLAYERS_MODE": "Jogadores",
+    "PLAYERS_MODE_STATES": "Estados",
+    "PLAYERS_MODE_RANDOM": "Aleatório",
+    "COUNT": "Quantidade"
+  },
+  "hints": {
+    "creation": {
+      "Infantry": [
+        "Pode capturar um",
+        "veículo inimigo adjacente.",
+        "Pode ser transformada",
+        "em infantaria motorizada.",
+        "",
+        "Todos os terrenos disponíveis."
+      ],
+      "Tank": [
+        "Ganha bônus de",
+        "ataque e defesa da",
+        "infantaria adjacente",
+        "e motorizada.",
+        "",
+        "Montanhas e pântanos indisponíveis."
+      ],
+      "Artillery": [
+        "Pode atacar",
+        "posições inimigas a",
+        "um alcance de três casas.",
+        "Não pode se mover",
+        "sozinha.",
+        "",
+        "Florestas, pântanos",
+        "e desertos indisponíveis."
+      ],
+      "Bunker": [
+        "Aumenta a defesa da",
+        "infantaria adjacente.",
+        "",
+        "Florestas, pântanos",
+        "e desertos indisponíveis."
+      ],
+      "MissileSilo": [
+        "Pode lançar mísseis",
+        "\"Oreshnik\".",
+        "",
+        "Apenas planícies disponíveis."
+      ],
+      "Town": [
+        "Produz dólares.",
+        "Pode ser transformada",
+        "em infantaria.",
+        "",
+        "Montanhas, pântanos",
+        "e desertos indisponíveis."
+      ],
+      "LightFactory": [
+        "Produz bens de consumo,",
+        "consome dólares.",
+        "",
+        "Montanhas, pântanos",
+        "e desertos indisponíveis."
+      ],
+      "HeavyFactory": [
+        "Produz ind. pesada,",
+        "consome bens de consumo",
+        "e dólares.",
+        "",
+        "Pântanos e desertos indisponíveis."
+      ],
+      "TierOneCapital": [
+        "Dobra a produção",
+        "dos edifícios adjacentes",
+        "e impede",
+        "a anexação da região",
+        "cercada em que se encontra.",
+        "",
+        "Apenas planícies disponíveis."
+      ]
+    },
+    "figures_menu": {
+      "ARTILLERY_ATTACK": [
+        "Destrói uma peça mais",
+        "fraca a uma distância",
+        "de 3 casas."
+      ],
+      "HOWITZER_ATTACK": [
+        "Destrói uma peça mais",
+        "fraca a uma distância",
+        "de 3 casas."
+      ],
+      "GRAD_ATTACK": [
+        "Destrói peças mais fracas nas",
+        "proximidades da casa alvo."
+      ],
+      "TANK_ATTACK": [
+        "Destrói uma peça mais",
+        "fraca nas proximidades."
+      ],
+      "ARTILLERY_INITIATE_PULLING": [
+        "Engata a artilharia",
+        "à infantaria selecionada",
+        "ou motorizada."
+      ],
+      "ARTILLERY_TERMINATE_PULLING": [
+        "Desengata a artilharia",
+        "da peça engatada."
+      ],
+      "LAUNCH_ORESHNIK": [
+        "Lança um míssil \"Oreshnik\"",
+        "na casa selecionada e",
+        "nos seus arredores."
+      ],
+      "CAPITAL_TO_TALL_CAPITAL": [
+        "Transforma esta peça em",
+        "uma Capital Alta,",
+        "aumentando o bônus",
+        "de produção dos vizinhos."
+      ],
+      "CAPITAL_TO_WIDE_CAPITAL": [
+        "Transforma esta peça em",
+        "uma Capital Larga,",
+        "aumentando o raio",
+        "do bônus de produção",
+        "para duas casas."
+      ],
+      "TANK_AND_ARTILLERY_TO_HOWITZER": [
+        "Absorvendo a artilharia",
+        "adjacente, transforma",
+        "esta peça em Obus.",
+        "",
+        "Montanhas e pântanos indisponíveis."
+      ],
+      "MOTORIZATION_AND_ARTILLERY_TO_GRAD": [
+        "Absorvendo a artilharia",
+        "adjacente, transforma",
+        "esta peça em Grad.",
+        "",
+        "Apenas planícies disponíveis."
+      ],
+      "PURCHASE_SETTLEMENT": [
+        "Transforma esta peça",
+        "numa cidade."
+      ],
+      "PURCHASE_PRIVATE_LIGHT_FACTORY": [
+        "Transforma esta peça",
+        "numa fábrica leve."
+      ],
+      "PURCHASE_PRIVATE_HEAVY_FACTORY": [
+        "Transforma esta peça",
+        "numa fábrica pesada."
+      ],
+      "MOBILISE_TOWN": [
+        "Transforma esta peça",
+        "em infantaria."
+      ],
+      "MOBILISE_SETTLEMENT": [
+        "Transforma esta peça",
+        "em infantaria."
+      ],
+      "INFANTRY_SETTLE": [
+        "Transforma esta peça",
+        "num assentamento."
+      ],
+      "INFANTRY_CAPTURE": [
+        "Captura uma peça mais",
+        "fraca nas proximidades."
+      ],
+      "MOTORIZATION_TO_INFANTRY": [
+        "Transforma esta",
+        "peça em infantaria.",
+        "",
+        "Todos os terrenos disponíveis."
+      ],
+      "INFANTRY_TO_MOTORIZATION": [
+        "Transforma esta peça",
+        "em infantaria motorizada. ",
+        "",
+        "Montanhas, pântanos",
+        "e desertos indisponíveis."
+      ]
+    },
+    "tutorials": [
+      [
+        [
+          "Bem-vindo ao",
+          "curso de instrução",
+          "militar! Ao",
+          "terminá-lo",
+          "dominarás as mecânicas",
+          "básicas do jogo.",
+          "Tudo começa com",
+          "uma visão geral."
+        ],
+        [
+          "Diante de ti",
+          "está o campo",
+          "de batalha, dividido",
+          "em casas separadas.",
+          "Cada casa",
+          "tem seu dono -",
+          "um jogador, e dentro",
+          "das casas ficam as peças."
+        ],
+        [
+          "Algumas casas",
+          "estão ocupadas por água -",
+          "lembra logo:",
+          "as peças não podem",
+          "entrar na água, é",
+          "uma zona intransponível."
+        ],
+        [
+          "Para ver com conforto",
+          "tudo ao redor, move",
+          "a câmera com WASD,",
+          "gira a visão com ",
+          "QE, e com a roda do mouse",
+          "aproxima e afasta",
+          "a câmera."
+        ],
+        [
+          "Vês uma peça no campo?",
+          "Clica nela com o botão",
+          "esquerdo do mouse - no",
+          "canto inferior esquerdo",
+          "abrirá o menu dela."
+        ],
+        [
+          "Para fechar o menu",
+          "da peça, pressiona ESC",
+          "- isso desmarcará",
+          "a casa escolhida."
+        ],
+        [
+          "Muitas peças",
+          "podem se mover",
+          "saltando para casas",
+          "adjacentes. Para saltar,",
+          "seleciona uma peça (clique esq.)",
+          "e clica com o botão direito",
+          "do mouse em",
+          "uma casa adjacente",
+          "para a qual queres",
+          "te mover."
+        ],
+        [
+          "Se uma casa",
+          "pertence a outro",
+          "jogador, após o salto",
+          "ela se tornará tua.",
+          "Mas não podes",
+          "saltar para uma casa",
+          "onde as tuas forças já",
+          "estão - está ocupada."
+        ],
+        [
+          "Ponto importante: se",
+          "na casa inimiga",
+          "para a qual saltas",
+          "já está uma peça",
+          "inimiga - ela",
+          "desaparecerá, e a tua",
+          "ocupará o lugar."
+        ],
+        [
+          "Cada movimento",
+          "consome a",
+          "capacidade de combate da peça - a sua",
+          "reserva fica no menu da peça."
+        ],
+        [
+          "A capacidade de combate",
+          "só pode ser restaurada",
+          "de uma forma:",
+          "encerra o turno e deixa",
+          "os soldados descansarem."
+        ],
+        [
+          "Os jogadores jogam por turnos,",
+          "então quando todos",
+          "tiverem feito os movimentos,",
+          "o controle volta",
+          "para ti."
+        ],
+        [
+          "E por fim - o movimento",
+          "rápido: para não",
+          "clicar em cada",
+          "casa do caminho, mantém",
+          "a tecla Shift, aponta",
+          "para uma casa distante",
+          "e clica com o botão direito. A peça",
+          "selecionada traçará",
+          "sozinha a rota mais curta."
+        ],
+        [
+          "E agora vejamos",
+          "se serves",
+          "para algo.",
+          "A tua primeira missão",
+          "de combate - captura",
+          "o edifício",
+          "da capital inimiga."
+        ]
+      ],
+      [
+        [
+          "Agora falemos dos",
+          "números que",
+          "decidem o resultado do combate.",
+          "Cada peça",
+          "tem dois parâmetros",
+          "chave: ataque e",
+          "defesa - estão no",
+          "menu, junto à",
+          "capacidade de combate."
+        ],
+        [
+          "A regra é simples:",
+          "se a defesa",
+          "da casa inimiga (com",
+          "todos os bônus)",
+          "for maior que",
+          "o ataque da tua peça,",
+          "não poderás saltar",
+          "para essa casa."
+        ],
+        [
+          "Além disso, todas",
+          "as peças projetam",
+          "sua defesa sobre",
+          "as casas adjacentes,",
+          "como se cobrissem",
+          "as costas dos companheiros."
+        ],
+        [
+          "Clica numa peça",
+          "inimiga para",
+          "ver o ataque",
+          "ou a defesa dela na pequena",
+          "janela no canto inferior esquerdo. Se",
+          "não houver janela, a peça",
+          "selecionada não tem nem ataque",
+          "nem defesa - um alvo fácil."
+        ],
+        [
+          "E agora presta",
+          "atenção ao campo de batalha",
+          "- há novas",
+          "peças: um bunker e",
+          "artilharia."
+        ],
+        [
+          "O bunker é um bastião",
+          "da defesa: não",
+          "só tem uma defesa",
+          "impressionante por si só,",
+          "como também buffa",
+          "a defesa da",
+          "infantaria",
+          "adjacente."
+        ],
+        [
+          "A artilharia ataca",
+          "de longe - pode",
+          "atacar o inimigo a",
+          "uma distância de até três",
+          "casas e destruí-lo",
+          "sem contato",
+          "direto."
+        ],
+        [
+          "O bunker, apesar ",
+          "de todo o seu poder,",
+          "não é obstáculo para a artilharia -",
+          "um único disparo",
+          "basta."
+        ],
+        [
+          "Contudo,",
+          "a artilharia não pode",
+          "se mover",
+          "sozinha - precisa",
+          "ser engatada à infantaria.",
+          "Então, quando a",
+          "infantaria se move, a artilharia",
+          "rolará obedientemente",
+          "atrás."
+        ],
+        [
+          "Nota: o par",
+          "engatado pode",
+          "fazer um salto",
+          "só se ambas",
+          "as peças tiverem",
+          "capacidade de combate suficiente para isso."
+        ],
+        [
+          "E outro truque",
+          "importante: a artilharia",
+          "inimiga pode",
+          "ser capturada pelo nosso",
+          "infante. Para isso",
+          "leva a infantaria para",
+          "a casa adjacente ao inimigo,",
+          "abre o menu dela, pressiona",
+          "o botão \"Capturar\" e",
+          "clica com o direito na peça",
+          "inimiga."
+        ],
+        [
+          "Mas tem cuidado:",
+          "a captura não pode",
+          "ser realizada se",
+          "junto ao alvo",
+          "houver infantaria",
+          "inimiga ou um bunker -",
+          "eles atrapalharão",
+          "a operação."
+        ],
+        [
+          "E por fim - presta",
+          "atenção ao terreno",
+          "pantanoso ao norte de",
+          "nós. Em hipótese alguma",
+          "leves a artilharia",
+          "para lá - assim que ela",
+          "estiver lá,",
+          "perderá a capacidade",
+          "de atacar o inimigo,",
+          "até que a",
+          "tires de lá."
+        ],
+        [
+          "E agora",
+          "resolve o inimigo nesta",
+          "estranha",
+          "ilha - captura a artilharia",
+          "dele e abre",
+          "os bunkers atrás",
+          "dos quais ele se esconde."
+        ]
+      ],
+      [
+        [
+          "E agora sobre aquilo",
+          "sem o que nenhum exército",
+          "existe - uma retaguarda",
+          "sólida. As peças não vêm",
+          "do nada, é preciso",
+          "criá-las, e isso",
+          "exige recursos."
+        ],
+        [
+          "Olha no canto",
+          "superior esquerdo - os teus recursos",
+          "(dólares e bens de consumo)",
+          "vais vê-los lá.",
+          "A cada turno eles te são",
+          "trazidos pelos edifícios",
+          "produtores."
+        ],
+        [
+          "Os dólares são trazidos",
+          "pelas cidades.",
+          "Os bens de consumo são produzidos",
+          "pelas fábricas, gastando",
+          "dólares nisso."
+        ],
+        [
+          "E por fim, o principal",
+          "segredo de uma economia",
+          "eficiente - o edifício",
+          "da capital. Ele dobra",
+          "a produção",
+          "de todas as cidades",
+          "e fábricas adjacentes,",
+          "e - os recursos",
+          "que gastam continuam",
+          "os mesmos."
+        ],
+        [
+          "As capitais,",
+          "cidades e fábricas",
+          "inimigas podem",
+          "ser capturadas",
+          "pela infantaria - exatamente como",
+          "a artilharia."
+        ],
+        [
+          "Agora vamos tentar",
+          "gastar recursos em",
+          "criar uma peça. Quando",
+          "nenhuma casa está selecionada,",
+          "no lugar do menu",
+          "da peça há botões",
+          "de criação de peças - os",
+          "para os quais",
+          "tens recursos suficientes",
+          "estão marcados com cor."
+        ],
+        [
+          "Deves ter dólares",
+          "suficientes para criar",
+          "uma fábrica - clica no",
+          "botão correspondente,",
+          "e depois, com o direito,",
+          "escolhe uma casa para",
+          "a construção."
+        ],
+        [
+          "A criação de infantaria e",
+          "artilharia funciona",
+          "um pouco diferente - elas",
+          "só podem ser construídas",
+          "junto a edifícios",
+          "produtores."
+        ],
+        [
+          "Quando clicares no",
+          "botão de criação de infantaria,",
+          "serão destacadas",
+          "as cidades junto às quais",
+          "ela pode ser construída",
+          "para ti."
+        ],
+        [
+          "Nota que uma peça não pode",
+          "ser criada num terreno",
+          "inadequado, por exemplo -",
+          "não poderás",
+          "construir uma fábrica nas montanhas,",
+          "mas a artilharia ficará",
+          "bastante confortável lá."
+        ],
+        [
+          "Nota também: muitas",
+          "peças requerem recursos",
+          "não só ao aparecer,",
+          "mas também os consomem",
+          "a cada turno. Os recursos",
+          "consumidos por uma peça",
+          "a cada turno podem",
+          "ser encontrados no menu dela."
+        ],
+        [
+          "Se no início de um turno",
+          "não houver recursos",
+          "suficientes para a manutenção, a peça será",
+          "removida do campo - então",
+          "fica de olho no saldo."
+        ],
+        [
+          "Se a uma fábrica faltarem",
+          "matérias-primas,",
+          "ela não desaparece, mas simplesmente",
+          "fica parada sem",
+          "produzir."
+        ],
+        [
+          "Além da reserva de recursos",
+          "no canto superior esquerdo",
+          "também é exibido",
+          "o crescimento previsto",
+          "para o próximo turno (entre",
+          "parênteses), mas lembra:",
+          "a possível inatividade",
+          "por falta de recursos",
+          "não é considerada",
+          "nesta previsão."
+        ],
+        [
+          "Usando o conhecimento",
+          "adquirido, reforça",
+          "a economia, reúne",
+          "um exército forte e",
+          "esmaga os teus inimigos",
+          "nesta bela",
+          "ilha."
+        ]
+      ],
+      [
+        [
+          "Um comandante competente",
+          "sabe vencer não só",
+          "pela força, mas também",
+          "pela astúcia. Por que",
+          "derramar sangue onde",
+          "podes tomar o teu",
+          "sem luta?"
+        ],
+        [
+          "Se conseguires",
+          "cercar um grupo",
+          "de casas inimigas,",
+          "isto é, cortá-las",
+          "completamente",
+          "do resto das",
+          "possessões inimigas,",
+          "então ao",
+          "fim do turno dele",
+          "estas casas serão",
+          "anexadas por ti."
+        ],
+        [
+          "Isto é muito vantajoso!",
+          "Mas há um detalhe -",
+          "só são anexadas as casas",
+          "não controladas pelo",
+          "inimigo,",
+          "que, além disso,",
+          "após a anexação poderemos",
+          "controlar."
+        ],
+        [
+          "O controle das casas é garantido",
+          "pelas capitais e pela infantaria.",
+          "Se na região cercada",
+          "houver uma capital inimiga,",
+          "então ela não será anexada.",
+          "E, ao contrário, mesmo casas",
+          "não cercadas podem",
+          "ser anexadas, caso",
+          "estejam longe da",
+          "capital mais próxima ou",
+          "da infantaria."
+        ],
+        [
+          "Contudo, deve-se notar",
+          "que a infantaria dá",
+          "controle apenas ",
+          "quando está na",
+          "mesma região que",
+          "uma capital ou então",
+          "(se não houver capital),",
+          "quando está junto à",
+          "água - assim ela",
+          "ganha a capacidade",
+          "de ser abastecida por mar."
+        ],
+        [
+          "Se a anexação",
+          "de fato acontecer,",
+          "então toda a infantaria",
+          "inimiga dentro",
+          "do cerco",
+          "é dissolvida (os soldados",
+          "se dispersam para suas",
+          "casas), e todas",
+          "as outras peças -",
+          "passam para o teu",
+          "exército sãs e salvas."
+        ],
+        [
+          "Para criar cercos",
+          "é útil ter",
+          "alta mobilidade.",
+          "A infantaria comum pode",
+          "ganhar rodas -",
+          "subir num",
+          "transporte e",
+          "se transformar em",
+          "infantaria motorizada."
+        ],
+        [
+          "Isso dá uma enorme",
+          "vantagem: a reserva",
+          "de capacidade de combate da",
+          "infantaria motorizada é muito",
+          "maior do que a pé,",
+          "e ela também pode",
+          "engatar",
+          "artilharia."
+        ],
+        [
+          "Além disso, a infantaria",
+          "motorizada, assim como",
+          "a infantaria comum,",
+          "dá controle sobre",
+          "as casas - usa",
+          "isso para não perder",
+          "território em vão."
+        ],
+        [
+          "Mas também há um ponto negativo -",
+          "capturar",
+          "peças inimigas,",
+          "a infantaria motorizada já não",
+          "é capaz, para isso",
+          "precisas especificamente",
+          "de soldados a pé."
+        ],
+        [
+          "Toda esta ilha",
+          "está coberta de floresta densa,",
+          "na qual a nossa",
+          "artilharia é inútil.",
+          "O inimigo, sabendo disso, se",
+          "fortificou bem e trouxe a",
+          "infantaria motorizada dele para",
+          "nos expulsar daqui."
+        ],
+        [
+          "Reúne urgentemente umas rodas",
+          "e faz as terras dele",
+          "em pedaços."
+        ]
+      ],
+      [
+        [
+          "Agora sobre o equipamento",
+          "pesado. Um bunker",
+          "inimigo que a infantaria",
+          "não consegue derrubar,",
+          "pode ser destruído",
+          "por um tanque."
+        ],
+        [
+          "Tanques, como a artilharia,",
+          "podem ser capturados",
+          "pela infantaria. Um tanque pode",
+          "atacar o inimigo, mas",
+          "apenas numa casa",
+          "adjacente - à queima-roupa."
+        ],
+        [
+          "A força do tanque cresce",
+          "se por perto houver",
+          "infantaria ou motorizada:",
+          "os companheiros de combate cobrem",
+          "a blindagem, e o ataque e a defesa",
+          "do tanque aumentam."
+        ],
+        [
+          "Um tanque solitário,",
+          "entretanto - é presa",
+          "fácil. Até a infantaria",
+          "comum pode",
+          "destruí-lo."
+        ],
+        [
+          "Criar o teu próprio",
+          "tanque não é tarefa fácil -",
+          "com os meios",
+          "disponíveis não dá.",
+          "Conhece um novo",
+          "recurso - a ind. pesada, ela é",
+          "produzida pelas fábricas pesadas,",
+          "gastando nisso",
+          "dólares e bens de consumo."
+        ],
+        [
+          "Uma fábrica pesada, assim como",
+          "uma fábrica leve, recebe bônus",
+          "pela vizinhança de",
+          "uma capital, e",
+          "as fábricas pesadas inimigas podem",
+          "ser capturadas pela infantaria."
+        ],
+        [
+          "Quanto à transitabilidade",
+          "dos tanques - eles são um dos",
+          "poucos capazes de lutar",
+          "no deserto, porém em montanhas",
+          "e pântanos não esperes",
+          "nada deles."
+        ],
+        [
+          "Olha para esta pobre",
+          "ilha, ela está há muitos",
+          "anos envolta em eterna",
+          "guerra - é hora",
+          "de pôr ordem aqui."
+        ]
+      ],
+      [
+        [
+          "Os edifícios produtores nem sempre",
+          "têm de ser construídos por ti.",
+          "Os produtores de recursos podem",
+          "aparecer sozinhos nos teus",
+          "territórios - falamos",
+          "dos privateers (versões",
+          "alternativas de cidades,",
+          "fábricas e fábricas pesadas)."
+        ],
+        [
+          "Para aparecer, precisam",
+          "de planícies desocupadas",
+          "e da ausência de controle",
+          "estatal (quanto menos",
+          "capitais, mais",
+          "privateers)."
+        ],
+        [
+          "Os privateers são menos eficientes",
+          "que as produções na tua",
+          "posse, pois de qualquer forma",
+          "precisam obter lucro.",
+          "Ao mesmo tempo, cada privateer",
+          "pode ser comprado - transformado",
+          "num edifício produtor normal."
+        ],
+        [
+          "Outra diferença - um privateer",
+          "não tolerará a ausência dos",
+          "recursos de que precisa",
+          "para produzir -",
+          "em caso de déficit, ele abandonará",
+          "sua produção."
+        ],
+        [
+          "Um abandono não só",
+          "consome gratuitamente",
+          "o orçamento estatal, como também",
+          "infecta os edifícios",
+          "produtores por perto."
+        ],
+        [
+          "A partir deste momento",
+          "os bunkers situados",
+          "a grande distância",
+          "da frente também",
+          "se transformarão em abandonos -",
+          "não adianta construí-los na retaguarda!"
+        ],
+        [
+          "A boa notícia é",
+          "que os abandonos, como todos",
+          "os edifícios de que não precisas,",
+          "podem ser demolidos com tiros",
+          "de tanques e artilharia -",
+          "usa isso para",
+          "evitar a sua",
+          "propagação."
+        ],
+        [
+          "E por fim, a infantaria",
+          "sobrante sempre pode",
+          "se assentar - transformar-se",
+          "em assentamentos.",
+          "Isso ajudará a salvar",
+          "a economia numa hora",
+          "difícil."
+        ]
+      ],
+      [
+        [
+          "O inimigo nesta ilha",
+          "sabia de antemão da nossa",
+          "chegada e pôde investir muito",
+          "numa defesa",
+          "estática - felizmente para nós",
+          "tínhamos o nosso homem na",
+          "província ocidental que",
+          "sabotou a construção."
+        ],
+        [
+          "Infelizmente, a leste teremos de",
+          "abrir caminho por incontáveis",
+          "fileiras de bunkers. Aqui uma nova",
+          "peça virá em nosso",
+          "auxílio - o Grad. Gastando em cada",
+          "tiro um pouco de bens de consumo",
+          "ele destrói 3 alvos de uma vez -",
+          "exatamente o que é preciso contra construção densa."
+        ],
+        [
+          "Só nota que o Grad é uma",
+          "arma imprecisa, e exatamente a casa",
+          "para a qual miras,",
+          "ele nunca acertará."
+        ],
+        [
+          "O Grad, além disso, não pode",
+          "simplesmente ser contratado - para criá-lo",
+          "é preciso combinar",
+          "infantaria motorizada com artilharia.",
+          "Essa transformação exige,",
+          "ainda, um pouco de ind. pesada,",
+          "que não trouxemos connosco.",
+          "Mas temos certeza de que encontrarás",
+          "uma saída para esta situação."
+        ],
+        [
+          "E outra coisinha - os nossos",
+          "construtores organizaram algo",
+          "como uma greve, então nesta",
+          "e na próxima missão",
+          "não poderás criar",
+          "novas peças."
+        ]
+      ],
+      [
+        [
+          "Malditos logísticos!",
+          "No pedido estava claramente -",
+          "entregar um tanque a norte do",
+          "rio. Sem ele, por estes",
+          "bunkers, até à capital inimiga",
+          "não chegamos. Felizmente",
+          "os nossos artesãos recentemente",
+          "desenvolveram uma arma milagrosa - o Obus."
+        ],
+        [
+          "Com a transitabilidade de um tanque e",
+          "o alcance da artilharia",
+          "este monstro não tem igual.",
+          "Obtém-se combinando",
+          "um tanque com artilharia, mas há",
+          "um detalhe - a artilharia também",
+          "não nos foi entregue. Desenrasca-te",
+          "com esta situação como souberes."
+        ]
+      ],
+      [
+        [
+          "E agora falemos",
+          "a sério - destruir",
+          "o exército inimigo nem sempre",
+          "basta para",
+          "uma vitória decisiva.",
+          "Se a economia do inimigo",
+          "for forte, após",
+          "a derrota ele voltará",
+          "com força aumentada."
+        ],
+        [
+          "Para resolver este",
+          "problema, vais",
+          "precisar de um silo",
+          "de mísseis - ele pode",
+          "lançar mísseis sob",
+          "o nome de código",
+          "\"Oreshnik\"."
+        ],
+        [
+          "\"Oreshnik\" é uma arma",
+          "de longo alcance.",
+          "Além disso, se um silo",
+          "inimigo te chamar a",
+          "atenção, sábio - ele",
+          "pode ser capturado",
+          "pela infantaria e usado",
+          "contra o antigo dono."
+        ],
+        [
+          "O lançamento de \"Oreshnik\"",
+          "é possível contra qualquer",
+          "casa inimiga",
+          "que esteja a",
+          "uma distância não inferior",
+          "a dez casas do",
+          "silo."
+        ],
+        [
+          "O míssil atinge",
+          "não só o",
+          "alvo que escolheste,",
+          "mas também",
+          "adicionalmente",
+          "acerta seis",
+          "casas aleatórias nos",
+          "arredores."
+        ],
+        [
+          "Conseguimos nos firmar no",
+          "continente, mas o desembarque",
+          "na ilha revelou-se",
+          "um fracasso total - a nossa",
+          "infantaria ficou presa nas densas",
+          "florestas do norte da ilha.",
+          "Aqui precisaremos de",
+          "\"Oreshnik\" - arrasa as",
+          "capitais deles em",
+          "Madagáscar e então",
+          "o inimigo capitulará."
+        ]
+      ],
+      [
+        [
+          "O curso de instrução",
+          "terminou! Agora",
+          "sabes tudo",
+          "o necessário para",
+          "levar as tuas tropas à",
+          "vitória. E agora",
+          "prova-o tomando",
+          "toda a ilha."
+        ],
+        [
+          "Lembra: conhecer as mecânicas",
+          "- é metade do sucesso,",
+          "a outra metade -",
+          "o teu engenho.",
+          "Em frente, às vitórias!"
+        ]
+      ]
+    ]
+  },
+  "figures": {
+    "Land": "Planície",
+    "Mountain": "Montanha",
+    "Forest": "Floresta",
+    "Swamp": "Pântano",
+    "Desert": "Deserto",
+    "Water": "Água",
+    "Infantry": "Infantaria",
+    "Tank": "Tanque",
+    "Artillery": "Artilharia",
+    "Howitzer": "Obus",
+    "Grad": "Grad",
+    "Motorization": "Motorização",
+    "Bunker": "Bunker",
+    "MissileSilo": "Silo de mísseis",
+    "Town": "Cidade",
+    "LightFactory": "Fábrica leve",
+    "HeavyFactory": "Fábrica pesada",
+    "TierOneCapital": "Capital",
+    "TallCapital": "Capital Alta",
+    "WideCapital": "Capital Larga",
+    "Settlement": "Assentamento",
+    "PrivateLightFactory": "Artesão",
+    "PrivateHeavyFactory": "Privado",
+    "Abandonment": "Abandono"
+  },
+  "resources": {
+    "Dollars": "Dólares",
+    "LightIndustryProducts": "Bens de consumo",
+    "HeavyIndustryProducts": "Ind. pesada"
+  }
+}
