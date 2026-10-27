@@ -76,6 +76,7 @@ _ON = "ON"
 _OFF = "OFF"
 _APPLY = "APPLY"
 _ADD_PLAYER = "ADD_PLAYER"
+_FILL_HINT = "FILL_HINT"
 _PLAYERS_NAME = "PLAYERS_NAME"
 _CLEAR = "CLEAR"
 _PLAYERS_MODE = "PLAYERS_MODE"
@@ -365,6 +366,9 @@ class Language:
 
     def get_add_player_message(self) -> str:
         return self._ui[_ADD_PLAYER]
+
+    def get_fill_hint_message(self) -> str:
+        return self._ui[_FILL_HINT]
 
     def get_players_mode_message(self) -> str:
         return self._ui[_PLAYERS_MODE]

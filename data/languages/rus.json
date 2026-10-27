@@ -85,6 +85,7 @@
     "OFF": "Выкл",
     "APPLY": "Применить",
     "ADD_PLAYER": "Добавить игрока",
+    "FILL_HINT": "Заливка: Shift + ЛКМ",
     "PLAYERS_NAME": "Имя игрока",
     "CLEAR": "Очистить",
     "PLAYERS_TOP": "Топ игроков",

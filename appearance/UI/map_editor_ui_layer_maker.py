@@ -18,6 +18,7 @@ from appearance.graphics.colors import RECTANGLE_BUTTON
 from appearance.graphics.sprites import SpritesLoader, Sprite
 from appearance.language import Language
 from appearance.layer import Layer
+from appearance.protocols import ElementUi
 from color import Color
 from core.player import Player, PlayerData
 from core.player.inputers.bot_player_inputer import BotPlayerInputer
@@ -48,9 +49,19 @@ class MapEditorUiLayerMaker:
             changer := self._make_transform_switcher(),
             self._make_player_adding_menu(changer, exit_was_pressed.subscriber),
             self._make_player_edit_menu(changer),
+            self._make_fill_hint(changer),
         ]
 
         return Layer.as_multiple(layers)
+
+    def _make_fill_hint(self, anchor: ElementUi) -> TextUi:
+        rectangle = anchor.rectangle
+        return TextUi.make_with_anchors(self._drawer,
+                                        Rectangle(rectangle.position + Vector2.up(rectangle.shape.y + 10),
+                                                  Vector2(rectangle.shape.x, 25)),
+                                        TextData.debug(self._language.get_fill_hint_message()),
+                                        anchor_x=TextUi.RIGHT,
+                                        anchor_y=TextUi.CENTER)
 
     def _make_player_edit_menu(self, transforms_switcher: TwoButtonsValueChanger[str]) -> Layer:
         layout = VerticalLayoutUi(RectangleBuilder(self._screen_shape)

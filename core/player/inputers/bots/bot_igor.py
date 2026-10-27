@@ -211,7 +211,7 @@ class BotIgor(proto.Bot):
             self._state = _SPENDING
 
         if self._state == _SPENDING:
-            has_developed = hf_count > 0
+            has_developed = tanks_count > 0
             has_room_to_build = empties_count > cells_count * _MIN_EMPTIES_RATIO
 
             for silo in cells.with_owner(self._player) & cells.with_figure(fig.MissileSilo):
