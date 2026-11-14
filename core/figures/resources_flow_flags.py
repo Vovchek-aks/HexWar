@@ -2,6 +2,7 @@ from abc import ABCMeta
 from typing import Iterator, Callable
 
 from attrs import frozen, field
+from typing_extensions import ClassVar
 
 import core.protocols as proto
 from core.distant_neighbors_getter import DistantNeighborsGetter
@@ -16,12 +17,14 @@ MAX_BUFF_DISTANCE = 2
 class TriesTakeResourcesElseDies(proto.TriesTakeResourcesElseDies):
     EXCLUDES = {}
 
+    DEFAULT_PRIORITY: ClassVar[int] = 100
+
     @classmethod
-    def make(cls, *resources: proto.Resource) -> proto.TriesTakeResourcesElseDies:
-        return cls(ResourcesGroup.make(*resources))
+    def make(cls, *resources: proto.Resource, priority: int = DEFAULT_PRIORITY) -> proto.TriesTakeResourcesElseDies:
+        return cls(ResourcesGroup.make(*resources), priority)
 
     _resources: proto.ResourcesGroup
-    _priority: int = 100
+    _priority: int = DEFAULT_PRIORITY
 
     @property
     def priority(self) -> int:

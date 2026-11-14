@@ -397,7 +397,8 @@ class Abandonment(_Figure):
                       WithRestrictedTerrainKinds(),
                       Static(),
                       Capturable(),
-                      AddsResourcesIndefinably.make(Dollars(-25_000)))
+                      TriesTakeResourcesElseDies.make(Dollars(50_000),
+                                                      priority=TriesTakeResourcesElseDies.DEFAULT_PRIORITY - 1))
     MOVES_BUDGET = 0
 
     @classmethod
