@@ -15,7 +15,13 @@ ICON_FILE = Path("data") / "sprites" / "icon.png"
 
 
 class Window(arc.Window):
-    def __init__(self, ups: float, is_fullscreen: bool, title: str, screen_shape: Vector2Int) -> None:
+    def __init__(self,
+                 ups: float,
+                 is_fullscreen: bool,
+                 title: str,
+                 screen_shape: Vector2Int,
+                 *,
+                 need_visible_mouse: bool = True) -> None:
         dt = 1 / ups
         super().__init__(screen_shape.x,
                          screen_shape.y,
@@ -32,6 +38,8 @@ class Window(arc.Window):
         self.set_fullscreen(fullscreen=is_fullscreen)
 
         self._pressed_keys = set[int]()
+
+        self._need_visible_mouse = need_visible_mouse
 
         self._fixed_update_started = Event[float, None]()
         self._fixed_update_finished = Event[float, None]()
@@ -123,6 +131,9 @@ class Window(arc.Window):
         click = Click(Vector2(x, y), buttons)
 
         self._click_was_made.invoke(click)
+
+        self.set_mouse_visible(self._need_visible_mouse)
+        print(123)
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
         self._pressed_keys.add(symbol)

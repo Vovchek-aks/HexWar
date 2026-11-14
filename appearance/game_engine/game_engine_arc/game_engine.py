@@ -21,7 +21,7 @@ class GameEngine:
         screen_shape = settings.screen_shape
         is_fullscreen = settings.if_fullscreen
 
-        window = Window(ups, is_fullscreen, caption, screen_shape)
+        window = Window(ups, is_fullscreen, caption, screen_shape, need_visible_mouse=False)
         window.set_mouse_visible(False)
         scene_switcher = SceneSwitcher.make(make_scene(window))
         self = cls(caption, window, scene_switcher)
