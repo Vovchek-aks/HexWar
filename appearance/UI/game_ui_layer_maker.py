@@ -585,6 +585,7 @@ class GameUiLayerMaker:
             resources,
             end_turn_button,
         ])
+        layer.set_activity(self._session.master.current_player.need_ui)
         self._session.master.turn_had_started.subscribe(lambda player: layer.set_activity(player.need_ui))
         return layer
 
