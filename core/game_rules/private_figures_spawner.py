@@ -10,13 +10,13 @@ import core.figures.figure as fig
 from ..figures.figures_flags import ALL_TERRAINS
 
 PRIVATES_FLAT_COUNT = 10
-PRIVATES_RATIO = .1
-PRIVATES_DECREASE_FROM_CAPITALS_RATIO = 5
-PRIVATES_SPAWN_SPEED_MULTIPLIER = .1
+PRIVATES_RATIO = .15
+PRIVATES_DECREASE_FROM_CAPITALS_RATIO = 7
+PRIVATES_SPAWN_SPEED_MULTIPLIER = .15
 PRIVATES_WEIGHTS = {
     fig.Settlement: 1,
     fig.PrivateLightFactory: .3,
-    fig.PrivateHeavyFactory: .1,
+    fig.PrivateHeavyFactory: .05,
 }
 
 
