@@ -70,7 +70,8 @@ from appearance.graphics.colors import PAUSE_MENU_BACKGROUND
 def load_tutorial(window: Window,
                   make_session: Callable[[], GameSession],
                   tutorial_index: int,
-                  ups: int) -> Iterator[proto.Scene | Status]:
+                  ups: int,
+                  is_reloading: bool = False) -> Iterator[proto.Scene | Status]:
     window.set_mouse_visible(False)
 
     screen_shape = Settings.open().screen_shape
@@ -237,7 +238,7 @@ def load_tutorial(window: Window,
                                          combine(lambda: GameSessionSaver(session).save(TEMP_FILE),
                                                  lambda: scene.switch_to(LoadingScene.make(
                                                      load_tutorial(window, GameSessionLoader.make(TEMP_FILE, ups).load,
-                                                                   tutorial_index, ups))))))
+                                                                   tutorial_index, ups, is_reloading=True))))))
 
     pause_menu_layers = [
         cursor_layer,
@@ -263,6 +264,10 @@ def load_tutorial(window: Window,
     continue_was_pressed.subscribe(scene.on_pause_menu_toggle_requested)
     to_main_menu_was_pressed.subscribe(window.reload)
     scene.was_switched.subscribe(lambda _: music_player.stop())
+
+    if is_reloading:
+        yield scene
+        return
 
     for _ in game_rules_applier.on_turn_start():
         ...
