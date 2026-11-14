@@ -334,6 +334,10 @@ class CellsCache(ABC):
         ...
 
     @abstractmethod
+    def get_empty_cells_with_empty_neighbors_of(self, player: Player, empty_neighbors_count: int) -> "Cells":
+        ...
+
+    @abstractmethod
     def get_all_players(self) -> "Cells":
         ...
 

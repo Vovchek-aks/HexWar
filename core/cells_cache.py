@@ -33,6 +33,9 @@ class CellsCache(proto.CellsCache):
     _front: set[proto.Cell] = field(init=False, factory=set)
     _changeable_front: set[proto.Cell] = field(init=False, factory=set)
     _control_zone_of: dict[proto.Cell, Cells] = field(init=False, factory=dict)
+    _empty_cells_with_empty_neighbors_of: dict[proto.Player, dict[int, set[proto.Cell]]] = (
+        field(init=False, factory=lambda: defaultdict(lambda: {count: set() for count in range(6 + 1)}))
+    )
 
     @property
     def at_front(self) -> Cells:
@@ -80,6 +83,9 @@ class CellsCache(proto.CellsCache):
             result |= self._cells_with[concrete_figure]
         return Cells(result)
 
+    def get_empty_cells_with_empty_neighbors_of(self, player: proto.Player, empty_neighbors_count: int) -> Cells:
+        return Cells(self._empty_cells_with_empty_neighbors_of[player][empty_neighbors_count])
+
     def get_all_players(self) -> Cells:
         return reduce(lambda a, b: a + b, (self.with_owner(player) for player in self._cells_of))
 
@@ -107,6 +113,7 @@ class CellsCache(proto.CellsCache):
 
         self._update_front(cell)
         self._update_control_zones(cell)
+        self._update_empty_cells_with_empty_neighbors_of(cell)
 
         figure = type(cell.figure)
         if cell not in self._owner_of:
@@ -144,6 +151,14 @@ class CellsCache(proto.CellsCache):
         if flag is not MISSING:
             self._control_zone_of[cell] = (DistantNeighborsGetter(cell, self._board)
                                            .get_all_not_farther_than(flag.distance, include_cell=True))
+
+    def _update_empty_cells_with_empty_neighbors_of(self, cell: proto.Cell) -> None:
+        for cell in self._board.get_neighbors(cell, include_cell=True).with_flag(proto.OnLand):
+            if cell in self._owner_of:
+                for cells in self._empty_cells_with_empty_neighbors_of[self._owner_of[cell]].values():
+                    cells.discard(cell)
+            neighbors_count = len(self._board.get_neighbors(cell).with_figure(fig.Land).with_owner(cell.owner))
+            self._empty_cells_with_empty_neighbors_of[cell.owner][neighbors_count].add(cell)
 
     def _update_front(self, changed_cell: proto.Cell) -> None:
         for cell in self._board.get_neighbors(changed_cell, include_cell=True).with_flag(proto.OnLand):

@@ -447,11 +447,18 @@ class BotIgor(proto.Bot):
                     if neighbors:
                         return random.choice(neighbors.as_list())
 
-                candidates = back or empties
-                return max(candidates, key=lambda cell: len(self._board
-                                                            .get_neighbors(cell)
-                                                            .with_owner(self._player)
-                                                            .with_figure(fig.Land)))
+                need_to_discard_front = len(empties) != len(back)
+                for empty_neighbors_count in range(6, 0 - 1, -1):
+                    candidates = cells.get_empty_cells_with_empty_neighbors_of(self._player, empty_neighbors_count)
+                    if need_to_discard_front:
+                        candidates -= front
+
+                    if not candidates:
+                        continue
+
+                    return random.choice(candidates.as_list())
+
+                assert False
 
             case fig.MissileSilo:
                 candidates = back or empties
