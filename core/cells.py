@@ -1,6 +1,6 @@
 from collections import defaultdict
 from types import UnionType
-from typing import Iterator, Callable, Hashable
+from typing import Iterator, Callable, Hashable, Iterable
 
 from attrs import frozen, field
 
@@ -20,6 +20,10 @@ class Cells(proto.Cells):
         for cells in cellses:
             self |= cells.as_set()
         return cls(self)
+
+    @classmethod
+    def from_iter(cls, iterator: Iterable[proto.Cell]) -> "Cells":
+        return cls(set(iterator))
 
     _cells: set[proto.Cell] = field(factory=set)
 
