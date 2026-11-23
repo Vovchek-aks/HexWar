@@ -157,6 +157,10 @@ class CellsCache(proto.CellsCache):
             if cell in self._owner_of:
                 for cells in self._empty_cells_with_empty_neighbors_of[self._owner_of[cell]].values():
                     cells.discard(cell)
+
+            if not isinstance(cell.figure, fig.Land):
+                continue
+
             neighbors_count = len(self._board.get_neighbors(cell).with_figure(fig.Land).with_owner(cell.owner))
             self._empty_cells_with_empty_neighbors_of[cell.owner][neighbors_count].add(cell)
 
