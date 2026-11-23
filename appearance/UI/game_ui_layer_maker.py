@@ -44,7 +44,6 @@ from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.protocols import GameSession, Player, MovesMaker, ValidMove, Creatable, Resource, Movable, ResourcesChanger, \
     ResourcesTaker, ResourcesAdder, CanLaunchOreshnik, CanPull, WithRestrictedTerrainKinds
 from core.resources import Dollars, LightIndustryProducts, HeavyIndustryProducts, ResourcesGroup, get_resources_types
-from files import read_finished_levels, increment_finished_levels
 from mathematics.rectangle import Rectangle, RectangleBuilder
 from mathematics.vector import Vector2, Vector2Int
 import core.figures.figure as fig
@@ -98,7 +97,8 @@ class GameUiLayerMaker:
     def make_for_tutorial(self,
                           tutorial_index: int,
                           on_end_turn_button_was_clicked: Callable[[], None],
-                          on_to_next_level_was_pressed: Callable[[], None]) -> Layer:
+                          on_to_next_level_was_pressed: Callable[[], None],
+                          level_was_completed: OnEventSubscriber[None]) -> Layer:
         first_levels_resources = (
             Dollars,
             LightIndustryProducts,
@@ -126,38 +126,24 @@ class GameUiLayerMaker:
                                        allowed_resources, make_current_turn_ui,
                                        on_to_next_level_was_pressed
                                        if tutorial_index < len(current_turn_ui_makers_and_resources) - 1 else
-                                       MISSING)
+                                       MISSING,
+                                       level_was_completed)
 
     def _make_for_tutorial(self,
                            tutorial_index: int,
                            on_end_turn_button_was_clicked: Callable[[], None],
                            allowed_resources: Sequence[type[Resource]],
                            current_turn_ui_maker: Callable[[ElementUi, ButtonUi], Layer],
-                           on_to_next_level_was_pressed: Callable[[], None] | Status) -> Layer:
+                           on_to_next_level_was_pressed: Callable[[], None] | Status,
+                           level_was_completed: OnEventSubscriber[None]) -> Layer:
         resources, players_turn = self._make_resources_and_player_turn(allowed_resources)
         end_turn_button = self._make_end_turn_button()
-        first_player = self._session.master.current_player
 
-        def on_turn_had_started(player: Player) -> None:
-            current_turn_ui.set_activity(player.need_ui)
+        level_was_completed.subscribe(lambda: current_turn_ui.set_activity(False))
+        level_was_completed.subscribe(lambda: hints.layer.set_activity(False))
 
-            if player is not first_player:
-                return
-
-            cells = self._session.cells
-            if len(cells.with_owner(player)) < sum(len(cells.with_owner(other))
-                                                   for other in self._session.master.players):
-                return
-
-            level_was_completed.invoke()
-            current_turn_ui.set_activity(False)
-            hints.layer.set_activity(False)
-            if tutorial_index == read_finished_levels():
-                increment_finished_levels()
-
-        level_was_completed = Event[None]()
-        self._session.master.turn_had_started.subscribe(on_turn_had_started)
-        you_won_screen = self._make_level_completion_screen(level_was_completed.subscriber,
+        self._session.master.turn_had_started.subscribe(lambda player: current_turn_ui.set_activity(player.need_ui))
+        you_won_screen = self._make_level_completion_screen(level_was_completed,
                                                             on_to_next_level_was_pressed)
 
         layers = [

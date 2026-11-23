@@ -133,7 +133,6 @@ class Window(arc.Window):
         self._click_was_made.invoke(click)
 
         self.set_mouse_visible(self._need_visible_mouse)
-        print(123)
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
         self._pressed_keys.add(symbol)

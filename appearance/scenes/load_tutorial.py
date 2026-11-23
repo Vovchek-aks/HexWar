@@ -51,12 +51,14 @@ from appearance.settings import Settings
 from core.annexation_map.annexation_map import AnnexationMap
 from core.annexation_map.annexation_map_updater import AnnexationMapUpdater
 from core.cells_changes_observer import CellsChangesObserver
+from core.player.inputers.bot_player_inputer import BotPlayerInputer
 from core.player.inputers.wants_to_be_event_player_inputer import WantsToBeEventPlayerInputer
 from core.moves_maker import MovesMaker
 from core.player.inputers.event_player_inputer import EventPlayerInputerBuilder
 from core.player.players_moves_maker import players_moves_maker
 from core.game_rules.game_rules_applier import GameRulesApplier
-from core.protocols import GameSession
+from core.protocols import GameSession, Player
+from files import read_finished_levels, increment_finished_levels
 from game_session_saver import GameSessionLoader, TUTORIAL_MAP_PREFIX, GameSessionSaver, TEMP_FILE
 from mathematics.vector import Vector2Int
 from my_types import combine
@@ -137,6 +139,26 @@ def load_tutorial(window: Window,
     mouse_movement_observer = MouseMovementObserver()
 
     yield language.get_ui_making_message()
+    level_was_completed = Event[None]()
+    human_players = [player for player in session.master.players
+                     if not isinstance(player.inputer, BotPlayerInputer)]
+    assert len(human_players) <= 1
+    human_player = human_players[0] if human_players else MISSING
+
+    def on_turn_had_started(player: Player) -> None:
+        if player is not human_player:
+            return
+
+        cells = session.cells
+        if len(cells.with_owner(player)) < sum(len(cells.with_owner(other))
+                                               for other in session.master.players):
+            return
+
+        level_was_completed.invoke()
+        if tutorial_index == read_finished_levels():
+            increment_finished_levels()
+
+    session.master.turn_had_started.subscribe(on_turn_had_started)
 
     def on_to_next_level_was_pressed() -> None:
         next_tutorial_index = tutorial_index + 1
@@ -158,7 +180,7 @@ def load_tutorial(window: Window,
                                            turn_start_preparations_had_finished.subscriber,
                                            actions_reader)
     ui_layer = game_ui_layer_maker.make_for_tutorial(tutorial_index, end_turn_button_was_clicked.invoke,
-                                                     on_to_next_level_was_pressed)
+                                                     on_to_next_level_was_pressed, level_was_completed.subscriber)
 
     yield language.get_sprite_loading_message()
     hatching_map = HatchingMap()

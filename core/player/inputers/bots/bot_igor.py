@@ -458,7 +458,8 @@ class BotIgor(proto.Bot):
 
                     return random.choice(candidates.as_list())
 
-                assert False
+                print("eroro")
+                return MISSING
 
             case fig.MissileSilo:
                 candidates = back or empties
