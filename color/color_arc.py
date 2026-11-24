@@ -47,7 +47,7 @@ class Color(arc.color.Color):
         )
 
     def hex(self) -> str:
-        return f"#{hex(self.r)[2:]}{hex(self.g)[2:]}{hex(self.b)[2:]}"
+        return f"#{self.r:02x}{self.g:02x}{self.b:02x}"
 
     def lerp(self, color: "Color", ratio: float) -> "Color":
         return Color(
